@@ -1,0 +1,15 @@
+.page-header {
+    background-color: #ff9400;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+}
+
+.content {
+    h1 {
+        color: #FCA205;
+    }
+    body {
+        padding-left: 15px;
+    }
+}
+
