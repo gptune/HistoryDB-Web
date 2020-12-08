@@ -1,0 +1,32 @@
+{% extends 'account/base.html' %}  
+{% load static %}
+{% block content %}
+
+<div class="starter-template">
+<div class="container">
+  <h1>Sign up</h1><br>
+
+  <form method="POST" action="{% url 'account:signup' %}">
+    {% csrf_token %}
+    Username:
+    <br>
+    <input name="username" type="text">
+    <br>
+    Email:
+    <br>
+    <input name="email" type="email">
+    <br>
+    Password:
+    <br>
+    <input name="password1" type="password">
+    <br>
+    Confirm Password:
+    <br>
+    <input name="password2" type="password">
+    <br><br>
+    <input type="submit" class="btn btn-primary" value="sign up">
+  </form>
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'account/base.html' %}  
+{% load static %}
+{% block content %}
+
+<div class="starter-template">
+<div class="container">
+  <h1>Log in</h1><br><br>
+
+  <form method="POST" action="{% url 'account:login' %}">
+    {% csrf_token %}
+    Username:
+    <br>
+    <input name="username" type="text">
+    <br>
+    Password:
+    <br>
+    <input name="password" type="password">
+    <br><br>
+    <input type="submit" class="btn btn-primary" value="Log In">
+  </form>
+  <br>
+  <a href="{% url 'account:signup' %}">
+      <button class="btn btn-primary">Sign Up</button>
+  </a>
+</div>
+</div>
+
+{% endblock %}
