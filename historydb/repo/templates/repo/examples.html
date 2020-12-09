@@ -1,0 +1,142 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v4.1.1">
+    <title>Carousel Template · Bootstrap</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/carousel/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="carousel.css" rel="stylesheet">
+  </head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="#">GPTune History DB</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'main:index' %}">Home<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown active">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Public Repository</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard</a>
+          <a class="dropdown-item" href="{% url 'repo:examples' %}">Examples</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Documentation</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'account:login' %}">Login</a>
+      </li>
+    </ul>
+
+    {% if user.is_authenticated %}
+    <a href="{% url 'account:logout' %}">
+      <button class="btn btn-secondary my-2 my-sm-0">Logout</button>
+    </a>
+    {% endif %}
+
+  </div>
+</nav>
+
+<main role="main">
+  <!-- Marketing messaging and featurettes
+  ================================================== -->
+  <!-- Wrap the rest of the page in another container to center all the content. -->
+
+  <div class="starter-template">
+    <h1>Selected Examples in Our Database</h1>
+  </div>
+
+  <div class="container marketing">
+    <!-- Three columns of text below the carousel -->
+    <div class="row">
+      <div class="col-lg-4">
+        <img src="{% static 'images/ScaLAPACK.gif' %}" width=140>
+        <h2>ScaLAPACK</h2>
+        <p>The ScaLAPACK (or Scalable LAPACK) library includes a subset of LAPACK routines redesigned for distributed memory MIMD parallel computers. It is currently written in a Single-Program-Multiple-Data style using explicit message passing for interprocessor communication. It assumes matrices are laid out in a two-dimensional block cyclic decomposition.</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View DB Data &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+
+      <div class="col-lg-4">
+        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 140x140"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"/><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+        <h2>SuperLU_DIST</h2>
+        <p>SuperLU_DIST contains a set of subroutines to solve a sparse linear system A*X=B. It uses Gaussian elimination with static pivoting (GESP). Static pivoting is a technique that combines the numerical stability of partial pivoting with the scalability of Cholesky (no pivoting), to run accurately and efficiently on large numbers of processors.</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View DB Data &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+
+      <div class="col-lg-4">
+        <img src="{% static 'images/HypreLogo.png' %}" width=200>
+        <h2>Hypre</h2>
+        <p>The Parallel High Performance Preconditioners (hypre) is a library of routines for scalable (parallel) solution of linear systems. The built-in BLOPEX package in addition allows solving eigenvalue problems.</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View DB Data &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+
+    </div><!-- /.row -->
+
+    <!-- Three columns of text below the carousel -->
+    <div class="row">
+      <div class="col-lg-4">
+        <img src="{% static 'images/LAPACK.gif' %}" width=140>
+        <h2>LAPACK</h2>
+        <p>LAPACK ("Linear Algebra Package") is a standard software library for numerical linear algebra. It provides routines for solving systems of linear equations and linear least squares, eigenvalue problems, and singular value decomposition.</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View DB Data &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+
+      <div class="col-lg-4">
+        <img src="{% static 'images/BLAS-snapshot.jpg' %}" width=180>
+        <h2>BLAS</h2>
+        <p>The BLAS (Basic Linear Algebra Subprograms) are routines that provide standard building blocks for performing basic vector and matrix operations. The Level 1 BLAS perform scalar, vector and vector-vector operations, the Level 2 BLAS perform matrix-vector operations, and the Level 3 BLAS perform matrix-matrix operations.</p>
+        <p><a class="btn btn-secondary" href="#" role="button">View DB Data &raquo;</a></p>
+      </div><!-- /.col-lg-4 -->
+
+    </div><!-- /.row -->
+
+  </div><!-- /.container -->
+
+  <!-- FOOTER -->
+  <footer class="container">
+    <p class="float-right"><a href="#">Back to top</a></p>
+    <p>&copy; 2020 GPTune-Dev. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </footer>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('')</script><script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+</html>
