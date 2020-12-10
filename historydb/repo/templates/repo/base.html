@@ -65,9 +65,9 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'repo:display' %}">
               <span data-feather="file"></span>
-              Placeholder
+              Display example
             </a>
           </li>
           <li class="nav-item">
@@ -114,28 +114,6 @@
       </div>
 
       <h2>Performance Data</h2>
-
-      {% if libraries_avail %}
-      <ul>
-          {% for library_avail in libraries_avail %}
-          <li>
-              {{ library_avail }}
-          </li>
-          {% endfor %}
-      </ul>
-      {% else %}
-      <p> No performance files are available.</p>
-      {% endif %}
-
-      {% if perf_data %}
-      <ul>
-          <li>
-              {{ perf_data.0 }}
-          </li>
-      </ul>
-      {% else %}
-      <p> No performance files are available.</p>
-      {% endif %}
 
       {% block content %}
       {% endblock %}

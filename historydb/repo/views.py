@@ -158,6 +158,7 @@ def dashboard(request):
     json_path = "../json"
     libraries_avail = os.listdir("../json")
     print (libraries_avail)
+    applications_avail = []
 
     perf_data = {}
 
@@ -166,6 +167,7 @@ def dashboard(request):
 
         library_json_path = json_path + "/" + library_avail
         for application in os.listdir(library_json_path):
+            applications_avail.append(application.split('.')[0])
             application_path = library_json_path + "/" + application
             print (application_path)
             with open(application_path) as f_in:
@@ -194,6 +196,7 @@ def dashboard(request):
 
     context = {
             "libraries_avail" : libraries_avail,
+            "applications_avail" : applications_avail,
             "perf_data" : perf_data_web,
             "num_func_eval" : num_func_eval,
             "num_pages" : range(num_pages),
@@ -201,6 +204,63 @@ def dashboard(request):
             }
 
     return render(request, 'repo/dashboard.html', context)
+
+def display(request):
+    import os
+    import json
+
+    json_path = "../json"
+    libraries_avail = os.listdir("../json")
+    print (libraries_avail)
+
+    applications_avail = []
+
+    perf_data = {}
+
+    for library_avail in libraries_avail:
+        perf_data[library_avail] = {}
+
+        library_json_path = json_path + "/" + library_avail
+        for application in os.listdir(library_json_path):
+            applications_avail.append(application.split('.')[0])
+            application_path = library_json_path + "/" + application
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+
+                perf_data[library_avail][application.split('.')[0]] = func_eval_data
+
+    num_func_eval = len(perf_data['ScaLAPACK']['PDGEQRF'])
+    print ("num_func_eval: ", num_func_eval)
+    num_evals_per_page = 15
+    if (num_func_eval%num_evals_per_page) == 0:
+        num_pages = num_func_eval/num_evals_per_page
+    else:
+        num_pages = int(num_func_eval/num_evals_per_page)+1
+    print ("num_pages: ", num_pages)
+
+    current_page = 0
+    start_index = (current_page)*num_evals_per_page
+    end_index = (current_page+1)*num_evals_per_page
+    if end_index > num_func_eval:
+        end_index = num_func_eval
+
+    perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+    print (perf_data_web)
+
+    context = {
+            "libraries_avail" : libraries_avail,
+            "applications_avail" : applications_avail,
+            "library_selected" : "ScaLAPACK",
+            "application_selected" : "PDGEQRF",
+            "perf_data" : perf_data_web,
+            "num_func_eval" : num_func_eval,
+            "num_pages" : range(num_pages),
+            "current_page" : current_page
+            }
+
+    return render(request, 'repo/display.html', context)
 
 from datetime import datetime
 import os
@@ -253,3 +313,5 @@ def examples(request):
 
 def base(request):
     return render(request, 'repo/base.html')
+
+
