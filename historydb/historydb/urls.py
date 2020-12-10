@@ -18,6 +18,7 @@ from django.urls import path
 from django.urls import include
 
 urlpatterns = [
+    path('documentation/', include('documentation.urls')),
     path('repo/', include('repo.urls')),
     path('account/', include('account.urls')),
     path('', include('main.urls')),
