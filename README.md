@@ -3,13 +3,13 @@
 The web interface for the GPTune history database repository for development and debugging.
 The web framework is based on Django and uses Bootstrap for pretty webpages.
 
-# prerequisite
+## Prerequisite
 
 - Python (version higher than 3)
 - Django installed
 - MongoDB installed (although the current version has not integrated MongoDB yet)
 
-# usage (testing/debuggin)
+## Usage (testing/debugging)
 
 $ python manage.py makemigrations
 
