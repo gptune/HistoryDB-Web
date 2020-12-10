@@ -115,11 +115,141 @@ from django.http import JsonResponse
 def carousel(request):
     return render(request, 'repo/carousel.html')
 
-def archive(request):
-    return render(request, 'repo/archive.html')
+#def archive(request):
+#    return render(request, 'repo/archive.html')
+
+#def dashboard(request):
+#    import os
+#    import json
+#
+#    json_path = "../json"
+#    libraries_avail = os.listdir("../json")
+#    print (libraries_avail)
+#
+#    perf_data = {}
+#
+#    for library_avail in libraries_avail:
+#        perf_data[library_avail] = {}
+#
+#        library_json_path = json_path + "/" + library_avail
+#        for application in os.listdir(library_json_path):
+#            application_path = library_json_path + "/" + application
+#            print (application_path)
+#            with open(application_path) as f_in:
+#                json_data = json.loads(f_in.read())
+#                func_eval_data = json_data["func_eval"]
+#
+#                perf_data[library_avail][application.split('.')[0]] = func_eval_data
+#
+#    perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][:15]
+#    print (perf_data_web)
+#
+#    context = {
+#            "libraries_avail" : libraries_avail,
+#            "perf_data" : perf_data_web,
+#            }
+#
+#    return render(request, 'repo/dashboard.html', context)
 
 def dashboard(request):
-    return render(request, 'repo/dashboard.html')
+    import os
+    import json
+
+    json_path = "../json"
+    libraries_avail = os.listdir("../json")
+    print (libraries_avail)
+
+    perf_data = {}
+
+    for library_avail in libraries_avail:
+        perf_data[library_avail] = {}
+
+        library_json_path = json_path + "/" + library_avail
+        for application in os.listdir(library_json_path):
+            application_path = library_json_path + "/" + application
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+
+                perf_data[library_avail][application.split('.')[0]] = func_eval_data
+
+    num_func_eval = len(perf_data['ScaLAPACK']['PDGEQRF'])
+    print ("num_func_eval: ", num_func_eval)
+    num_evals_per_page = 15
+    if (num_func_eval%num_evals_per_page) == 0:
+        num_pages = num_func_eval/num_evals_per_page
+    else:
+        num_pages = int(num_func_eval/num_evals_per_page)+1
+    print ("num_pages: ", num_pages)
+
+    current_page = 0
+    start_index = (current_page)*num_evals_per_page
+    end_index = (current_page+1)*num_evals_per_page
+    if end_index > num_func_eval:
+        end_index = num_func_eval
+
+    perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+    print (perf_data_web)
+
+    context = {
+            "libraries_avail" : libraries_avail,
+            "perf_data" : perf_data_web,
+            "num_func_eval" : num_func_eval,
+            "num_pages" : range(num_pages),
+            "current_page" : current_page
+            }
+
+    return render(request, 'repo/dashboard.html', context)
+
+from datetime import datetime
+import os
+import json
+from django.forms.models import model_to_dict
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+
+def query(request, perf_data_uid):
+    print ("!!!!")
+    print (perf_data_uid)
+
+    perf_data = {}
+
+    json_path = "../json"
+    libraries_avail = os.listdir(json_path)
+    for library_avail in libraries_avail:
+        library_json_path = json_path + "/" + library_avail
+        for application in os.listdir(library_json_path):
+            application_path = library_json_path + "/" + application
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+                for func_eval in func_eval_data:
+                    if func_eval["uid"] == perf_data_uid:
+                        perf_data = func_eval
+
+    obj = {} #PerfFile.objects.get(pk = perf_file_id)
+    #print (model_to_dict(obj))
+
+    context = {
+        "json_detail": perf_data
+        }
+
+    return render(request, 'repo/detail.html', context)
+    #return JsonResponse(model_to_dict(obj))
+
+    #all_entries = PerfFile.objects.all()
+    #print (model_to_dict(all_entries[0]))
+
+    #fb = PerfFile(name = '####', perf_data = json.dumps('{"a":"b"}'), pub_date = datetime.now())
+    ##fb = PerfFile(name = '####', pub_date = datetime.now())
+    #fb.save()
+
+    #return HttpResponse("SASDFASDF question %s." % perf_file_id)
 
 def examples(request):
     return render(request, 'repo/examples.html')
+
+
+def base(request):
+    return render(request, 'repo/base.html')

@@ -1,0 +1,26 @@
+{% extends 'repo/base.html' %}  
+{% load static %}
+
+{% block content %}
+
+<div class="starter-template">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    </head>
+    <body>
+        <p>History Database Data Details</p>
+        <p>
+        <pre>{{ json_detail | pprint }}</pre>
+        </p>
+
+        <span>
+          <a href="{% url 'repo:dashboard' %}">Go to dashboard</a>
+        </span>
+
+    </body>
+</div>
+
+{% endblock %}

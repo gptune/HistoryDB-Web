@@ -41,9 +41,15 @@
   </button>
   <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
   <ul class="navbar-nav px-3">
+    {% if user.is_authenticated %}
     <li class="nav-item text-nowrap">
       <a class="nav-link" href="{% url 'account:logout' %}">Sign out</a>
     </li>
+    {% else %}
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" href="{% url 'account:login' %}">Login</a>
+    </li>
+    {% endif %}
   </ul>
 </nav>
 
@@ -61,64 +67,31 @@
           <li class="nav-item">
             <a class="nav-link" href="#">
               <span data-feather="file"></span>
-              Orders
+              Placeholder
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">
               <span data-feather="shopping-cart"></span>
-              Products
+              Placeholder
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">
               <span data-feather="users"></span>
-              Customers
+              Placeholder
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">
               <span data-feather="bar-chart-2"></span>
-              Reports
+              Placeholder
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">
               <span data-feather="layers"></span>
-              Integrations
-            </a>
-          </li>
-        </ul>
-
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-          <span>Saved reports</span>
-          <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
-            <span data-feather="plus-circle"></span>
-          </a>
-        </h6>
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Current month
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Last quarter
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Social engagement
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Year-end sale
+              Placeholder
             </a>
           </li>
         </ul>
@@ -141,133 +114,181 @@
       </div>
 
       <h2>Performance Data</h2>
+
+      {% if libraries_avail %}
+      <ul>
+          {% for library_avail in libraries_avail %}
+          <li>
+              {{ library_avail }}
+          </li>
+          {% endfor %}
+      </ul>
+      {% else %}
+      <p> No performance files are available.</p>
+      {% endif %}
+
+      {% if perf_data %}
+      <ul>
+          <li>
+              {{ perf_data.0 }}
+          </li>
+      </ul>
+      {% else %}
+      <p> No performance files are available.</p>
+      {% endif %}
+
       <div class="table-responsive">
         <table class="table table-striped table-sm">
           <thead>
             <tr>
               <th>#</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
-              <th>Header</th>
+              <th>Input Task</th>
+              <th>Tuning Parameter</th>
+              <th>Output Result</th>
+              <th>Date</th>
+              <th>UID (Details)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>1,001</td>
-              <td>Lorem</td>
-              <td>ipsum</td>
-              <td>dolor</td>
-              <td>sit</td>
+              <td>{{ perf_data.0.I }}</td>
+              <td>{{ perf_data.0.P }}</td>
+              <td>{{ perf_data.0.O }}</td>
+              <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
             </tr>
             <tr>
               <td>1,002</td>
-              <td>amet</td>
-              <td>consectetur</td>
-              <td>adipiscing</td>
-              <td>elit</td>
+              <td>{{ perf_data.1.I }}</td>
+              <td>{{ perf_data.1.P }}</td>
+              <td>{{ perf_data.1.O }}</td>
+              <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
             </tr>
             <tr>
               <td>1,003</td>
-              <td>Integer</td>
-              <td>nec</td>
-              <td>odio</td>
-              <td>Praesent</td>
-            </tr>
-            <tr>
-              <td>1,003</td>
-              <td>libero</td>
-              <td>Sed</td>
-              <td>cursus</td>
-              <td>ante</td>
+              <td>{{ perf_data.2.I }}</td>
+              <td>{{ perf_data.2.P }}</td>
+              <td>{{ perf_data.2.O }}</td>
+              <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
             </tr>
             <tr>
               <td>1,004</td>
-              <td>dapibus</td>
-              <td>diam</td>
-              <td>Sed</td>
-              <td>nisi</td>
+              <td>{{ perf_data.3.I }}</td>
+              <td>{{ perf_data.3.P }}</td>
+              <td>{{ perf_data.3.O }}</td>
+              <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
             </tr>
             <tr>
               <td>1,005</td>
-              <td>Nulla</td>
-              <td>quis</td>
-              <td>sem</td>
-              <td>at</td>
+              <td>{{ perf_data.4.I }}</td>
+              <td>{{ perf_data.4.P }}</td>
+              <td>{{ perf_data.4.O }}</td>
+              <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
             </tr>
             <tr>
               <td>1,006</td>
-              <td>nibh</td>
-              <td>elementum</td>
-              <td>imperdiet</td>
-              <td>Duis</td>
+              <td>{{ perf_data.5.I }}</td>
+              <td>{{ perf_data.5.P }}</td>
+              <td>{{ perf_data.5.O }}</td>
+              <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
             </tr>
             <tr>
               <td>1,007</td>
-              <td>sagittis</td>
-              <td>ipsum</td>
-              <td>Praesent</td>
-              <td>mauris</td>
+              <td>{{ perf_data.6.I }}</td>
+              <td>{{ perf_data.6.P }}</td>
+              <td>{{ perf_data.6.O }}</td>
+              <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
             </tr>
             <tr>
               <td>1,008</td>
-              <td>Fusce</td>
-              <td>nec</td>
-              <td>tellus</td>
-              <td>sed</td>
+              <td>{{ perf_data.7.I }}</td>
+              <td>{{ perf_data.7.P }}</td>
+              <td>{{ perf_data.7.O }}</td>
+              <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
             </tr>
             <tr>
               <td>1,009</td>
-              <td>augue</td>
-              <td>semper</td>
-              <td>porta</td>
-              <td>Mauris</td>
+              <td>{{ perf_data.8.I }}</td>
+              <td>{{ perf_data.8.P }}</td>
+              <td>{{ perf_data.8.O }}</td>
+              <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
             </tr>
             <tr>
               <td>1,010</td>
-              <td>massa</td>
-              <td>Vestibulum</td>
-              <td>lacinia</td>
-              <td>arcu</td>
+              <td>{{ perf_data.9.I }}</td>
+              <td>{{ perf_data.9.P }}</td>
+              <td>{{ perf_data.9.O }}</td>
+              <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
             </tr>
             <tr>
               <td>1,011</td>
-              <td>eget</td>
-              <td>nulla</td>
-              <td>Class</td>
-              <td>aptent</td>
+              <td>{{ perf_data.10.I }}</td>
+              <td>{{ perf_data.10.P }}</td>
+              <td>{{ perf_data.10.O }}</td>
+              <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
             </tr>
             <tr>
               <td>1,012</td>
-              <td>taciti</td>
-              <td>sociosqu</td>
-              <td>ad</td>
-              <td>litora</td>
+              <td>{{ perf_data.11.I }}</td>
+              <td>{{ perf_data.11.P }}</td>
+              <td>{{ perf_data.11.O }}</td>
+              <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
             </tr>
             <tr>
               <td>1,013</td>
-              <td>torquent</td>
-              <td>per</td>
-              <td>conubia</td>
-              <td>nostra</td>
+              <td>{{ perf_data.12.I }}</td>
+              <td>{{ perf_data.12.P }}</td>
+              <td>{{ perf_data.12.O }}</td>
+              <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
             </tr>
             <tr>
               <td>1,014</td>
-              <td>per</td>
-              <td>inceptos</td>
-              <td>himenaeos</td>
-              <td>Curabitur</td>
+              <td>{{ perf_data.13.I }}</td>
+              <td>{{ perf_data.13.P }}</td>
+              <td>{{ perf_data.13.O }}</td>
+              <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
             </tr>
             <tr>
               <td>1,015</td>
-              <td>sodales</td>
-              <td>ligula</td>
-              <td>in</td>
-              <td>libero</td>
+              <td>{{ perf_data.14.I }}</td>
+              <td>{{ perf_data.14.P }}</td>
+              <td>{{ perf_data.14.O }}</td>
+              <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <div class="table-responsive">
+        <tr>
+          <td>
+          {% for page_num in num_pages %}
+            <a href="/listSpecificPageWork?current_page={{page_num}}" >
+            {% ifequal page_num current_page %}
+            [<b>{{ page_num }}</b>]
+            {% else %}
+            [{{ page_num }}]
+            {% endifequal %}
+          {% endfor %}
+          </td>
+        </tr>
+      </table>
+
     </main>
   </div>
 </div>
