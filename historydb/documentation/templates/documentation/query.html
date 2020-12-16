@@ -1,0 +1,11 @@
+{% extends 'documentation/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <font face="Lucida Grande">
+    {{ markdown_html | safe }}
+    </font>
+</div>
+
+{% endblock %}
