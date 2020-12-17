@@ -185,9 +185,7 @@
     {% endif %}
 
   </div>
-</nav>
-
-
+  </nav>
 
 <div class="container-fluid">
   <div class="row">
@@ -249,13 +247,15 @@
         </div>
       </div>
 
-      <form method="get">
+      <form method="POST">
+        {% csrf_token %}
         <div class="well">
           <h2 style="margin-top: 0">Search Filter</h2>
           <div class="row">
             <div class="form-group col-sm-4 col-md-3">
                 Application<br>
                 <select name="application" id="applicationVal" onChange = "UpdateDeps();">
+                  <option value="" selected disabled hidden>Select application</option>
                   {% if applications_avail %}
                     {% for application_avail in applications_avail %}
                     <option value="{{ application_avail }}">{{ application_avail }}</option>
@@ -277,6 +277,165 @@
           </button>
         </div>
       </form>
+
+      {% ifnotequal num_func_eval 0 %}
+      <div class="table-responsive">
+        <br><br>
+
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Input Task</th>
+              <th>Tuning Parameter</th>
+              <th>Output Result</th>
+              <th>Date</th>
+              <th>UID (Details)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>{{ perf_data.0.I }}</td>
+              <td>{{ perf_data.0.P }}</td>
+              <td>{{ perf_data.0.O }}</td>
+              <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>{{ perf_data.1.I }}</td>
+              <td>{{ perf_data.1.P }}</td>
+              <td>{{ perf_data.1.O }}</td>
+              <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>{{ perf_data.2.I }}</td>
+              <td>{{ perf_data.2.P }}</td>
+              <td>{{ perf_data.2.O }}</td>
+              <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>{{ perf_data.3.I }}</td>
+              <td>{{ perf_data.3.P }}</td>
+              <td>{{ perf_data.3.O }}</td>
+              <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>{{ perf_data.4.I }}</td>
+              <td>{{ perf_data.4.P }}</td>
+              <td>{{ perf_data.4.O }}</td>
+              <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>{{ perf_data.5.I }}</td>
+              <td>{{ perf_data.5.P }}</td>
+              <td>{{ perf_data.5.O }}</td>
+              <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>{{ perf_data.6.I }}</td>
+              <td>{{ perf_data.6.P }}</td>
+              <td>{{ perf_data.6.O }}</td>
+              <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>{{ perf_data.7.I }}</td>
+              <td>{{ perf_data.7.P }}</td>
+              <td>{{ perf_data.7.O }}</td>
+              <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>{{ perf_data.8.I }}</td>
+              <td>{{ perf_data.8.P }}</td>
+              <td>{{ perf_data.8.O }}</td>
+              <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>{{ perf_data.9.I }}</td>
+              <td>{{ perf_data.9.P }}</td>
+              <td>{{ perf_data.9.O }}</td>
+              <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>{{ perf_data.10.I }}</td>
+              <td>{{ perf_data.10.P }}</td>
+              <td>{{ perf_data.10.O }}</td>
+              <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>{{ perf_data.11.I }}</td>
+              <td>{{ perf_data.11.P }}</td>
+              <td>{{ perf_data.11.O }}</td>
+              <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td>{{ perf_data.12.I }}</td>
+              <td>{{ perf_data.12.P }}</td>
+              <td>{{ perf_data.12.O }}</td>
+              <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>{{ perf_data.13.I }}</td>
+              <td>{{ perf_data.13.P }}</td>
+              <td>{{ perf_data.13.O }}</td>
+              <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td>{{ perf_data.14.I }}</td>
+              <td>{{ perf_data.14.P }}</td>
+              <td>{{ perf_data.14.O }}</td>
+              <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
+              <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-responsive">
+        <tr>
+          <td>
+          {% for page_num in num_pages %}
+            <a href="/listSpecificPageWork?current_page={{page_num}}" >
+            {% ifequal page_num current_page %}
+            [<b>{{ page_num }}</b>]
+            {% else %}
+            [{{ page_num }}]
+            {% endifequal %}
+          {% endfor %}
+          </td>
+        </tr>
+      </table>
+
+      {% else %}
+      {% endifnotequal %}
+
     </main>
   </div>
 </div>
