@@ -436,17 +436,14 @@ def query(request, perf_data_uid):
     perf_data = {}
 
     json_path = "../json"
-    libraries_avail = os.listdir(json_path)
-    for library_avail in libraries_avail:
-        library_json_path = json_path + "/" + library_avail
-        for application in os.listdir(library_json_path):
-            application_path = library_json_path + "/" + application
-            with open(application_path) as f_in:
-                json_data = json.loads(f_in.read())
-                func_eval_data = json_data["func_eval"]
-                for func_eval in func_eval_data:
-                    if func_eval["uid"] == perf_data_uid:
-                        perf_data = func_eval
+    for application in os.listdir(json_path):
+        application_path = json_path + "/" + application
+        with open(application_path) as f_in:
+            json_data = json.loads(f_in.read())
+            func_eval_data = json_data["func_eval"]
+            for func_eval in func_eval_data:
+                if func_eval["uid"] == perf_data_uid:
+                    perf_data = func_eval
 
     obj = {} #PerfFile.objects.get(pk = perf_file_id)
     #print (model_to_dict(obj))
@@ -466,6 +463,113 @@ def query(request, perf_data_uid):
     #fb.save()
 
     #return HttpResponse("SASDFASDF question %s." % perf_file_id)
+
+class Export(TemplateView):
+
+    def get(self, request, **kwargs):
+        import os
+        import json
+
+        application = request.GET.get("application", "")
+        print("export: ", application)
+
+        applications_avail = []
+        perf_data = {}
+
+        json_path = "../json"
+        for application_file in os.listdir(json_path):
+            applications_avail.append(application_file.split('.')[0])
+            application_path = json_path + "/" + application_file
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+                perf_data[application_file.split('.')[0]] = func_eval_data
+
+        context = {
+                "perf_data" : perf_data[application],
+                }
+
+        return render(request, 'repo/export.html', context)
+
+    def post(self, request, **kwargs):
+        application = request.POST["application"]
+
+        if application == "PDGEQRF":
+            machines_avail = ["cori", "nersc", "3"]
+            for machine in machines_avail:
+                if machine in request.POST:
+                    print (machine + " has been selected")
+
+            software_deps_avail = [str({"a":"a"}),"!","#"]
+            for software_deps in software_deps_avail:
+                if software_deps in request.POST:
+                    print (software_deps + " has been selected")
+
+            users_avail = ["user1", "user2"]
+            for users in users_avail:
+                if users in request.POST:
+                    print (users + " has been selected")
+
+        import os
+        import json
+
+        json_path = "../json"
+
+        applications_avail = []
+        perf_data = {}
+
+        json_path = "../json"
+        for application_file in os.listdir(json_path):
+            applications_avail.append(application_file.split('.')[0])
+            application_path = json_path + "/" + application_file
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+                perf_data[application_file.split('.')[0]] = func_eval_data
+
+        num_func_eval = len(perf_data['PDGEQRF'])
+        print ("num_func_eval: ", num_func_eval)
+        num_evals_per_page = 15
+        if (num_func_eval%num_evals_per_page) == 0:
+            num_pages = num_func_eval/num_evals_per_page
+        else:
+            num_pages = int(num_func_eval/num_evals_per_page)+1
+        print ("num_pages: ", num_pages)
+
+        current_page = 0
+        start_index = (current_page)*num_evals_per_page
+        end_index = (current_page+1)*num_evals_per_page
+        if end_index > num_func_eval:
+            end_index = num_func_eval
+
+        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
+        print (perf_data_web)
+
+        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
+        for i in range(len(perf_data_web)):
+            perf_data_web[i]["id"] = start_index+i
+
+        context = {
+                "applications_avail" : applications_avail,
+                "application" : application,
+                "perf_data" : perf_data_web,
+                "num_func_eval" : num_func_eval,
+                "num_pages" : range(num_pages),
+                "current_page" : current_page,
+                "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
+                "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
+                "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]})
+                }
+
+        return render(request, 'repo/dashboard.html', context)
+        #form = LocationForm(request.POST)
+        #if form.is_valid():
+        #    pass  # do something with form.cleaned_data
+        #return render(request, self.template_name, {"form": form})
+
+
 
 def examples(request):
     return render(request, 'repo/examples.html')

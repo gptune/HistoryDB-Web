@@ -9,6 +9,7 @@ urlpatterns = [
     path('display/', views.display, name='display'),
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     path('examples/', views.examples, name='examples'),
+    path('export/', views.Export.as_view(), name='export'),
     path('carousel/', views.carousel, name='carousel'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]

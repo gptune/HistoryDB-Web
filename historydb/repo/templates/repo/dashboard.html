@@ -238,7 +238,9 @@
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
             <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_json}}&software_deps_json={{software_deps_json}}&users_json={{users_json}}">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+            </a>
           </div>
           <!--
           <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -283,7 +285,7 @@
       {% ifnotequal application "" %}
       <div>
         <br><br>
-        <h2>Performance Data</h2>
+        <h2>Search Condition</h2>
 
         Application: {{ application }}
         <br>
@@ -301,6 +303,8 @@
       <div class="table-responsive">
         <h2>Performance Data</h2>
         <br><br>
+        number of function evaluation result: {{ num_func_eval }}
+        <br>
 
         <table class="table table-striped table-sm">
           <thead>
