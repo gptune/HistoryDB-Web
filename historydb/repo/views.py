@@ -275,7 +275,7 @@ class Dashboard(TemplateView):
                     "perf_data" : perf_data_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages" : range(num_pages),
-                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}),
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc"],"ij":["cori","intel72"]}),
                     "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
                     "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
                     "current_page" : current_page
@@ -283,14 +283,11 @@ class Dashboard(TemplateView):
 
             return render(request, 'repo/dashboard.html', context)
 
-        #context = {}
-        #return render(request, 'repo/dashboard.html', context)
-
     def post(self, request, **kwargs):
         application = request.POST["application"]
 
         if application == "PDGEQRF":
-            machines_avail = ["cori", "nersc", "3"]
+            machines_avail = ["cori", "nersc"]
             for machine in machines_avail:
                 if machine in request.POST:
                     print (machine + " has been selected")
@@ -301,6 +298,22 @@ class Dashboard(TemplateView):
                     print (software_deps + " has been selected")
 
             users_avail = ["user1", "user2"]
+            for users in users_avail:
+                if users in request.POST:
+                    print (users + " has been selected")
+
+        elif application == "ij":
+            machines_avail = ["cori", "intel72"]
+            for machine in machines_avail:
+                if machine in request.POST:
+                    print (machine + " has been selected")
+
+            software_deps_avail = []
+            for software_deps in software_deps_avail:
+                if software_deps in request.POST:
+                    print (software_deps + " has been selected")
+
+            users_avail = ["user3"]
             for users in users_avail:
                 if users in request.POST:
                     print (users + " has been selected")
@@ -339,10 +352,12 @@ class Dashboard(TemplateView):
             end_index = num_func_eval
 
         perf_data_web = perf_data[application][start_index:end_index]
-        #print (perf_data_web)
-
         for i in range(len(perf_data_web)):
             perf_data_web[i]["id"] = start_index+i
+
+        machine_deps_dict = {"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}
+        software_deps_dict = {"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}
+        users_dict = {"PDGEQRF":["user1","user2"],"ij":["user3"]}
 
         context = {
                 "applications_avail" : applications_avail,
@@ -351,16 +366,12 @@ class Dashboard(TemplateView):
                 "num_func_eval" : num_func_eval,
                 "num_pages" : range(num_pages),
                 "current_page" : current_page,
-                "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
-                "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
-                "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]})
+                "machine_deps_json" : json.dumps(machine_deps_dict[application]),
+                "software_deps_json" : json.dumps(software_deps_dict[application]),
+                "users_json" : json.dumps(users_dict[application])
                 }
 
         return render(request, 'repo/dashboard.html', context)
-        #form = LocationForm(request.POST)
-        #if form.is_valid():
-        #    pass  # do something with form.cleaned_data
-        #return render(request, self.template_name, {"form": form})
 
 def display(request):
     import os
