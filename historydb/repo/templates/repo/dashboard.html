@@ -20,10 +20,10 @@
         }
 
         function UpdateDeps() {
-            var libraries = {{ libraries_avail | safe }}
-            for (i=0; i<libraries.length; i++) {
-                console.log(libraries[i])
-            };
+            //var libraries = {{ libraries_avail | safe }}
+            //for (i=0; i<libraries.length; i++) {
+            //    console.log(libraries[i])
+            //};
 
             var application_var = document.getElementById("applicationVal");
             //alert(application_var.options[application_var.selectedIndex].value);
@@ -280,6 +280,7 @@
         </div>
       </form>
 
+      {% ifnotequal application "" %}
       <div>
         <br><br>
         <h2>Performance Data</h2>
@@ -293,6 +294,8 @@
         Users Deps: {{ users_json }}
         <br><br>
       </div>
+      {% else %}
+      {% endifnotequal %}
 
       {% ifnotequal num_func_eval 0 %}
       <div class="table-responsive">

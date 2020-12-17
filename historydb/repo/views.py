@@ -207,104 +207,93 @@ def carousel(request):
 
 from django.views.generic import TemplateView
 class Dashboard(TemplateView):
-    template_name = "index.html"
-
-    def __init__(self, **kwargs):
-        self.application_selected = False
-        self.application = "asdf"
-
-        self.machines_selected = []
-        self.class_value = 0
 
     def get(self, request, **kwargs):
         import os
         import json
 
-        print ("self application: ", self.application)
+        application = request.GET.get("application", "")
 
-        json_path = "../json"
-        libraries_avail = os.listdir("../json")
-        print (libraries_avail)
         applications_avail = []
-
-        print ("APPLICATION: ", request.GET.get("application", "asdf"))
-        self.application = request.GET.get("application", "asdf")
         perf_data = {}
 
-        for library_avail in libraries_avail:
-            perf_data[library_avail] = {}
+        json_path = "../json"
+        for application_file in os.listdir(json_path):
+            applications_avail.append(application_file.split('.')[0])
+            application_path = json_path + "/" + application_file
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+                perf_data[application_file.split('.')[0]] = func_eval_data
 
-            library_json_path = json_path + "/" + library_avail
-            for application in os.listdir(library_json_path):
-                applications_avail.append(application.split('.')[0])
-                application_path = library_json_path + "/" + application
-                print (application_path)
-                with open(application_path) as f_in:
-                    json_data = json.loads(f_in.read())
-                    func_eval_data = json_data["func_eval"]
+        if application != "":
+            num_func_eval = len(perf_data['PDGEQRF'])
+            print ("num_func_eval: ", num_func_eval)
+            num_evals_per_page = 15
+            if (num_func_eval%num_evals_per_page) == 0:
+                num_pages = num_func_eval/num_evals_per_page
+            else:
+                num_pages = int(num_func_eval/num_evals_per_page)+1
+            print ("num_pages: ", num_pages)
 
-                    perf_data[library_avail][application.split('.')[0]] = func_eval_data
+            current_page = int(request.GET.get("current_page", 0))
+            print ("current_page: ", current_page)
+            start_index = (current_page)*num_evals_per_page
+            end_index = (current_page+1)*num_evals_per_page
+            if end_index > num_func_eval:
+                end_index = num_func_eval
 
-        num_func_eval = len(perf_data['ScaLAPACK']['PDGEQRF'])
-        print ("num_func_eval: ", num_func_eval)
-        num_evals_per_page = 15
-        if (num_func_eval%num_evals_per_page) == 0:
-            num_pages = num_func_eval/num_evals_per_page
+            perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
+            for i in range(len(perf_data_web)):
+                perf_data_web[i]["id"] = start_index+i
+
+            print (perf_data_web)
+
+            context = {
+                    "application" : application,
+                    "applications_avail" : applications_avail,
+                    "perf_data" : perf_data_web,
+                    "num_func_eval" : num_func_eval,
+                    "num_pages" : range(num_pages),
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
+                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
+                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
+                    "tempjson" : json.dumps({"PDGEQRF":["1","2","3"],"B":["a"]}),
+                    "tempdict" : {"PDGEQRF":["1"],"B":["2"]},
+                    "current_page" : current_page
+                    }
+
+            return render(request, 'repo/dashboard.html', context)
+
         else:
-            num_pages = int(num_func_eval/num_evals_per_page)+1
-        print ("num_pages: ", num_pages)
+            perf_data_web = []
+            num_func_eval = 0
+            num_pages = 0
+            current_page = 0
+            context = {
+                    "application" : application,
+                    "applications_avail" : applications_avail,
+                    "perf_data" : perf_data_web,
+                    "num_func_eval" : num_func_eval,
+                    "num_pages" : range(num_pages),
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
+                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
+                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
+                    "tempjson" : json.dumps({"PDGEQRF":["1","2","3"],"B":["a"]}),
+                    "tempdict" : {"PDGEQRF":["1"],"B":["2"]},
+                    "current_page" : current_page
+                    }
 
-        current_page = int(request.GET.get("current_page", 0))
-        print ("current_page: ", current_page)
-        start_index = (current_page)*num_evals_per_page
-        end_index = (current_page+1)*num_evals_per_page
-        if end_index > num_func_eval:
-            end_index = num_func_eval
-
-        perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
-        for i in range(len(perf_data_web)):
-            perf_data_web[i]["id"] = start_index+i
-
-        print (perf_data_web)
-
-        print ("libraries_avail")
-        print (libraries_avail)
-
-        context = {
-                "application_selected" : self.application_selected,
-                "application" : self.application,
-                "class_value" : self.class_value,
-                "libraries_avail" : libraries_avail,
-                "applications_avail" : applications_avail,
-                "perf_data" : perf_data_web,
-                "num_func_eval" : num_func_eval,
-                "num_pages" : range(num_pages),
-                "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
-                "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
-                "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
-                "tempjson" : json.dumps({"PDGEQRF":["1","2","3"],"B":["a"]}),
-                "tempdict" : {"PDGEQRF":["1"],"B":["2"]},
-                "current_page" : current_page
-                }
-
-        return render(request, 'repo/dashboard.html', context)
+            return render(request, 'repo/dashboard.html', context)
 
         #context = {}
         #return render(request, 'repo/dashboard.html', context)
 
     def post(self, request, **kwargs):
-        print ("POST")
+        application = request.POST["application"]
 
-        print (request)
-
-        self.application = request.POST["application"]
-        print ("self application: ", self.application)
-
-        self.application_selected = True
-
-        self.class_value = self.application
-
-        if self.application == "PDGEQRF":
+        if application == "PDGEQRF":
             machines_avail = ["cori", "nersc", "3"]
             for machine in machines_avail:
                 if machine in request.POST:
@@ -320,34 +309,25 @@ class Dashboard(TemplateView):
                 if users in request.POST:
                     print (users + " has been selected")
 
-        context = {}
-
         import os
         import json
 
         json_path = "../json"
-        libraries_avail = os.listdir("../json")
-        print (libraries_avail)
 
         applications_avail = []
-
         perf_data = {}
 
-        for library_avail in libraries_avail:
-            perf_data[library_avail] = {}
+        json_path = "../json"
+        for application_file in os.listdir(json_path):
+            applications_avail.append(application_file.split('.')[0])
+            application_path = json_path + "/" + application_file
+            print (application_path)
+            with open(application_path) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_data = json_data["func_eval"]
+                perf_data[application_file.split('.')[0]] = func_eval_data
 
-            library_json_path = json_path + "/" + library_avail
-            for application in os.listdir(library_json_path):
-                applications_avail.append(application.split('.')[0])
-                application_path = library_json_path + "/" + application
-                print (application_path)
-                with open(application_path) as f_in:
-                    json_data = json.loads(f_in.read())
-                    func_eval_data = json_data["func_eval"]
-
-                    perf_data[library_avail][application.split('.')[0]] = func_eval_data
-
-        num_func_eval = len(perf_data['ScaLAPACK']['PDGEQRF'])
+        num_func_eval = len(perf_data['PDGEQRF'])
         print ("num_func_eval: ", num_func_eval)
         num_evals_per_page = 15
         if (num_func_eval%num_evals_per_page) == 0:
@@ -362,19 +342,16 @@ class Dashboard(TemplateView):
         if end_index > num_func_eval:
             end_index = num_func_eval
 
-        perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
         print (perf_data_web)
 
-        perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
         for i in range(len(perf_data_web)):
             perf_data_web[i]["id"] = start_index+i
 
         context = {
-                "class_value" : self.class_value,
-                "libraries_avail" : libraries_avail,
                 "applications_avail" : applications_avail,
-                "library_selected" : "ScaLAPACK",
-                "application" : self.application,
+                "application" : application,
                 "perf_data" : perf_data_web,
                 "num_func_eval" : num_func_eval,
                 "num_pages" : range(num_pages),
@@ -389,7 +366,6 @@ class Dashboard(TemplateView):
         #if form.is_valid():
         #    pass  # do something with form.cleaned_data
         #return render(request, self.template_name, {"form": form})
-
 
 def display(request):
     import os
@@ -438,8 +414,6 @@ def display(request):
     context = {
             "libraries_avail" : libraries_avail,
             "applications_avail" : applications_avail,
-            "library_selected" : "ScaLAPACK",
-            "application_selected" : "PDGEQRF",
             "perf_data" : perf_data_web,
             "num_func_eval" : num_func_eval,
             "num_pages" : range(num_pages),
