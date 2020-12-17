@@ -237,13 +237,15 @@
         <h1 class="h2">Dashboard</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
           </div>
+          <!--
           <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
             <span data-feather="calendar"></span>
             This week
           </button>
+          -->
         </div>
       </div>
 
@@ -278,8 +280,23 @@
         </div>
       </form>
 
+      <div>
+        <br><br>
+        <h2>Performance Data</h2>
+
+        Application: {{ application }}
+        <br>
+        Machine Deps: {{ machine_deps_json }}
+        <br>
+        Software Deps: {{ software_deps_json }}
+        <br>
+        Users Deps: {{ users_json }}
+        <br><br>
+      </div>
+
       {% ifnotequal num_func_eval 0 %}
       <div class="table-responsive">
+        <h2>Performance Data</h2>
         <br><br>
 
         <table class="table table-striped table-sm">
@@ -424,7 +441,7 @@
           <td>
           {% for page_num in num_pages %}
           <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-          <a href="{% url 'repo:dashboard' %}?current_page={{page_num}}">
+          <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_json}}&software_deps_json={{software_deps_json}}&users_json={{users_json}}">
             {% ifequal page_num current_page %}
             [<b>{{ page_num }}</b>]
             {% else %}
