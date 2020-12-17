@@ -9,6 +9,7 @@ The web framework is based on Django and uses Bootstrap for pretty webpages.
 - Django installed
 - MongoDB installed (although the current version has not integrated MongoDB yet)
 - markdown (pip install markdown)
+- django-widget-tweaks (pip install django-widget-tweaks)
 
 ## Usage (testing/debugging)
 

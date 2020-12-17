@@ -14,6 +14,119 @@
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
+    <script type = "text/JavaScript">
+        function Hello() {
+            alert("Hello, World");
+        }
+
+        function UpdateDeps() {
+            var libraries = {{ libraries_avail | safe }}
+            for (i=0; i<libraries.length; i++) {
+                console.log(libraries[i])
+            };
+
+            var application_var = document.getElementById("applicationVal");
+            //alert(application_var.options[application_var.selectedIndex].value);
+
+            var application_name = application_var.options[application_var.selectedIndex].value;
+            //alert(application_name)
+
+            var machine_deps_json = {{ machine_deps_json | safe | escape }};
+            //alert(tempvalues)
+            //alert(tempvalues[application_name]);
+
+            var machine_deps_div = document.getElementById("machine_deps");
+            machine_deps_div.innerHTML = "";
+            var machine_deps_label = document.createElement("label")
+            machine_deps_label.appendChild(document.createTextNode("Machines available"));
+            machine_deps_div.appendChild(machine_deps_label);
+            machine_deps_div.appendChild(document.createElement('br'));
+            //alert("!!!!");
+            for (i=0; i<machine_deps_json[application_name].length; i++) {
+                var x = document.createElement("input");
+                x.setAttribute("type", "checkbox");
+                x.setAttribute("value", machine_deps_json[application_name][i]);
+                x.setAttribute("name", machine_deps_json[application_name][i]);
+                machine_deps_div.appendChild(x);
+
+                var label = document.createElement("label");
+                label.appendChild(document.createTextNode(machine_deps_json[application_name][i]));
+                machine_deps_div.appendChild(label);
+
+                var linebreak = document.createElement("br");
+                linebreak.appendChild(document.createTextNode(machine_deps_json[application_name][i]));
+                machine_deps_div.appendChild(linebreak);
+            }
+
+            //alert("machine deps");
+
+            //for (i=0; i<tempvalues[application_name].length; i++)
+            //    select.options[select.options.length] = new Option('Text 1', 'Value 1');
+
+            var software_deps_json = {{ software_deps_json | safe | escape }};
+
+            var software_deps_div = document.getElementById("software_deps");
+            software_deps_div.innerHTML = "";
+            var software_deps_label = document.createElement("label");
+            //alert("software_deps");
+            software_deps_label.appendChild(document.createTextNode("Software deps"));
+            software_deps_div.appendChild(software_deps_label);
+            software_deps_div.appendChild(document.createElement("br"));
+
+            for (i=0; i<software_deps_json[application_name].length; i++) {
+                var x = document.createElement("input");
+                x.setAttribute("type", "checkbox");
+                x.setAttribute("value", software_deps_json[application_name][i]);
+                x.setAttribute("name", software_deps_json[application_name][i]);
+                software_deps_div.appendChild(x);
+
+                var label = document.createElement("label");
+                label.appendChild(document.createTextNode(software_deps_json[application_name][i]));
+                software_deps_div.appendChild(label);
+
+                var linebreak = document.createElement("br");
+                linebreak.appendChild(document.createTextNode(software_deps_json[application_name][i]));
+                software_deps_div.appendChild(linebreak);
+            }
+
+            var users_json = {{ users_json | safe | escape }};
+
+            var users_div = document.getElementById("users_deps");
+            users_div.innerHTML = "";
+            var users_label = document.createElement("label");
+            //alert("users");
+            users_label.appendChild(document.createTextNode("Users"));
+            users_div.appendChild(users_label);
+            users_div.appendChild(document.createElement("br"));
+
+            for (i=0; i<users_json[application_name].length; i++) {
+                var x = document.createElement("input");
+                x.setAttribute("type", "checkbox");
+                x.setAttribute("value", users_json[application_name][i]);
+                x.setAttribute("name", users_json[application_name][i]);
+                users_div.appendChild(x);
+
+                var label = document.createElement("label");
+                label.appendChild(document.createTextNode(users_json[application_name][i]));
+                users_div.appendChild(label);
+
+                var linebreak = document.createElement("br");
+                linebreak.appendChild(document.createTextNode(users_json[application_name][i]));
+                users_div.appendChild(linebreak);
+            }
+
+            //var x = document.createElement("input");
+            //x.setAttribute("type", "checkbox");
+            //x.setAttribute("value", "abc");
+            //x.setAttribute("name", "xyz");
+
+            //var label = document.createElement("label")
+            //label.appendChild(document.createTextNode(" ASDF"))
+
+            alert("update deps done")
+        }
+    </script>
+
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -136,55 +249,27 @@
         </div>
       </div>
 
-      {% if libraries_avail %}
-      <h2>Available libraries</h2>
-      <ul>
-          {% for library_avail in libraries_avail %}
-          <li>
-              {{ library_avail }}
-          </li>
-          {% endfor %}
-      </ul>
-      {% else %}
-      <p> No performance files are available.</p>
-      {% endif %}
-
-      {% if applications_avail %}
-      <h2>Available Applications</h2>
-      <ul>
-          {% for application_avail in applications_avail %}
-          <li>
-              {{ application_avail }}
-          </li>
-          {% endfor %}
-      </ul>
-      {% else %}
-      <p> No performance files are available.</p>
-      {% endif %}
-
       <form method="get">
         <div class="well">
           <h2 style="margin-top: 0">Search Filter</h2>
           <div class="row">
             <div class="form-group col-sm-4 col-md-3">
-                Library<br>
-              <input name="library" type="text">
-            </div>
-            <div class="form-group col-sm-4 col-md-3">
                 Application<br>
-              <input name="application" type="text">
+                <select name="application" id="applicationVal" onChange = "UpdateDeps();">
+                  {% if applications_avail %}
+                    {% for application_avail in applications_avail %}
+                    <option value="{{ application_avail }}">{{ application_avail }}</option>
+                    </li>
+                    {% endfor %}
+                  {% else %}
+                  {% endif %}
+                </select>
             </div>
-            <div class="form-group col-sm-4 col-md-3">
-                Machine deps<br>
-              <input name="username" type="text">
+            <div class="form-group col-sm-4 col-md-3" id="machine_deps">
             </div>
-            <div class="form-group col-sm-4 col-md-3">
-                Software deps<br>
-              <input name="username" type="text">
+            <div class="form-group col-sm-4 col-md-3" id="software_deps">
             </div>
-            <div class="form-group col-sm-8 col-md-6">
-                Users<br>
-              <input name="username" type="text">
+            <div class="form-group col-sm-8 col-md-6" id="users_deps">
             </div>
           </div>
           <button type="submit" class="btn btn-primary">

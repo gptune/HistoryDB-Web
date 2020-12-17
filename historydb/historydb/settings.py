@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'repo.apps.RepoConfig',
     'account.apps.AccountConfig',
     'main.apps.MainConfig',
+    'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
