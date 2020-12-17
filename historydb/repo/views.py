@@ -218,6 +218,7 @@ class Dashboard(TemplateView):
             print (application)
 
             print ("machine_deps_checkbox: ", request.GET.getlist("machine_deps"))
+            print ("PAGE: ", request.GET["current_page"])
 
             context = {}
             return render(request, 'repo/dashboard.html', context)
@@ -227,6 +228,7 @@ class Dashboard(TemplateView):
             print (libraries_avail)
             applications_avail = []
 
+            #print ("PAGE: ", request.GET["current_page"])
             perf_data = {}
 
             for library_avail in libraries_avail:
@@ -252,13 +254,17 @@ class Dashboard(TemplateView):
                 num_pages = int(num_func_eval/num_evals_per_page)+1
             print ("num_pages: ", num_pages)
 
-            current_page = 0
+            current_page = int(request.GET.get("current_page", 0))
+            print ("current_page: ", current_page)
             start_index = (current_page)*num_evals_per_page
             end_index = (current_page+1)*num_evals_per_page
             if end_index > num_func_eval:
                 end_index = num_func_eval
 
             perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+            for i in range(len(perf_data_web)):
+                perf_data_web[i]["id"] = start_index+i
+
             print (perf_data_web)
 
             print ("libraries_avail")
@@ -267,9 +273,9 @@ class Dashboard(TemplateView):
             context = {
                     "libraries_avail" : libraries_avail,
                     "applications_avail" : applications_avail,
-                    "perf_data" : json.dumps({}), #perf_data_web,
-                    "num_func_eval" : 0, #num_func_eval,
-                    "num_pages" : range(0), #range(num_pages),
+                    "perf_data" : perf_data_web,
+                    "num_func_eval" : num_func_eval,
+                    "num_pages" : range(num_pages),
                     "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
                     "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
                     "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
@@ -351,6 +357,10 @@ class Dashboard(TemplateView):
 
         perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
         print (perf_data_web)
+
+        perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
+        for i in range(len(perf_data_web)):
+            perf_data_web[i]["id"] = start_index+i
 
         context = {
                 "libraries_avail" : libraries_avail,

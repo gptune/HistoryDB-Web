@@ -255,7 +255,7 @@
             <div class="form-group col-sm-4 col-md-3">
                 Application<br>
                 <select name="application" id="applicationVal" onChange = "UpdateDeps();">
-                  <option value="" selected disabled hidden>Select application</option>
+                  <option value="" label=" "selected>Select application</option>
                   {% if applications_avail %}
                     {% for application_avail in applications_avail %}
                     <option value="{{ application_avail }}">{{ application_avail }}</option>
@@ -295,7 +295,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>1</td>
+              <td>{{ perf_data.0.id }}</td>
               <td>{{ perf_data.0.I }}</td>
               <td>{{ perf_data.0.P }}</td>
               <td>{{ perf_data.0.O }}</td>
@@ -303,7 +303,7 @@
               <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
             </tr>
             <tr>
-              <td>2</td>
+              <td>{{ perf_data.1.id }}</td>
               <td>{{ perf_data.1.I }}</td>
               <td>{{ perf_data.1.P }}</td>
               <td>{{ perf_data.1.O }}</td>
@@ -311,7 +311,7 @@
               <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
             </tr>
             <tr>
-              <td>3</td>
+              <td>{{ perf_data.2.id }}</td>
               <td>{{ perf_data.2.I }}</td>
               <td>{{ perf_data.2.P }}</td>
               <td>{{ perf_data.2.O }}</td>
@@ -319,7 +319,7 @@
               <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
             </tr>
             <tr>
-              <td>4</td>
+              <td>{{ perf_data.3.id }}</td>
               <td>{{ perf_data.3.I }}</td>
               <td>{{ perf_data.3.P }}</td>
               <td>{{ perf_data.3.O }}</td>
@@ -327,7 +327,7 @@
               <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
             </tr>
             <tr>
-              <td>5</td>
+              <td>{{ perf_data.4.id }}</td>
               <td>{{ perf_data.4.I }}</td>
               <td>{{ perf_data.4.P }}</td>
               <td>{{ perf_data.4.O }}</td>
@@ -335,7 +335,7 @@
               <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
             </tr>
             <tr>
-              <td>6</td>
+              <td>{{ perf_data.5.id }}</td>
               <td>{{ perf_data.5.I }}</td>
               <td>{{ perf_data.5.P }}</td>
               <td>{{ perf_data.5.O }}</td>
@@ -343,7 +343,7 @@
               <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
             </tr>
             <tr>
-              <td>7</td>
+              <td>{{ perf_data.6.id }}</td>
               <td>{{ perf_data.6.I }}</td>
               <td>{{ perf_data.6.P }}</td>
               <td>{{ perf_data.6.O }}</td>
@@ -351,7 +351,7 @@
               <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
             </tr>
             <tr>
-              <td>8</td>
+              <td>{{ perf_data.7.id }}</td>
               <td>{{ perf_data.7.I }}</td>
               <td>{{ perf_data.7.P }}</td>
               <td>{{ perf_data.7.O }}</td>
@@ -359,7 +359,7 @@
               <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
             </tr>
             <tr>
-              <td>9</td>
+              <td>{{ perf_data.8.id }}</td>
               <td>{{ perf_data.8.I }}</td>
               <td>{{ perf_data.8.P }}</td>
               <td>{{ perf_data.8.O }}</td>
@@ -367,7 +367,7 @@
               <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
             </tr>
             <tr>
-              <td>10</td>
+              <td>{{ perf_data.9.id }}</td>
               <td>{{ perf_data.9.I }}</td>
               <td>{{ perf_data.9.P }}</td>
               <td>{{ perf_data.9.O }}</td>
@@ -375,7 +375,7 @@
               <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
             </tr>
             <tr>
-              <td>11</td>
+              <td>{{ perf_data.10.id }}</td>
               <td>{{ perf_data.10.I }}</td>
               <td>{{ perf_data.10.P }}</td>
               <td>{{ perf_data.10.O }}</td>
@@ -383,7 +383,7 @@
               <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
             </tr>
             <tr>
-              <td>12</td>
+              <td>{{ perf_data.11.id }}</td>
               <td>{{ perf_data.11.I }}</td>
               <td>{{ perf_data.11.P }}</td>
               <td>{{ perf_data.11.O }}</td>
@@ -391,7 +391,7 @@
               <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
             </tr>
             <tr>
-              <td>13</td>
+              <td>{{ perf_data.12.id }}</td>
               <td>{{ perf_data.12.I }}</td>
               <td>{{ perf_data.12.P }}</td>
               <td>{{ perf_data.12.O }}</td>
@@ -399,7 +399,7 @@
               <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
             </tr>
             <tr>
-              <td>14</td>
+              <td>{{ perf_data.13.id }}</td>
               <td>{{ perf_data.13.I }}</td>
               <td>{{ perf_data.13.P }}</td>
               <td>{{ perf_data.13.O }}</td>
@@ -407,7 +407,7 @@
               <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
             </tr>
             <tr>
-              <td>15</td>
+              <td>{{ perf_data.14.id }}</td>
               <td>{{ perf_data.14.I }}</td>
               <td>{{ perf_data.14.P }}</td>
               <td>{{ perf_data.14.O }}</td>
@@ -420,9 +420,11 @@
 
       <div class="table-responsive">
         <tr>
+          Pages:
           <td>
           {% for page_num in num_pages %}
-            <a href="/listSpecificPageWork?current_page={{page_num}}" >
+          <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
+          <a href="{% url 'repo:dashboard' %}?current_page={{page_num}}">
             {% ifequal page_num current_page %}
             [<b>{{ page_num }}</b>]
             {% else %}
