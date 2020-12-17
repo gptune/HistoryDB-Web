@@ -228,7 +228,7 @@ class Dashboard(TemplateView):
                 perf_data[application_file.split('.')[0]] = func_eval_data
 
         if application != "":
-            num_func_eval = len(perf_data['PDGEQRF'])
+            num_func_eval = len(perf_data[application])
             print ("num_func_eval: ", num_func_eval)
             num_evals_per_page = 15
             if (num_func_eval%num_evals_per_page) == 0:
@@ -244,7 +244,7 @@ class Dashboard(TemplateView):
             if end_index > num_func_eval:
                 end_index = num_func_eval
 
-            perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
+            perf_data_web = perf_data[application][start_index:end_index]
             for i in range(len(perf_data_web)):
                 perf_data_web[i]["id"] = start_index+i
 
@@ -256,11 +256,9 @@ class Dashboard(TemplateView):
                     "perf_data" : perf_data_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages" : range(num_pages),
-                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
-                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
-                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
-                    "tempjson" : json.dumps({"PDGEQRF":["1","2","3"],"B":["a"]}),
-                    "tempdict" : {"PDGEQRF":["1"],"B":["2"]},
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}),
+                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
+                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
                     "current_page" : current_page
                     }
 
@@ -277,11 +275,9 @@ class Dashboard(TemplateView):
                     "perf_data" : perf_data_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages" : range(num_pages),
-                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
-                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
-                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]}),
-                    "tempjson" : json.dumps({"PDGEQRF":["1","2","3"],"B":["a"]}),
-                    "tempdict" : {"PDGEQRF":["1"],"B":["2"]},
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}),
+                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
+                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
                     "current_page" : current_page
                     }
 
@@ -327,7 +323,7 @@ class Dashboard(TemplateView):
                 func_eval_data = json_data["func_eval"]
                 perf_data[application_file.split('.')[0]] = func_eval_data
 
-        num_func_eval = len(perf_data['PDGEQRF'])
+        num_func_eval = len(perf_data[application])
         print ("num_func_eval: ", num_func_eval)
         num_evals_per_page = 15
         if (num_func_eval%num_evals_per_page) == 0:
@@ -342,10 +338,9 @@ class Dashboard(TemplateView):
         if end_index > num_func_eval:
             end_index = num_func_eval
 
-        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
-        print (perf_data_web)
+        perf_data_web = perf_data[application][start_index:end_index]
+        #print (perf_data_web)
 
-        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
         for i in range(len(perf_data_web)):
             perf_data_web[i]["id"] = start_index+i
 
@@ -491,85 +486,6 @@ class Export(TemplateView):
                 }
 
         return render(request, 'repo/export.html', context)
-
-    def post(self, request, **kwargs):
-        application = request.POST["application"]
-
-        if application == "PDGEQRF":
-            machines_avail = ["cori", "nersc", "3"]
-            for machine in machines_avail:
-                if machine in request.POST:
-                    print (machine + " has been selected")
-
-            software_deps_avail = [str({"a":"a"}),"!","#"]
-            for software_deps in software_deps_avail:
-                if software_deps in request.POST:
-                    print (software_deps + " has been selected")
-
-            users_avail = ["user1", "user2"]
-            for users in users_avail:
-                if users in request.POST:
-                    print (users + " has been selected")
-
-        import os
-        import json
-
-        json_path = "../json"
-
-        applications_avail = []
-        perf_data = {}
-
-        json_path = "../json"
-        for application_file in os.listdir(json_path):
-            applications_avail.append(application_file.split('.')[0])
-            application_path = json_path + "/" + application_file
-            print (application_path)
-            with open(application_path) as f_in:
-                json_data = json.loads(f_in.read())
-                func_eval_data = json_data["func_eval"]
-                perf_data[application_file.split('.')[0]] = func_eval_data
-
-        num_func_eval = len(perf_data['PDGEQRF'])
-        print ("num_func_eval: ", num_func_eval)
-        num_evals_per_page = 15
-        if (num_func_eval%num_evals_per_page) == 0:
-            num_pages = num_func_eval/num_evals_per_page
-        else:
-            num_pages = int(num_func_eval/num_evals_per_page)+1
-        print ("num_pages: ", num_pages)
-
-        current_page = 0
-        start_index = (current_page)*num_evals_per_page
-        end_index = (current_page+1)*num_evals_per_page
-        if end_index > num_func_eval:
-            end_index = num_func_eval
-
-        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
-        print (perf_data_web)
-
-        perf_data_web = perf_data['PDGEQRF'][start_index:end_index]
-        for i in range(len(perf_data_web)):
-            perf_data_web[i]["id"] = start_index+i
-
-        context = {
-                "applications_avail" : applications_avail,
-                "application" : application,
-                "perf_data" : perf_data_web,
-                "num_func_eval" : num_func_eval,
-                "num_pages" : range(num_pages),
-                "current_page" : current_page,
-                "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc","3"],"B":["a"]}),
-                "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"B":["a"]}),
-                "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"B":["a"]})
-                }
-
-        return render(request, 'repo/dashboard.html', context)
-        #form = LocationForm(request.POST)
-        #if form.is_valid():
-        #    pass  # do something with form.cleaned_data
-        #return render(request, self.template_name, {"form": form})
-
-
 
 def examples(request):
     return render(request, 'repo/examples.html')
