@@ -280,6 +280,12 @@ class Dashboard(TemplateView):
             print ("APPLICATION NOT GIVEN: ", application)
 
             applications_avail = historydb.get_applications_avail()
+            machine_deps_avail = historydb.get_machine_deps_avail()
+            print (machine_deps_avail)
+            software_deps_avail = historydb.get_software_deps_avail()
+            print (software_deps_avail)
+            users_avail = historydb.get_users_avail()
+
             perf_data = {}
 
             perf_data_web = []
@@ -292,9 +298,9 @@ class Dashboard(TemplateView):
                     "perf_data" : perf_data_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages" : range(num_pages),
-                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori1","nersc1"],"ij":["cori1","intel721"]}),
-                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a1":"a1"}),"!","#"],"ij":[]}),
-                    "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
+                    "machine_deps_json" : json.dumps(machine_deps_avail),
+                    "software_deps_json" : json.dumps(software_deps_avail),
+                    "users_json" : json.dumps(users_avail),
                     "current_page" : current_page
                     }
 

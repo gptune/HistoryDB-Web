@@ -31,6 +31,7 @@
             var application_name = application_var.options[application_var.selectedIndex].value;
             //alert(application_name)
 
+            //var machine_deps_json = {{ machine_deps_json | safe | escape }};
             var machine_deps_json = {{ machine_deps_json | safe | escape }};
             //alert(tempvalues)
             //alert(tempvalues[application_name]);
@@ -41,7 +42,6 @@
             machine_deps_label.appendChild(document.createTextNode("Machines available"));
             machine_deps_div.appendChild(machine_deps_label);
             machine_deps_div.appendChild(document.createElement('br'));
-            //alert("!!!!");
             for (i=0; i<machine_deps_json[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -50,7 +50,7 @@
                 machine_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.appendChild(document.createTextNode(machine_deps_json[application_name][i]));
+                label.innerHTML = "<pre>" + JSON.stringify(machine_deps_json[application_name][i], null, 2) + "</pre>";
                 machine_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -58,17 +58,11 @@
                 machine_deps_div.appendChild(linebreak);
             }
 
-            //alert("machine deps");
-
-            //for (i=0; i<tempvalues[application_name].length; i++)
-            //    select.options[select.options.length] = new Option('Text 1', 'Value 1');
-
             var software_deps_json = {{ software_deps_json | safe | escape }};
 
             var software_deps_div = document.getElementById("software_deps");
             software_deps_div.innerHTML = "";
             var software_deps_label = document.createElement("label");
-            //alert("software_deps");
             software_deps_label.appendChild(document.createTextNode("Software deps"));
             software_deps_div.appendChild(software_deps_label);
             software_deps_div.appendChild(document.createElement("br"));
@@ -81,7 +75,7 @@
                 software_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.appendChild(document.createTextNode(software_deps_json[application_name][i]));
+                label.innerHTML = "<pre>" + JSON.stringify(software_deps_json[application_name][i], null, 2) + "</pre>";
                 software_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -94,7 +88,6 @@
             var users_div = document.getElementById("users_deps");
             users_div.innerHTML = "";
             var users_label = document.createElement("label");
-            //alert("users");
             users_label.appendChild(document.createTextNode("Users"));
             users_div.appendChild(users_label);
             users_div.appendChild(document.createElement("br"));
