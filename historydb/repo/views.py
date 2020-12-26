@@ -207,27 +207,33 @@ def carousel(request):
 
 from django.views.generic import TemplateView
 class Dashboard(TemplateView):
-
     def get(self, request, **kwargs):
         import os
         import json
 
+        from dbmanager import HistoryDB
+        historydb = HistoryDB()
+        print (historydb.load_func_eval("PDGEQRF"))
+        print ("####")
+
         application = request.GET.get("application", "")
 
-        applications_avail = []
-        perf_data = {}
-
-        json_path = "../json"
-        for application_file in os.listdir(json_path):
-            applications_avail.append(application_file.split('.')[0])
-            application_path = json_path + "/" + application_file
-            print (application_path)
-            with open(application_path) as f_in:
-                json_data = json.loads(f_in.read())
-                func_eval_data = json_data["func_eval"]
-                perf_data[application_file.split('.')[0]] = func_eval_data
-
         if application != "":
+            print ("APPLICATION GIVEN: ", application)
+
+            applications_avail = []
+            perf_data = {}
+
+            json_path = "../json"
+            for application_file in os.listdir(json_path):
+                applications_avail.append(application_file.split('.')[0])
+                application_path = json_path + "/" + application_file
+                print (application_path)
+                with open(application_path) as f_in:
+                    json_data = json.loads(f_in.read())
+                    func_eval_data = json_data["func_eval"]
+                    perf_data[application_file.split('.')[0]] = func_eval_data
+
             num_func_eval = len(perf_data[application])
             print ("num_func_eval: ", num_func_eval)
             num_evals_per_page = 15
@@ -265,6 +271,17 @@ class Dashboard(TemplateView):
             return render(request, 'repo/dashboard.html', context)
 
         else:
+            import os
+            import json
+
+            from dbmanager import HistoryDB
+            historydb = HistoryDB()
+
+            print ("APPLICATION NOT GIVEN: ", application)
+
+            applications_avail = historydb.get_applications_avail()
+            perf_data = {}
+
             perf_data_web = []
             num_func_eval = 0
             num_pages = 0
@@ -275,8 +292,8 @@ class Dashboard(TemplateView):
                     "perf_data" : perf_data_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages" : range(num_pages),
-                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori","nersc"],"ij":["cori","intel72"]}),
-                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
+                    "machine_deps_json" : json.dumps({"PDGEQRF":["cori1","nersc1"],"ij":["cori1","intel721"]}),
+                    "software_deps_json" : json.dumps({"PDGEQRF":[str({"a1":"a1"}),"!","#"],"ij":[]}),
                     "users_json" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
                     "current_page" : current_page
                     }
