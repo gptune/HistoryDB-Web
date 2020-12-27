@@ -213,8 +213,11 @@ class Dashboard(TemplateView):
 
         from dbmanager import HistoryDB
         historydb = HistoryDB()
-        print (historydb.load_func_eval("PDGEQRF"))
-        print ("####")
+
+        applications_avail = historydb.get_applications_avail()
+        machine_deps_avail = historydb.get_machine_deps_avail()
+        software_deps_avail = historydb.get_software_deps_avail()
+        users_avail = historydb.get_users_avail()
 
         application = request.GET.get("application", "")
 
@@ -281,9 +284,7 @@ class Dashboard(TemplateView):
 
             applications_avail = historydb.get_applications_avail()
             machine_deps_avail = historydb.get_machine_deps_avail()
-            print (machine_deps_avail)
             software_deps_avail = historydb.get_software_deps_avail()
-            print (software_deps_avail)
             users_avail = historydb.get_users_avail()
 
             perf_data = {}

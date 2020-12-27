@@ -100,7 +100,8 @@
                 users_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.appendChild(document.createTextNode(users_json[application_name][i]));
+                label.innerHTML = "<pre>" + JSON.stringify(users_json[application_name][i], null, 2) + "</pre>"
+                //label.appendChild(document.createTextNode(users_json[application_name][i]));
                 users_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -108,15 +109,25 @@
                 users_div.appendChild(linebreak);
             }
 
-            //var x = document.createElement("input");
-            //x.setAttribute("type", "checkbox");
-            //x.setAttribute("value", "abc");
-            //x.setAttribute("name", "xyz");
+            alert("update deps done");
+        }
 
-            //var label = document.createElement("label")
-            //label.appendChild(document.createTextNode(" ASDF"))
+        function UpdateCond() {
+            var cond_div = document.getElementById("search_condition");
+            cond_div.innerHTML = "";
 
-            alert("update deps done")
+            var header_label = document.createElement("label");
+            header_label.innerHTML = "<h2> Search Condition </h2>";
+            cond_div.appendChild(header_label);
+
+            var application_cond_div = document.getElementById("application_cond");
+            var application_label = document.createElement("label");
+            application_label.innerHTML = "<h4>Application Selected</h4>";
+            application_cond_div.appendChild(application_label);
+            application_label.innerHTML = {{ machine_deps_json | safe | escape }};
+            application_cond_div.appendChild(application_label);
+
+            alert("update cond");
         }
     </script>
 
@@ -249,7 +260,7 @@
         <div class="well">
           <h2 style="margin-top: 0">Search Filter</h2>
           <div class="row">
-            <div class="form-group col-sm-4 col-md-3">
+            <div class="form-group col">
                 Application<br>
                 <select name="application" id="applicationVal" onChange = "UpdateDeps();">
                   <option value="" label=" "selected>Select application</option>
@@ -262,11 +273,11 @@
                   {% endif %}
                 </select>
             </div>
-            <div class="form-group col-sm-4 col-md-3" id="machine_deps">
+            <div class="form-group col" id="machine_deps">
             </div>
-            <div class="form-group col-sm-4 col-md-3" id="software_deps">
+            <div class="form-group col" id="software_deps">
             </div>
-            <div class="form-group col-sm-8 col-md-6" id="users_deps">
+            <div class="form-group col" id="users_deps">
             </div>
           </div>
           <button type="submit" class="btn btn-primary">
@@ -278,17 +289,24 @@
       {% ifnotequal application "" %}
       <div>
         <br><br>
-        <h2>Search Condition</h2>
+        <div id="search_condition">
+        </div>
 
-        Application: {{ application }}
-        <br>
-        Machine Deps: {{ machine_deps_json }}
-        <br>
-        Software Deps: {{ software_deps_json }}
-        <br>
-        Users Deps: {{ users_json }}
-        <br><br>
+        <div id="application_cond">
+        </div>
+
+        <div id="machine_deps_cond">
+        </div>
+
+        <div id="software_deps_cond">
+        </div>
+
+        <div id="users_json">
+        </div>
       </div>
+      <script type="text/javascript">
+          UpdateCond();
+      </script>
       {% else %}
       {% endifnotequal %}
 
