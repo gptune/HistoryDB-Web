@@ -122,10 +122,23 @@
 
             var application_cond_div = document.getElementById("application_cond");
             var application_label = document.createElement("label");
-            application_label.innerHTML = "<h4>Application Selected</h4>";
             application_cond_div.appendChild(application_label);
-            application_label.innerHTML = {{ machine_deps_json | safe | escape }};
+            var application_info = {{ application_info | safe | escape }};
+            alert(application_info['application']);
+            application_label.innerHTML = "<h4>Application Selected</h4>" + application_info['application'];
             application_cond_div.appendChild(application_label);
+
+            var machine_deps_cond_div = document.getElementById("machine_deps_cond");
+            var machine_deps_label = document.createElement("label");
+            var machine_deps = {{ machine_deps_json | safe | escape }};
+            machine_deps_label.innerHTML = "<h4>Machine deps selected</h4>" + "<pre>" + JSON.stringify(machine_deps, null, 2) + "</pre>";
+            machine_deps_cond_div.appendChild(machine_deps_label);
+
+            var software_deps_cond_div = document.getElementById("software_deps_cond");
+            var software_deps_label = document.createElement("label");
+            var software_deps = {{ software_deps_json | safe | escape }};
+            software_deps_label.innerHTML = "<h4>Software deps selected</h4>" + "<pre>" + JSON.stringify(software_deps, null, 2) + "</pre>";
+            software_deps_cond_div.appendChild(software_deps_label);
 
             alert("update cond");
         }
@@ -288,6 +301,7 @@
 
       {% ifnotequal application "" %}
       <div>
+        application = {{ application }}
         <br><br>
         <div id="search_condition">
         </div>

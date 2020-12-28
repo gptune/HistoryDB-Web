@@ -260,6 +260,7 @@ class Dashboard(TemplateView):
             print (perf_data_web)
 
             context = {
+                    "application_info" : json.dumps({"application":application}),
                     "application" : application,
                     "applications_avail" : applications_avail,
                     "perf_data" : perf_data_web,
@@ -294,6 +295,7 @@ class Dashboard(TemplateView):
             num_pages = 0
             current_page = 0
             context = {
+                    "application_info" : json.dumps({"application":application}),
                     "application" : application,
                     "applications_avail" : applications_avail,
                     "perf_data" : perf_data_web,
@@ -309,9 +311,10 @@ class Dashboard(TemplateView):
 
     def post(self, request, **kwargs):
         application = request.POST["application"]
+        print ("REQUEST")
 
         if application == "PDGEQRF":
-            machines_avail = ["cori", "nersc"]
+            machines_avail = ["cori", "nersc", "{'machine': 'cori', 'nodes': 8, 'cores': 32}"]
             for machine in machines_avail:
                 if machine in request.POST:
                     print (machine + " has been selected")
@@ -384,6 +387,7 @@ class Dashboard(TemplateView):
         users_dict = {"PDGEQRF":["user1","user2"],"ij":["user3"]}
 
         context = {
+                "application_info" : json.dumps({"application":application}),
                 "applications_avail" : applications_avail,
                 "application" : application,
                 "perf_data" : perf_data_web,
