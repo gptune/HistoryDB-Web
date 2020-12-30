@@ -215,11 +215,18 @@ class Dashboard(TemplateView):
         historydb = HistoryDB()
 
         applications_avail = historydb.get_applications_avail()
+        print (applications_avail)
         machine_deps_avail = historydb.get_machine_deps_avail()
+        #print (machine_deps_avail)
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
         application = request.GET.get("application", "")
+
+        values = (request.GET.getlist('machine_deps_list'))
+        print ("========!!@#!@#!@#!@#!@#!@#!@#")
+        print (values)
+        #print (request.POST.getlist('software_deps_list'))
 
         if application != "":
             print ("APPLICATION GIVEN: ", application)
@@ -283,10 +290,11 @@ class Dashboard(TemplateView):
 
             print ("APPLICATION NOT GIVEN: ", application)
 
-            applications_avail = historydb.get_applications_avail()
-            machine_deps_avail = historydb.get_machine_deps_avail()
-            software_deps_avail = historydb.get_software_deps_avail()
-            users_avail = historydb.get_users_avail()
+            #applications_avail = historydb.get_applications_avail()
+            #machine_deps_avail = historydb.get_machine_deps_avail()
+            #print (machine_deps_avail)
+            #software_deps_avail = historydb.get_software_deps_avail()
+            #users_avail = historydb.get_users_avail()
 
             perf_data = {}
 
@@ -310,60 +318,45 @@ class Dashboard(TemplateView):
             return render(request, 'repo/dashboard.html', context)
 
     def post(self, request, **kwargs):
-        application = request.POST["application"]
-        print ("REQUEST")
-
-        if application == "PDGEQRF":
-            machines_avail = ["cori", "nersc", "{'machine': 'cori', 'nodes': 8, 'cores': 32}"]
-            for machine in machines_avail:
-                if machine in request.POST:
-                    print (machine + " has been selected")
-
-            software_deps_avail = [str({"a":"a"}),"!","#"]
-            for software_deps in software_deps_avail:
-                if software_deps in request.POST:
-                    print (software_deps + " has been selected")
-
-            users_avail = ["user1", "user2"]
-            for users in users_avail:
-                if users in request.POST:
-                    print (users + " has been selected")
-
-        elif application == "ij":
-            machines_avail = ["cori", "intel72"]
-            for machine in machines_avail:
-                if machine in request.POST:
-                    print (machine + " has been selected")
-
-            software_deps_avail = []
-            for software_deps in software_deps_avail:
-                if software_deps in request.POST:
-                    print (software_deps + " has been selected")
-
-            users_avail = ["user3"]
-            for users in users_avail:
-                if users in request.POST:
-                    print (users + " has been selected")
-
         import os
         import json
 
-        json_path = "../json"
+        application = request.POST["application"]
+
+        machine_deps_list = []
+        post_values = request.POST.getlist('machine_deps_list')
+        for i in range(len(post_values)):
+            machine_deps_list.append(json.loads(post_values[i]))
+        print ("machine_deps_list")
+        print (machine_deps_list)
+
+        software_deps_list = []
+        post_values = request.POST.getlist('software_deps_list')
+        for i in range(len(post_values)):
+            software_deps_list.append(json.loads(post_values[i]))
+        print ("software_deps_list")
+        print (software_deps_list)
+
+        users_list = []
+        post_values = request.POST.getlist('users_list')
+        for i in range(len(post_values)):
+            users_list.append(json.loads(post_values[i]))
+        print ("users_list")
+        print (users_list)
+
+        from dbmanager import HistoryDB
+        historydb = HistoryDB()
+
+        perf_data = historydb.load_func_eval(application_name = application,
+                machine_deps_list = machine_deps_list,
+                software_deps_list = software_deps_list)
 
         applications_avail = []
-        perf_data = {}
-
         json_path = "../json"
         for application_file in os.listdir(json_path):
             applications_avail.append(application_file.split('.')[0])
-            application_path = json_path + "/" + application_file
-            print (application_path)
-            with open(application_path) as f_in:
-                json_data = json.loads(f_in.read())
-                func_eval_data = json_data["func_eval"]
-                perf_data[application_file.split('.')[0]] = func_eval_data
 
-        num_func_eval = len(perf_data[application])
+        num_func_eval = len(perf_data)
         print ("num_func_eval: ", num_func_eval)
         num_evals_per_page = 15
         if (num_func_eval%num_evals_per_page) == 0:
@@ -378,13 +371,9 @@ class Dashboard(TemplateView):
         if end_index > num_func_eval:
             end_index = num_func_eval
 
-        perf_data_web = perf_data[application][start_index:end_index]
+        perf_data_web = perf_data[start_index:end_index]
         for i in range(len(perf_data_web)):
             perf_data_web[i]["id"] = start_index+i
-
-        machine_deps_dict = {"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}
-        software_deps_dict = {"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}
-        users_dict = {"PDGEQRF":["user1","user2"],"ij":["user3"]}
 
         context = {
                 "application_info" : json.dumps({"application":application}),
@@ -394,9 +383,9 @@ class Dashboard(TemplateView):
                 "num_func_eval" : num_func_eval,
                 "num_pages" : range(num_pages),
                 "current_page" : current_page,
-                "machine_deps_json" : json.dumps(machine_deps_dict[application]),
-                "software_deps_json" : json.dumps(software_deps_dict[application]),
-                "users_json" : json.dumps(users_dict[application])
+                "machine_deps_json" : json.dumps(machine_deps_list),
+                "software_deps_json" : json.dumps(software_deps_list),
+                "users_json" : json.dumps(users_list)
                 }
 
         return render(request, 'repo/dashboard.html', context)
