@@ -141,6 +141,9 @@ class HistoryDB(dict):
         for i in range(len(software_deps_list)):
             software_deps_str_list.append(str(software_deps_list[i]))
 
+        print ("machine_deps_str_list: ", machine_deps_str_list)
+        print ("software_deps_str_list: ", software_deps_str_list)
+
         with open(self.json_path+"/"+application_name+".json") as f_in:
             json_data = json.loads(f_in.read())
             func_eval_list = json_data["func_eval"]
@@ -152,6 +155,16 @@ class HistoryDB(dict):
                         func_eval_filtered.append(func_eval)
 
         return func_eval_filtered
+
+    def load_func_eval_by_uid(self, func_eval_uid):
+        for application_file in os.listdir(self.json_path):
+            with open(self.json_path+"/"+application_file) as f_in:
+                json_data = json.loads(f_in.read())
+                func_eval_list = json_data["func_eval"]
+                for func_eval in func_eval_list:
+                    if func_eval["uid"] == func_eval_uid:
+                        return func_eval
+        return None
 
 if __name__ == "__main__":
     historydb = HistoryDB()

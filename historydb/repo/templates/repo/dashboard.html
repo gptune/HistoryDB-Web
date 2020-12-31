@@ -20,6 +20,7 @@
         }
 
         function UpdateDeps() {
+            alert("Update Deps!!")
             //var libraries = {{ libraries_avail | safe }}
             //for (i=0; i<libraries.length; i++) {
             //    console.log(libraries[i])
@@ -31,8 +32,8 @@
             var application_name = application_var.options[application_var.selectedIndex].value;
             //alert(application_name)
 
-            //var machine_deps_json = {{ machine_deps_json | safe | escape }};
-            var machine_deps_json = {{ machine_deps_json | safe | escape }};
+            //var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
+            var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
             //alert(tempvalues)
             //alert(tempvalues[application_name]);
 
@@ -42,23 +43,23 @@
             machine_deps_label.appendChild(document.createTextNode("Machines available"));
             machine_deps_div.appendChild(machine_deps_label);
             machine_deps_div.appendChild(document.createElement('br'));
-            for (i=0; i<machine_deps_json[application_name].length; i++) {
+            for (i=0; i<machine_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
-                x.setAttribute("value", JSON.stringify(machine_deps_json[application_name][i], null, 2));
+                x.setAttribute("value", JSON.stringify(machine_deps_avail[application_name][i], null, 2));
                 x.setAttribute("name", "machine_deps_list");
                 machine_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(machine_deps_json[application_name][i], null, 2) + "</pre>";
+                label.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
                 machine_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
-                linebreak.appendChild(document.createTextNode(machine_deps_json[application_name][i]));
+                linebreak.appendChild(document.createTextNode(machine_deps_avail[application_name][i]));
                 machine_deps_div.appendChild(linebreak);
             }
 
-            var software_deps_json = {{ software_deps_json | safe | escape }};
+            var software_deps_avail = {{ software_deps_avail | safe | escape }};
 
             var software_deps_div = document.getElementById("software_deps");
             software_deps_div.innerHTML = "";
@@ -67,23 +68,23 @@
             software_deps_div.appendChild(software_deps_label);
             software_deps_div.appendChild(document.createElement("br"));
 
-            for (i=0; i<software_deps_json[application_name].length; i++) {
+            for (i=0; i<software_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
-                x.setAttribute("value", JSON.stringify(software_deps_json[application_name][i], null, 2));
+                x.setAttribute("value", JSON.stringify(software_deps_avail[application_name][i], null, 2));
                 x.setAttribute("name", "software_deps_list")
                 software_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(software_deps_json[application_name][i], null, 2) + "</pre>";
+                label.innerHTML = "<pre>" + JSON.stringify(software_deps_avail[application_name][i], null, 2) + "</pre>";
                 software_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
-                linebreak.appendChild(document.createTextNode(software_deps_json[application_name][i]));
+                linebreak.appendChild(document.createTextNode(software_deps_avail[application_name][i]));
                 software_deps_div.appendChild(linebreak);
             }
 
-            var users_json = {{ users_json | safe | escape }};
+            var users_avail = {{ users_avail | safe | escape }};
 
             var users_div = document.getElementById("users_deps");
             users_div.innerHTML = "";
@@ -92,20 +93,20 @@
             users_div.appendChild(users_label);
             users_div.appendChild(document.createElement("br"));
 
-            for (i=0; i<users_json[application_name].length; i++) {
+            for (i=0; i<users_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
-                x.setAttribute("value", JSON.stringify(users_json[application_name][i], null, 2));
-                x.setAttribute("name", users_json[application_name][i]);
+                x.setAttribute("value", JSON.stringify(users_avail[application_name][i], null, 2));
+                x.setAttribute("name", users_avail[application_name][i]);
                 users_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(users_json[application_name][i], null, 2) + "</pre>"
-                //label.appendChild(document.createTextNode(users_json[application_name][i]));
+                label.innerHTML = "<pre>" + JSON.stringify(users_avail[application_name][i], null, 2) + "</pre>"
+                //label.appendChild(document.createTextNode(users_avail[application_name][i]));
                 users_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
-                linebreak.appendChild(document.createTextNode(users_json[application_name][i]));
+                linebreak.appendChild(document.createTextNode(users_avail[application_name][i]));
                 users_div.appendChild(linebreak);
             }
 
@@ -130,13 +131,13 @@
 
             var machine_deps_cond_div = document.getElementById("machine_deps_cond");
             var machine_deps_label = document.createElement("label");
-            var machine_deps = {{ machine_deps_json | safe | escape }};
+            var machine_deps = {{ machine_deps_list | safe | escape }};
             machine_deps_label.innerHTML = "<h4>Machine deps selected</h4>" + "<pre>" + JSON.stringify(machine_deps, null, 2) + "</pre>";
             machine_deps_cond_div.appendChild(machine_deps_label);
 
             var software_deps_cond_div = document.getElementById("software_deps_cond");
             var software_deps_label = document.createElement("label");
-            var software_deps = {{ software_deps_json | safe | escape }};
+            var software_deps = {{ software_deps_list | safe | escape }};
             software_deps_label.innerHTML = "<h4>Software deps selected</h4>" + "<pre>" + JSON.stringify(software_deps, null, 2) + "</pre>";
             software_deps_cond_div.appendChild(software_deps_label);
 
@@ -255,7 +256,7 @@
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group mr-2">
             <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-            <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_json}}&software_deps_json={{software_deps_json}}&users_json={{users_json}}">
+            <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&uers_list={{users_list}}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
             </a>
           </div>
@@ -315,7 +316,7 @@
         <div id="software_deps_cond">
         </div>
 
-        <div id="users_json">
+        <div id="users_avail">
         </div>
       </div>
       <script type="text/javascript">
@@ -503,7 +504,7 @@
           <td>
           {% for page_num in num_pages %}
           <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-          <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_json}}&software_deps_json={{software_deps_json}}&users_json={{users_json}}">
+          <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}">
             {% ifequal page_num current_page %}
             [<b>{{ page_num }}</b>]
             {% else %}
