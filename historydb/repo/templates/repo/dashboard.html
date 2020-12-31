@@ -7,36 +7,19 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.1.1">
-    <title>Dashboard Template · Bootstrap</title>
+    <title>Carousel Template · Bootstrap</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/carousel/">
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
 
     <script type = "text/JavaScript">
-        function Hello() {
-            alert("Hello, World");
-        }
-
         function UpdateDeps() {
-            alert("Update Deps!!")
-            //var libraries = {{ libraries_avail | safe }}
-            //for (i=0; i<libraries.length; i++) {
-            //    console.log(libraries[i])
-            //};
-
             var application_var = document.getElementById("applicationVal");
-            //alert(application_var.options[application_var.selectedIndex].value);
-
             var application_name = application_var.options[application_var.selectedIndex].value;
-            //alert(application_name)
-
-            //var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
             var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
-            //alert(tempvalues)
-            //alert(tempvalues[application_name]);
-
             var machine_deps_div = document.getElementById("machine_deps");
             machine_deps_div.innerHTML = "";
             var machine_deps_label = document.createElement("label")
@@ -60,7 +43,6 @@
             }
 
             var software_deps_avail = {{ software_deps_avail | safe | escape }};
-
             var software_deps_div = document.getElementById("software_deps");
             software_deps_div.innerHTML = "";
             var software_deps_label = document.createElement("label");
@@ -85,7 +67,6 @@
             }
 
             var users_avail = {{ users_avail | safe | escape }};
-
             var users_div = document.getElementById("users_deps");
             users_div.innerHTML = "";
             var users_label = document.createElement("label");
@@ -102,15 +83,12 @@
 
                 var label = document.createElement("label");
                 label.innerHTML = "<pre>" + JSON.stringify(users_avail[application_name][i], null, 2) + "</pre>"
-                //label.appendChild(document.createTextNode(users_avail[application_name][i]));
                 users_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(users_avail[application_name][i]));
                 users_div.appendChild(linebreak);
             }
-
-            alert("update deps done");
         }
 
         function UpdateCond() {
@@ -125,7 +103,6 @@
             var application_label = document.createElement("label");
             application_cond_div.appendChild(application_label);
             var application_info = {{ application_info | safe | escape }};
-            alert(application_info['application']);
             application_label.innerHTML = "<h4>Application Selected</h4>" + application_info['application'];
             application_cond_div.appendChild(application_label);
 
@@ -140,8 +117,6 @@
             var software_deps = {{ software_deps_list | safe | escape }};
             software_deps_label.innerHTML = "<h4>Software deps selected</h4>" + "<pre>" + JSON.stringify(software_deps, null, 2) + "</pre>";
             software_deps_cond_div.appendChild(software_deps_label);
-
-            alert("update cond");
         }
     </script>
 
@@ -162,11 +137,10 @@
       }
     </style>
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
+    <link href="carousel.css" rel="stylesheet">
   </head>
-
 <body>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
   <a class="navbar-brand" href="#">GPTune History DB</a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -178,15 +152,15 @@
       <li class="nav-item">
         <a class="nav-link" href="{% url 'main:index' %}">Home<span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle active" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Public Repository</a>
+      <li class="nav-item dropdown active">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Public Repository</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
           <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard</a>
           <a class="dropdown-item" href="{% url 'repo:examples' %}">Examples</a>
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'documentation:index' %}">Documentation</a>
+        <a class="nav-link" href="#">Documentation</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
@@ -203,327 +177,287 @@
     {% endif %}
 
   </div>
-  </nav>
+</nav>
 
-<div class="container-fluid">
-  <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-      <div class="sidebar-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="#">
-              <span data-feather="home"></span>
-              Dashboard <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'repo:display' %}">
-              <span data-feather="file"></span>
-              Display example
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="shopping-cart"></span>
-              Placeholder
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="users"></span>
-              Placeholder
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="bar-chart-2"></span>
-              Placeholder
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="layers"></span>
-              Placeholder
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group mr-2">
-            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-            <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&uers_list={{users_list}}">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
-            </a>
-          </div>
-          <!--
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-          </button>
-          -->
-        </div>
-      </div>
-
-      <form method="POST">
-        {% csrf_token %}
-        <div class="well">
-          <h2 style="margin-top: 0">Search Filter</h2>
-          <div class="row">
-            <div class="form-group col">
-                Application<br>
-                <select name="application" id="applicationVal" onChange = "UpdateDeps();">
-                  <option value="" label=" "selected>Select application</option>
-                  {% if applications_avail %}
-                    {% for application_avail in applications_avail %}
-                    <option value="{{ application_avail }}">{{ application_avail }}</option>
-                    </li>
-                    {% endfor %}
-                  {% else %}
-                  {% endif %}
-                </select>
-            </div>
-            <div class="form-group col" id="machine_deps">
-            </div>
-            <div class="form-group col" id="software_deps">
-            </div>
-            <div class="form-group col" id="users_deps">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-search"></span> Search
-          </button>
-        </div>
-      </form>
-
-      {% ifnotequal application "" %}
-      <div>
-        application = {{ application }}
-        <br><br>
-        <div id="search_condition">
-        </div>
-
-        <div id="application_cond">
-        </div>
-
-        <div id="machine_deps_cond">
-        </div>
-
-        <div id="software_deps_cond">
-        </div>
-
-        <div id="users_avail">
-        </div>
-      </div>
-      <script type="text/javascript">
-          UpdateCond();
-      </script>
-      {% else %}
-      {% endifnotequal %}
-
-      {% ifnotequal num_func_eval 0 %}
-      <div class="table-responsive">
-        <h2>Performance Data</h2>
-        <br><br>
-        number of function evaluation result: {{ num_func_eval }}
-        <br>
-
-        <table class="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Input Task</th>
-              <th>Tuning Parameter</th>
-              <th>Output Result</th>
-              <th>Date</th>
-              <th>UID (Details)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if num_func_eval > 0 %}
-            <tr>
-              <td>{{ perf_data.0.id }}</td>
-              <td>{{ perf_data.0.I }}</td>
-              <td>{{ perf_data.0.P }}</td>
-              <td>{{ perf_data.0.O }}</td>
-              <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 1 %}
-            <tr>
-              <td>{{ perf_data.1.id }}</td>
-              <td>{{ perf_data.1.I }}</td>
-              <td>{{ perf_data.1.P }}</td>
-              <td>{{ perf_data.1.O }}</td>
-              <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 2 %}
-            <tr>
-              <td>{{ perf_data.2.id }}</td>
-              <td>{{ perf_data.2.I }}</td>
-              <td>{{ perf_data.2.P }}</td>
-              <td>{{ perf_data.2.O }}</td>
-              <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 3 %}
-            <tr>
-              <td>{{ perf_data.3.id }}</td>
-              <td>{{ perf_data.3.I }}</td>
-              <td>{{ perf_data.3.P }}</td>
-              <td>{{ perf_data.3.O }}</td>
-              <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 4 %}
-            <tr>
-              <td>{{ perf_data.4.id }}</td>
-              <td>{{ perf_data.4.I }}</td>
-              <td>{{ perf_data.4.P }}</td>
-              <td>{{ perf_data.4.O }}</td>
-              <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 5 %}
-            <tr>
-              <td>{{ perf_data.5.id }}</td>
-              <td>{{ perf_data.5.I }}</td>
-              <td>{{ perf_data.5.P }}</td>
-              <td>{{ perf_data.5.O }}</td>
-              <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 6 %}
-            <tr>
-              <td>{{ perf_data.6.id }}</td>
-              <td>{{ perf_data.6.I }}</td>
-              <td>{{ perf_data.6.P }}</td>
-              <td>{{ perf_data.6.O }}</td>
-              <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 7 %}
-            <tr>
-              <td>{{ perf_data.7.id }}</td>
-              <td>{{ perf_data.7.I }}</td>
-              <td>{{ perf_data.7.P }}</td>
-              <td>{{ perf_data.7.O }}</td>
-              <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 8 %}
-            <tr>
-              <td>{{ perf_data.8.id }}</td>
-              <td>{{ perf_data.8.I }}</td>
-              <td>{{ perf_data.8.P }}</td>
-              <td>{{ perf_data.8.O }}</td>
-              <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 9 %}
-            <tr>
-              <td>{{ perf_data.9.id }}</td>
-              <td>{{ perf_data.9.I }}</td>
-              <td>{{ perf_data.9.P }}</td>
-              <td>{{ perf_data.9.O }}</td>
-              <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 10 %}
-            <tr>
-              <td>{{ perf_data.10.id }}</td>
-              <td>{{ perf_data.10.I }}</td>
-              <td>{{ perf_data.10.P }}</td>
-              <td>{{ perf_data.10.O }}</td>
-              <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 11 %}
-            <tr>
-              <td>{{ perf_data.11.id }}</td>
-              <td>{{ perf_data.11.I }}</td>
-              <td>{{ perf_data.11.P }}</td>
-              <td>{{ perf_data.11.O }}</td>
-              <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 12 %}
-            <tr>
-              <td>{{ perf_data.12.id }}</td>
-              <td>{{ perf_data.12.I }}</td>
-              <td>{{ perf_data.12.P }}</td>
-              <td>{{ perf_data.12.O }}</td>
-              <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 13 %}
-            <tr>
-              <td>{{ perf_data.13.id }}</td>
-              <td>{{ perf_data.13.I }}</td>
-              <td>{{ perf_data.13.P }}</td>
-              <td>{{ perf_data.13.O }}</td>
-              <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
-            </tr>
-            {% endif %}
-            {% if num_func_eval > 14 %}
-            <tr>
-              <td>{{ perf_data.14.id }}</td>
-              <td>{{ perf_data.14.I }}</td>
-              <td>{{ perf_data.14.P }}</td>
-              <td>{{ perf_data.14.O }}</td>
-              <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
-              <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
-            </tr>
-            {% endif %}
-          </tbody>
-        </table>
-      </div>
-
-      <div class="table-responsive">
-        <tr>
-          Pages:
-          <td>
-          {% for page_num in num_pages %}
-          <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-          <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}">
-            {% ifequal page_num current_page %}
-            [<b>{{ page_num }}</b>]
-            {% else %}
-            [{{ page_num }}]
-            {% endifequal %}
-          {% endfor %}
-          </td>
-        </tr>
-      </table>
-
-      {% else %}
-      {% endifnotequal %}
-
-    </main>
+<main role="main">
+  <div class="container">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h1">Dashboard</h1>
   </div>
-</div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="well">
+      <h2 style="margin-top: 0">Search Filter</h2>
+      <div class="row">
+        <div class="form-group col">
+            Application<br>
+            <select name="application" id="applicationVal" onChange = "UpdateDeps();">
+              <option value="" label=" "selected>Select application</option>
+              {% if applications_avail %}
+                {% for application_avail in applications_avail %}
+                <option value="{{ application_avail }}">{{ application_avail }}</option>
+                </li>
+                {% endfor %}
+              {% else %}
+              {% endif %}
+            </select>
+        </div>
+        <div class="form-group col" id="machine_deps">
+        </div>
+        <div class="form-group col" id="software_deps">
+        </div>
+        <div class="form-group col" id="users_deps">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <span class="glyphicon glyphicon-search"></span> Search
+      </button>
+    </div>
+  </form>
+
+  {% ifnotequal application "" %}
+  <br><br>
+  <hr>
+  <div>
+    <div id="search_condition">
+    </div>
+
+    <div id="application_cond">
+    </div>
+
+    <div id="machine_deps_cond">
+    </div>
+
+    <div id="software_deps_cond">
+    </div>
+
+    <div id="users_avail">
+    </div>
+  </div>
+  <script type="text/javascript">
+      UpdateCond();
+  </script>
+  {% else %}
+  {% endifnotequal %}
+
+  {% ifnotequal num_func_eval 0 %}
+  <br><br>
+  <hr>
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Performance Data</h2>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&uers_list={{users_list}}">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    number of function evaluation result: {{ num_func_eval }}
+    <br><br>
+
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Input Task</th>
+          <th>Tuning Parameter</th>
+          <th>Output Result</th>
+          <th>Date</th>
+          <th>UID (Details)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if num_func_eval > 0 %}
+        <tr>
+          <td>{{ perf_data.0.id }}</td>
+          <td>{{ perf_data.0.I }}</td>
+          <td>{{ perf_data.0.P }}</td>
+          <td>{{ perf_data.0.O }}</td>
+          <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 1 %}
+        <tr>
+          <td>{{ perf_data.1.id }}</td>
+          <td>{{ perf_data.1.I }}</td>
+          <td>{{ perf_data.1.P }}</td>
+          <td>{{ perf_data.1.O }}</td>
+          <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 2 %}
+        <tr>
+          <td>{{ perf_data.2.id }}</td>
+          <td>{{ perf_data.2.I }}</td>
+          <td>{{ perf_data.2.P }}</td>
+          <td>{{ perf_data.2.O }}</td>
+          <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 3 %}
+        <tr>
+          <td>{{ perf_data.3.id }}</td>
+          <td>{{ perf_data.3.I }}</td>
+          <td>{{ perf_data.3.P }}</td>
+          <td>{{ perf_data.3.O }}</td>
+          <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 4 %}
+        <tr>
+          <td>{{ perf_data.4.id }}</td>
+          <td>{{ perf_data.4.I }}</td>
+          <td>{{ perf_data.4.P }}</td>
+          <td>{{ perf_data.4.O }}</td>
+          <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 5 %}
+        <tr>
+          <td>{{ perf_data.5.id }}</td>
+          <td>{{ perf_data.5.I }}</td>
+          <td>{{ perf_data.5.P }}</td>
+          <td>{{ perf_data.5.O }}</td>
+          <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 6 %}
+        <tr>
+          <td>{{ perf_data.6.id }}</td>
+          <td>{{ perf_data.6.I }}</td>
+          <td>{{ perf_data.6.P }}</td>
+          <td>{{ perf_data.6.O }}</td>
+          <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 7 %}
+        <tr>
+          <td>{{ perf_data.7.id }}</td>
+          <td>{{ perf_data.7.I }}</td>
+          <td>{{ perf_data.7.P }}</td>
+          <td>{{ perf_data.7.O }}</td>
+          <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 8 %}
+        <tr>
+          <td>{{ perf_data.8.id }}</td>
+          <td>{{ perf_data.8.I }}</td>
+          <td>{{ perf_data.8.P }}</td>
+          <td>{{ perf_data.8.O }}</td>
+          <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 9 %}
+        <tr>
+          <td>{{ perf_data.9.id }}</td>
+          <td>{{ perf_data.9.I }}</td>
+          <td>{{ perf_data.9.P }}</td>
+          <td>{{ perf_data.9.O }}</td>
+          <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 10 %}
+        <tr>
+          <td>{{ perf_data.10.id }}</td>
+          <td>{{ perf_data.10.I }}</td>
+          <td>{{ perf_data.10.P }}</td>
+          <td>{{ perf_data.10.O }}</td>
+          <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 11 %}
+        <tr>
+          <td>{{ perf_data.11.id }}</td>
+          <td>{{ perf_data.11.I }}</td>
+          <td>{{ perf_data.11.P }}</td>
+          <td>{{ perf_data.11.O }}</td>
+          <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 12 %}
+        <tr>
+          <td>{{ perf_data.12.id }}</td>
+          <td>{{ perf_data.12.I }}</td>
+          <td>{{ perf_data.12.P }}</td>
+          <td>{{ perf_data.12.O }}</td>
+          <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 13 %}
+        <tr>
+          <td>{{ perf_data.13.id }}</td>
+          <td>{{ perf_data.13.I }}</td>
+          <td>{{ perf_data.13.P }}</td>
+          <td>{{ perf_data.13.O }}</td>
+          <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 14 %}
+        <tr>
+          <td>{{ perf_data.14.id }}</td>
+          <td>{{ perf_data.14.I }}</td>
+          <td>{{ perf_data.14.P }}</td>
+          <td>{{ perf_data.14.O }}</td>
+          <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <table>
+      <tr>
+        Pages:
+        <td>
+        {% for page_num in num_pages %}
+        <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}">
+          {% ifequal page_num current_page %}
+          [<b>{{ page_num }}</b>]
+          {% else %}
+          [{{ page_num }}]
+          {% endifequal %}
+        {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  {% else %}
+  {% endifnotequal %}
+
+  <hr>
+
+  <footer class="container">
+    <br>
+    <p class="float-right"><a href="#">Back to top</a></p>
+    <p>&copy; 2020 GPTune-Dev. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </footer>
+
+  </div>
+</main>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-        <script>window.jQuery || document.write('')</script><script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-        <script src="{% static 'js/dashboard.js' %}"></script></body>
+<script>window.jQuery || document.write('')</script><script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
 </html>
