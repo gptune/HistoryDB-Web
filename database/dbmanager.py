@@ -20,22 +20,64 @@ import json
 import os.path
 #import numpy as np
 import uuid
+import sys
+from pathlib import Path
 
-class HistoryDB(dict):
+class HistoryDB_JSON(dict):
 
     def __init__(self, **kwargs):
         self.init_value = 0
-        self.json_path = "../json"
+        self.json_path = str(Path(__file__).parent) + "/json"
+        print ("JSON path: ", self.json_path)
+
+    def load_json_data(self, application, **kwargs):
+        application_path = self.json_path + "/" + application + ".json"
+        with open(application_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            return json_data
+
+        return None
 
     def load_func_eval(self, application, **kwargs):
         application_path = self.json_path + "/" + application + ".json"
         print (application_path)
-        with open(application_path) as f_in:
+        with open(application_path, "r") as f_in:
             json_data = json.loads(f_in.read())
             func_eval_data = json_data["func_eval"]
             return (func_eval_data)
 
+        return None
+
+    def load_model_data(self, application_name, **kwargs):
+        application_path = self.json_path + "/" + application_name + ".json"
+        print (application_path)
+        with open(application_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            model_data = json_data["model_data"]
+            return (model_data)
+
+        return None
+
+    def load_func_eval_by_path(self, json_path, **kwargs):
+        with open(json_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            func_eval = json_data["func_eval"]
+            return func_eval
+
+        return None
+
+    def load_model_data_by_path(self, json_path, **kwargs):
+        with open(json_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            model_data = json_data["model_data"]
+            return model_data
+
+        return None
+
     def get_applications_avail(self, **kwargs):
+        print ("self.json_path")
+        print (self.json_path)
+
         applications_avail = []
 
         for application_file in os.listdir(self.json_path):
@@ -53,8 +95,9 @@ class HistoryDB(dict):
         machine_deps_avail = {}
 
         for application_file in os.listdir(self.json_path):
+            print ("application_file: ", application_file)
             application_path = self.json_path + "/" + application_file
-            with open(application_path) as f_in:
+            with open(application_path, "r") as f_in:
                 application_name = application_file.split('.')[0]
                 machine_deps_avail_givenapp = []
                 machine_deps_avail_givenapp_str = []
@@ -68,8 +111,8 @@ class HistoryDB(dict):
                         machine_deps_avail_givenapp.append(machine_deps)
                         machine_deps_avail_givenapp_str.append(machine_deps_str)
 
-                #print (machine_deps_avail_givenapp)
-                #print (application_name)
+                print (machine_deps_avail_givenapp)
+                print (application_name)
                 machine_deps_avail[application_name] = machine_deps_avail_givenapp
 
         print (machine_deps_avail)
@@ -81,7 +124,7 @@ class HistoryDB(dict):
 
         for application_file in os.listdir(self.json_path):
             application_path = self.json_path + "/" + application_file
-            with open(application_path) as f_in:
+            with open(application_path, "r") as f_in:
                 application_name = application_file.split('.')[0]
                 software_deps_avail_givenapp = []
                 software_deps_avail_givenapp_str = []
@@ -107,7 +150,7 @@ class HistoryDB(dict):
 
         for application_file in os.listdir(self.json_path):
             application_path = self.json_path + "/" + application_file
-            with open(application_path) as f_in:
+            with open(application_path, "r") as f_in:
                 application_name = application_file.split('.')[0]
                 users_avail_givenapp = []
 
@@ -127,38 +170,45 @@ class HistoryDB(dict):
 
         return users_avail
 
-    def load_func_eval(self,
+    def load_func_eval_filtered(self,
             application_name,
             machine_deps_list,
             software_deps_list,
+            users_list,
             **kwargs):
         func_eval_filtered = []
 
         machine_deps_str_list = []
         software_deps_str_list = []
+        users_str_list = []
         for i in range(len(machine_deps_list)):
             machine_deps_str_list.append(str(machine_deps_list[i]))
         for i in range(len(software_deps_list)):
             software_deps_str_list.append(str(software_deps_list[i]))
+        for i in range(len(users_list)):
+            users_str_list.append(str(users_list[i]))
 
         print ("machine_deps_str_list: ", machine_deps_str_list)
         print ("software_deps_str_list: ", software_deps_str_list)
+        print ("users_str_list: ", users_str_list)
 
-        with open(self.json_path+"/"+application_name+".json") as f_in:
+        with open(self.json_path+"/"+application_name+".json", "r") as f_in:
             json_data = json.loads(f_in.read())
             func_eval_list = json_data["func_eval"]
             for func_eval in func_eval_list:
                 machine_deps_str = str(func_eval["machine_deps"])
                 software_deps_str = str(func_eval["compile_deps"])
+                user_str = str(func_eval["user"])
                 if (machine_deps_str in machine_deps_str_list):
                    if (software_deps_str in software_deps_str_list):
-                        func_eval_filtered.append(func_eval)
+                       if (user_str in users_str_list):
+                            func_eval_filtered.append(func_eval)
 
         return func_eval_filtered
 
     def load_func_eval_by_uid(self, func_eval_uid):
         for application_file in os.listdir(self.json_path):
-            with open(self.json_path+"/"+application_file) as f_in:
+            with open(self.json_path+"/"+application_file, "r") as f_in:
                 json_data = json.loads(f_in.read())
                 func_eval_list = json_data["func_eval"]
                 for func_eval in func_eval_list:
@@ -166,6 +216,74 @@ class HistoryDB(dict):
                         return func_eval
         return None
 
+    def upload_func_eval(self, user_info, application_name, perf_file_path):
+        import os.path
+        if not os.path.exists(self.json_path+"/"+application_name+".json"):
+            with open(self.json_path+"/"+application_name+".json", "w") as f_out:
+                json_data = {}
+                json_data["name"] = application_name
+                json_data["model_data"] = []
+                json_data["func_eval"] = []
+                json.dump(json_data, f_out, indent=2)
+
+        func_eval_db = self.load_func_eval(application_name)
+        uid_exist = []
+        for func_eval in func_eval_db:
+            uid_exist.append(func_eval["uid"])
+        print (func_eval_db)
+
+        json_data = self.load_json_data(application_name)
+
+        func_eval_in = self.load_func_eval_by_path(perf_file_path)
+        for func_eval in func_eval_in:
+            uid = func_eval["uid"]
+            if uid in uid_exist:
+                print ("uid already exists: ", uid)
+                continue
+            else:
+                func_eval["user"] = user_info
+                json_data["func_eval"].append(func_eval)
+
+        with open(self.json_path+"/"+application_name+".json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
+        return None
+
+    def upload_model_data(self, user_info, application_name, perf_file_path):
+        import os.path
+        if not os.path.exists(self.json_path+"/"+application_name+".json"):
+            with open(self.json_path+"/"+application_name+".json", "w") as f_out:
+                json_data = {}
+                json_data["name"] = application_name
+                json_data["model_data"] = []
+                json_data["func_eval"] = []
+                json.dump(json_data, f_out, indent=2)
+
+        model_data_db = self.load_model_data(application_name)
+        uid_exist = []
+        for model_data in model_data_db:
+            uid_exist.append(model_data["uid"])
+        print (model_data_db)
+
+        json_data = self.load_json_data(application_name)
+
+        model_data_in = self.load_model_data_by_path(perf_file_path)
+        for item in model_data_in:
+            uid = item["uid"]
+            if not uid in uid_exist:
+                item["user"] = user_info
+                json_data["model_data"].append(item)
+
+        with open(self.json_path+"/"+application_name+".json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
+        return None
+
 if __name__ == "__main__":
-    historydb = HistoryDB()
-    print (historydb.load_func_eval("PDGEQRF"))
+    import sys
+
+    print (sys.argv[1])
+    historydb = HistoryDB_JSON()
+    historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+    #print (historydb.load_func_eval("PDGEQRF"))

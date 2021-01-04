@@ -78,7 +78,7 @@
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
                 x.setAttribute("value", JSON.stringify(users_avail[application_name][i], null, 2));
-                x.setAttribute("name", users_avail[application_name][i]);
+                x.setAttribute("name", "users_list");
                 users_div.appendChild(x);
 
                 var label = document.createElement("label");
@@ -117,6 +117,12 @@
             var software_deps = {{ software_deps_list | safe | escape }};
             software_deps_label.innerHTML = "<h4>Software deps selected</h4>" + "<pre>" + JSON.stringify(software_deps, null, 2) + "</pre>";
             software_deps_cond_div.appendChild(software_deps_label);
+
+            var users_cond_div = document.getElementById("users_cond");
+            var users_label = document.createElement("label");
+            var users = {{ users_list | safe | escape }};
+            users_label.innerHTML = "<h4>Users selected</h4>" + "<pre>" + JSON.stringify(users, null, 2) + "</pre>";
+            users_cond_div.appendChild(users_label);
         }
     </script>
 
@@ -160,7 +166,7 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Documentation</a>
+        <a class="nav-link" href="{% url 'documentation:index' %}">Documentation</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
@@ -232,7 +238,7 @@
     <div id="software_deps_cond">
     </div>
 
-    <div id="users_avail">
+    <div id="users_cond">
     </div>
   </div>
   <script type="text/javascript">
@@ -250,7 +256,7 @@
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&uers_list={{users_list}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -431,7 +437,7 @@
         <td>
         {% for page_num in num_pages %}
         <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
           {% ifequal page_num current_page %}
           [<b>{{ page_num }}</b>]
           {% else %}
