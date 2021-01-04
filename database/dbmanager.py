@@ -216,6 +216,32 @@ class HistoryDB_JSON(dict):
                         return func_eval
         return None
 
+    def load_model_data_by_uid(self, model_data_uid):
+        for application_file in os.listdir(self.json_path):
+            with open(self.json_path+"/"+application_file, "r") as f_in:
+                json_data = json.loads(f_in.read())
+                model_data_list = json_data["model_data"]
+                for model_data in model_data_list:
+                    if model_data["uid"] == model_data_uid:
+                        return model_data
+        return None
+
+    def load_perf_data_by_uid(self, perf_data_uid):
+        for application_file in os.listdir(self.json_path):
+            with open(self.json_path+"/"+application_file, "r") as f_in:
+                json_data = json.loads(f_in.read())
+
+                func_eval_list = json_data["func_eval"]
+                for func_eval in func_eval_list:
+                    if func_eval["uid"] == perf_data_uid:
+                        return func_eval
+
+                model_data_list = json_data["model_data"]
+                for model_data in model_data_list:
+                    if model_data["uid"] == perf_data_uid:
+                        return model_data
+        return None
+
     def upload_func_eval(self, user_info, application_name, perf_file_path):
         import os.path
         if not os.path.exists(self.json_path+"/"+application_name+".json"):
@@ -248,6 +274,43 @@ class HistoryDB_JSON(dict):
             json.dump(json_data, f_out, indent=2)
 
         return None
+
+    def load_model_data_filtered(self,
+            application_name,
+            machine_deps_list,
+            software_deps_list,
+            users_list,
+            **kwargs):
+        model_data_filtered = []
+        machine_deps_str_list = []
+        software_deps_str_list = []
+        users_str_list = []
+        for i in range(len(machine_deps_list)):
+            machine_deps_str_list.append(str(machine_deps_list[i]))
+        for i in range(len(software_deps_list)):
+            software_deps_str_list.append(str(software_deps_list[i]))
+        for i in range(len(users_list)):
+            users_str_list.append(str(users_list[i]))
+
+        print ("machine_deps_str_list: ", machine_deps_str_list)
+        print ("software_deps_str_list: ", software_deps_str_list)
+        print ("users_str_list: ", users_str_list)
+
+        with open(self.json_path+"/"+application_name+".json", "r") as f_in:
+            json_data = json.loads(f_in.read())
+
+            model_data_list = json_data["model_data"]
+            for model_data in model_data_list:
+                func_eval_sample = self.load_func_eval_by_uid(model_data["func_eval"][0])
+                machine_deps_str = str(func_eval_sample["machine_deps"])
+                software_deps_str = str(func_eval_sample["compile_deps"])
+                user_str = str(func_eval_sample["user"])
+                if (machine_deps_str in machine_deps_str_list):
+                   if (software_deps_str in software_deps_str_list):
+                       if (user_str in users_str_list):
+                            model_data_filtered.append(model_data)
+
+        return model_data_filtered
 
     def upload_model_data(self, user_info, application_name, perf_file_path):
         import os.path
