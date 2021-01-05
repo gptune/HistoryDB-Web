@@ -347,11 +347,100 @@ class HistoryDB_JSON(dict):
 
         return None
 
+import pymongo
+class HistoryDB_MongoDB(dict):
+
+    def __init__(self, **kwargs):
+        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
+        #print (self.client.list_database_names())
+        if not "gptune-db" in self.client.list_database_names():
+            print ("the database not exist.")
+        self.db = self.client["gptune-db"]
+        print (self.db)
+
+    def load_json_data(self, application, **kwargs):
+        return None
+
+    def load_model_data(self, application_name, **kwargs):
+        return None
+
+    def load_func_eval_by_path(self, json_path, **kwargs):
+        return None
+
+    def load_model_data_by_path(self, json_path, **kwargs):
+        return None
+
+    def get_applications_avail(self, **kwargs):
+        return None
+
+    def get_applications_avail_per_library(self, **kwargs):
+        return None
+
+    def get_machine_deps_avail(self, **kwargs):
+        return None
+
+    def get_software_deps_avail(self, **kwargs):
+        return None
+
+    def get_users_avail(self, **kwargs):
+        return None
+
+    def load_func_eval_filtered(self,
+            application_name,
+            machine_deps_list,
+            software_deps_list,
+            users_list,
+            **kwargs):
+        return None
+
+    def load_func_eval_by_uid(self, func_eval_uid):
+        return None
+
+    def load_model_data_by_uid(self, model_data_uid):
+        return None
+
+    def load_perf_data_by_uid(self, perf_data_uid):
+        return None
+
+    def upload_func_eval(self, user_info, application_name, perf_file_path):
+        print ("upload_func_eval")
+        collist = self.db.list_collection_names()
+        print ("collist")
+        print (collist)
+        if not application_name in collist:
+            print (application_name + " is not exist in the database; create the collection")
+        collection = self.db[application_name]
+
+        if not application_name in collist:
+            collection.insert({"document_type":"application_info", "name": application_name})
+
+        with open(perf_file_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            func_eval_list = json_data["func_eval"]
+            for func_eval in func_eval_list:
+                if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                    collection.insert(func_eval)
+                else:
+                    print ("func_eval: " + func_eval["uid"] + " already exist")
+
+        return None
+
+    def load_model_data_filtered(self,
+            application_name,
+            machine_deps_list,
+            software_deps_list,
+            users_list,
+            **kwargs):
+        return None
+
+    def upload_model_data(self, user_info, application_name, perf_file_path):
+        return None
+
 if __name__ == "__main__":
     import sys
 
     print (sys.argv[1])
-    historydb = HistoryDB_JSON()
+    historydb = HistoryDB_MongoDB()
     historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
-    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+    #historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
     #print (historydb.load_func_eval("PDGEQRF"))
