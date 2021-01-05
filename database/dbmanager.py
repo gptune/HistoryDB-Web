@@ -26,9 +26,7 @@ from pathlib import Path
 class HistoryDB_JSON(dict):
 
     def __init__(self, **kwargs):
-        self.init_value = 0
         self.json_path = str(Path(__file__).parent) + "/json"
-        print ("JSON path: ", self.json_path)
 
     def load_json_data(self, application, **kwargs):
         application_path = self.json_path + "/" + application + ".json"
@@ -75,21 +73,28 @@ class HistoryDB_JSON(dict):
         return None
 
     def get_applications_avail(self, **kwargs):
-        print ("self.json_path")
-        print (self.json_path)
-
         applications_avail = []
 
         for application_file in os.listdir(self.json_path):
             applications_avail.append(application_file.split('.')[0])
-            #application_path = self.json_path + "/" + application_file
-            #print (application_path)
-            #with open(application_path) as f_in:
-            #    json_data = json.loads(f_in.read())
-            #    func_eval_data = json_data["func_eval"]
-            #    perf_data[application_file.split('.')[0]] = func_eval_data
 
         return applications_avail
+
+    def get_applications_avail_per_library(self, **kwargs):
+        applications_avail_per_library = {}
+
+        for application_file in os.listdir(self.json_path):
+            application_path = self.json_path + "/" + application_file
+            print (application_path)
+            with open(application_path, "r") as f_in:
+                json_data = json.loads(f_in.read())
+                application_library = json_data["application_info"]["library"]
+                if not application_library in applications_avail_per_library:
+                    applications_avail_per_library[application_library] = []
+                application_name = json_data["application_info"]["name"]
+                applications_avail_per_library[application_library].append(application_name)
+
+        return applications_avail_per_library
 
     def get_machine_deps_avail(self, **kwargs):
         machine_deps_avail = {}

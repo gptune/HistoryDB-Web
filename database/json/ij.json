@@ -1,0 +1,12 @@
+{
+  "name": "IJ",
+  "application_info": {
+    "name": "IJ",
+    "library": "Hypre",
+    "desc": ""
+  },
+  "model_data": [
+  ],
+  "func_eval": [
+  ]
+}
