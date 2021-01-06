@@ -16,10 +16,6 @@
     <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
 
     <script type = "text/JavaScript">
-        function ShowWindow() {
-            alert ("asdf");
-        }
-
         function UpdateDeps() {
             var application_var = document.getElementById("applicationVal");
             var application_name = application_var.options[application_var.selectedIndex].value;
@@ -34,14 +30,23 @@
                 x.setAttribute("name", "machine_deps_list");
                 machine_deps_div.appendChild(x);
 
-                var label = document.createElement("label");
-                label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"] + " (" 
-                    + machine_deps_avail[application_name][i]["nodes"] + " nodes; " +
-                    + machine_deps_avail[application_name][i]["cores"] + " cores" +
-                    ")";
+                //var label = document.createElement("label");
+                //label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"] + " ("
+                //    + machine_deps_avail[application_name][i]["nodes"] + " nodes; " +
+                //    + machine_deps_avail[application_name][i]["cores"] + " cores" +
+                //    ")";
+                //machine_deps_div.appendChild(label);
 
-                //label.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
+                var label = document.createElement("label");
+                label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"];
+                label.innerHTML += "&nbsp;<button onclick=\"document.getElementById('machine_deps_label" + i + "').style.visibility='visible'; return false;\">detail</button>";
                 machine_deps_div.appendChild(label);
+
+                var label2 = document.createElement("label");
+                label2.setAttribute("id", "machine_deps_label"+i);
+                label2.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
+                machine_deps_div.appendChild(label2);
+                label2.style.visibility = "hidden";
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(machine_deps_avail[application_name][i]));
@@ -60,7 +65,14 @@
 
                 var label = document.createElement("label");
                 label.innerHTML = "&nbsp;configuration " + (i+1);
+                label.innerHTML += "&nbsp;<button onclick=\"document.getElementById('software_deps_label" + i + "').style.visibility='visible'; return false;\">detail</button>";
                 software_deps_div.appendChild(label);
+
+                var label2 = document.createElement("label");
+                label2.setAttribute("id", "software_deps_label"+i);
+                label2.innerHTML = "<pre>" + JSON.stringify(software_deps_avail[application_name][i], null, 2) + "</pre>";
+                software_deps_div.appendChild(label2);
+                label2.style.visibility = "hidden";
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(software_deps_avail[application_name][i]));
