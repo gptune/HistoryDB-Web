@@ -22,7 +22,7 @@
 
             var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
             var machine_deps_div = document.getElementById("machine_deps");
-            machine_deps_div.innerHTML = "<b>Available Machine Configurations</b><br>";
+            machine_deps_div.innerHTML = "<b>Available Machine Configurations</b><br><br>";
             for (i=0; i<machine_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -30,23 +30,12 @@
                 x.setAttribute("name", "machine_deps_list");
                 machine_deps_div.appendChild(x);
 
-                //var label = document.createElement("label");
-                //label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"] + " ("
-                //    + machine_deps_avail[application_name][i]["nodes"] + " nodes; " +
-                //    + machine_deps_avail[application_name][i]["cores"] + " cores" +
-                //    ")";
-                //machine_deps_div.appendChild(label);
-
                 var label = document.createElement("label");
-                label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"];
-                label.innerHTML += "&nbsp;<button onclick=\"document.getElementById('machine_deps_label" + i + "').style.visibility='visible'; return false;\">detail</button>";
+                label.innerHTML = "&nbsp; Option " + (i+1) + " (" + machine_deps_avail[application_name][i]["machine"] + ")";
                 machine_deps_div.appendChild(label);
-
                 var label2 = document.createElement("label");
-                label2.setAttribute("id", "machine_deps_label"+i);
-                label2.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
+                label2.innerHTML = "<details> <summary>JSON details</summary><p><pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre></p></details>";
                 machine_deps_div.appendChild(label2);
-                label2.style.visibility = "hidden";
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(machine_deps_avail[application_name][i]));
@@ -55,7 +44,7 @@
 
             var software_deps_avail = {{ software_deps_avail | safe | escape }};
             var software_deps_div = document.getElementById("software_deps");
-            software_deps_div.innerHTML = "<b>Available Software Configurations</b><br>";
+            software_deps_div.innerHTML = "<b>Available Software Configurations</b><br><br>";
             for (i=0; i<software_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -64,15 +53,11 @@
                 software_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "&nbsp;configuration " + (i+1);
-                label.innerHTML += "&nbsp;<button onclick=\"document.getElementById('software_deps_label" + i + "').style.visibility='visible'; return false;\">detail</button>";
+                label.innerHTML = "&nbsp; Option " + (i+1) + "&nbsp;&nbsp;<br>";
                 software_deps_div.appendChild(label);
-
                 var label2 = document.createElement("label");
-                label2.setAttribute("id", "software_deps_label"+i);
-                label2.innerHTML = "<pre>" + JSON.stringify(software_deps_avail[application_name][i], null, 2) + "</pre>";
+                label2.innerHTML = "<details> <summary>JSON details</summary><p><pre>" + JSON.stringify(software_deps_avail[application_name][i], null, 2) + "</pre></p></details>";
                 software_deps_div.appendChild(label2);
-                label2.style.visibility = "hidden";
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(software_deps_avail[application_name][i]));
@@ -81,8 +66,7 @@
 
             var users_avail = {{ users_avail | safe | escape }};
             var users_div = document.getElementById("users_deps");
-            users_div.innerHTML = "<b>Available User List</b><br>";
-
+            users_div.innerHTML = "<b>Available User List</b><br><br>";
             for (i=0; i<users_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -91,8 +75,11 @@
                 users_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "&nbsp;" + users_avail[application_name][i]["name"];
+                label.innerHTML = "&nbsp; Option " + (i+1) + " (" + users_avail[application_name][i]["name"] + ")";
                 users_div.appendChild(label);
+                var label2 = document.createElement("label");
+                label2.innerHTML = "<details> <summary>JSON details</summary><p><pre>" + JSON.stringify(users_avail[application_name][i], null, 2) + "</pre></p></details>";
+                users_div.appendChild(label2);
 
                 var linebreak = document.createElement("br");
                 linebreak.appendChild(document.createTextNode(users_avail[application_name][i]));
@@ -100,8 +87,7 @@
             }
 
             var search_data_div = document.getElementById("search_data");
-            search_data_div.innerHTML = "<b>Search Data</b><br>";
-
+            search_data_div.innerHTML = "<b>Search Data</b><br><br>";
             var x1 = document.createElement("input");
             x1.setAttribute("type", "checkbox");
             x1.setAttribute("value", "func_eval");
@@ -139,26 +125,38 @@
             var application_label = document.createElement("label");
             application_cond_div.appendChild(application_label);
             var application_info = {{ application_info | safe | escape }};
-            application_label.innerHTML = "<h4>Application Selected</h4>" + application_info['application'];
+            application_label.innerHTML = "<b>Application selected</b><br><br>";
             application_cond_div.appendChild(application_label);
+            var label1 = document.createElement("label");
+            label1.innerHTML = "<details><summary>JSON details</summary><p><pre>" + JSON.stringify(application_info, null, 2) + "</pre></p></details>";
+            application_cond_div.appendChild(label1);
 
             var machine_deps_cond_div = document.getElementById("machine_deps_cond");
             var machine_deps_label = document.createElement("label");
             var machine_deps = {{ machine_deps_list | safe | escape }};
-            machine_deps_label.innerHTML = "<h4>Machine deps selected</h4>" + "<pre>" + JSON.stringify(machine_deps, null, 2) + "</pre>";
+            machine_deps_label.innerHTML = "<b>Machine configuration selected</b><br><br>";
             machine_deps_cond_div.appendChild(machine_deps_label);
+            var label2 = document.createElement("label");
+            label2.innerHTML = "<details><summary>JSON details</summary><p><pre>" + JSON.stringify(machine_deps, null, 2) + "</pre></p></details>";
+            machine_deps_cond_div.appendChild(label2);
 
             var software_deps_cond_div = document.getElementById("software_deps_cond");
             var software_deps_label = document.createElement("label");
             var software_deps = {{ software_deps_list | safe | escape }};
-            software_deps_label.innerHTML = "<h4>Software deps selected</h4>" + "<pre>" + JSON.stringify(software_deps, null, 2) + "</pre>";
+            software_deps_label.innerHTML = "<b>Software configuration selected</b><br><br>";
             software_deps_cond_div.appendChild(software_deps_label);
+            var label3 = document.createElement("label");
+            label3.innerHTML = "<details><summary>JSON details</summary><p><pre>" + JSON.stringify(software_deps, null, 2) + "</pre></p></details>";
+            software_deps_cond_div.appendChild(label3);
 
             var users_cond_div = document.getElementById("users_cond");
             var users_label = document.createElement("label");
             var users = {{ users_list | safe | escape }};
-            users_label.innerHTML = "<h4>Users selected</h4>" + "<pre>" + JSON.stringify(users, null, 2) + "</pre>";
+            users_label.innerHTML = "<b>Software configuration selected</b><br><br>";
             users_cond_div.appendChild(users_label);
+            var label4 = document.createElement("label");
+            label4.innerHTML = "<details><summary>JSON details</summary><p><pre>" + JSON.stringify(users, null, 2) + "</pre></p></details>";
+            users_cond_div.appendChild(label4);
         }
     </script>
 
@@ -263,22 +261,22 @@
   {% ifnotequal application "" %}
   <br><br>
   <hr>
-  <div>
-    <div id="search_condition">
-    </div>
 
-    <div id="application_cond">
+  <div class="well">
+    <div class="form-group col" id="search_condition">
     </div>
-
-    <div id="machine_deps_cond">
-    </div>
-
-    <div id="software_deps_cond">
-    </div>
-
-    <div id="users_cond">
+    <div class="row">
+      <div class="form-group col" id="application_cond">
+      </div>
+      <div class="form-group col" id="machine_deps_cond">
+      </div>
+      <div class="form-group col" id="software_deps_cond">
+      </div>
+      <div class="form-group col" id="users_cond">
+      </div>
     </div>
   </div>
+
   <script type="text/javascript">
       UpdateCond();
   </script>

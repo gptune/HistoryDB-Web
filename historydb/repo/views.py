@@ -42,6 +42,8 @@ class Dashboard(TemplateView):
 
             search_data = ast.literal_eval(request.GET.get("search_data", ""))
 
+            application_info = historydb.load_application_info(application_name = application)
+
             if "func_eval" in search_data:
                 perf_data = historydb.load_func_eval_filtered(application_name = application,
                         machine_deps_list = machine_deps_list,
@@ -106,7 +108,7 @@ class Dashboard(TemplateView):
                 current_page_model_data = 0
 
             context = {
-                    "application_info" : json.dumps({"application":application}),
+                    "application_info" : json.dumps(application_info),
                     "application" : application,
                     "applications_avail" : applications_avail,
                     "perf_data" : perf_data_web,
@@ -195,6 +197,10 @@ class Dashboard(TemplateView):
 
         application = request.POST["application"]
 
+        application_info = historydb.load_application_info(application_name = application)
+        print ("APPLICATION_INFO")
+        print (application_info)
+
         machine_deps_list = []
         post_values = request.POST.getlist('machine_deps_list')
         for i in range(len(post_values)):
@@ -278,7 +284,7 @@ class Dashboard(TemplateView):
             current_page_model_data = 0
 
         context = {
-                "application_info" : json.dumps({"application":application}),
+                "application_info" : json.dumps(application_info),
                 "applications_avail" : applications_avail,
                 "application" : application,
                 "perf_data" : perf_data_web,
@@ -386,9 +392,10 @@ class Export(TemplateView):
         users_list = json.loads(request.GET.get("users_list", "{}"))
 
         historydb = HistoryDB_MongoDB()
-        perf_data = historydb.load_func_eval(application_name = application,
+        perf_data = historydb.load_func_eval_filtered(application_name = application,
                 machine_deps_list = machine_deps_list,
-                software_deps_list = software_deps_list)
+                software_deps_list = software_deps_list,
+                users_list = users_list)
 
         context = { "perf_data" : perf_data, }
 

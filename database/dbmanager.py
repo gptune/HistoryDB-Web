@@ -385,6 +385,12 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_list
 
+    def load_application_info(self, application_name, **kwargs):
+        collection = self.db[application_name]
+        application_info = collection.find({"document_type":{"$eq":"application_info"}})[0]
+        application_info["_id"] = str(application_info["_id"])
+        return application_info
+
     def get_applications_avail(self, **kwargs):
         return self.db.list_collection_names()
 
