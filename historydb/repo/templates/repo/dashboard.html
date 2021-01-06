@@ -16,16 +16,17 @@
     <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
 
     <script type = "text/JavaScript">
+        function ShowWindow() {
+            alert ("asdf");
+        }
+
         function UpdateDeps() {
             var application_var = document.getElementById("applicationVal");
             var application_name = application_var.options[application_var.selectedIndex].value;
+
             var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
             var machine_deps_div = document.getElementById("machine_deps");
-            machine_deps_div.innerHTML = "";
-            var machine_deps_label = document.createElement("label")
-            machine_deps_label.appendChild(document.createTextNode("Available Machine Configurations"));
-            machine_deps_div.appendChild(machine_deps_label);
-            machine_deps_div.appendChild(document.createElement('br'));
+            machine_deps_div.innerHTML = "<b>Available Machine Configurations</b><br>";
             for (i=0; i<machine_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -34,7 +35,12 @@
                 machine_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
+                label.innerHTML = "&nbsp;" + machine_deps_avail[application_name][i]["machine"] + " (" 
+                    + machine_deps_avail[application_name][i]["nodes"] + " nodes; " +
+                    + machine_deps_avail[application_name][i]["cores"] + " cores" +
+                    ")";
+
+                //label.innerHTML = "<pre>" + JSON.stringify(machine_deps_avail[application_name][i], null, 2) + "</pre>";
                 machine_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -44,12 +50,7 @@
 
             var software_deps_avail = {{ software_deps_avail | safe | escape }};
             var software_deps_div = document.getElementById("software_deps");
-            software_deps_div.innerHTML = "";
-            var software_deps_label = document.createElement("label");
-            software_deps_label.appendChild(document.createTextNode("Available Software Configurations"));
-            software_deps_div.appendChild(software_deps_label);
-            software_deps_div.appendChild(document.createElement("br"));
-
+            software_deps_div.innerHTML = "<b>Available Software Configurations</b><br>";
             for (i=0; i<software_deps_avail[application_name].length; i++) {
                 var x = document.createElement("input");
                 x.setAttribute("type", "checkbox");
@@ -58,7 +59,7 @@
                 software_deps_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(software_deps_avail[application_name][i], null, 2) + "</pre>";
+                label.innerHTML = "&nbsp;configuration " + (i+1);
                 software_deps_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -68,11 +69,7 @@
 
             var users_avail = {{ users_avail | safe | escape }};
             var users_div = document.getElementById("users_deps");
-            users_div.innerHTML = "";
-            var users_label = document.createElement("label");
-            users_label.appendChild(document.createTextNode("Available User List"));
-            users_div.appendChild(users_label);
-            users_div.appendChild(document.createElement("br"));
+            users_div.innerHTML = "<b>Available User List</b><br>";
 
             for (i=0; i<users_avail[application_name].length; i++) {
                 var x = document.createElement("input");
@@ -82,7 +79,7 @@
                 users_div.appendChild(x);
 
                 var label = document.createElement("label");
-                label.innerHTML = "<pre>" + JSON.stringify(users_avail[application_name][i], null, 2) + "</pre>"
+                label.innerHTML = "&nbsp;" + users_avail[application_name][i]["name"];
                 users_div.appendChild(label);
 
                 var linebreak = document.createElement("br");
@@ -91,18 +88,15 @@
             }
 
             var search_data_div = document.getElementById("search_data");
-            search_data_div.innerHTML = "";
-            var search_data_label = document.createElement("label");
-            search_data_label.appendChild(document.createTextNode("Search data"));
-            search_data_div.appendChild(search_data_label);
-            search_data_div.appendChild(document.createElement("br"));
+            search_data_div.innerHTML = "<b>Search Data</b><br>";
+
             var x1 = document.createElement("input");
             x1.setAttribute("type", "checkbox");
             x1.setAttribute("value", "func_eval");
             x1.setAttribute("name", "search_data");
             search_data_div.appendChild(x1);
             var label1 = document.createElement("label");
-            label1.innerHTML = "func_eval";
+            label1.innerHTML = "&nbsp; func_eval";
             search_data_div.appendChild(label1);
             var linebreak1 = document.createElement("br");
             linebreak1.appendChild(document.createTextNode("func_eval"));
@@ -114,7 +108,7 @@
             x2.setAttribute("name", "search_data");
             search_data_div.appendChild(x2);
             var label2 = document.createElement("label");
-            label2.innerHTML = "model_data";
+            label2.innerHTML = "&nbsp; model_data";
             search_data_div.appendChild(label2);
             var linebreak2 = document.createElement("br");
             linebreak2.appendChild(document.createTextNode("model_data"));
@@ -227,7 +221,7 @@
       <h2 style="margin-top: 0">Search Filter</h2>
       <div class="row">
         <div class="form-group col">
-            Application<br>
+            <b>Application</b><br>
             <select name="application" id="applicationVal" onChange = "UpdateDeps();">
               <option value="" label=" "selected>Select application</option>
               {% if applications_avail %}
