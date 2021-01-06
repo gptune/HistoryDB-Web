@@ -6,35 +6,31 @@
 <div class="starter-template">
   <h1>GPTune History Database</h1>
   <br>
-  <p class="lead"><a href="https://github.com/gptune/GPTune">GPTune</a> is an autotuning framework that relies on multitask and transfer learnings to help solve the underlying black-box optimization problem. GPTune is part of the <a href="https://xsdk.info/ecp/">xSDK4ECP</a> effort supported by the Exascale Computing Project (ECP).
+  <p class="lead">
+  <a href="https://github.com/gptune/GPTune">GPTune</a> is an autotuning framework which is designed to tune high-performance application codes as "black-boxes", running them for carefully chosen tuning parameter values and building a performance model based on the measured performance.
+  <a href="https://github.com/gptune/GPTune/tree/history_db">GPTune History Database</a> allows users to save and re-use their performance data to reduce the cost of the expensive black-box objective function (i.e. run application and measure the performance on a parallel machine).
   <br><br>
-  GPTune provides a history database which allows users to save and re-use their performance data (e.g. function evaluation data, trained surrogate models) to relieve the issue of the expensive black-box objective function (i.e. run application and measure the performance on a parallel machine).
-  <br><br>
-  To harness the power of crowdtuning, the GPTune history database can leverage a shared public database provided by this webpage, where users can store their performance data or download the performance data provided by other users.
-  With the shared database, everyone can benefit from (expensive) runs of widely used high-performance computing codes.
   </p>
-</div>
 
-<div class="starter-template">
-    <h2>Development Team and Facility</h2>
-    <br>
+  <h1>Harness the Power of Crowdtuning</h1>
+  <br>
+  <p class="lead">
+  The history database can leverage a shared public database provided by this webpage, where users can store their performance data or download the performance data provided by other users.
+  With the shared database, everyone can benefit from (expensive) runs of widely used high-performance computing codes.
+  This website provides <a href="{% url 'repo:dashboard' %}">a nice dashboard</a> to search and download performance data from the public repository and <a href="{% url 'documentation:index' %}">an online user manual</a> to learn how to use the database.
+  <br><br>
+  </p>
+
+  <p class="lead">
+  GPTune is a joint research project between <a href="https://lbl.gov">Lawrence Berkeley National Laboratory</a> and <a href="https://berkeley.edu">University of California at Berkeley</a>, and is part of the <a href="https://xsdk.info/ecp/">xSDK4ECP</a> effort supported by the Exascale Computing Project (ECP).
+  <div class="starter-template">
     <a href="https://www.berkeley.edu/"><img src="{% static 'images/UCBerkeleyLogo.png' %}" width=200></a>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://www.lbl.gov/"><img src="{% static 'images/BerkeleyLabLogo.png' %}" width=200></a>
     &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://www.nersc.gov/"><img src="{% static 'images/NERSCLogo.jpg' %}" width=200></a>
-</div>
-
-<div class="starter-template">
-  <h2>Acknowledgements</h2>
-  <br>
-  <p class="lead">GPTune Copyright (c) 2019, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Dept. of Energy) and the University of California, Berkeley. All rights reserved.
-  <br>
-  If you have questions about your rights to use or distribute this software, please contact Berkeley Lab's Intellectual Property Office at IPO@lbl.gov.
-  <br>
-  NOTICE. This Software was developed under funding from the U.S. Department of Energy and the U.S. Government consequently retains certain rights. As such, the U.S. Government has been granted for itself and others acting on its behalf a paid-up, nonexclusive, irrevocable, worldwide license in the Software to reproduce, distribute copies to the public, prepare derivative works, and perform publicly and display publicly, and to permit other to do so.
+  </div>
   </p>
-  <br><br>
 </div>
 
 {% endblock %}

@@ -63,6 +63,9 @@
       <li class="nav-item">
           <a class="nav-link" href="{% url 'account:login' %}">Login</a>
       </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'main:acknowledgement' %}">Acknowledgement</a>
+      </li>
     </ul>
 
     {% if user.is_authenticated %}

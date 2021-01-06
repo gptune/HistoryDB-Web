@@ -9,5 +9,6 @@ from django.contrib import admin
 app_name = "main"
 urlpatterns = [
     path('', views.index, name='index'),
+    path('acknowledgement', views.acknowledgement, name='acknowledgement'),
     path('base', views.base, name='base'),
 ]

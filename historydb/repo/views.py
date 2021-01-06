@@ -5,10 +5,14 @@ from django.views import View
 from django.http import HttpResponse
 from django.http import JsonResponse
 
-def carousel(request):
-    return render(request, 'repo/carousel.html')
-
 from django.views.generic import TemplateView
+
+from datetime import datetime
+import os
+import json
+from django.forms.models import model_to_dict
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 
 class Dashboard(TemplateView):
     def get(self, request, **kwargs):
@@ -124,9 +128,6 @@ class Dashboard(TemplateView):
                     "machine_deps_list" : json.dumps(machine_deps_list),
                     "software_deps_list" : json.dumps(software_deps_list),
                     "users_list" : json.dumps(users_list),
-                    #"machine_deps_avail" : json.dumps({"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}),
-                    #"software_deps_avail" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
-                    #"users_avail" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
                     "current_page" : current_page,
                     "search_data" : json.dumps(search_data)
                     }
@@ -141,12 +142,6 @@ class Dashboard(TemplateView):
             historydb = HistoryDB_MongoDB()
 
             print ("APPLICATION NOT GIVEN: ", application)
-
-            #applications_avail = historydb.get_applications_avail()
-            #machine_deps_avail = historydb.get_machine_deps_avail()
-            #print (machine_deps_avail)
-            #software_deps_avail = historydb.get_software_deps_avail()
-            #users_avail = historydb.get_users_avail()
 
             perf_data_web = []
             num_func_eval = 0
@@ -306,79 +301,6 @@ class Dashboard(TemplateView):
 
         return render(request, 'repo/dashboard.html', context)
 
-def display(request):
-    import os
-    import json
-
-    json_path = "../json"
-    libraries_avail = os.listdir("../json")
-    print (libraries_avail)
-
-    applications_avail = []
-
-    perf_data = {}
-
-    for library_avail in libraries_avail:
-        perf_data[library_avail] = {}
-
-        library_json_path = json_path + "/" + library_avail
-        for application in os.listdir(library_json_path):
-            applications_avail.append(application.split('.')[0])
-            application_path = library_json_path + "/" + application
-            print (application_path)
-            with open(application_path) as f_in:
-                json_data = json.loads(f_in.read())
-                func_eval_data = json_data["func_eval"]
-
-                perf_data[library_avail][application.split('.')[0]] = func_eval_data
-
-    num_func_eval = len(perf_data['ScaLAPACK']['PDGEQRF'])
-    print ("num_func_eval: ", num_func_eval)
-    num_evals_per_page = 15
-    if (num_func_eval%num_evals_per_page) == 0:
-        num_pages = num_func_eval/num_evals_per_page
-    else:
-        num_pages = int(num_func_eval/num_evals_per_page)+1
-    print ("num_pages: ", num_pages)
-
-    current_page = 0
-    start_index = (current_page)*num_evals_per_page
-    end_index = (current_page+1)*num_evals_per_page
-    if end_index > num_func_eval:
-        end_index = num_func_eval
-
-    perf_data_web = perf_data['ScaLAPACK']['PDGEQRF'][start_index:end_index]
-    print (perf_data_web)
-
-    context = {
-            "libraries_avail" : libraries_avail,
-            "applications_avail" : applications_avail,
-            "perf_data" : perf_data_web,
-            "num_func_eval" : num_func_eval,
-            "num_pages" : range(num_pages),
-            "current_page" : current_page
-            }
-
-    return render(request, 'repo/display.html', context)
-
-from datetime import datetime
-import os
-import json
-from django.forms.models import model_to_dict
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
-
-def query(request, perf_data_uid):
-    import os
-    import json
-    from dbmanager import HistoryDB_MongoDB
-
-    historydb = HistoryDB_MongoDB()
-    perf_data = historydb.load_perf_data_by_uid(perf_data_uid)
-    context = { "perf_data" : perf_data, }
-
-    return render(request, 'repo/detail.html', context)
-
 class Export(TemplateView):
 
     def get(self, request, **kwargs):
@@ -401,9 +323,6 @@ class Export(TemplateView):
 
         return render(request, 'repo/export.html', context)
 
-
-########
-
 class Examples(TemplateView):
     def get(self, request, **kwargs):
         print ("======== Examples GET ========")
@@ -414,9 +333,7 @@ class Examples(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        #applications_avail = historydb.get_applications_avail()
         applications_avail_per_library = historydb.get_applications_avail_per_library()
-        #print (applications_avail_per_library)
         machine_deps_avail = historydb.get_machine_deps_avail()
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
@@ -532,5 +449,17 @@ class Examples(TemplateView):
 
         return render(request, 'repo/dashboard.html', context)
 
+def query(request, perf_data_uid):
+    import os
+    import json
+    from dbmanager import HistoryDB_MongoDB
+
+    historydb = HistoryDB_MongoDB()
+    perf_data = historydb.load_perf_data_by_uid(perf_data_uid)
+    context = { "perf_data" : perf_data, }
+
+    return render(request, 'repo/detail.html', context)
+
 def base(request):
     return render(request, 'repo/base.html')
+

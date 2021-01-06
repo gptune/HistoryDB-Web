@@ -9,8 +9,6 @@
     <meta name="generator" content="Jekyll v4.1.1">
     <title>Carousel Template · Bootstrap</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/carousel/">
-
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
@@ -114,13 +112,6 @@
         }
 
         function UpdateCond() {
-            var cond_div = document.getElementById("search_condition");
-            cond_div.innerHTML = "";
-
-            var header_label = document.createElement("label");
-            header_label.innerHTML = "<h2> Search Condition </h2>";
-            cond_div.appendChild(header_label);
-
             var application_cond_div = document.getElementById("application_cond");
             var application_label = document.createElement("label");
             application_cond_div.appendChild(application_label);
@@ -176,8 +167,6 @@
         }
       }
     </style>
-    <!-- Custom styles for this template -->
-    <link href="carousel.css" rel="stylesheet">
   </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -261,10 +250,8 @@
   {% ifnotequal application "" %}
   <br><br>
   <hr>
-
   <div class="well">
-    <div class="form-group col" id="search_condition">
-    </div>
+    <h2>Search Condition</h2>
     <div class="row">
       <div class="form-group col" id="application_cond">
       </div>
