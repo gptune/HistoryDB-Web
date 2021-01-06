@@ -163,7 +163,7 @@ class HistoryDB_JSON(dict):
                 func_eval_data = json_data["func_eval"]
                 for func_eval in func_eval_data:
                     try:
-                        users = func_eval["user"]
+                        users = func_eval["user_info"]
                     except:
                         users = "placeholder"
                     if users not in users_avail_givenapp:
@@ -203,7 +203,7 @@ class HistoryDB_JSON(dict):
             for func_eval in func_eval_list:
                 machine_deps_str = str(func_eval["machine_deps"])
                 software_deps_str = str(func_eval["compile_deps"])
-                user_str = str(func_eval["user"])
+                user_str = str(func_eval["user_info"])
                 if (machine_deps_str in machine_deps_str_list):
                    if (software_deps_str in software_deps_str_list):
                        if (user_str in users_str_list):
@@ -272,7 +272,7 @@ class HistoryDB_JSON(dict):
                 print ("uid already exists: ", uid)
                 continue
             else:
-                func_eval["user"] = user_info
+                func_eval["user_info"] = user_info
                 json_data["func_eval"].append(func_eval)
 
         with open(self.json_path+"/"+application_name+".json", "w") as f_out:
@@ -339,7 +339,7 @@ class HistoryDB_JSON(dict):
         for item in model_data_in:
             uid = item["uid"]
             if not uid in uid_exist:
-                item["user"] = user_info
+                item["user_info"] = user_info
                 json_data["model_data"].append(item)
 
         with open(self.json_path+"/"+application_name+".json", "w") as f_out:
@@ -352,38 +352,113 @@ class HistoryDB_MongoDB(dict):
 
     def __init__(self, **kwargs):
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        #print (self.client.list_database_names())
+        print ("DB NAMES: ", self.client.list_database_names())
         if not "gptune-db" in self.client.list_database_names():
             print ("the database not exist.")
         self.db = self.client["gptune-db"]
         print (self.db)
 
-    def load_json_data(self, application, **kwargs):
-        return None
+    def load_json_data(self, application_name, **kwargs):
+        json_data = {}
+        json_data["name"] = application_name
+        json_data["application_info"] = []
+        json_data["model_data"] = []
+        json_data["func_eval"] = []
+
+        collection = self.db[application_name]
+        for document in collection.find():
+            document["_id"] = str(document["_id"])
+            if document["document_type"] == "application_info":
+                json_data["application_info"].append(document)
+            elif document["document_type"] == "model_data":
+                json_data["model_data"].append(document)
+            elif document["document_type"] == "func_eval":
+                json_data["func_eval"].append(document)
+
+        return json_data
 
     def load_model_data(self, application_name, **kwargs):
-        return None
+        model_data_list = []
 
-    def load_func_eval_by_path(self, json_path, **kwargs):
-        return None
+        collection = self.db[application_name]
+        model_data_list = collection.find({"document_type":{"$eq":"model_data"}})
 
-    def load_model_data_by_path(self, json_path, **kwargs):
-        return None
+        return model_data_list
 
     def get_applications_avail(self, **kwargs):
-        return None
+        return self.db.list_collection_names()
 
     def get_applications_avail_per_library(self, **kwargs):
-        return None
+        applications_avail_per_library = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            application_info = application_db.find({"document_type":{"$eq":"application_info"}})
+            application_library = application_info["library"]
+            if not application_library in applications_avail_per_library:
+                applications_avail_per_library[application_library] = []
+            application_name = application_info["name"]
+            applications_avail_per_library[application_library].append(application_name)
+
+        return applications_avail_per_library
 
     def get_machine_deps_avail(self, **kwargs):
-        return None
+        machine_deps_avail = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            machine_deps_avail_givenapp = []
+            machine_deps_avail_givenapp_str = []
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                machine_deps = func_eval["machine_deps"]
+                machine_deps_str = str(func_eval["machine_deps"])
+                if machine_deps_str not in machine_deps_avail_givenapp_str:
+                    machine_deps_avail_givenapp.append(machine_deps)
+                    machine_deps_avail_givenapp_str.append(machine_deps_str)
+            machine_deps_avail[application_name] = machine_deps_avail_givenapp
+
+        return machine_deps_avail
 
     def get_software_deps_avail(self, **kwargs):
-        return None
+        software_deps_avail = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            software_deps_avail_givenapp = []
+            software_deps_avail_givenapp_str = []
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                software_deps = func_eval["compile_deps"]
+                software_deps_str = str(func_eval["compile_deps"])
+                if software_deps_str not in software_deps_avail_givenapp_str:
+                    software_deps_avail_givenapp.append(software_deps)
+                    software_deps_avail_givenapp_str.append(software_deps_str)
+            software_deps_avail[application_name] = software_deps_avail_givenapp
+
+        return software_deps_avail
 
     def get_users_avail(self, **kwargs):
-        return None
+        users_avail = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            users_avail_givenapp = []
+            users_avail_givenapp_str = []
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                users = func_eval["user_info"]
+                users_str = str(func_eval["user_info"])
+                if users_str not in users_avail_givenapp_str:
+                    users_avail_givenapp.append(users)
+                    users_avail_givenapp_str.append(users_str)
+            users_avail[application_name] = users_avail_givenapp
+
+        return users_avail
 
     def load_func_eval_filtered(self,
             application_name,
@@ -391,35 +466,95 @@ class HistoryDB_MongoDB(dict):
             software_deps_list,
             users_list,
             **kwargs):
-        return None
+        func_eval_filtered = []
+
+        machine_deps_str_list = []
+        software_deps_str_list = []
+        users_str_list = []
+        for i in range(len(machine_deps_list)):
+            machine_deps_str_list.append(str(machine_deps_list[i]))
+        for i in range(len(software_deps_list)):
+            software_deps_str_list.append(str(software_deps_list[i]))
+        for i in range(len(users_list)):
+            users_str_list.append(str(users_list[i]))
+
+        print ("machine_deps_str_list: ", machine_deps_str_list)
+        print ("software_deps_str_list: ", software_deps_str_list)
+        print ("users_str_list: ", users_str_list)
+
+        application_db = self.db[application_name]
+        func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+
+        for func_eval in func_eval_list:
+            machine_deps_str = str(func_eval["machine_deps"])
+            software_deps_str = str(func_eval["compile_deps"])
+            user_str = str(func_eval["user_info"])
+            if (machine_deps_str in machine_deps_str_list):
+               if (software_deps_str in software_deps_str_list):
+                   if (user_str in users_str_list):
+                        func_eval_filtered.append(func_eval)
+
+        return func_eval_filtered
 
     def load_func_eval_by_uid(self, func_eval_uid):
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                if func_eval["uid"] == func_eval_uid:
+                    return func_eval
+
         return None
 
     def load_model_data_by_uid(self, model_data_uid):
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+            for model_data in model_data_list:
+                if model_data["uid"] == model_data_uid:
+                    return model_data
+
         return None
 
     def load_perf_data_by_uid(self, perf_data_uid):
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                if func_eval["uid"] == func_eval_uid:
+                    return func_eval
+            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+            for model_data in model_data_list:
+                if model_data["uid"] == model_data_uid:
+                    return model_data
+
         return None
 
     def upload_func_eval(self, user_info, application_name, perf_file_path):
-        print ("upload_func_eval")
+        print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
-        print ("collist")
-        print (collist)
+        print ("Collection List: ", collist)
         if not application_name in collist:
-            print (application_name + " is not exist in the database; create the collection")
+            print (application_name + " is not exist in the database; create one.")
         collection = self.db[application_name]
 
         if not application_name in collist:
-            collection.insert({"document_type":"application_info", "name": application_name})
+            collection.insert_one({
+                "document_type":"application_info",
+                "name": application_name
+                })
 
         with open(perf_file_path, "r") as f_in:
             json_data = json.loads(f_in.read())
             func_eval_list = json_data["func_eval"]
             for func_eval in func_eval_list:
+                func_eval["document_type"] = "func_eval"
+                func_eval["user_info"] = user_info
                 if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
-                    collection.insert(func_eval)
+                    collection.insert_one(func_eval)
                 else:
                     print ("func_eval: " + func_eval["uid"] + " already exist")
 
@@ -431,16 +566,76 @@ class HistoryDB_MongoDB(dict):
             software_deps_list,
             users_list,
             **kwargs):
-        return None
+        model_data_filtered = []
+
+        machine_deps_str_list = []
+        software_deps_str_list = []
+        users_str_list = []
+        for i in range(len(machine_deps_list)):
+            machine_deps_str_list.append(str(machine_deps_list[i]))
+        for i in range(len(software_deps_list)):
+            software_deps_str_list.append(str(software_deps_list[i]))
+        for i in range(len(users_list)):
+            users_str_list.append(str(users_list[i]))
+
+        print ("machine_deps_str_list: ", machine_deps_str_list)
+        print ("software_deps_str_list: ", software_deps_str_list)
+        print ("users_str_list: ", users_str_list)
+
+        application_db = self.db[application_name]
+        model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+
+        for model_data in model_data_list:
+            func_eval_sample = self.load_func_eval_by_uid(model_data["func_eval"][0])
+            machine_deps_str = str(func_eval_sample["machine_deps"])
+            software_deps_str = str(func_eval_sample["compile_deps"])
+            user_str = str(func_eval_sample["user_info"])
+            if (machine_deps_str in machine_deps_str_list):
+               if (software_deps_str in software_deps_str_list):
+                   if (user_str in users_str_list):
+                        model_data_filtered.append(model_data)
+
+        return model_data_filtered
 
     def upload_model_data(self, user_info, application_name, perf_file_path):
+        print ("Upload surrogate model data")
+        collist = self.db.list_collection_names()
+        print ("Collection List: ", collist)
+        if not application_name in collist:
+            print (application_name + " is not exist in the database; create one.")
+        collection = self.db[application_name]
+
+        if not application_name in collist:
+            collection.insert_one({
+                "document_type":"application_info",
+                "name": application_name
+                })
+
+        with open(perf_file_path, "r") as f_in:
+            json_data = json.loads(f_in.read())
+            model_data_list = json_data["model_data"]
+            for model_data in model_data_list:
+                model_data["document_type"] = "model_data"
+                model_data["user_info"] = user_info
+                if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
+                    collection.insert_one(model_data)
+                else:
+                    print ("model_data: " + model_data["uid"] + " already exist")
+
         return None
 
 if __name__ == "__main__":
     import sys
+    import json
 
     print (sys.argv[1])
     historydb = HistoryDB_MongoDB()
     historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+
+    json_data = historydb.load_json_data("PDGEQRF")
+    with open("asdf.json", "w") as f_out:
+        json.dump(json_data, f_out, indent=2)
+
     #historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
     #print (historydb.load_func_eval("PDGEQRF"))

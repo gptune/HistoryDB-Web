@@ -17,8 +17,8 @@ class Dashboard(TemplateView):
         import os
         import json
 
-        from dbmanager import HistoryDB_JSON
-        historydb = HistoryDB_JSON()
+        from dbmanager import HistoryDB_MongoDB
+        historydb = HistoryDB_MongoDB()
 
         applications_avail = historydb.get_applications_avail()
         machine_deps_avail = historydb.get_machine_deps_avail()
@@ -37,8 +37,8 @@ class Dashboard(TemplateView):
 
             import os
             import json
-            from dbmanager import HistoryDB_JSON
-            historydb = HistoryDB_JSON()
+            from dbmanager import HistoryDB_MongoDB
+            historydb = HistoryDB_MongoDB()
 
             perf_data = historydb.load_func_eval_filtered(application_name = application,
                     machine_deps_list = machine_deps_list,
@@ -124,8 +124,8 @@ class Dashboard(TemplateView):
             import os
             import json
 
-            from dbmanager import HistoryDB_JSON
-            historydb = HistoryDB_JSON()
+            from dbmanager import HistoryDB_MongoDB
+            historydb = HistoryDB_MongoDB()
 
             print ("APPLICATION NOT GIVEN: ", application)
 
@@ -171,8 +171,8 @@ class Dashboard(TemplateView):
         import os
         import json
 
-        from dbmanager import HistoryDB_JSON
-        historydb = HistoryDB_JSON()
+        from dbmanager import HistoryDB_MongoDB
+        historydb = HistoryDB_MongoDB()
 
         applications_avail = historydb.get_applications_avail()
         print (applications_avail)
@@ -352,9 +352,9 @@ from django.urls import reverse_lazy
 def query(request, perf_data_uid):
     import os
     import json
-    from dbmanager import HistoryDB_JSON
+    from dbmanager import HistoryDB_MongoDB
 
-    historydb = HistoryDB_JSON()
+    historydb = HistoryDB_MongoDB()
     perf_data = historydb.load_perf_data_by_uid(perf_data_uid)
     context = { "perf_data" : perf_data, }
 
@@ -365,14 +365,14 @@ class Export(TemplateView):
     def get(self, request, **kwargs):
         import os
         import json
-        from dbmanager import HistoryDB_JSON
+        from dbmanager import HistoryDB_MongoDB
 
         application = request.GET.get("application", "")
         machine_deps_list = json.loads(request.GET.get("machine_deps_list", "{}"))
         software_deps_list = json.loads(request.GET.get("software_deps_list", "{}"))
         users_list = json.loads(request.GET.get("users_list", "{}"))
 
-        historydb = HistoryDB_JSON()
+        historydb = HistoryDB_MongoDB()
         perf_data = historydb.load_func_eval(application_name = application,
                 machine_deps_list = machine_deps_list,
                 software_deps_list = software_deps_list)
@@ -390,9 +390,9 @@ class Examples(TemplateView):
 
         import os
         import json
-        from dbmanager import HistoryDB_JSON
+        from dbmanager import HistoryDB_MongoDB
 
-        historydb = HistoryDB_JSON()
+        historydb = HistoryDB_MongoDB()
 
         #applications_avail = historydb.get_applications_avail()
         applications_avail_per_library = historydb.get_applications_avail_per_library()
@@ -413,9 +413,9 @@ class Examples(TemplateView):
     def post(self, request, **kwargs):
         import os
         import json
-        from dbmanager import HistoryDB_JSON
+        from dbmanager import HistoryDB_MongoDB
 
-        historydb = HistoryDB_JSON()
+        historydb = HistoryDB_MongoDB()
 
         application = request.POST["application"]
 
