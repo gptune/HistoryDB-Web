@@ -394,7 +394,8 @@ class HistoryDB_MongoDB(dict):
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
             application_db = self.db[application_name]
-            application_info = application_db.find({"document_type":{"$eq":"application_info"}})
+            application_info_list = application_db.find({"document_type":{"$eq":"application_info"}})
+            application_info = application_info_list[0] # assume there is one document for application_info
             application_library = application_info["library"]
             if not application_library in applications_avail_per_library:
                 applications_avail_per_library[application_library] = []
@@ -533,7 +534,7 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, user_info, application_name, perf_file_path):
+    def upload_func_eval(self, user_info, application_name, application_library, perf_file_path):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
@@ -544,7 +545,14 @@ class HistoryDB_MongoDB(dict):
         if not application_name in collist:
             collection.insert_one({
                 "document_type":"application_info",
-                "name": application_name
+                "name": application_name,
+                "library": application_library
+                })
+        elif collection.count_documents({}) == 0:
+            collection.insert_one({
+                "document_type":"application_info",
+                "name": application_name,
+                "library": application_library
                 })
 
         with open(perf_file_path, "r") as f_in:
@@ -597,7 +605,7 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_filtered
 
-    def upload_model_data(self, user_info, application_name, perf_file_path):
+    def upload_model_data(self, user_info, application_name, application_library, perf_file_path):
         print ("Upload surrogate model data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
@@ -608,7 +616,14 @@ class HistoryDB_MongoDB(dict):
         if not application_name in collist:
             collection.insert_one({
                 "document_type":"application_info",
-                "name": application_name
+                "name": application_name,
+                "library": application_library
+                })
+        elif collection.count_documents({}) == 0:
+            collection.insert_one({
+                "document_type":"application_info",
+                "name": application_name,
+                "library": application_library
                 })
 
         with open(perf_file_path, "r") as f_in:
@@ -630,8 +645,8 @@ if __name__ == "__main__":
 
     print (sys.argv[1])
     historydb = HistoryDB_MongoDB()
-    historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
-    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
+    historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", "ScaLAPACK", sys.argv[1])
+    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", "ScaLAPACK", sys.argv[1])
 
     json_data = historydb.load_json_data("PDGEQRF")
     with open("asdf.json", "w") as f_out:
