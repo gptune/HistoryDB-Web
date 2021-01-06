@@ -288,7 +288,7 @@
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -485,7 +485,7 @@
         <td>
         {% for page_num in num_pages %}
         <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num current_page %}
           [<b>{{ page_num }}</b>]
           {% else %}
@@ -509,7 +509,7 @@
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -689,7 +689,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

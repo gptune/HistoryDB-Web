@@ -40,60 +40,70 @@ class Dashboard(TemplateView):
             from dbmanager import HistoryDB_MongoDB
             historydb = HistoryDB_MongoDB()
 
-            perf_data = historydb.load_func_eval_filtered(application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list)
+            search_data = ast.literal_eval(request.GET.get("search_data", ""))
 
-            num_func_eval = len(perf_data)
-            print ("num_func_eval: ", num_func_eval)
-            num_evals_per_page = 15
-            if (num_func_eval%num_evals_per_page) == 0:
-                num_pages = num_func_eval/num_evals_per_page
+            if "func_eval" in search_data:
+                perf_data = historydb.load_func_eval_filtered(application_name = application,
+                        machine_deps_list = machine_deps_list,
+                        software_deps_list = software_deps_list,
+                        users_list = users_list)
+                num_func_eval = len(perf_data)
+                print ("num_func_eval: ", num_func_eval)
+                num_evals_per_page = 15
+                if (num_func_eval%num_evals_per_page) == 0:
+                    num_pages = num_func_eval/num_evals_per_page
+                else:
+                    num_pages = int(num_func_eval/num_evals_per_page)+1
+                print ("num_pages: ", num_pages)
+                if (num_pages == 0):
+                    num_pages = 1
+                current_page = int(request.GET.get("current_page", 0))
+                print ("current_page: ", current_page)
+                start_index = (current_page)*num_evals_per_page
+                end_index = (current_page+1)*num_evals_per_page
+                if end_index > num_func_eval:
+                    end_index = num_func_eval
+                perf_data_web = perf_data[start_index:end_index]
+                for i in range(len(perf_data_web)):
+                    perf_data_web[i]["id"] = start_index+i
+                print (perf_data_web)
             else:
-                num_pages = int(num_func_eval/num_evals_per_page)+1
-            print ("num_pages: ", num_pages)
-            if (num_pages == 0):
-                num_pages = 1
+                perf_data_web = []
+                num_func_eval = 0
+                num_pages = 0
+                current_page = 0
 
-            current_page = int(request.GET.get("current_page", 0))
-            print ("current_page: ", current_page)
-            start_index = (current_page)*num_evals_per_page
-            end_index = (current_page+1)*num_evals_per_page
-            if end_index > num_func_eval:
-                end_index = num_func_eval
-
-            perf_data_web = perf_data[start_index:end_index]
-            for i in range(len(perf_data_web)):
-                perf_data_web[i]["id"] = start_index+i
-
-            print (perf_data_web)
-
-            model_data = historydb.load_model_data_filtered(
-                    application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list)
-            num_model_data = len(model_data)
-            num_model_data_per_page = 15
-            if (num_model_data %num_model_data_per_page) == 0:
-                num_pages_model_data = num_model_data/num_model_data_per_page
+            if "model_data" in search_data:
+                model_data = historydb.load_model_data_filtered(
+                        application_name = application,
+                        machine_deps_list = machine_deps_list,
+                        software_deps_list = software_deps_list,
+                        users_list = users_list)
+                num_model_data = len(model_data)
+                num_model_data_per_page = 15
+                if (num_model_data %num_model_data_per_page) == 0:
+                    num_pages_model_data = num_model_data/num_model_data_per_page
+                else:
+                    num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
+                if (num_pages_model_data == 0):
+                    num_pages_model_data = 1
+                current_page_model_data = int(request.GET.get("current_page_model_data", 0))
+                start_index_model_data = (current_page_model_data)*num_model_data_per_page
+                end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
+                if end_index_model_data > num_model_data:
+                    end_index_model_data = num_model_data
+                model_data_web = model_data[start_index_model_data:end_index_model_data]
+                for i in range(len(model_data_web)):
+                    model_data_web[i]["id"] = start_index_model_data+i
+                    model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
+                    model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
+                    model_data_web[i]["num_func_eval_per_task"] = \
+                            int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
             else:
-                num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
-            if (num_pages_model_data == 0):
-                num_pages_model_data = 1
-            current_page_model_data = int(request.GET.get("current_page_model_data", 0))
-            start_index_model_data = (current_page_model_data)*num_model_data_per_page
-            end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
-            if end_index_model_data > num_model_data:
-                end_index_model_data = num_model_data
-            model_data_web = model_data[start_index_model_data:end_index_model_data]
-            for i in range(len(model_data_web)):
-                model_data_web[i]["id"] = start_index_model_data+i
-                model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
-                model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
-                model_data_web[i]["num_func_eval_per_task"] = \
-                        int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
+                model_data_web = []
+                num_model_data = 0
+                num_pages_model_data = 0
+                current_page_model_data = 0
 
             context = {
                     "application_info" : json.dumps({"application":application}),
@@ -115,7 +125,8 @@ class Dashboard(TemplateView):
                     #"machine_deps_avail" : json.dumps({"PDGEQRF":["cori","nersc","3"],"ij":["cori","intel72"]}),
                     #"software_deps_avail" : json.dumps({"PDGEQRF":[str({"a":"a"}),"!","#"],"ij":[]}),
                     #"users_avail" : json.dumps({"PDGEQRF":["user1","user2"],"ij":["user3"]}),
-                    "current_page" : current_page
+                    "current_page" : current_page,
+                    "search_data" : json.dumps(search_data)
                     }
 
             return render(request, 'repo/dashboard.html', context)
@@ -162,7 +173,8 @@ class Dashboard(TemplateView):
                     "machine_deps_list" : json.dumps(machine_deps_avail),
                     "software_deps_list" : json.dumps(software_deps_avail),
                     "users_list" : json.dumps(users_avail),
-                    "current_page" : current_page
+                    "current_page" : current_page,
+                    "search_data" : json.dumps({})
                     }
 
             return render(request, 'repo/dashboard.html', context)
@@ -282,7 +294,8 @@ class Dashboard(TemplateView):
                 "users_avail" : json.dumps(users_avail),
                 "machine_deps_list" : json.dumps(machine_deps_list),
                 "software_deps_list" : json.dumps(software_deps_list),
-                "users_list" : json.dumps(users_list)
+                "users_list" : json.dumps(users_list),
+                "search_data" : json.dumps(search_data)
                 }
 
         return render(request, 'repo/dashboard.html', context)
@@ -506,7 +519,8 @@ class Examples(TemplateView):
                 "users_avail" : json.dumps(users_avail),
                 "machine_deps_list" : json.dumps(machine_deps_list),
                 "software_deps_list" : json.dumps(software_deps_list),
-                "users_list" : json.dumps(users_list)
+                "users_list" : json.dumps(users_list),
+                "search_data" : json.dumps(search_data)
                 }
 
         return render(request, 'repo/dashboard.html', context)
