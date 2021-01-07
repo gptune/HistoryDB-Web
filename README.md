@@ -3,19 +3,38 @@
 The web interface for the GPTune history database repository for development and debugging.
 The web framework is based on Django and uses Bootstrap for pretty webpages.
 
-## Prerequisite
+## Prerequisite and installation
 
 - Python (version higher than 3)
 - Django installed
-- MongoDB installed (although the current version has not integrated MongoDB yet)
-- markdown (pip install markdown)
+```
+python -m pip install django
+```
+- markdown installed
+```
+python -m pip install markdown
+```
+- pymongo installed
+```
+python -m pip install pymongo
+```
+- mongodb installed
+```
+$ sudo apt-get install -y wget
+$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+$ sudo apt-get install -y gnupg
+$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+$ echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+$ sudo apt-get update
+$ sudo apt-get install -y mongodb-org
+```
 
 - create your own Django secret key
 ```
 cd HistoryDB-Web
 $ python create\_new\_key.py
 ```
-- set SQLite DB
+- set SQLite DB for the Django project
 ```
 cd historydb
 $ python manage.py makemigrations
