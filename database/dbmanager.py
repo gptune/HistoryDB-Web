@@ -392,7 +392,21 @@ class HistoryDB_MongoDB(dict):
         return application_info
 
     def get_applications_avail(self, **kwargs):
-        return self.db.list_collection_names()
+        applications_avail = []
+
+        collist = self.db.list_collection_names()
+        for application_name in collist:
+            collection = self.db[application_name]
+            num_func_evals = collection.count_documents({"document_type":{"$eq":"func_eval"}})
+            if num_func_evals > 0:
+                application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
+                application_info = application_info_list[0] # assume there is one document for application_info
+                applications_avail.append(application_info)
+
+        print ("APPLICATIONS_AVAIL")
+        print (applications_avail)
+
+        return applications_avail
 
     def get_applications_avail_per_library(self, **kwargs):
         applications_avail_per_library = {}
@@ -645,5 +659,3 @@ if __name__ == "__main__":
     with open("asdf.json", "w") as f_out:
         json.dump(json_data, f_out, indent=2)
 
-    #historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", sys.argv[1])
-    #print (historydb.load_func_eval("PDGEQRF"))

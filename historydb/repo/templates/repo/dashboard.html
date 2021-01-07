@@ -229,7 +229,7 @@
               <option value="" label=" "selected>Select application</option>
               {% if applications_avail %}
                 {% for application_avail in applications_avail %}
-                <option value="{{ application_avail }}">{{ application_avail }}</option>
+                <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
                 </li>
                 {% endfor %}
               {% else %}
