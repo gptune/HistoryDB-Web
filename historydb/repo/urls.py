@@ -8,6 +8,8 @@ urlpatterns = [
     path('base/', views.base, name='base'),
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     path('examples/', views.Examples.as_view(), name='examples'),
+    path('upload/', views.Upload.as_view(), name='upload'),
+    path('return/', views.base, name='return'),
     path('export/', views.Export.as_view(), name='export'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]

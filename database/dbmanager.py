@@ -531,7 +531,7 @@ class HistoryDB_MongoDB(dict):
             application_db = self.db[application_name]
             func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
             for func_eval in func_eval_list:
-                if func_eval["uid"] == func_eval_uid:
+                if func_eval["uid"] == perf_data_uid:
                     return func_eval
             model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
             for model_data in model_data_list:
@@ -540,37 +540,29 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, user_info, application_name, application_library, perf_file_path):
+    def upload_func_eval(self, user_info, application_info, json_data):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
+        application_name = application_info["name"]
         if not application_name in collist:
             print (application_name + " is not exist in the database; create one.")
         collection = self.db[application_name]
 
+        application_info["document_type"] = "application_info"
         if not application_name in collist:
-            collection.insert_one({
-                "document_type":"application_info",
-                "name": application_name,
-                "library": application_library
-                })
+            collection.insert_one(application_info)
         elif collection.count_documents({}) == 0:
-            collection.insert_one({
-                "document_type":"application_info",
-                "name": application_name,
-                "library": application_library
-                })
+            collection.insert_one(application_info)
 
-        with open(perf_file_path, "r") as f_in:
-            json_data = json.loads(f_in.read())
-            func_eval_list = json_data["func_eval"]
-            for func_eval in func_eval_list:
-                func_eval["document_type"] = "func_eval"
-                func_eval["user_info"] = user_info
-                if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
-                    collection.insert_one(func_eval)
-                else:
-                    print ("func_eval: " + func_eval["uid"] + " already exist")
+        func_eval_list = json_data["func_eval"]
+        for func_eval in func_eval_list:
+            func_eval["document_type"] = "func_eval"
+            func_eval["user_info"] = user_info
+            if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                collection.insert_one(func_eval)
+            else:
+                print ("func_eval: " + func_eval["uid"] + " already exist")
 
         return None
 
@@ -611,37 +603,29 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_filtered
 
-    def upload_model_data(self, user_info, application_name, application_library, perf_file_path):
+    def upload_model_data(self, user_info, application_name, application_library, json_data):
         print ("Upload surrogate model data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
+        application_name = application_info["name"]
         if not application_name in collist:
             print (application_name + " is not exist in the database; create one.")
         collection = self.db[application_name]
 
+        application_info["document_type"] = "application_info"
         if not application_name in collist:
-            collection.insert_one({
-                "document_type":"application_info",
-                "name": application_name,
-                "library": application_library
-                })
+            collection.insert_one(application_info)
         elif collection.count_documents({}) == 0:
-            collection.insert_one({
-                "document_type":"application_info",
-                "name": application_name,
-                "library": application_library
-                })
+            collection.insert_one(application_info)
 
-        with open(perf_file_path, "r") as f_in:
-            json_data = json.loads(f_in.read())
-            model_data_list = json_data["model_data"]
-            for model_data in model_data_list:
-                model_data["document_type"] = "model_data"
-                model_data["user_info"] = user_info
-                if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
-                    collection.insert_one(model_data)
-                else:
-                    print ("model_data: " + model_data["uid"] + " already exist")
+        model_data_list = json_data["model_data"]
+        for model_data in model_data_list:
+            model_data["document_type"] = "model_data"
+            model_data["user_info"] = user_info
+            if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
+                collection.insert_one(model_data)
+            else:
+                print ("model_data: " + model_data["uid"] + " already exist")
 
         return None
 
@@ -651,8 +635,11 @@ if __name__ == "__main__":
 
     print (sys.argv[1])
     historydb = HistoryDB_MongoDB()
-    historydb.upload_func_eval({"name":"younghyun"}, "PDGEQRF", "ScaLAPACK", sys.argv[1])
-    historydb.upload_model_data({"name":"younghyun"}, "PDGEQRF", "ScaLAPACK", sys.argv[1])
+    with open(sys.argv[1], "r") as f_in:
+        data = f_in.read()
+        json_data = json.loads(data)
+    historydb.upload_func_eval({"name":"younghyun"}, {"name:":"PDGEQRF", "library":"ScaLAPACK"}, json_data)
+    historydb.upload_model_data({"name":"younghyun"}, {"name":"PDGEQRF", "library":"ScaLAPACK"}, json_data)
 
     json_data = historydb.load_json_data("PDGEQRF")
     with open("asdf.json", "w") as f_out:

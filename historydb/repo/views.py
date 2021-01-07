@@ -8,20 +8,23 @@ from django.http import JsonResponse
 from django.views.generic import TemplateView
 
 from datetime import datetime
-import os
-import json
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+
+from django.contrib.auth.models import User
+from django.contrib import auth
+
+from dbmanager import HistoryDB_MongoDB
+
+import os
+import json
+import ast
 
 class Dashboard(TemplateView):
     def get(self, request, **kwargs):
         print ("======== Dashboard GET ========")
 
-        import os
-        import json
-
-        from dbmanager import HistoryDB_MongoDB
         historydb = HistoryDB_MongoDB()
 
         applications_avail = historydb.get_applications_avail()
@@ -34,14 +37,10 @@ class Dashboard(TemplateView):
         if application != "":
             print ("APPLICATION GIVEN: ", application)
 
-            import ast
             machine_deps_list = ast.literal_eval(request.GET.get("machine_deps_list", ""))
             software_deps_list = ast.literal_eval(request.GET.get("software_deps_list", ""))
             users_list = ast.literal_eval(request.GET.get("users_list", ""))
 
-            import os
-            import json
-            from dbmanager import HistoryDB_MongoDB
             historydb = HistoryDB_MongoDB()
 
             search_data = ast.literal_eval(request.GET.get("search_data", ""))
@@ -135,10 +134,6 @@ class Dashboard(TemplateView):
             return render(request, 'repo/dashboard.html', context)
 
         else:
-            import os
-            import json
-
-            from dbmanager import HistoryDB_MongoDB
             historydb = HistoryDB_MongoDB()
 
             print ("APPLICATION NOT GIVEN: ", application)
@@ -177,10 +172,6 @@ class Dashboard(TemplateView):
             return render(request, 'repo/dashboard.html', context)
 
     def post(self, request, **kwargs):
-        import os
-        import json
-
-        from dbmanager import HistoryDB_MongoDB
         historydb = HistoryDB_MongoDB()
 
         applications_avail = historydb.get_applications_avail()
@@ -304,10 +295,6 @@ class Dashboard(TemplateView):
 class Export(TemplateView):
 
     def get(self, request, **kwargs):
-        import os
-        import json
-        from dbmanager import HistoryDB_MongoDB
-
         application = request.GET.get("application", "")
         machine_deps_list = json.loads(request.GET.get("machine_deps_list", "{}"))
         software_deps_list = json.loads(request.GET.get("software_deps_list", "{}"))
@@ -327,18 +314,16 @@ class Examples(TemplateView):
     def get(self, request, **kwargs):
         print ("======== Examples GET ========")
 
-        import os
-        import json
-        from dbmanager import HistoryDB_MongoDB
-
         historydb = HistoryDB_MongoDB()
 
+        applications_avail = historydb.get_applications_avail()
         applications_avail_per_library = historydb.get_applications_avail_per_library()
         machine_deps_avail = historydb.get_machine_deps_avail()
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
         context = {
+                "applications_avail" : applications_avail,
                 "applications_avail_per_library" : applications_avail_per_library,
                 "machine_deps_avail" : json.dumps(machine_deps_avail),
                 "software_deps_avail" : json.dumps(software_deps_avail),
@@ -348,10 +333,6 @@ class Examples(TemplateView):
         return render(request, 'repo/examples.html', context)
 
     def post(self, request, **kwargs):
-        import os
-        import json
-        from dbmanager import HistoryDB_MongoDB
-
         historydb = HistoryDB_MongoDB()
 
         application = request.POST["application"]
@@ -449,11 +430,95 @@ class Examples(TemplateView):
 
         return render(request, 'repo/dashboard.html', context)
 
-def query(request, perf_data_uid):
-    import os
-    import json
-    from dbmanager import HistoryDB_MongoDB
+class Upload(TemplateView):
+    def get(self, request, **kwargs):
+        print ("======== Upload GET ========")
 
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        historydb = HistoryDB_MongoDB()
+
+        applications_avail = historydb.get_applications_avail()
+        applications_avail_per_library = historydb.get_applications_avail_per_library()
+        machine_deps_avail = historydb.get_machine_deps_avail()
+        software_deps_avail = historydb.get_software_deps_avail()
+        users_avail = historydb.get_users_avail()
+
+        context = {
+                "applications_avail" : applications_avail,
+                "applications_avail_per_library" : applications_avail_per_library,
+                "machine_deps_avail" : json.dumps(machine_deps_avail),
+                "software_deps_avail" : json.dumps(software_deps_avail),
+                "users_avail" : json.dumps(users_avail),
+                }
+
+        return render(request, 'repo/upload.html', context)
+
+    def post(self, request, **kwargs):
+        print ("======== Upload POST ========")
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        print ("user name: ", request.user.username)
+        print ("user email: ", request.user.email)
+
+        user_info = {}
+        user_info["name"] = request.user.username
+        user_info["email"] = request.user.email
+
+        application_name = request.POST["application"]
+        library_name = request.POST["library"]
+        application_description = request.POST["description"]
+
+        application_info = {}
+        application_info["name"] = application_name
+        application_info["library"] = library_name
+        application_info["description"] = application_description
+
+        print ("application_name: ", application_name)
+        print ("library_name: ", library_name)
+        print ("application_description: ", application_description)
+
+        json_data = {}
+
+        upload_type = "file"
+        try:
+            f = request.FILES["file_upload_name"]
+            data = f.read()
+        except:
+            upload_type = "text"
+
+        if upload_type == "text":
+            try:
+                json_text = request.POST["json_textarea"]
+                data = json_text
+            except:
+                data = {}
+
+        try:
+            json_data = json.loads(data)
+        except:
+            print ("Not able to convert to dictionary")
+            context = { "message":"Not able to convert data to dictionary" }
+            return render(request, 'repo/return.html', context)
+
+        historydb = HistoryDB_MongoDB()
+        try:
+            historydb.upload_func_eval(user_info, application_info, json_data)
+            historydb.upload_model_data(user_info, application_info, json_data)
+        except:
+            print ("Not able to upload the given data")
+            context = { "message":"Not able to upload the given data" }
+            return render(request, 'repo/return.html', context)
+
+        print ("Not able to upload the given data")
+        context = { "message":"Not able to upload the given data" }
+        return render(request, 'repo/return.html', context)
+        #return render(request, 'repo/upload.html')
+
+def query(request, perf_data_uid):
     historydb = HistoryDB_MongoDB()
     perf_data = historydb.load_perf_data_by_uid(perf_data_uid)
     context = { "perf_data" : perf_data, }
