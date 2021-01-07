@@ -18,6 +18,10 @@ python -m pip install markdown
 ```
 python -m pip install pymongo
 ```
+- django-widget-tweaks
+```
+python -m pip install django-widget-tweaks
+```
 - mongodb installed
 ```
 $ sudo apt-get install -y wget

@@ -11,6 +11,7 @@ RUN apt-get install -y python3-pip
 RUN python3 -m pip install django
 RUN python3 -m pip install markdown
 RUN python3 -m pip install pymongo
+RUN python3 -m pip install django-widget-tweaks
 
 RUN apt-get install -y wget
 RUN wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add -
