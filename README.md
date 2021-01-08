@@ -5,7 +5,7 @@ The web framework is based on Django and uses Bootstrap for pretty webpages.
 
 ## Prerequisite and installation
 
-- Python (version higher than 3)
+- Python (version >= 3.7)
 - Django installed
 ```
 python -m pip install django
@@ -35,7 +35,6 @@ $ sudo apt-get install -y mongodb-org
 
 - create your own Django secret key
 ```
-cd HistoryDB-Web
 $ python create\_new\_key.py
 ```
 - set SQLite DB for the Django project
@@ -46,12 +45,16 @@ $ python manage.py migrate
 ```
 ## Run (testing/debugging mode)
 
+- run MongoDB daemon
 ```
-cd dbfiles
-$ mkdir dbfiles
-$ mongod --dbpath $PWD/dbfiles &
-
-cd ../historydb
+mkdir "whateverpath"
+cd "whateverpath"
+$ mkdir "whateverpath"
+$ mongod --dbpath "whateverpath" 
+```
+- run Django web framework
+```
+cd historydb
 $ python manage.py runserver
 ```
 
