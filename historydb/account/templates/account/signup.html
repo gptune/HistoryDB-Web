@@ -1,6 +1,16 @@
-{% extends 'account/base.html' %}  
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
 {% load static %}
 {% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-login').addClass('active');
+  });
+</script>
 
 <div class="starter-template">
 <div class="container">

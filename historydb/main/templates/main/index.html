@@ -1,7 +1,17 @@
-{% extends 'main/base.html' %}  
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
 {% load static %}
 
 {% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-home').addClass('active');
+  });
+</script>
 
 <div class="starter-template">
   <h1>GPTune History Database</h1>

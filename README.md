@@ -35,7 +35,7 @@ $ sudo apt-get install -y mongodb-org
 
 - create your own Django secret key
 ```
-$ python create\_new\_key.py
+$ python create_new_key.py
 ```
 - set SQLite DB for the Django project
 ```
