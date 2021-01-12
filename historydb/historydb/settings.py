@@ -23,8 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import os, json
 
 django_key_file = os.path.join(BASE_DIR, 'django_keys.json')
-with open(django_key_file) as f:
-    django_keys = json.loads(f.read())
+with open(django_key_file, "r") as f_in:
+    django_keys = json.loads(f_in.read())
 def get_django_key(setting, django_keys=django_keys):
     return django_keys[setting]
 
@@ -34,6 +34,29 @@ SECRET_KEY = get_django_key("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# SECURITY WARNING: keep the email data credential (i.e. not open the email data file to public Github)
+
+email_setting_file = os.path.join(BASE_DIR, 'email_settings.json')
+def get_email_setting_data(setting):
+    try:
+        with open(email_setting_file, "r") as f_in:
+            email_setting_data = json.loads(f_in.read())
+            data = email_setting_data[setting]
+            if data == "yes":
+                return True
+            else:
+                return data
+    except:
+        return ""
+
+EMAIL_BACKEND = get_email_setting_data("EMAIL_BACKEND")
+EMAIL_USE_TLS = get_email_setting_data("EMAIL_USE_TLS")
+EMAIL_PORT = get_email_setting_data("EMAIL_PORT")
+EMAIL_HOST = get_email_setting_data("EMAIL_HOST")
+EMAIL_HOST_USER = get_email_setting_data("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = get_email_setting_data("EMAIL_HOST_PASSWORD")
+SERVER_EMAIL = get_email_setting_data("SERVER_EMAIL")
 
 
 # Application definition
