@@ -62,17 +62,17 @@ SERVER_EMAIL = get_email_setting_data("SERVER_EMAIL")
 # Application definition
 
 INSTALLED_APPS = [
-    'documentation.apps.DocumentationConfig',
-    'repo.apps.RepoConfig',
-    'account.apps.AccountConfig',
-    'main.apps.MainConfig',
-    'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'documentation.apps.DocumentationConfig',
+    'repo.apps.RepoConfig',
+    'account.apps.AccountConfig',
+    'main.apps.MainConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

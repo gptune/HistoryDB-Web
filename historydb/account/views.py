@@ -16,14 +16,23 @@ def signup(request):
             user = User.objects.create_user(
                     username = request.POST["username"],
                     email = request.POST["email"],
-                    password = request.POST["password1"])
-            auth.login(request, user)
+                    password = request.POST["password1"],
+                    is_active = False)
+            user.profile.affiliation = "temp"
+            user.profile.position = "temp"
 
             try:
+                from django.contrib.sites.shortcuts import get_current_site
+                current_site = get_current_site(request)
+
                 email = EmailMessage('Greetings from GPTune History Database', 'Greetings from GPTune History Database\nYou are now registered in the GPTune History Database Web!', to=[request.POST["email"]])
                 email.send()
             except:
                 print ("Something went wrong with email sending")
+
+            user.save()
+
+            #auth.login(request, user)
 
             return redirect(reverse_lazy('main:index'))
         return render(request, 'account/signup.html')
