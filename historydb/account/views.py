@@ -18,8 +18,12 @@ def signup(request):
                     email = request.POST["email"],
                     password = request.POST["password1"],
                     is_active = False)
-            user.profile.affiliation = "temp"
-            user.profile.position = "temp"
+
+            user.first_name = request.POST["firstname"]
+            user.last_name = request.POST["lastname"]
+            user.profile.position = request.POST["position"]
+            user.profile.affiliation = request.POST["affiliation"]
+            user.profile.ecp_member = request.POST["ecp_member"]
 
             try:
                 from django.contrib.sites.shortcuts import get_current_site
