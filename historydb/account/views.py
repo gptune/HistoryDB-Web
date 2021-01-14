@@ -109,3 +109,27 @@ def activate(request, username):
         except:
             return redirect(reverse_lazy('main:index'))
 
+
+from django.views.generic import TemplateView
+
+class ProfileDashboard(TemplateView):
+    def post(self, request, **kwargs):
+        return render(request, 'account/profile.html')
+
+    def get(self, request, **kwargs):
+        return render(request, 'account/profile.html')
+
+class GroupDashboard(TemplateView):
+    def post(self, request, **kwargs):
+        return render(request, 'account/group.html')
+
+    def get(self, request, **kwargs):
+        return render(request, 'account/group.html')
+
+class DataDashboard(TemplateView):
+    def post(self, request, **kwargs):
+        return render(request, 'account/data.html')
+
+    def get(self, request, **kwargs):
+        return render(request, 'account/data.html')
+
