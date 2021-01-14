@@ -11,6 +11,7 @@ class Profile(models.Model):
     position = models.CharField(max_length=30, blank=True)
     ecp_member = models.CharField(max_length=10, blank=True)
     is_certified = models.BooleanField(default=False)
+    activation_code = models.CharField(max_length=6, blank=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
