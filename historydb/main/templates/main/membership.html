@@ -1,0 +1,287 @@
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-acknowledgement').addClass('active');
+  });
+</script>
+
+<style>
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  -moz-transition: $args;
+  -ms-transition: $args;
+  -o-transition: $args;
+  transition: $args;
+}
+
+body {
+  color: slategray;
+}
+
+.table {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 2rem 0rem 0rem 0rem;
+  max-width: 1100px;
+}
+
+.table-cell {
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 100%;
+  padding: 0.8em 1.2em;
+  overflow: hidden;
+  list-style-type: none;
+  outline: 1px solid #ddd;
+  text-align: center;
+  font-weight: 300;
+  margin: {
+    top: 1px;
+    left: 1px;
+  }
+  &:first-child {
+  	outline: 1px solid #fff;
+    background: transparent;
+  	@media only screen and (max-width : 768px) {
+			display: none;
+		}
+  }
+  &:nth-child(3) {
+    outline: 1px solid #30305b;
+  }
+  &:nth-child(-n+3) {
+  	padding: {
+  		top: 40px;
+  		bottom: 40px;
+  	}
+  }
+  > h3 {
+    font-size: 26px;
+  	margin: {
+  		top: 0;
+  		bottom: 3rem;
+  	}
+  }
+  &.cell-feature {
+	  text-align: left;
+    font-size: 18px;
+  }
+  &.plattform {
+    color: limegreen;
+    a.btn {
+      color: limegreen;
+      &:hover {
+        background-color: limegreen;
+        border-color: limegreen;
+        color: white;
+      }
+    }
+  }
+  &.enterprise {
+    background-color: #30305b;
+    color: #85bafc;
+    a.btn {
+      color: #85bafc;
+      &:hover {
+        background-color: #85bafc;
+        border-color: #85bafc;
+        color: #30305b;
+      }
+    }
+  }
+}
+
+/* Table columns
+================================== */
+.table-cell  {
+  width: calc(24.5% - 1px);
+  &.cell-feature {
+	  @media only screen and (max-width : 768px) {
+		  width: 100%;
+		  text-align: center;
+	  }
+  }
+}
+
+svg.enterprise-check path {
+  fill: #30305b !important;
+}
+
+a.btn {
+  border: 2px solid;
+  padding: .6rem .9rem .6rem .9rem;
+  font-weight: 400;
+  text: {
+    transform: uppercase;
+    decoration: none;
+  }
+  @include transition(0.2s ease-in-out);
+  @include border-radius(.3rem);
+}
+</style>
+
+<div class="table">
+    <div class="table-cell"></div>
+    <div class="table-cell unregistered">
+        <h3>Unregistered Users</h3>
+    </div>
+    <div class="table-cell plattform">
+        <h3>Registered User</h3>
+        <a href="{% url 'account:signup' %}" class="btn">register now</a>
+    </div>
+    <div class="table-cell enterprise">
+        <h3>Certified User</h3>
+        <a href="" class="btn">Send us a Email</a>
+    </div>
+
+    <div class="table-cell cell-feature">Download Public Data</div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="red" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="limegreen" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Upload Data As Public</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="limegreen" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Download "Registered" Data</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="limegreen" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Upload Data As "Registered"</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="limegreen" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Download "Certified" Data</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Upload Data As "Certified"</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Having a Private Mode (Downloading/Uploading Data as Private)</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="limegreen" fill-rule="evenodd"/>
+        </svg>
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Creating a Collaboration Group and Sending Invitations</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+    <div class="table-cell cell-feature">Joining Collaboration Groups (Accepting Invitations)</div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+    </div>
+    <div class="table-cell">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <title>check_blue</title>
+            <path d="M6.116 14.884c.488.488 1.28.488 1.768 0l10-10c.488-.488.488-1.28 0-1.768s-1.28-.488-1.768 0l-9.08 9.15-4.152-4.15c-.488-.488-1.28-.488-1.768 0s-.488 1.28 0 1.768l5 5z" fill="blue" fill-rule="evenodd"/>
+        </svg>
+    </div>
+
+
+
+</div>
+
+{% endblock %}

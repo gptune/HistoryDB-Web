@@ -10,5 +10,6 @@ app_name = "main"
 urlpatterns = [
     path('', views.index, name='index'),
     path('acknowledgement', views.acknowledgement, name='acknowledgement'),
+    path('membership', views.membership, name='membership'),
     path('base', views.base, name='base'),
 ]
