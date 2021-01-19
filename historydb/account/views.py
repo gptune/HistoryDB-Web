@@ -62,6 +62,8 @@ def login(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        #print ("username: ", username)
+        #print ("password: ", password)
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
             auth.login(request, user)
@@ -94,6 +96,7 @@ def activate(request, username):
 
         if (activation_code == user.profile.activation_code):
             user.is_active = True
+            user.save()
             return redirect(reverse_lazy('main:index'))
         else:
             return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
@@ -109,27 +112,44 @@ def activate(request, username):
         except:
             return redirect(reverse_lazy('main:index'))
 
-
 from django.views.generic import TemplateView
 
 class ProfileDashboard(TemplateView):
     def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/profile.html')
 
     def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/profile.html')
 
 class GroupDashboard(TemplateView):
     def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/group.html')
 
     def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/group.html')
 
 class DataDashboard(TemplateView):
     def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/data.html')
 
     def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         return render(request, 'account/data.html')
 

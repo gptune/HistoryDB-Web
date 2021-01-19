@@ -12,10 +12,7 @@
   });
 </script>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-  <h1 class="h1">Dashboard</h1>
-</div>
-
+<div class="container pt-3">
 <form method="POST">
   {% csrf_token %}
   <div class="well">
@@ -53,20 +50,23 @@
     </button>
   </div>
 </form>
+</div>
 
 {% ifnotequal application "" %}
-<br><br>
-<hr>
-<div class="well">
-  <h2>Search Condition</h2>
-  <div class="row">
-    <div class="form-group col" id="application_cond">
-    </div>
-    <div class="form-group col" id="machine_deps_cond">
-    </div>
-    <div class="form-group col" id="software_deps_cond">
-    </div>
-    <div class="form-group col" id="users_cond">
+<div class="container">
+  <br><br>
+  <hr>
+  <div class="well">
+    <h2>Search Condition</h2>
+    <div class="row">
+      <div class="form-group col" id="application_cond">
+      </div>
+      <div class="form-group col" id="machine_deps_cond">
+      </div>
+      <div class="form-group col" id="software_deps_cond">
+      </div>
+      <div class="form-group col" id="users_cond">
+      </div>
     </div>
   </div>
 </div>
@@ -85,422 +85,422 @@
 <br><br>
 <hr>
 
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-  <h2 class="h2">Performance Data</h2>
-  <div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group mr-2">
-      <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-      <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
-      <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
-      </a>
+<div class="container">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Performance Data</h2>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+        </a>
+      </div>
     </div>
   </div>
-</div>
-<div class="table-responsive">
-  number of function evaluation result: {{ num_func_eval }}
-  <br><br>
+  <div class="table-responsive">
+    number of function evaluation result: {{ num_func_eval }}
+    <br><br>
 
-  <table class="table table-striped table-sm">
-    <thead>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Input Task</th>
+          <th>Tuning Parameter</th>
+          <th>Output Result</th>
+          <th>User Name</th>
+          <th>Date</th>
+          <th>UID (Details)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if num_func_eval > 0 %}
+        <tr>
+          <td>{{ perf_data.0.id }}</td>
+          <td>{{ perf_data.0.I }}</td>
+          <td>{{ perf_data.0.P }}</td>
+          <td>{{ perf_data.0.O }}</td>
+          <td>{{ perf_data.0.user.name }}</td>
+          <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 1 %}
+        <tr>
+          <td>{{ perf_data.1.id }}</td>
+          <td>{{ perf_data.1.I }}</td>
+          <td>{{ perf_data.1.P }}</td>
+          <td>{{ perf_data.1.O }}</td>
+          <td>{{ perf_data.1.user.name }}</td>
+          <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 2 %}
+        <tr>
+          <td>{{ perf_data.2.id }}</td>
+          <td>{{ perf_data.2.I }}</td>
+          <td>{{ perf_data.2.P }}</td>
+          <td>{{ perf_data.2.O }}</td>
+          <td>{{ perf_data.2.user.name }}</td>
+          <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 3 %}
+        <tr>
+          <td>{{ perf_data.3.id }}</td>
+          <td>{{ perf_data.3.I }}</td>
+          <td>{{ perf_data.3.P }}</td>
+          <td>{{ perf_data.3.O }}</td>
+          <td>{{ perf_data.3.user.name }}</td>
+          <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 4 %}
+        <tr>
+          <td>{{ perf_data.4.id }}</td>
+          <td>{{ perf_data.4.I }}</td>
+          <td>{{ perf_data.4.P }}</td>
+          <td>{{ perf_data.4.O }}</td>
+          <td>{{ perf_data.4.user.name }}</td>
+          <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 5 %}
+        <tr>
+          <td>{{ perf_data.5.id }}</td>
+          <td>{{ perf_data.5.I }}</td>
+          <td>{{ perf_data.5.P }}</td>
+          <td>{{ perf_data.5.O }}</td>
+          <td>{{ perf_data.5.user.name }}</td>
+          <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 6 %}
+        <tr>
+          <td>{{ perf_data.6.id }}</td>
+          <td>{{ perf_data.6.I }}</td>
+          <td>{{ perf_data.6.P }}</td>
+          <td>{{ perf_data.6.O }}</td>
+          <td>{{ perf_data.6.user.name }}</td>
+          <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 7 %}
+        <tr>
+          <td>{{ perf_data.7.id }}</td>
+          <td>{{ perf_data.7.I }}</td>
+          <td>{{ perf_data.7.P }}</td>
+          <td>{{ perf_data.7.O }}</td>
+          <td>{{ perf_data.7.user.name }}</td>
+          <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 8 %}
+        <tr>
+          <td>{{ perf_data.8.id }}</td>
+          <td>{{ perf_data.8.I }}</td>
+          <td>{{ perf_data.8.P }}</td>
+          <td>{{ perf_data.8.O }}</td>
+          <td>{{ perf_data.8.user.name }}</td>
+          <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 9 %}
+        <tr>
+          <td>{{ perf_data.9.id }}</td>
+          <td>{{ perf_data.9.I }}</td>
+          <td>{{ perf_data.9.P }}</td>
+          <td>{{ perf_data.9.O }}</td>
+          <td>{{ perf_data.9.user.name }}</td>
+          <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 10 %}
+        <tr>
+          <td>{{ perf_data.10.id }}</td>
+          <td>{{ perf_data.10.I }}</td>
+          <td>{{ perf_data.10.P }}</td>
+          <td>{{ perf_data.10.O }}</td>
+          <td>{{ perf_data.10.user.name }}</td>
+          <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 11 %}
+        <tr>
+          <td>{{ perf_data.11.id }}</td>
+          <td>{{ perf_data.11.I }}</td>
+          <td>{{ perf_data.11.P }}</td>
+          <td>{{ perf_data.11.O }}</td>
+          <td>{{ perf_data.11.user.name }}</td>
+          <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 12 %}
+        <tr>
+          <td>{{ perf_data.12.id }}</td>
+          <td>{{ perf_data.12.I }}</td>
+          <td>{{ perf_data.12.P }}</td>
+          <td>{{ perf_data.12.O }}</td>
+          <td>{{ perf_data.12.user.name }}</td>
+          <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 13 %}
+        <tr>
+          <td>{{ perf_data.13.id }}</td>
+          <td>{{ perf_data.13.I }}</td>
+          <td>{{ perf_data.13.P }}</td>
+          <td>{{ perf_data.13.O }}</td>
+          <td>{{ perf_data.13.user.name }}</td>
+          <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_func_eval > 14 %}
+        <tr>
+          <td>{{ perf_data.14.id }}</td>
+          <td>{{ perf_data.14.I }}</td>
+          <td>{{ perf_data.14.P }}</td>
+          <td>{{ perf_data.14.O }}</td>
+          <td>{{ perf_data.14.user.name }}</td>
+          <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    <table>
       <tr>
-        <th>#</th>
-        <th>Input Task</th>
-        <th>Tuning Parameter</th>
-        <th>Output Result</th>
-        <th>User Name</th>
-        <th>Date</th>
-        <th>UID (Details)</th>
+        Pages:
+        <td>
+        {% for page_num in num_pages %}
+        <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+          {% ifequal page_num current_page %}
+          [<b>{{ page_num }}</b>]
+          {% else %}
+          [{{ page_num }}]
+          {% endifequal %}
+        {% endfor %}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% if num_func_eval > 0 %}
-      <tr>
-        <td>{{ perf_data.0.id }}</td>
-        <td>{{ perf_data.0.I }}</td>
-        <td>{{ perf_data.0.P }}</td>
-        <td>{{ perf_data.0.O }}</td>
-        <td>{{ perf_data.0.user.name }}</td>
-        <td>{{ perf_data.0.time.tm_mon }}/{{ perf_data.0.time.tm_mday }}/{{ perf_data.0.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.0.uid }}/">{{ perf_data.0.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 1 %}
-      <tr>
-        <td>{{ perf_data.1.id }}</td>
-        <td>{{ perf_data.1.I }}</td>
-        <td>{{ perf_data.1.P }}</td>
-        <td>{{ perf_data.1.O }}</td>
-        <td>{{ perf_data.1.user.name }}</td>
-        <td>{{ perf_data.1.time.tm_mon }}/{{ perf_data.1.time.tm_mday }}/{{ perf_data.1.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.1.uid }}/">{{ perf_data.1.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 2 %}
-      <tr>
-        <td>{{ perf_data.2.id }}</td>
-        <td>{{ perf_data.2.I }}</td>
-        <td>{{ perf_data.2.P }}</td>
-        <td>{{ perf_data.2.O }}</td>
-        <td>{{ perf_data.2.user.name }}</td>
-        <td>{{ perf_data.2.time.tm_mon }}/{{ perf_data.2.time.tm_mday }}/{{ perf_data.2.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.2.uid }}/">{{ perf_data.2.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 3 %}
-      <tr>
-        <td>{{ perf_data.3.id }}</td>
-        <td>{{ perf_data.3.I }}</td>
-        <td>{{ perf_data.3.P }}</td>
-        <td>{{ perf_data.3.O }}</td>
-        <td>{{ perf_data.3.user.name }}</td>
-        <td>{{ perf_data.3.time.tm_mon }}/{{ perf_data.3.time.tm_mday }}/{{ perf_data.3.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.3.uid }}/">{{ perf_data.3.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 4 %}
-      <tr>
-        <td>{{ perf_data.4.id }}</td>
-        <td>{{ perf_data.4.I }}</td>
-        <td>{{ perf_data.4.P }}</td>
-        <td>{{ perf_data.4.O }}</td>
-        <td>{{ perf_data.4.user.name }}</td>
-        <td>{{ perf_data.4.time.tm_mon }}/{{ perf_data.4.time.tm_mday }}/{{ perf_data.4.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.4.uid }}/">{{ perf_data.4.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 5 %}
-      <tr>
-        <td>{{ perf_data.5.id }}</td>
-        <td>{{ perf_data.5.I }}</td>
-        <td>{{ perf_data.5.P }}</td>
-        <td>{{ perf_data.5.O }}</td>
-        <td>{{ perf_data.5.user.name }}</td>
-        <td>{{ perf_data.5.time.tm_mon }}/{{ perf_data.5.time.tm_mday }}/{{ perf_data.5.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.5.uid }}/">{{ perf_data.5.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 6 %}
-      <tr>
-        <td>{{ perf_data.6.id }}</td>
-        <td>{{ perf_data.6.I }}</td>
-        <td>{{ perf_data.6.P }}</td>
-        <td>{{ perf_data.6.O }}</td>
-        <td>{{ perf_data.6.user.name }}</td>
-        <td>{{ perf_data.6.time.tm_mon }}/{{ perf_data.6.time.tm_mday }}/{{ perf_data.6.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.6.uid }}/">{{ perf_data.6.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 7 %}
-      <tr>
-        <td>{{ perf_data.7.id }}</td>
-        <td>{{ perf_data.7.I }}</td>
-        <td>{{ perf_data.7.P }}</td>
-        <td>{{ perf_data.7.O }}</td>
-        <td>{{ perf_data.7.user.name }}</td>
-        <td>{{ perf_data.7.time.tm_mon }}/{{ perf_data.7.time.tm_mday }}/{{ perf_data.7.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.7.uid }}/">{{ perf_data.7.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 8 %}
-      <tr>
-        <td>{{ perf_data.8.id }}</td>
-        <td>{{ perf_data.8.I }}</td>
-        <td>{{ perf_data.8.P }}</td>
-        <td>{{ perf_data.8.O }}</td>
-        <td>{{ perf_data.8.user.name }}</td>
-        <td>{{ perf_data.8.time.tm_mon }}/{{ perf_data.8.time.tm_mday }}/{{ perf_data.8.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.8.uid }}/">{{ perf_data.8.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 9 %}
-      <tr>
-        <td>{{ perf_data.9.id }}</td>
-        <td>{{ perf_data.9.I }}</td>
-        <td>{{ perf_data.9.P }}</td>
-        <td>{{ perf_data.9.O }}</td>
-        <td>{{ perf_data.9.user.name }}</td>
-        <td>{{ perf_data.9.time.tm_mon }}/{{ perf_data.9.time.tm_mday }}/{{ perf_data.9.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.9.uid }}/">{{ perf_data.9.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 10 %}
-      <tr>
-        <td>{{ perf_data.10.id }}</td>
-        <td>{{ perf_data.10.I }}</td>
-        <td>{{ perf_data.10.P }}</td>
-        <td>{{ perf_data.10.O }}</td>
-        <td>{{ perf_data.10.user.name }}</td>
-        <td>{{ perf_data.10.time.tm_mon }}/{{ perf_data.10.time.tm_mday }}/{{ perf_data.10.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.10.uid }}/">{{ perf_data.10.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 11 %}
-      <tr>
-        <td>{{ perf_data.11.id }}</td>
-        <td>{{ perf_data.11.I }}</td>
-        <td>{{ perf_data.11.P }}</td>
-        <td>{{ perf_data.11.O }}</td>
-        <td>{{ perf_data.11.user.name }}</td>
-        <td>{{ perf_data.11.time.tm_mon }}/{{ perf_data.11.time.tm_mday }}/{{ perf_data.11.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.11.uid }}/">{{ perf_data.11.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 12 %}
-      <tr>
-        <td>{{ perf_data.12.id }}</td>
-        <td>{{ perf_data.12.I }}</td>
-        <td>{{ perf_data.12.P }}</td>
-        <td>{{ perf_data.12.O }}</td>
-        <td>{{ perf_data.12.user.name }}</td>
-        <td>{{ perf_data.12.time.tm_mon }}/{{ perf_data.12.time.tm_mday }}/{{ perf_data.12.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.12.uid }}/">{{ perf_data.12.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 13 %}
-      <tr>
-        <td>{{ perf_data.13.id }}</td>
-        <td>{{ perf_data.13.I }}</td>
-        <td>{{ perf_data.13.P }}</td>
-        <td>{{ perf_data.13.O }}</td>
-        <td>{{ perf_data.13.user.name }}</td>
-        <td>{{ perf_data.13.time.tm_mon }}/{{ perf_data.13.time.tm_mday }}/{{ perf_data.13.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.13.uid }}/">{{ perf_data.13.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_func_eval > 14 %}
-      <tr>
-        <td>{{ perf_data.14.id }}</td>
-        <td>{{ perf_data.14.I }}</td>
-        <td>{{ perf_data.14.P }}</td>
-        <td>{{ perf_data.14.O }}</td>
-        <td>{{ perf_data.14.user.name }}</td>
-        <td>{{ perf_data.14.time.tm_mon }}/{{ perf_data.14.time.tm_mday }}/{{ perf_data.14.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ perf_data.14.uid }}/">{{ perf_data.14.uid }}</a></td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-
-  <table>
-    <tr>
-      Pages:
-      <td>
-      {% for page_num in num_pages %}
-      <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-      <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
-        {% ifequal page_num current_page %}
-        [<b>{{ page_num }}</b>]
-        {% else %}
-        [{{ page_num }}]
-        {% endifequal %}
-      {% endfor %}
-      </td>
-    </tr>
-  </table>
+    </table>
+  </div>
 </div>
 
 {% else %}
 {% endifnotequal %}
 
 {% ifnotequal num_model_data 0 %}
-<br><br>
-<hr>
-
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-  <h2 class="h2">Model Data</h2>
-  <div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group mr-2">
-      <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-      <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
-      <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
-      </a>
+<div class="container">
+  <br><br>
+  <hr>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Model Data</h2>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+        </a>
+      </div>
     </div>
   </div>
-</div>
-<div class="table-responsive">
-  number of function evaluation result: {{ num_model_data }}
-  <br><br>
-
-  <table class="table table-striped table-sm">
-    <thead>
+  <div class="table-responsive">
+    number of function evaluation result: {{ num_model_data }}
+    <br><br>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Trained task parameters to build the model</th>
+          <th>Num function evaluations per task</th>
+          <th>User Name</th>
+          <th>Date</th>
+          <th>UID (Details)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.0.id }}</td>
+          <td>{{ model_data.0.task_parameters }}</td>
+          <td>{{ model_data.0.num_func_eval_per_task }}</td>
+          <td>{{ model_data.0.user.name }}</td>
+          <td>{{ model_data.0.time.tm_mon }}/{{ model_data.0.time.tm_mday }}/{{ model_data.0.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.0.uid }}/">{{ model_data.0.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 1 %}
+        <tr>
+          <td>{{ model_data.1.id }}</td>
+          <td>{{ model_data.1.task_parameters }}</td>
+          <td>{{ model_data.1.num_func_eval_per_task }}</td>
+          <td>{{ model_data.1.user.name }}</td>
+          <td>{{ model_data.1.time.tm_mon }}/{{ model_data.1.time.tm_mday }}/{{ model_data.1.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.1.uid }}/">{{ model_data.1.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.2.id }}</td>
+          <td>{{ model_data.2.task_parameters }}</td>
+          <td>{{ model_data.2.num_func_eval_per_task }}</td>
+          <td>{{ model_data.2.user.name }}</td>
+          <td>{{ model_data.2.time.tm_mon }}/{{ model_data.2.time.tm_mday }}/{{ model_data.2.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.2.uid }}/">{{ model_data.2.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.3.id }}</td>
+          <td>{{ model_data.3.task_parameters }}</td>
+          <td>{{ model_data.3.num_func_eval_per_task }}</td>
+          <td>{{ model_data.3.user.name }}</td>
+          <td>{{ model_data.3.time.tm_mon }}/{{ model_data.3.time.tm_mday }}/{{ model_data.3.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.3.uid }}/">{{ model_data.3.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.4.id }}</td>
+          <td>{{ model_data.4.task_parameters }}</td>
+          <td>{{ model_data.4.num_func_eval_per_task }}</td>
+          <td>{{ model_data.4.user.name }}</td>
+          <td>{{ model_data.4.time.tm_mon }}/{{ model_data.4.time.tm_mday }}/{{ model_data.4.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.4.uid }}/">{{ model_data.4.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.5.id }}</td>
+          <td>{{ model_data.5.task_parameters }}</td>
+          <td>{{ model_data.5.num_func_eval_per_task }}</td>
+          <td>{{ model_data.5.user.name }}</td>
+          <td>{{ model_data.5.time.tm_mon }}/{{ model_data.5.time.tm_mday }}/{{ model_data.5.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.5.uid }}/">{{ model_data.5.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.6.id }}</td>
+          <td>{{ model_data.6.task_parameters }}</td>
+          <td>{{ model_data.6.num_func_eval_per_task }}</td>
+          <td>{{ model_data.6.user.name }}</td>
+          <td>{{ model_data.6.time.tm_mon }}/{{ model_data.6.time.tm_mday }}/{{ model_data.6.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.6.uid }}/">{{ model_data.6.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.7.id }}</td>
+          <td>{{ model_data.7.task_parameters }}</td>
+          <td>{{ model_data.7.num_func_eval_per_task }}</td>
+          <td>{{ model_data.7.user.name }}</td>
+          <td>{{ model_data.7.time.tm_mon }}/{{ model_data.7.time.tm_mday }}/{{ model_data.7.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.7.uid }}/">{{ model_data.7.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.8.id }}</td>
+          <td>{{ model_data.8.task_parameters }}</td>
+          <td>{{ model_data.8.num_func_eval_per_task }}</td>
+          <td>{{ model_data.8.user.name }}</td>
+          <td>{{ model_data.8.time.tm_mon }}/{{ model_data.8.time.tm_mday }}/{{ model_data.8.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.8.uid }}/">{{ model_data.8.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.9.id }}</td>
+          <td>{{ model_data.9.task_parameters }}</td>
+          <td>{{ model_data.9.num_func_eval_per_task }}</td>
+          <td>{{ model_data.9.user.name }}</td>
+          <td>{{ model_data.9.time.tm_mon }}/{{ model_data.9.time.tm_mday }}/{{ model_data.9.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.9.uid }}/">{{ model_data.9.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.10.id }}</td>
+          <td>{{ model_data.10.task_parameters }}</td>
+          <td>{{ model_data.10.num_func_eval_per_task }}</td>
+          <td>{{ model_data.10.user.name }}</td>
+          <td>{{ model_data.10.time.tm_mon }}/{{ model_data.10.time.tm_mday }}/{{ model_data.10.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.10.uid }}/">{{ model_data.10.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.11.id }}</td>
+          <td>{{ model_data.11.task_parameters }}</td>
+          <td>{{ model_data.11.num_func_eval_per_task }}</td>
+          <td>{{ model_data.11.user.name }}</td>
+          <td>{{ model_data.11.time.tm_mon }}/{{ model_data.11.time.tm_mday }}/{{ model_data.11.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.11.uid }}/">{{ model_data.11.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.12.id }}</td>
+          <td>{{ model_data.12.task_parameters }}</td>
+          <td>{{ model_data.12.num_func_eval_per_task }}</td>
+          <td>{{ model_data.12.user.name }}</td>
+          <td>{{ model_data.12.time.tm_mon }}/{{ model_data.12.time.tm_mday }}/{{ model_data.12.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.12.uid }}/">{{ model_data.12.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.13.id }}</td>
+          <td>{{ model_data.13.task_parameters }}</td>
+          <td>{{ model_data.13.num_func_eval_per_task }}</td>
+          <td>{{ model_data.13.user.name }}</td>
+          <td>{{ model_data.13.time.tm_mon }}/{{ model_data.13.time.tm_mday }}/{{ model_data.13.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.13.uid }}/">{{ model_data.13.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.14.id }}</td>
+          <td>{{ model_data.14.task_parameters }}</td>
+          <td>{{ model_data.14.num_func_eval_per_task }}</td>
+          <td>{{ model_data.14.user.name }}</td>
+          <td>{{ model_data.14.time.tm_mon }}/{{ model_data.14.time.tm_mday }}/{{ model_data.14.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.14.uid }}/">{{ model_data.14.uid }}</a></td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    <table>
       <tr>
-        <th>#</th>
-        <th>Trained task parameters to build the model</th>
-        <th>Num function evaluations per task</th>
-        <th>User Name</th>
-        <th>Date</th>
-        <th>UID (Details)</th>
+        Pages:
+        <td>
+        {% for page_num_model_data in num_pages_model_data %}
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+          {% ifequal page_num_model_data current_page_model_data %}
+          [<b>{{ page_num_model_data }}</b>]
+          {% else %}
+          [{{ page_num_model_data }}]
+          {% endifequal %}
+        {% endfor %}
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.0.id }}</td>
-        <td>{{ model_data.0.task_parameters }}</td>
-        <td>{{ model_data.0.num_func_eval_per_task }}</td>
-        <td>{{ model_data.0.user.name }}</td>
-        <td>{{ model_data.0.time.tm_mon }}/{{ model_data.0.time.tm_mday }}/{{ model_data.0.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.0.uid }}/">{{ model_data.0.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 1 %}
-      <tr>
-        <td>{{ model_data.1.id }}</td>
-        <td>{{ model_data.1.task_parameters }}</td>
-        <td>{{ model_data.1.num_func_eval_per_task }}</td>
-        <td>{{ model_data.1.user.name }}</td>
-        <td>{{ model_data.1.time.tm_mon }}/{{ model_data.1.time.tm_mday }}/{{ model_data.1.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.1.uid }}/">{{ model_data.1.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.2.id }}</td>
-        <td>{{ model_data.2.task_parameters }}</td>
-        <td>{{ model_data.2.num_func_eval_per_task }}</td>
-        <td>{{ model_data.2.user.name }}</td>
-        <td>{{ model_data.2.time.tm_mon }}/{{ model_data.2.time.tm_mday }}/{{ model_data.2.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.2.uid }}/">{{ model_data.2.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.3.id }}</td>
-        <td>{{ model_data.3.task_parameters }}</td>
-        <td>{{ model_data.3.num_func_eval_per_task }}</td>
-        <td>{{ model_data.3.user.name }}</td>
-        <td>{{ model_data.3.time.tm_mon }}/{{ model_data.3.time.tm_mday }}/{{ model_data.3.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.3.uid }}/">{{ model_data.3.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.4.id }}</td>
-        <td>{{ model_data.4.task_parameters }}</td>
-        <td>{{ model_data.4.num_func_eval_per_task }}</td>
-        <td>{{ model_data.4.user.name }}</td>
-        <td>{{ model_data.4.time.tm_mon }}/{{ model_data.4.time.tm_mday }}/{{ model_data.4.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.4.uid }}/">{{ model_data.4.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.5.id }}</td>
-        <td>{{ model_data.5.task_parameters }}</td>
-        <td>{{ model_data.5.num_func_eval_per_task }}</td>
-        <td>{{ model_data.5.user.name }}</td>
-        <td>{{ model_data.5.time.tm_mon }}/{{ model_data.5.time.tm_mday }}/{{ model_data.5.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.5.uid }}/">{{ model_data.5.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.6.id }}</td>
-        <td>{{ model_data.6.task_parameters }}</td>
-        <td>{{ model_data.6.num_func_eval_per_task }}</td>
-        <td>{{ model_data.6.user.name }}</td>
-        <td>{{ model_data.6.time.tm_mon }}/{{ model_data.6.time.tm_mday }}/{{ model_data.6.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.6.uid }}/">{{ model_data.6.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.7.id }}</td>
-        <td>{{ model_data.7.task_parameters }}</td>
-        <td>{{ model_data.7.num_func_eval_per_task }}</td>
-        <td>{{ model_data.7.user.name }}</td>
-        <td>{{ model_data.7.time.tm_mon }}/{{ model_data.7.time.tm_mday }}/{{ model_data.7.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.7.uid }}/">{{ model_data.7.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.8.id }}</td>
-        <td>{{ model_data.8.task_parameters }}</td>
-        <td>{{ model_data.8.num_func_eval_per_task }}</td>
-        <td>{{ model_data.8.user.name }}</td>
-        <td>{{ model_data.8.time.tm_mon }}/{{ model_data.8.time.tm_mday }}/{{ model_data.8.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.8.uid }}/">{{ model_data.8.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.9.id }}</td>
-        <td>{{ model_data.9.task_parameters }}</td>
-        <td>{{ model_data.9.num_func_eval_per_task }}</td>
-        <td>{{ model_data.9.user.name }}</td>
-        <td>{{ model_data.9.time.tm_mon }}/{{ model_data.9.time.tm_mday }}/{{ model_data.9.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.9.uid }}/">{{ model_data.9.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.10.id }}</td>
-        <td>{{ model_data.10.task_parameters }}</td>
-        <td>{{ model_data.10.num_func_eval_per_task }}</td>
-        <td>{{ model_data.10.user.name }}</td>
-        <td>{{ model_data.10.time.tm_mon }}/{{ model_data.10.time.tm_mday }}/{{ model_data.10.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.10.uid }}/">{{ model_data.10.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.11.id }}</td>
-        <td>{{ model_data.11.task_parameters }}</td>
-        <td>{{ model_data.11.num_func_eval_per_task }}</td>
-        <td>{{ model_data.11.user.name }}</td>
-        <td>{{ model_data.11.time.tm_mon }}/{{ model_data.11.time.tm_mday }}/{{ model_data.11.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.11.uid }}/">{{ model_data.11.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.12.id }}</td>
-        <td>{{ model_data.12.task_parameters }}</td>
-        <td>{{ model_data.12.num_func_eval_per_task }}</td>
-        <td>{{ model_data.12.user.name }}</td>
-        <td>{{ model_data.12.time.tm_mon }}/{{ model_data.12.time.tm_mday }}/{{ model_data.12.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.12.uid }}/">{{ model_data.12.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.13.id }}</td>
-        <td>{{ model_data.13.task_parameters }}</td>
-        <td>{{ model_data.13.num_func_eval_per_task }}</td>
-        <td>{{ model_data.13.user.name }}</td>
-        <td>{{ model_data.13.time.tm_mon }}/{{ model_data.13.time.tm_mday }}/{{ model_data.13.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.13.uid }}/">{{ model_data.13.uid }}</a></td>
-      </tr>
-      {% endif %}
-      {% if num_model_data > 0 %}
-      <tr>
-        <td>{{ model_data.14.id }}</td>
-        <td>{{ model_data.14.task_parameters }}</td>
-        <td>{{ model_data.14.num_func_eval_per_task }}</td>
-        <td>{{ model_data.14.user.name }}</td>
-        <td>{{ model_data.14.time.tm_mon }}/{{ model_data.14.time.tm_mday }}/{{ model_data.14.time.tm_year }}</td>
-        <td><a href="/repo/archive/{{ model_data.14.uid }}/">{{ model_data.14.uid }}</a></td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-
-  <table>
-    <tr>
-      Pages:
-      <td>
-      {% for page_num_model_data in num_pages_model_data %}
-      <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
-        {% ifequal page_num_model_data current_page_model_data %}
-        [<b>{{ page_num_model_data }}</b>]
-        {% else %}
-        [{{ page_num_model_data }}]
-        {% endifequal %}
-      {% endfor %}
-      </td>
-    </tr>
-  </table>
+    </table>
+  </div>
 </div>
 
 {% else %}

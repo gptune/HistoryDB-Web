@@ -1,4 +1,5 @@
 <!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+<!-- Based on Bootstrap checkout form -->
 
 <!doctype html>
 
@@ -6,23 +7,12 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/scotch-tutorial.css' %}">
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
 
 <script>
   $(document).ready(function () {
     $('#nav-item-login').addClass('active');
   });
-</script>
-<script>
-  //$('#radioBtn a').on('click', function(){
-  //    alert("!@#!@#!@#");
-  //    var sel = $(this).data('title');
-  //    var tog = $(this).data('toggle');
-  //    $('#'+tog).prop('value', sel);
-
-  //    $('a[data-toggle="'+tog+'"]').not('[data-title="'+sel+'"]').removeClass('active').addClass('notActive');
-  //    $('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
-  //});
 
   function UpdateECP_Y() {
       document.getElementById("ecp_name_div").style.display = 'block';
@@ -37,119 +27,99 @@
   }
 </script>
 
-<style>
-  #radioBtn .notActive{
-      color: #3276b1;
-      background-color: #fff;
-  }
-</style>
-
-
-<div>
-  <form method="POST" action="{% url 'account:signup' %}">
-    {% csrf_token %}
+<div class="container" style="max-width: 560px">
+    <div class="py-5 text-center">
+        <h2>Sign Up</h2>
+        <p class="lead">
+    </div>
 
     <div class="container">
+        <form method="POST" action="{% url 'account:signup' %}" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username">Username</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                    <div class="invalid-feedback" style="width: 100%;">
+                        Your username is required.
+                    </div>
+                </div>
+            </div>
 
-    <div class="group">
-    <svg width="100" height="100" viewBox="0 0 16 16" class="bi bi-person-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-    </svg>
-    <h1>Sign Up</h1>
+            <div class="mb-3">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                <div class="invalid-feedback">
+                    Please enter a valid email address.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password1">Password <span class="text-muted"></span></label>
+                <input id="password1" name="password1" type="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="password2">Confirm Password <span class="text-muted"></span></label>
+                <input id="password2" name="password2" type="password" class="form-control" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="firstname">First name <span class="text-muted">(Optional)</span></label>
+                    <input type="text" class="form-control" id="firstname" name="firstname" placeholder="" value="" required>
+                    <div class="invalid-feedback">
+                        Valid first name is required.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="lastname">Last name <span class="text-muted">(Optional)</span></label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" placeholder="" value="" required>
+                    <div class="invalid-feedback">
+                        Valid last name is required.
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="position">Position <span class="text-muted">(Optional)</span></label>
+                <input type="text" class="form-control" id="position" name="position">
+            </div>
+
+            <div class="mb-3">
+                <label for="affiliation">Affiliation <span class="text-muted">(Optional)</span></label>
+                <input type="text" class="form-control" id="affiliation" name="affiliation">
+            </div>
+
+            <div class="d-block my-3">
+                <label>Are you part of Exascale Computing Project?</label>
+                <div class="custom-control custom-radio">
+                    <input id="ecp_member_y" name="ecp_member" value="Yes" type="radio" class="custom-control-input" onClick="UpdateECP_Y();" required>
+                    <label class="custom-control-label" for="ecp_member_y">Yes</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input id="ecp_member_n" name="ecp_member" value="No" type="radio" class="custom-control-input" onClick="UpdateECP_N();" required>
+                    <label class="custom-control-label" for="ecp_member_n">No</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input id="ecp_member_x" name="ecp_member" value="Unknown" type="radio" class="custom-control-input" onClick="UpdateECP_X();" checked required>
+                    <label class="custom-control-label" for="ecp_member_x">I don't know</label>
+                </div>
+            </div>
+
+            <div class="mb-3" id="ecp_name_div" style="display: none;">
+                <label for="ecp_project">Name of Your ECP Project <span class="text-muted">(Optional)</span></label>
+                <input type="text" class="form-control" id="ecp_project" name="ecp_project">
+            </div>
+
+            <hr class="mb-4">
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Sign Up</button>
+        </form>
     </div>
-
-
-    <div class="group">
-      <input name="username" type="text" required>
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>User ID <small>(required)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="email" type="email" required>
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Email <small>(required)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="password1" type="password" required>
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Password <small>(required)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="password2" type="password" required>
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Confirm Password <small>(required)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="firstname" type="text">
-      <span class="bar"></span>
-      <label>First Name <small>(optional)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="lastname" type="text">
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Last Name <small>(optional)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="position" type="text">
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Position <small>(optional)</small></label>
-    </div>
-
-    <div class="group">
-      <input name="affiliation" type="text">
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Affiliation <small>(optional)</small></label>
-    </div>
-
-    <h6>Are you part of Exascale Computing Project?</h6>
-    <!--    <div id="radioBtn" class="btn-group"> -->
-    <!--        <a class="btn btn-primary btn-sm notActive" data-toggle="fun" data-title="Y">YES</a> -->
-    <!--        <a class="btn btn-primary btn-sm active" data-toggle="fun" data-title="X">I don't know</a> -->
-    <!--        <a class="btn btn-primary btn-sm notActive" data-toggle="fun" data-title="N">NO</a> -->
-    <!--    </div> -->
-
-    <table>
-        <tr>
-            <td>Yes</td>
-            <td><input name="ecp_member" type="radio" value="Yes" name="upload_type" onClick="UpdateECP_Y();"></td>
-        </tr>
-        <tr>
-            <td>No</td>
-            <td><input name="ecp_member" type="radio" value="No" name="upload_type" onClick="UpdateECP_N();"></td>
-        </tr>
-        <tr>
-            <td>I don't know</td>
-            <td><input name="ecp_member" type="radio" value="Unknown" name="upload_type" checked="checked" onClick="UpdateECP_X();"></td>
-        </tr>
-    </table>
-
-    <br>
-    <div class="group" id="ecp_name_div" style="display: none;">
-      <input name="ecp_name" type="text">
-      <span class="highlight"></span>
-      <span class="bar"></span>
-      <label>Name of Your ECP Project <small>(optional)</small></label>
-    </div>
-
-    <br><br>
-
-    <input type="submit" class="btn btn-primary" value="Sign Up">
-
-    </div>
-  </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/form-validation.js' %}"></script>
 
 {% endblock %}
