@@ -7,60 +7,187 @@
 
 {% block content %}
 
+
 <script>
   $(document).ready(function () {
     $('#nav-item-home').addClass('active');
   });
 </script>
 
-<div class="starter-template">
-  <h1>GPTune History Database</h1>
-  <br>
-  <p class="lead">
-  <a href="https://github.com/gptune/GPTune">GPTune</a> is an autotuning framework which is designed to tune high-performance application codes as "black-boxes", running them for carefully chosen tuning parameter values and building a performance model based on the measured performance.
-  GPTune has a nice feature called <a href="https://github.com/gptune/GPTune/tree/history_db">History Database</a> which allows users to save and re-use their performance data to reduce the cost of the expensive black-box objective function (i.e. run application and measure the performance on a parallel machine).
-  <br><br>
-  </p>
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#777"/></svg>
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Harness the Power of Crowdtuning with GPTune</h1>
 
-  <h1>Harness the Power of Crowdtuning</h1>
-  <br>
-  <p class="lead">
-  The history database can leverage a shared public database provided by this web application, where users can store their performance data or download the performance data provided by other users.
-  With the shared database, everyone can benefit from (expensive) runs of widely used high-performance computing codes.
-  This website provides <a href="{% url 'repo:dashboard' %}">a nice dashboard</a> to search and download performance data from the public repository and <a href="{% url 'documentation:index' %}">an online user manual</a> to learn how to use the database.
-  <br><br>
-  </p>
-
-  <h1>Join our Community</h1>
-  <br>
-  <p class="lead">
-  Unregistered users can only view publicly available performance data.
-  This means that they cannot view data disclosed to authorized users or upload any kind of data into out database.
-  </p>
-  <p class="lead">
-  Please <a href="{% url 'account:signup' %}">Sign Up</a> to access more data in our history database!
-  Registered users can download data disclosed to registered users.
-  There is another privilege level called <a href="{% url 'main:membership' %}">Certified</a> for registered users.
-  The GPTune team will update the user status as "certified" if the user has entered user profile information correctly.
-  Certified users can access data for certified users and create collaboration groups to share data within your group members.
-  </p>
-  <p class="lead">
-  For more information about our membership, click <a href="{% url 'main:membership' %}">here</a>.
-  <br><br>
-  </p>
-
-  <h1>About Us</h1>
-  <br>
-  <p class="lead">
-  GPTune is a joint research project between <a href="https://lbl.gov">Lawrence Berkeley National Laboratory</a> and <a href="https://berkeley.edu">University of California at Berkeley</a>, and is part of the <a href="https://xsdk.info/ecp/">xSDK4ECP</a> effort supported by the Exascale Computing Project (ECP).
-  <div class="starter-template">
-    <a href="https://www.berkeley.edu/"><img src="{% static 'images/UCBerkeleyLogo.png' %}" width=200></a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://www.lbl.gov/"><img src="{% static 'images/BerkeleyLabLogo.png' %}" width=200></a>
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://www.nersc.gov/"><img src="{% static 'images/NERSCLogo.jpg' %}" width=200></a>
+          <p>GPTune is an autotuning framework for high-performance application codes. GPTune provides a web-based repository to allow users to save and re-use their performance tuning data, so everyone can benefit from (expensive) runs of widely used high-performance computing codes.
+          <p><a class="btn btn-lg btn-primary" href="#" role="button">Go To Dashboard</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#777"/></svg>
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Join Our Community</h1>
+          <p>Unregistered users can only view publicly available data. Please Sign Up For Free to access more data and use all the nice features of the history database!</p>
+          <p><a class="btn btn-lg btn-primary" href="{% url 'account:signup' %}" role="button">Sign Up For Free</a></p>
+        </div>
+      </div>
+    </div>
   </div>
-  </p>
+  <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+  </a>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <h1>Selected Examples in Our Database</h1>
+  </div>
+  <br>
+
+  <div class="row">
+    <div class="col-lg-4">
+      <img src="{% static 'images/ScaLAPACK.gif' %}" width=140>
+      <h2>ScaLAPACK</h2>
+      <p>The ScaLAPACK (or Scalable LAPACK) library includes a subset of LAPACK routines redesigned for distributed memory MIMD parallel computers. It is currently written in a Single-Program-Multiple-Data style using explicit message passing for interprocessor communication. It assumes matrices are laid out in a two-dimensional block cyclic decomposition.</p>
+      <form method="POST">
+        <b>Select Application</b><br>
+        {% csrf_token %}
+        <select name="application" id="applicationVal">
+          <option value="" label=" "selected>Select application</option>
+          {% if applications_avail_per_library %}
+            {% for application_avail in applications_avail_per_library.ScaLAPACK %}
+            <option value="{{ application_avail }}">{{ application_avail }}</option>
+            </li>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>View DB Data&raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+
+    <div class="col-lg-4">
+      <img src="{% static 'images/SuperLULogo.png' %}" width=200>
+      <h2>SuperLU_DIST</h2>
+      <p>SuperLU_DIST contains a set of subroutines to solve a sparse linear system A*X=B. It uses Gaussian elimination with static pivoting (GESP). Static pivoting is a technique that combines the numerical stability of partial pivoting with the scalability of Cholesky (no pivoting), to run accurately and efficiently on large numbers of processors.</p>
+      <form method="POST">
+        <b>Select Application</b><br>
+        {% csrf_token %}
+        <select name="application" id="applicationVal">
+          <option value="" label=" "selected>Select application</option>
+          {% if applications_avail_per_library %}
+            {% for application_avail in applications_avail_per_library.SuperLU %}
+            <option value="{{ application_avail }}">{{ application_avail }}</option>
+            </li>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>View DB Data&raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+
+    <div class="col-lg-4">
+      <img src="{% static 'images/HypreLogo.png' %}" width=280>
+      <h2>Hypre</h2>
+      <p>The Parallel High Performance Preconditioners (hypre) is a library of routines for scalable (parallel) solution of linear systems. The built-in BLOPEX package in addition allows solving eigenvalue problems.</p>
+      <form method="POST">
+        <b>Select Application</b><br>
+        {% csrf_token %}
+        <select name="application" id="applicationVal">
+          <option value="" label=" "selected>Select application</option>
+          {% if applications_avail_per_library %}
+            {% for application_avail in applications_avail_per_library.Hypre %}
+            <option value="{{ application_avail }}">{{ application_avail }}</option>
+            </li>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>View DB Data&raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4">
+      <img src="{% static 'images/LAPACK.gif' %}" width=140>
+      <h2>LAPACK</h2>
+      <p>LAPACK ("Linear Algebra Package") is a standard software library for numerical linear algebra. It provides routines for solving systems of linear equations and linear least squares, eigenvalue problems, and singular value decomposition.</p>
+      <form method="POST">
+        <b>Select Application</b><br>
+        {% csrf_token %}
+        <select name="application" id="applicationVal">
+          <option value="" label=" "selected>Select application</option>
+          {% if applications_avail_per_library %}
+            {% for application_avail in applications_avail_per_library.LAPACK %}
+            <option value="{{ application_avail }}">{{ application_avail }}</option>
+            </li>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>View DB Data&raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+
+    <div class="col-lg-4">
+      <img src="{% static 'images/BLAS-snapshot.jpg' %}" width=180>
+      <h2>BLAS</h2>
+      <p>The BLAS (Basic Linear Algebra Subprograms) are routines that provide standard building blocks for performing basic vector and matrix operations. The Level 1 BLAS perform scalar, vector and vector-vector operations, the Level 2 BLAS perform matrix-vector operations, and the Level 3 BLAS perform matrix-matrix operations.</p>
+      <form method="POST">
+        <b>Select Application</b><br>
+        {% csrf_token %}
+        <select name="application" id="applicationVal">
+          <option value="" label=" "selected>Select application</option>
+          {% if applications_avail_per_library %}
+            {% for application_avail in applications_avail_per_library.BLAS %}
+            <option value="{{ application_avail }}">{{ application_avail }}</option>
+            </li>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>View DB Data&raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

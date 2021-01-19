@@ -9,6 +9,7 @@ from django.contrib import admin
 app_name = "main"
 urlpatterns = [
     path('', views.index, name='index'),
+    path('about', views.about, name='about'),
     path('acknowledgement', views.acknowledgement, name='acknowledgement'),
     path('membership', views.membership, name='membership'),
     path('base', views.base, name='base'),

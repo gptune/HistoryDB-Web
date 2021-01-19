@@ -1,0 +1,56 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-about').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <br><br>
+  <h1>GPTune History Database</h1>
+  <br>
+  <p class="lead">
+  <a href="https://github.com/gptune/GPTune">GPTune</a> is an autotuning framework which is designed to tune high-performance application codes as "black-boxes", running them for carefully chosen tuning parameter values and building a performance model based on the measured performance.
+  GPTune has a nice feature called <a href="https://github.com/gptune/GPTune/tree/history_db">History Database</a> which allows users to save and re-use their performance data to reduce the cost of the expensive black-box objective function (i.e. run application and measure the performance on a parallel machine).
+  <br><br>
+  </p>
+
+  <h1>Harness the Power of Crowdtuning</h1>
+  <br>
+  <p class="lead">
+  The history database can leverage a shared public database provided by this web application, where users can store their performance data or download the performance data provided by other users.
+  With the shared database, everyone can benefit from (expensive) runs of widely used high-performance computing codes.
+  This website provides <a href="{% url 'repo:dashboard' %}">a nice dashboard</a> to search and download performance data from the public repository and <a href="{% url 'documentation:index' %}">an online user manual</a> to learn how to use the database.
+  <br><br>
+  </p>
+
+  <h1>Join our Community</h1>
+  <br>
+  <p class="lead">
+  Unregistered users can only view publicly available performance data.
+  This means that they cannot view data disclosed to authorized users or upload any kind of data into out database.
+  </p>
+  <p class="lead">
+  Please <a href="{% url 'account:signup' %}">Sign Up</a> to access more data in our history database!
+  Registered users can download data disclosed to registered users.
+  There is another privilege level called <a href="{% url 'main:membership' %}">Certified</a> for registered users.
+  The GPTune team will update the user status as "certified" if the user has entered user profile information correctly.
+  Certified users can access data for certified users and create collaboration groups to share data within your group members.
+  </p>
+  <p class="lead">
+  For more information about our membership, click <a href="{% url 'main:membership' %}">here</a>.
+  <br><br>
+  </p>
+
+</div>
+
+
+{% endblock %}
