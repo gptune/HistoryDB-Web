@@ -119,13 +119,58 @@ class ProfileDashboard(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
+        username = request.POST['username']
+        password = request.POST['password']
+        #print ("username: ", username)
+        #print ("password: ", password)
+
+        user = auth.authenticate(request, username=username, password=password)
+        if user is not None:
+            #user = User.objects.get(username=username)
+            user.profile.first_name = request.POST['firstname']
+            user.profile.last_name = request.POST['lastname']
+            user.profile.position = request.POST['position']
+            user.profile.affiliation = request.POST['affiliation']
+            user.profile.ecp_member = request.POST['ecp_member']
+
+            print ("firstname: ", request.POST['firstname'])
+            print ("lastname: ", request.POST['lastname'])
+            print ("position: ", request.POST['position'])
+            print ("affiliation: ", request.POST['affiliation'])
+            print ("ecp_member: ", request.POST['ecp_member'])
+
+            user.save()
+
+            return redirect(reverse_lazy('main:index'))
+        else:
+            return render(request, 'account/profile.html', {'error': 'username or password is incorrect'})
+
         return render(request, 'account/profile.html')
 
     def get(self, request, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
-        return render(request, 'account/profile.html')
+        user = User.objects.get(username=request.user.username)
+        username = request.user.username
+        email = request.user.email
+        firstname = request.user.first_name
+        lastname = request.user.last_name
+        position = request.user.profile.position
+        affiliation = request.user.profile.affiliation
+        ecp_member = request.user.profile.ecp_member
+
+        context = {
+                "username":username,
+                "email":email,
+                "firstname":firstname,
+                "lastname":lastname,
+                "position":position,
+                "affiliation":affiliation,
+                "ecp_member":ecp_member,
+                }
+
+        return render(request, 'account/profile.html', context)
 
 class GroupDashboard(TemplateView):
     def post(self, request, **kwargs):

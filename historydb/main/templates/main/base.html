@@ -57,11 +57,11 @@
         </li>
         {% if user.is_authenticated %}
         <li class="nav-item dropdown" id="nav-item-account">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In</a>
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item" href="{% url 'account:profile' %}">Your Profile</a>
-                <a class="dropdown-item" href="{% url 'account:group' %}">Your Groups</a>
-                <a class="dropdown-item" href="{% url 'account:data' %}">Your Data</a>
+                <a class="dropdown-item" href="{% url 'account:profile' %}">My Profile</a>
+                <a class="dropdown-item" href="{% url 'account:group' %}">My Groups</a>
+                <a class="dropdown-item" href="{% url 'account:data' %}">My Data</a>
                 <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
             </div>
         </li>

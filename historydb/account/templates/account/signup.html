@@ -13,18 +13,6 @@
   $(document).ready(function () {
     $('#nav-item-login').addClass('active');
   });
-
-  function UpdateECP_Y() {
-      document.getElementById("ecp_name_div").style.display = 'block';
-  }
-
-  function UpdateECP_N() {
-      document.getElementById("ecp_name_div").style.display = 'none';
-  }
-
-  function UpdateECP_X() {
-      document.getElementById("ecp_name_div").style.display = 'none';
-  }
 </script>
 
 <div class="container" style="max-width: 560px">
@@ -66,14 +54,14 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label for="firstname">First name <span class="text-muted">(Optional)</span></label>
+                    <label for="firstname">First Name</label>
                     <input type="text" class="form-control" id="firstname" name="firstname" placeholder="" value="" required>
                     <div class="invalid-feedback">
                         Valid first name is required.
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="lastname">Last name <span class="text-muted">(Optional)</span></label>
+                    <label for="lastname">Last Name</label>
                     <input type="text" class="form-control" id="lastname" name="lastname" placeholder="" value="" required>
                     <div class="invalid-feedback">
                         Valid last name is required.
@@ -82,12 +70,12 @@
             </div>
 
             <div class="mb-3">
-                <label for="position">Position <span class="text-muted">(Optional)</span></label>
+                <label for="position">Position</label>
                 <input type="text" class="form-control" id="position" name="position">
             </div>
 
             <div class="mb-3">
-                <label for="affiliation">Affiliation <span class="text-muted">(Optional)</span></label>
+                <label for="affiliation">Affiliation</label>
                 <input type="text" class="form-control" id="affiliation" name="affiliation">
             </div>
 
@@ -107,12 +95,7 @@
                 </div>
             </div>
 
-            <div class="mb-3" id="ecp_name_div" style="display: none;">
-                <label for="ecp_project">Name of Your ECP Project <span class="text-muted">(Optional)</span></label>
-                <input type="text" class="form-control" id="ecp_project" name="ecp_project">
-            </div>
-
-            <hr class="mb-4">
+            <br>
             <button class="btn btn-primary btn-lg btn-block" type="submit">Sign Up</button>
         </form>
     </div>
