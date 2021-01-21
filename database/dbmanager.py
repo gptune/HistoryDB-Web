@@ -385,6 +385,11 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_list
 
+    def add_user_to_group(self, groupname, username):
+        # [TODO] add user collaboration group information
+
+        return None
+
     def load_application_info(self, application_name, **kwargs):
         collection = self.db[application_name]
         application_info = collection.find({"document_type":{"$eq":"application_info"}})[0]

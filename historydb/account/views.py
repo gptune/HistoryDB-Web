@@ -27,7 +27,7 @@ def signup(request):
             user.profile.affiliation = request.POST["affiliation"]
             user.profile.ecp_member = request.POST["ecp_member"]
 
-            collaboration_groups = ['gptune-dev'] # TEMP: TODO: remove this
+            collaboration_groups = ['temp_initial_group'] # TEMP: TODO: remove this
             user.profile.collaboration_groups = json.dumps(collaboration_groups)
 
             # 6-digit activation code
@@ -194,19 +194,104 @@ class GroupDashboard(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You don't have permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
         collaboration_groups_str = request.user.profile.collaboration_groups
         print (collaboration_groups_str)
         context = {
                 "collaboration_groups": json.loads(collaboration_groups_str)
                 }
 
-        username = request.user.username
-        email = request.user.email
-        firstname = request.user.first_name
-        lastname = request.user.last_name
-        position = request.user.profile.position
-        affiliation = request.user.profile.affiliation
-        ecp_member = request.user.profile.ecp_member
+        return render(request, 'account/group.html', context)
+
+class AddGroupDashboard(TemplateView):
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        print ("group_name: ", request.POST['group_name'])
+        print ("group_invites: ", request.POST.getlist('group_invites'))
+        print ("group_description: ", request.POST['group_description'])
+
+        group_name = request.POST['group_name']
+        group_invites = request.POST.getlist('group_invites')
+        group_description = request.POST['group_description']
+
+        import random
+        activation_code = ""
+        for i in range(6):
+            activation_code += random.choice('1234567890')
+
+        try:
+            #from django.contrib.sites.shortcuts import get_current_site
+            #current_site = get_current_site(request)
+
+            for invite in group_invites:
+                print (invite)
+                if (invite != ''):
+                    message = 'Greetings from GPTune-Dev!\n'
+                    message += 'You are now invited to a collaboration group in GPTune History Database.\n'
+                    message += 'Inviter: ' + request.user.username + '\n'
+                    message += 'Inviter Email: ' + request.user.email + '\n'
+                    message += 'Collaboration Group: ' + group_name + '\n'
+                    message += 'Group Description: ' + group_description + '\n'
+                    message += 'Please use this code to confirm.\n'
+                    message += 'Code: ' + activation_code
+
+                    email = EmailMessage('Invitation to GPTune Collaboration Group!', message, to=[invite])
+                    email.send()
+        except:
+            print ("Something went wrong with email sending")
+
+        return render(request, 'account/group.html')
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You don't have permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
+        collaboration_groups_str = request.user.profile.collaboration_groups
+        print (collaboration_groups_str)
+        context = {
+                "collaboration_groups": json.loads(collaboration_groups_str)
+                }
+
+        return render(request, 'account/group.html', context)
+
+class UpdateGroupDashboard(TemplateView):
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        return render(request, 'account/group.html')
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You don't have permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
+        collaboration_groups_str = request.user.profile.collaboration_groups
+        print (collaboration_groups_str)
+        context = {
+                "collaboration_groups": json.loads(collaboration_groups_str)
+                }
 
         return render(request, 'account/group.html', context)
 

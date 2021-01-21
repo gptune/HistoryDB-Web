@@ -6,17 +6,22 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'css/scotch-tutorial.css' %}">
-
 <script>
 </script>
 
-<div>
+<div class="container" style="max-width: 560px">
+  <div class="py-5 text-center">
     <h1>My Performance Data</h1>
-</div>
+  </div>
 
-<div>
-
+  <div class="container">
+    <div class="mb-3">
+      <label for="applicationVal">Application</label>
+      <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="LoadGroupUpdateForm();">
+        <option value="" label="Search..." selected></option>
+      </select>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

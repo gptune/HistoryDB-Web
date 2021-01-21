@@ -518,6 +518,7 @@ class Upload(TemplateView):
 
         print ("Your data has been uploaded")
         context = {
+                "header": "Success",
                 "message": "Your data has been uploaded",
                 "num_added_func_eval": num_added_func_eval,
                 "num_added_model_data": num_added_model_data
@@ -588,7 +589,7 @@ class AddApp(TemplateView):
 
         print ("Added the application")
         context = {
-                "header": "Something Went Wrong",
+                "header": "Success",
                 "message": "The application information has been added"
                 }
         return render(request, 'repo/return.html', context)

@@ -13,21 +13,23 @@
 
 <script>
   $(document).ready(function () {
-    $('#nav-item-repo').addClass('active');
+    $('#nav-item-account').addClass('active');
   });
 
-  function UpdateUploadOptionFile() {
-    document.getElementById('file_upload_form_div').style.display = 'block';
-    document.getElementById('text_upload_form_div').style.display = 'none';
-  }
-
-  function UpdateUploadOptionText() {
-    document.getElementById('file_upload_form_div').style.display = 'none';
-    document.getElementById('text_upload_form_div').style.display = 'block';
+  function LoadGroupUpdateForm() {
+    if (document.getElementById('applicationVal')) {
+      alert('1234');
+      document.getElementById('update-form').style.display = 'block';
+      document.getElementById('add-form').style.display = 'none';
+    } else {
+      alert('2222');
+      document.getElementById('update-form').style.display = 'none';
+    }
   }
 
   function AddToggle() {
     if (document.getElementById('add-toggle').checked) {
+      document.getElementById('update-form').style.display = 'none';
       document.getElementById('add-form').style.display = 'block';
     } else {
       document.getElementById('add-form').style.display = 'none';
@@ -41,26 +43,48 @@
   </div>
 
   <div class="container">
-    <form method="POST" action="{% url 'repo:addapp' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label for="applicationVal">My groups</label>
+      <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="LoadGroupUpdateForm();">
+        <option value="" label="Search..." selected></option>
+        {% if collaboration_groups %}
+        {% for group in collaboration_groups %}
+        <option value="{{ group }}">{{ group }}</option>
+        {% endfor %}
+        {% else %}
+        {% endif %}
+      </select>
+    </div>
+
+    <form method="POST" action="{% url 'account:updategroup' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+      <div id="update-form" style="display:none;">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label for="group_invites">Group members</label>
+          <textarea class="form-control" id="group_invites" name="group_invites" rows="5"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="group_description">About this group</label>
+          <textarea class="form-control" id="group_description" name="group_description" rows="5"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+
+      </div>
+    </form>
+
+    <div class="mb-3">
+      <label for="add-toggle">Do you want to create more groups?</label>
+      <input id="add-toggle" type="checkbox" data-toggle="toggle" onchange="AddToggle()" data-on="Now Adding a New Group" data-width="100%" data-height="20" data-off="Click to Add" data-onstyle="primary" data-offstyle="success">
+    </div>
+
+    <form method="POST" action="{% url 'account:addgroup' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
       {% csrf_token %}
-      <div class="mb-3">
-        <label for="applicationVal">My groups</label>
-        <select class="custom-select d-block w-100" name="application" id="applicationVal">
-          <option value="" label="Search..." selected></option>
-          {% if collaboration_groups %}
-          {% for group in collaboration_groups %}
-          <option value="{{ group }}">{{ group }}</option>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="add-toggle">Do you want to create more groups?</label>
-        <input id="add-toggle" type="checkbox" data-toggle="toggle" onchange="AddToggle()" data-on="Now Adding a New Group" data-width="100%" data-height="20" data-off="Click to Add" data-onstyle="primary" data-offstyle="success">
-      </div>
-
       <div id="add-form" style="display:none;">
 
         <div class="mb-3">
@@ -69,8 +93,12 @@
         </div>
 
         <div class="mb-3">
-          <label for="group_description">Invites (you@example.com)</label>
-          <textarea class="form-control" id="group_description" name="group_description" rows="5"></textarea>
+          <label for="group_invites">Invites (you@example.com)</label>
+          <input type="email" class="form-control" name="group_invites">
+          <input type="email" class="form-control" name="group_invites">
+          <input type="email" class="form-control" name="group_invites">
+          <input type="email" class="form-control" name="group_invites">
+          <input type="email" class="form-control" name="group_invites">
         </div>
 
         <div class="mb-3">
