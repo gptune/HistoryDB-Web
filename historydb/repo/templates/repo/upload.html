@@ -6,66 +6,84 @@
 {% load static %}
 {% block content %}
 
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
   });
 
   function UpdateUploadOptionFile() {
-      document.getElementById("file_upload_div").style.display = 'block';
-      document.getElementById("json_textarea_div").style.display = 'none';
+    document.getElementById("file_upload_form_div").style.display = 'block';
+    document.getElementById("text_upload_form_div").style.display = 'none';
   }
 
   function UpdateUploadOptionText() {
-      document.getElementById("file_upload_div").style.display = 'none';
-      document.getElementById("json_textarea_div").style.display = 'block';
+    document.getElementById("file_upload_form_div").style.display = 'none';
+    document.getElementById("text_upload_form_div").style.display = 'block';
   }
 </script>
 
-<div class="container pt-3">
-  <h1>Upload Performance Data</h1><br>
+<div class="container" style="max-width: 560px">
+  <div class="py-5 text-center">
+    <h1>Upload Performance Data</h1>
+  </div>
 
-  <form method="POST" action="{% url 'repo:upload' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <b>Application name</b>
-    <br>
-    <input name="application" type="text" required>
-    <br>
-    <br>
-    <b>Library/category of the application</b>
-    <br>
-    <input name="library" type="text" required>
-    <br>
-    <br>
-    <b>Brief description of the application</b>
-    <br>
-    <input name="description" type="text">
-    <br>
-    <br>
-    <b>Upload type</b>
-    <br>
-    <input name="upload" type="radio" value="file_upload" name="upload_type" checked="checked" onChange="UpdateUploadOptionFile();">
-    <label for="file_upload">File upload</label>
-    <input name="upload" type="radio" value="json_text" name="upload_type" onChange="UpdateUploadOptionText();">
-    <label for="json_text">JSON text</label>
+  <div class="container">
+    <form method="POST" action="{% url 'repo:upload' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <div class="mb-3">
+          <label for="applicationVal">Application</label>
+          <select class="custom-select d-block w-100" name="application" id="applicationVal">
+            <option value="" label="Choose..." selected></option>
+            {% if applications_avail %}
+            {% for application_avail in applications_avail %}
+            <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
+            </li>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+          </select>
 
-    <br>
-    <br>
+          <div class="d-block text-right mt-3">
+              <label>Can't find your application?</label><br>
+              <a id="add_app_tab" href="{% url 'repo:addapp' %}">Add an application</a>
+          </div>
+        </div>
 
-    <div id="file_upload_div" style="display: block;">
-        <b>JSON file upload</b><br>
-        <input type="file" id="file_upload_id" name="file_upload_name">
-    </div>
+        <div class="d-block my-3">
+          <label>Upload Type</label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="file_upload" name="upload_type" type="radio" value="file_upload" checked  onChange="UpdateUploadOptionFile();" required>
+            <label class="custom-control-label" for="file_upload">JSON file</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="json_upload" name="upload_type" type="radio" value="json_upload" onChange="UpdateUploadOptionText();" required>
+            <label class="custom-control-label" for="json_upload">JSON text</label>
+          </div>
+        </div>
 
-    <div id="json_textarea_div" style="display: none;">
-        <b>JSON text data</b><br>
-        <textarea name="json_textarea" type="text" rows=20 cols=40></textarea>
-    </div>
+        <div class="form-group" id="file_upload_form_div" style="display: block;">
+          <label for="file_upload_form">JSON file upload</label>
+          <input type="file" class="form-control-file" id="file_upload_form" name="file_upload_form">
+        </div>
 
-    <br>
-    <br>
-    <input type="submit" class="btn btn-primary" value="upload">
-  </form>
+        <div class="form-group" id="text_upload_form_div" style="display: none;">
+          <label for="text_upload_form">JSON text upload</label>
+          <textarea class="form-control" id="text_upload_form" name="text_upload_form" rows="20"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 {% endblock %}

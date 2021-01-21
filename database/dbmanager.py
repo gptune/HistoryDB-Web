@@ -397,11 +397,11 @@ class HistoryDB_MongoDB(dict):
         collist = self.db.list_collection_names()
         for application_name in collist:
             collection = self.db[application_name]
-            num_func_evals = collection.count_documents({"document_type":{"$eq":"func_eval"}})
-            if num_func_evals > 0:
-                application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
-                application_info = application_info_list[0] # assume there is one document for application_info
-                applications_avail.append(application_info)
+            #num_func_evals = collection.count_documents({"document_type":{"$eq":"func_eval"}})
+            #if num_func_evals > 0:
+            application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
+            application_info = application_info_list[0] # assume there is one document for application_info
+            applications_avail.append(application_info)
 
         print ("APPLICATIONS_AVAIL")
         print (applications_avail)
@@ -434,11 +434,14 @@ class HistoryDB_MongoDB(dict):
             machine_deps_avail_givenapp_str = []
             func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
             for func_eval in func_eval_list:
-                machine_deps = func_eval["machine_deps"]
-                machine_deps_str = str(func_eval["machine_deps"])
-                if machine_deps_str not in machine_deps_avail_givenapp_str:
-                    machine_deps_avail_givenapp.append(machine_deps)
-                    machine_deps_avail_givenapp_str.append(machine_deps_str)
+                try:
+                    machine_deps = func_eval["machine_deps"]
+                    machine_deps_str = str(func_eval["machine_deps"])
+                    if machine_deps_str not in machine_deps_avail_givenapp_str:
+                        machine_deps_avail_givenapp.append(machine_deps)
+                        machine_deps_avail_givenapp_str.append(machine_deps_str)
+                except:
+                    continue
             machine_deps_avail[application_name] = machine_deps_avail_givenapp
 
         return machine_deps_avail
@@ -453,11 +456,14 @@ class HistoryDB_MongoDB(dict):
             software_deps_avail_givenapp_str = []
             func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
             for func_eval in func_eval_list:
-                software_deps = func_eval["compile_deps"]
-                software_deps_str = str(func_eval["compile_deps"])
-                if software_deps_str not in software_deps_avail_givenapp_str:
-                    software_deps_avail_givenapp.append(software_deps)
-                    software_deps_avail_givenapp_str.append(software_deps_str)
+                try:
+                    software_deps = func_eval["compile_deps"]
+                    software_deps_str = str(func_eval["compile_deps"])
+                    if software_deps_str not in software_deps_avail_givenapp_str:
+                        software_deps_avail_givenapp.append(software_deps)
+                        software_deps_avail_givenapp_str.append(software_deps_str)
+                except:
+                    continue
             software_deps_avail[application_name] = software_deps_avail_givenapp
 
         return software_deps_avail
@@ -507,13 +513,16 @@ class HistoryDB_MongoDB(dict):
         func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
 
         for func_eval in func_eval_list:
-            machine_deps_str = str(func_eval["machine_deps"])
-            software_deps_str = str(func_eval["compile_deps"])
-            user_str = str(func_eval["user_info"])
-            if (machine_deps_str in machine_deps_str_list):
-               if (software_deps_str in software_deps_str_list):
-                   if (user_str in users_str_list):
-                        func_eval_filtered.append(func_eval)
+            try:
+                machine_deps_str = str(func_eval["machine_deps"])
+                software_deps_str = str(func_eval["compile_deps"])
+                user_str = str(func_eval["user_info"])
+                if (machine_deps_str in machine_deps_str_list):
+                    if (software_deps_str in software_deps_str_list):
+                        if (user_str in users_str_list):
+                            func_eval_filtered.append(func_eval)
+            except:
+                continue
 
         return func_eval_filtered
 
@@ -554,7 +563,7 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, user_info, application_info, json_data):
+    def upload_application_info(self, user_info, application_info):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
@@ -564,21 +573,37 @@ class HistoryDB_MongoDB(dict):
         collection = self.db[application_name]
 
         application_info["document_type"] = "application_info"
+        application_info["user_info"] = user_info
         if not application_name in collist:
             collection.insert_one(application_info)
         elif collection.count_documents({}) == 0:
             collection.insert_one(application_info)
 
-        func_eval_list = json_data["func_eval"]
-        for func_eval in func_eval_list:
-            func_eval["document_type"] = "func_eval"
-            func_eval["user_info"] = user_info
-            if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
-                collection.insert_one(func_eval)
-            else:
-                print ("func_eval: " + func_eval["uid"] + " already exist")
-
         return None
+
+    def upload_func_eval(self, user_info, application_name, json_data):
+        print ("Upload function evaluation data")
+        collist = self.db.list_collection_names()
+        print ("Collection List: ", collist)
+        if not application_name in collist:
+            print (application_name + " is not exist in the database; create one.")
+        collection = self.db[application_name]
+
+        print (json_data)
+        num_added_func_eval = 0
+        if "func_eval" in json_data:
+            print ("func_eval exist")
+            func_eval_list = json_data["func_eval"]
+            for func_eval in func_eval_list:
+                func_eval["document_type"] = "func_eval"
+                func_eval["user_info"] = user_info
+                if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                    collection.insert_one(func_eval)
+                    num_added_func_eval += 1
+                else:
+                    print ("func_eval: " + func_eval["uid"] + " already exist")
+
+        return num_added_func_eval
 
     def load_model_data_filtered(self,
             application_name,
@@ -617,31 +642,29 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_filtered
 
-    def upload_model_data(self, user_info, application_name, application_library, json_data):
+    def upload_model_data(self, user_info, application_name, json_data):
         print ("Upload surrogate model data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
-        application_name = application_info["name"]
         if not application_name in collist:
             print (application_name + " is not exist in the database; create one.")
         collection = self.db[application_name]
 
-        application_info["document_type"] = "application_info"
-        if not application_name in collist:
-            collection.insert_one(application_info)
-        elif collection.count_documents({}) == 0:
-            collection.insert_one(application_info)
+        print (json_data)
+        num_added_model_data = 0
+        if "model_data" in json_data:
+            print ("model_data exist")
+            model_data_list = json_data["model_data"]
+            for model_data in model_data_list:
+                model_data["document_type"] = "model_data"
+                model_data["user_info"] = user_info
+                if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
+                    collection.insert_one(model_data)
+                    num_added_model_data += 1
+                else:
+                    print ("model_data: " + model_data["uid"] + " already exist")
 
-        model_data_list = json_data["model_data"]
-        for model_data in model_data_list:
-            model_data["document_type"] = "model_data"
-            model_data["user_info"] = user_info
-            if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
-                collection.insert_one(model_data)
-            else:
-                print ("model_data: " + model_data["uid"] + " already exist")
-
-        return None
+        return num_added_model_data
 
 if __name__ == "__main__":
     import sys

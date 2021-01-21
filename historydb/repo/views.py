@@ -469,30 +469,20 @@ class Upload(TemplateView):
         user_info["email"] = request.user.email
 
         application_name = request.POST["application"]
-        library_name = request.POST["library"]
-        application_description = request.POST["description"]
-
-        application_info = {}
-        application_info["name"] = application_name
-        application_info["library"] = library_name
-        application_info["description"] = application_description
-
         print ("application_name: ", application_name)
-        print ("library_name: ", library_name)
-        print ("application_description: ", application_description)
 
         json_data = {}
 
         upload_type = "file"
         try:
-            f = request.FILES["file_upload_name"]
+            f = request.FILES["file_upload_form"]
             data = f.read()
         except:
             upload_type = "text"
 
         if upload_type == "text":
             try:
-                json_text = request.POST["json_textarea"]
+                json_text = request.POST["text_upload_form"]
                 data = json_text
             except:
                 data = {}
@@ -506,17 +496,76 @@ class Upload(TemplateView):
 
         historydb = HistoryDB_MongoDB()
         try:
-            historydb.upload_func_eval(user_info, application_info, json_data)
-            historydb.upload_model_data(user_info, application_info, json_data)
+            num_added_func_eval = historydb.upload_func_eval(user_info, application_name, json_data)
+            num_added_model_data = historydb.upload_model_data(user_info, application_name, json_data)
         except:
             print ("Not able to upload the given data")
             context = { "message":"Not able to upload the given data" }
             return render(request, 'repo/return.html', context)
 
-        print ("Not able to upload the given data")
-        context = { "message":"Not able to upload the given data" }
+        print ("Your data has been uploaded")
+        context = {
+                "message": "Your data has been uploaded",
+                "num_added_func_eval": num_added_func_eval,
+                "num_added_model_data": num_added_model_data
+                }
         return render(request, 'repo/return.html', context)
-        #return render(request, 'repo/upload.html')
+
+class AddApp(TemplateView):
+    def get(self, request, **kwargs):
+        print ("======== Upload GET ========")
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        historydb = HistoryDB_MongoDB()
+        applications_avail = historydb.get_applications_avail()
+        applications_avail_per_library = historydb.get_applications_avail_per_library()
+
+        context = {
+                "applications_avail" : applications_avail,
+                "applications_avail_per_library" : applications_avail_per_library,
+                }
+
+        return render(request, 'repo/addapp.html', context)
+
+    def post(self, request, **kwargs):
+        print ("======== Upload POST ========")
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        print ("user name: ", request.user.username)
+        print ("user email: ", request.user.email)
+
+        user_info = {}
+        user_info["name"] = request.user.username
+        user_info["email"] = request.user.email
+
+        application_name = request.POST["application_name"]
+        library_name = request.POST["application_category"]
+        application_description = request.POST["application_description"]
+
+        application_info = {}
+        application_info["name"] = application_name
+        application_info["library"] = library_name
+        application_info["description"] = application_description
+
+        print ("application_name: ", application_name)
+        print ("library_name: ", library_name)
+        print ("application_description: ", application_description)
+
+        historydb = HistoryDB_MongoDB()
+        try:
+            historydb.upload_application_info(user_info, application_info)
+        except:
+            print ("Not able to add the application")
+            context = { "message": "Not able to add the application" }
+            return render(request, 'repo/return.html', context)
+
+        print ("Added the application")
+        context = { "message": "The application information has been added" }
+        return render(request, 'repo/return.html', context)
 
 def query(request, perf_data_uid):
     historydb = HistoryDB_MongoDB()

@@ -15,25 +15,25 @@
 </script>
 
 <div class="container">
-    <form method="POST" action="{% url 'account:login' %}" class="form-signin">
-        {% csrf_token %}
+  <form method="POST" action="{% url 'account:login' %}" class="form-signin">
+    {% csrf_token %}
 
-        <div class="py-5 text-center">
-            <h1>Log In</h1>
-        </div>
-        <label for="username" class="sr-only">Username</label>
-        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-        <br>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    </form>
-
-    <a href="{% url 'account:signup' %}">
-        <button class="btn btn-primary btn-lg btn-block" style="display: blcok; width:300px; margin: 0 auto;">Sign Up</button>
-    </a>
-
+    <div class="py-5 text-center">
+      <h1>Log In</h1>
+    </div>
+    <label for="username" class="sr-only">Username</label>
+    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
     <br>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+
+  <a href="{% url 'account:signup' %}">
+    <button class="btn btn-primary btn-lg btn-block" style="display: blcok; width:300px; margin: 0 auto;">Sign Up</button>
+  </a>
+
+  <br>
 
 </div>
 

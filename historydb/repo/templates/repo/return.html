@@ -1,0 +1,19 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<h1>Upload Performance Data</h1><br>
+
+<p>
+<h2>
+{{ message | pprint }}
+{{ num_added_func_eval | pprint }}
+{{ num_added_model_data | pprint }}
+</h2>
+</p>
+
+{% endblock %}
