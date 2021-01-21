@@ -437,6 +437,13 @@ class Upload(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
         historydb = HistoryDB_MongoDB()
 
         applications_avail = historydb.get_applications_avail()
@@ -491,7 +498,10 @@ class Upload(TemplateView):
             json_data = json.loads(data)
         except:
             print ("Not able to convert to dictionary")
-            context = { "message":"Not able to convert data to dictionary" }
+            context = {
+                    "header": "Something Went Wrong",
+                    "message": "Not able to convert data to dictionary"
+                    }
             return render(request, 'repo/return.html', context)
 
         historydb = HistoryDB_MongoDB()
@@ -500,7 +510,10 @@ class Upload(TemplateView):
             num_added_model_data = historydb.upload_model_data(user_info, application_name, json_data)
         except:
             print ("Not able to upload the given data")
-            context = { "message":"Not able to upload the given data" }
+            context = {
+                    "header": "Something Went Wrong",
+                    "message": "Not able to upload the given data"
+                    }
             return render(request, 'repo/return.html', context)
 
         print ("Your data has been uploaded")
@@ -517,6 +530,13 @@ class AddApp(TemplateView):
 
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
+
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
 
         historydb = HistoryDB_MongoDB()
         applications_avail = historydb.get_applications_avail()
@@ -560,11 +580,17 @@ class AddApp(TemplateView):
             historydb.upload_application_info(user_info, application_info)
         except:
             print ("Not able to add the application")
-            context = { "message": "Not able to add the application" }
+            context = {
+                    "header": "Something Went Wrong",
+                    "message": "Not able to add the application"
+                    }
             return render(request, 'repo/return.html', context)
 
         print ("Added the application")
-        context = { "message": "The application information has been added" }
+        context = {
+                "header": "Something Went Wrong",
+                "message": "The application information has been added"
+                }
         return render(request, 'repo/return.html', context)
 
 def query(request, perf_data_uid):

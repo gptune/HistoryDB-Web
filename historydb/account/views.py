@@ -8,6 +8,8 @@ from django.urls import reverse_lazy
 
 from django.core.mail import EmailMessage
 
+import json
+
 # Create your views here.
 def signup(request):
     if request.method == "POST":
@@ -25,6 +27,9 @@ def signup(request):
             user.profile.affiliation = request.POST["affiliation"]
             user.profile.ecp_member = request.POST["ecp_member"]
 
+            collaboration_groups = ['gptune-dev'] # TEMP: TODO: remove this
+            user.profile.collaboration_groups = json.dumps(collaboration_groups)
+
             # 6-digit activation code
             import random
             random.seed()
@@ -41,12 +46,12 @@ def signup(request):
                 from django.contrib.sites.shortcuts import get_current_site
                 current_site = get_current_site(request)
 
-                message = 'Greetings from GPTune History Database!\n'
+                message = 'Greetings from GPTune-Dev!\n'
                 message += 'You are registered in the GPTune History Database Web.\n'
                 message += 'Please use this code to activate your account.\n'
                 message += 'Code: ' + activation_code
 
-                email = EmailMessage('Greetings from GPTune History Database', message, to=[request.POST["email"]])
+                email = EmailMessage('Thank you for signing up!', message, to=[request.POST["email"]])
                 email.send()
             except:
                 print ("Something went wrong with email sending")
@@ -97,7 +102,13 @@ def activate(request, username):
         if (activation_code == user.profile.activation_code):
             user.is_active = True
             user.save()
-            return redirect(reverse_lazy('main:index'))
+
+            context = {
+                    "header": "Registeration Completed",
+                    "message": "Your registration is completed, but please wait for our approval to use our history database!"
+                    }
+            return render(request, 'account/return.html', context)
+            #return redirect(reverse_lazy('main:index'))
         else:
             return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
 
@@ -151,7 +162,7 @@ class ProfileDashboard(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
-        user = User.objects.get(username=request.user.username)
+        #user = User.objects.get(username=request.user.username)
         username = request.user.username
         email = request.user.email
         firstname = request.user.first_name
@@ -183,7 +194,21 @@ class GroupDashboard(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
-        return render(request, 'account/group.html')
+        collaboration_groups_str = request.user.profile.collaboration_groups
+        print (collaboration_groups_str)
+        context = {
+                "collaboration_groups": json.loads(collaboration_groups_str)
+                }
+
+        username = request.user.username
+        email = request.user.email
+        firstname = request.user.first_name
+        lastname = request.user.last_name
+        position = request.user.profile.position
+        affiliation = request.user.profile.affiliation
+        ecp_member = request.user.profile.ecp_member
+
+        return render(request, 'account/group.html', context)
 
 class DataDashboard(TemplateView):
     def post(self, request, **kwargs):
