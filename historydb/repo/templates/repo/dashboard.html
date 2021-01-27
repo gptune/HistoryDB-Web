@@ -6,6 +6,8 @@
 {% load static %}
 {% block content %}
 
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
@@ -13,60 +15,65 @@
 </script>
 
 <div class="container pt-3">
-<form method="POST">
-  {% csrf_token %}
-  <div class="well">
-    <h2 style="margin-top: 0">Search Filter</h2>
-    <div class="row">
-      <div class="form-group col">
-          <b>Application</b><br>
-          <script>
-              var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
-              var software_deps_avail = {{ software_deps_avail | safe | escape }};
-              var users_avail = {{ users_avail | safe | escape }};
-          </script>
-          <select name="application" id="applicationVal" onChange="UpdateDeps(machine_deps_avail, software_deps_avail, users_avail)";>
-            <option value="" label=" "selected>Select application</option>
-            {% if applications_avail %}
-              {% for application_avail in applications_avail %}
+  <form method="POST">
+    {% csrf_token %}
+    <div class="well">
+      <h2 style="margin-top: 0">Search Filter</h2>
+      <div class="mb-3">
+        <b>Application</b><br>
+        <script>
+          var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
+          var software_deps_avail = {{ software_deps_avail | safe | escape }};
+          var users_avail = {{ users_avail | safe | escape }};
+        </script>
+        <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="UpdateDeps(machine_deps_avail, software_deps_avail, users_avail);">
+          <option value="" label="Choose..." selected></option>
+          {% if applications_avail %}
+            {% for application_avail in applications_avail %}
               <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
-              </li>
-              {% endfor %}
-            {% else %}
-            {% endif %}
-          </select>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
       </div>
-      <div class="form-group col" id="machine_deps">
+
+      <div>
+        <div id="select_deps">
+        </div>
+        <div class="container mb-3 row">
+          <div class="col" id="machine_deps">
+          </div>
+          <div class="col" id="software_deps">
+          </div>
+          <div class="col" id="user_deps">
+          </div>
+          <div class="col" id="search_data">
+          </div>
+        </div>
       </div>
-      <div class="form-group col" id="software_deps">
-      </div>
-      <div class="form-group col" id="users_deps">
-      </div>
-      <div class="form-group col" id="search_data">
-      </div>
+
+      <button type="submit" class="btn btn-primary">
+        <span class="glyphicon glyphicon-search"></span> Search
+      </button>
     </div>
-    <button type="submit" class="btn btn-primary">
-      <span class="glyphicon glyphicon-search"></span> Search
-    </button>
-  </div>
-</form>
+  </form>
 </div>
 
 {% ifnotequal application "" %}
 <div class="container">
   <br><br>
   <hr>
-  <div class="well">
-    <h2>Search Condition</h2>
-    <div class="row">
-      <div class="form-group col" id="application_cond">
-      </div>
-      <div class="form-group col" id="machine_deps_cond">
-      </div>
-      <div class="form-group col" id="software_deps_cond">
-      </div>
-      <div class="form-group col" id="users_cond">
-      </div>
+  <h2>Search Condition</h2>
+  <div id="select_deps">
+  </div>
+  <div class="container mb-3 row">
+    <div class="col" id="application_cond">
+    </div>
+    <div class="col" id="machine_deps_cond">
+    </div>
+    <div class="col" id="software_deps_cond">
+    </div>
+    <div class="col" id="users_cond">
     </div>
   </div>
 </div>
@@ -82,12 +89,11 @@
 {% endifnotequal %}
 
 {% ifnotequal num_func_eval 0 %}
-<br><br>
-<hr>
-
 <div class="container">
+  <br><br>
+  <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Performance Data</h2>
+    <h2 class="h2">Function Evaluation Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->

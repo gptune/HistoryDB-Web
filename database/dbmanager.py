@@ -492,6 +492,16 @@ class HistoryDB_MongoDB(dict):
 
         return users_avail
 
+    def get_search_data_avail(self, **kwargs):
+        search_data_avail = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            search_data_avail[application_name]  = ["func_eval", "model_data"]
+            # TODO: collect available search data type from database
+
+        return search_data_avail
+
     def load_func_eval_filtered(self,
             application_name,
             machine_deps_list,

@@ -209,6 +209,8 @@ class Dashboard(TemplateView):
         print (users_list)
 
         search_data = request.POST.getlist("search_data")
+        print ("search_data")
+        print (search_data)
 
         if "func_eval" in search_data:
             perf_data = historydb.load_func_eval_filtered(application_name = application,
