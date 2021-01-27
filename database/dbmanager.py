@@ -435,6 +435,45 @@ class HistoryDB_MongoDB(dict):
 
         return applications_avail_per_library
 
+    def get_user_applications_avail(self, username, **kwargs):
+        applications_avail = []
+
+        collist = self.db.list_collection_names()
+        for application_name in collist:
+            try:
+                collection = self.db[application_name]
+                application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
+                application_info = application_info_list[0]
+                applications_avail.append(application_info)
+            except:
+                # probably there is no document for application_info
+                continue
+
+        print ("APPLICATIONS_AVAIL")
+        print (applications_avail)
+
+        return applications_avail
+
+    def get_user_applications_avail_per_library(self, username, **kwargs):
+        applications_avail_per_library = {}
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            try:
+                application_db = self.db[application_name]
+                application_info_list = application_db.find({"document_type":{"$eq":"application_info"}})
+                application_info = application_info_list[0]
+                application_library = application_info["library"]
+                if not application_library in applications_avail_per_library:
+                    applications_avail_per_library[application_library] = []
+                application_name = application_info["name"]
+                applications_avail_per_library[application_library].append(application_name)
+            except:
+                # probably there is no document for application_info
+                continue
+
+        return applications_avail_per_library
+
     def get_machine_deps_avail(self, **kwargs):
         machine_deps_avail = {}
 

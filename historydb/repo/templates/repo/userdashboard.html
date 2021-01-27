@@ -1,0 +1,38 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div class="container pt-3">
+  <div class="py-5 text-center">
+    <h1>My Performance Data</h1>
+  </div>
+
+  <div class="container">
+    <div class="mb-3">
+      <label for="applicationVal">Application</label>
+      <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="LoadGroupUpdateForm();">
+        <option value="" label="Search..." selected></option>
+        {% if applications_avail %}
+          {% for application_avail in applications_avail %}
+            <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
+          {% endfor %}
+        {% else %}
+        {% endif %}
+      </select>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
