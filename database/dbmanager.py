@@ -401,12 +401,14 @@ class HistoryDB_MongoDB(dict):
 
         collist = self.db.list_collection_names()
         for application_name in collist:
-            collection = self.db[application_name]
-            #num_func_evals = collection.count_documents({"document_type":{"$eq":"func_eval"}})
-            #if num_func_evals > 0:
-            application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
-            application_info = application_info_list[0] # assume there is one document for application_info
-            applications_avail.append(application_info)
+            try:
+                collection = self.db[application_name]
+                application_info_list = self.db[application_name].find({"document_type":{"$eq":"application_info"}})
+                application_info = application_info_list[0]
+                applications_avail.append(application_info)
+            except:
+                # probably there is no document for application_info
+                continue
 
         print ("APPLICATIONS_AVAIL")
         print (applications_avail)
@@ -418,14 +420,18 @@ class HistoryDB_MongoDB(dict):
 
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
-            application_db = self.db[application_name]
-            application_info_list = application_db.find({"document_type":{"$eq":"application_info"}})
-            application_info = application_info_list[0] # assume there is one document for application_info
-            application_library = application_info["library"]
-            if not application_library in applications_avail_per_library:
-                applications_avail_per_library[application_library] = []
-            application_name = application_info["name"]
-            applications_avail_per_library[application_library].append(application_name)
+            try:
+                application_db = self.db[application_name]
+                application_info_list = application_db.find({"document_type":{"$eq":"application_info"}})
+                application_info = application_info_list[0]
+                application_library = application_info["library"]
+                if not application_library in applications_avail_per_library:
+                    applications_avail_per_library[application_library] = []
+                application_name = application_info["name"]
+                applications_avail_per_library[application_library].append(application_name)
+            except:
+                # probably there is no document for application_info
+                continue
 
         return applications_avail_per_library
 

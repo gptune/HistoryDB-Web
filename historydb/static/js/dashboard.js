@@ -4,7 +4,7 @@ function UpdateDeps(machine_deps_avail, software_deps_avail, users_avail, search
     var application_var = document.getElementById("applicationVal");
     var application_name = application_var.options[application_var.selectedIndex].value;
 
-    document.getElementById('select_deps').innerHTML = "<b>Select available tuning configurations</b>";
+    document.getElementById('select_deps').innerHTML = "<b>Select available tuning configurations (click each option to see the details)</b>";
 
     var machine_deps_div = document.getElementById("machine_deps");
     machine_deps_div.innerHTML = "Machine configurations";
