@@ -221,6 +221,9 @@ class HistoryDB_JSON(dict):
                         return func_eval
         return None
 
+    def load_func_eval_by_user(self, user_email):
+        return None
+
     def load_model_data_by_uid(self, model_data_uid):
         for application_file in os.listdir(self.json_path):
             with open(self.json_path+"/"+application_file, "r") as f_in:
@@ -245,6 +248,9 @@ class HistoryDB_JSON(dict):
                 for model_data in model_data_list:
                     if model_data["uid"] == perf_data_uid:
                         return model_data
+        return None
+
+    def load_model_data_by_user(self, user_email):
         return None
 
     def upload_func_eval(self, user_info, application_name, perf_file_path):
@@ -618,16 +624,19 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def load_model_data_by_uid(self, model_data_uid):
+    def load_func_eval_by_user(self, user_email):
+        func_eval_by_user = []
+
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
             application_db = self.db[application_name]
-            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
-            for model_data in model_data_list:
-                if model_data["uid"] == model_data_uid:
-                    return model_data
+            func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                if func_eval["user_info"]["email"] == user_email:
+                    func_eval["application"] = application_name
+                    func_eval_by_user.append(func_eval)
 
-        return None
+        return func_eval_by_user
 
     def load_perf_data_by_uid(self, perf_data_uid, user_email):
         applications_list = self.db.list_collection_names()
@@ -727,6 +736,31 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_filtered
 
+    def load_model_data_by_uid(self, model_data_uid):
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+            for model_data in model_data_list:
+                if model_data["uid"] == model_data_uid:
+                    return model_data
+
+        return None
+
+    def load_model_data_by_user(self, user_email):
+        model_data_by_user = []
+
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+            for model_data in model_data_list:
+                if model_data["user_info"]["email"] == user_email:
+                    model_data["application"] = application_name
+                    model_data_by_user.append(model_data)
+
+        return model_data_by_user
+
     def upload_model_data(self, json_data, user_info, application_name, accessibility):
         print ("Upload surrogate model data")
         collist = self.db.list_collection_names()
@@ -751,6 +785,12 @@ class HistoryDB_MongoDB(dict):
                     print ("model_data: " + model_data["uid"] + " already exist")
 
         return num_added_model_data
+
+    def delete_perf_data_by_uid(self, application_name, entry_uid):
+        application_db = self.db[application_name]
+        application_db.delete_one({"uid": entry_uid})
+
+        return None
 
 if __name__ == "__main__":
     import sys

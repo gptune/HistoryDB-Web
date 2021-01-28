@@ -6,33 +6,325 @@
 {% load static %}
 {% block content %}
 
-<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
-
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
   });
 </script>
 
-<div class="container pt-3">
-  <div class="py-5 text-center">
-    <h1>My Performance Data</h1>
-  </div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
-  <div class="container">
-    <div class="mb-3">
-      <label for="applicationVal">Application</label>
-      <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="LoadGroupUpdateForm();">
-        <option value="" label="Search..." selected></option>
-        {% if applications_avail %}
-          {% for application_avail in applications_avail %}
-            <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
-          {% endfor %}
-        {% else %}
+{% ifnotequal num_func_eval 0 %}
+<div class="container">
+  <br><br>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Function Evaluation Data</h2>
+  </div>
+  <div class="table-responsive">
+      <p>Envelope icon: <span class="glyphicon glyphicon-envelope"></span></p>
+    number of function evaluation result: {{ num_func_eval }}
+<label><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></label>
+    <br><br>
+
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Application</th>
+          <th>Input Task</th>
+          <th>Tuning Parameter</th>
+          <th>Output Result</th>
+          <th>Username</th>
+          <th>Date</th>
+          <th>Accessibility</th>
+          <th>Details</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for func_eval_elem in func_eval %}
+          <tr>
+            <td><a href="/repo/archive/{{ func_eval_elem.uid }}/">{{ func_eval_elem.id }}</a></td>
+            <td>{{ func_eval_elem.application }}</td>
+            <td>{{ func_eval_elem.I }}</td>
+            <td>{{ func_eval_elem.P }}</td>
+            <td>{{ func_eval_elem.O }}</td>
+            <td>{{ func_eval_elem.user_info.name }}</td>
+            <td>{{ func_eval_elem.time.tm_mon }}/{{ func_eval_elem.time.tm_mday }}/{{ func_eval_elem.time.tm_year }}</td>
+            <td>{{ func_eval_elem.accessibility.type }} <span class="glyphicon glyphicon-edit"></span></td>
+            <td><a href="/repo/archive/{{ func_eval_elem.uid }}/"><span class="glyphicon glyphicon-file"></span></a></td>
+            <td><a data-toggle="modal" data-target="#deleteModalLong_{{ func_eval_elem.uid }}"><span class="glyphicon glyphicon-trash"></span></a></td>
+          </tr>
+
+          <div class="modal fade" id="deleteModalLong_{{ func_eval_elem.uid }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteModalLongTitle">Deleting Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'repo:entrydel' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_uid" value={{ func_eval_elem.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ func_eval_elem.application }}></input>
+                  <div class="modal-body">
+                    Are you sure to delete this item?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-primary">Yes</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </tbody>
+    </table>
+    <table>
+      <tr>
+        Pages:
+        <td>
+        {% for page_num_func_eval in num_pages_func_eval %}
+        <!-- <a href="/listSpecificPageWork?current_page_func_eval={{page_num_func_eval}}" > -->
+        <a href="{% url 'repo:userdashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+          {% ifequal page_num_func_eval current_page_func_eval %}
+          [<b>{{ page_num_func_eval }}</b>]
+          {% else %}
+          [{{ page_num_func_eval }}]
+          {% endifequal %}
+        {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% else %}
+{% endifnotequal %}
+
+{% ifnotequal num_model_data 0 %}
+<div class="container">
+  <br><br>
+  <hr>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Model Data</h2>
+  </div>
+  <div class="table-responsive">
+    number of function evaluation result: {{ num_model_data }}
+    <br><br>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Application</th>
+          <th>Trained task parameters to build the model</th>
+          <th>Num function evaluations per task</th>
+          <th>User Name</th>
+          <th>Date</th>
+          <th>UID (Details)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.0.id }}</td>
+          <td>{{ model_data.0.task_parameters }}</td>
+          <td>{{ model_data.0.num_func_eval_per_task }}</td>
+          <td>{{ model_data.0.user_info.name }}</td>
+          <td>{{ model_data.0.time.tm_mon }}/{{ model_data.0.time.tm_mday }}/{{ model_data.0.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.0.uid }}/">{{ model_data.0.uid }}</a></td>
+        </tr>
         {% endif %}
-      </select>
+        {% if num_model_data > 1 %}
+        <tr>
+          <td>{{ model_data.1.id }}</td>
+          <td>{{ model_data.1.task_parameters }}</td>
+          <td>{{ model_data.1.num_func_eval_per_task }}</td>
+          <td>{{ model_data.1.user_info.name }}</td>
+          <td>{{ model_data.1.time.tm_mon }}/{{ model_data.1.time.tm_mday }}/{{ model_data.1.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.1.uid }}/">{{ model_data.1.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.2.id }}</td>
+          <td>{{ model_data.2.task_parameters }}</td>
+          <td>{{ model_data.2.num_func_eval_per_task }}</td>
+          <td>{{ model_data.2.user_info.name }}</td>
+          <td>{{ model_data.2.time.tm_mon }}/{{ model_data.2.time.tm_mday }}/{{ model_data.2.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.2.uid }}/">{{ model_data.2.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.3.id }}</td>
+          <td>{{ model_data.3.task_parameters }}</td>
+          <td>{{ model_data.3.num_func_eval_per_task }}</td>
+          <td>{{ model_data.3.user_info.name }}</td>
+          <td>{{ model_data.3.time.tm_mon }}/{{ model_data.3.time.tm_mday }}/{{ model_data.3.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.3.uid }}/">{{ model_data.3.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.4.id }}</td>
+          <td>{{ model_data.4.task_parameters }}</td>
+          <td>{{ model_data.4.num_func_eval_per_task }}</td>
+          <td>{{ model_data.4.user_info.name }}</td>
+          <td>{{ model_data.4.time.tm_mon }}/{{ model_data.4.time.tm_mday }}/{{ model_data.4.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.4.uid }}/">{{ model_data.4.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.5.id }}</td>
+          <td>{{ model_data.5.task_parameters }}</td>
+          <td>{{ model_data.5.num_func_eval_per_task }}</td>
+          <td>{{ model_data.5.user_info.name }}</td>
+          <td>{{ model_data.5.time.tm_mon }}/{{ model_data.5.time.tm_mday }}/{{ model_data.5.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.5.uid }}/">{{ model_data.5.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.6.id }}</td>
+          <td>{{ model_data.6.task_parameters }}</td>
+          <td>{{ model_data.6.num_func_eval_per_task }}</td>
+          <td>{{ model_data.6.user_info.name }}</td>
+          <td>{{ model_data.6.time.tm_mon }}/{{ model_data.6.time.tm_mday }}/{{ model_data.6.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.6.uid }}/">{{ model_data.6.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.7.id }}</td>
+          <td>{{ model_data.7.task_parameters }}</td>
+          <td>{{ model_data.7.num_func_eval_per_task }}</td>
+          <td>{{ model_data.7.user_info.name }}</td>
+          <td>{{ model_data.7.time.tm_mon }}/{{ model_data.7.time.tm_mday }}/{{ model_data.7.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.7.uid }}/">{{ model_data.7.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.8.id }}</td>
+          <td>{{ model_data.8.task_parameters }}</td>
+          <td>{{ model_data.8.num_func_eval_per_task }}</td>
+          <td>{{ model_data.8.user_info.name }}</td>
+          <td>{{ model_data.8.time.tm_mon }}/{{ model_data.8.time.tm_mday }}/{{ model_data.8.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.8.uid }}/">{{ model_data.8.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.9.id }}</td>
+          <td>{{ model_data.9.task_parameters }}</td>
+          <td>{{ model_data.9.num_func_eval_per_task }}</td>
+          <td>{{ model_data.9.user_info.name }}</td>
+          <td>{{ model_data.9.time.tm_mon }}/{{ model_data.9.time.tm_mday }}/{{ model_data.9.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.9.uid }}/">{{ model_data.9.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.10.id }}</td>
+          <td>{{ model_data.10.task_parameters }}</td>
+          <td>{{ model_data.10.num_func_eval_per_task }}</td>
+          <td>{{ model_data.10.user_info.name }}</td>
+          <td>{{ model_data.10.time.tm_mon }}/{{ model_data.10.time.tm_mday }}/{{ model_data.10.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.10.uid }}/">{{ model_data.10.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.11.id }}</td>
+          <td>{{ model_data.11.task_parameters }}</td>
+          <td>{{ model_data.11.num_func_eval_per_task }}</td>
+          <td>{{ model_data.11.user_info.name }}</td>
+          <td>{{ model_data.11.time.tm_mon }}/{{ model_data.11.time.tm_mday }}/{{ model_data.11.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.11.uid }}/">{{ model_data.11.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.12.id }}</td>
+          <td>{{ model_data.12.task_parameters }}</td>
+          <td>{{ model_data.12.num_func_eval_per_task }}</td>
+          <td>{{ model_data.12.user_info.name }}</td>
+          <td>{{ model_data.12.time.tm_mon }}/{{ model_data.12.time.tm_mday }}/{{ model_data.12.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.12.uid }}/">{{ model_data.12.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.13.id }}</td>
+          <td>{{ model_data.13.task_parameters }}</td>
+          <td>{{ model_data.13.num_func_eval_per_task }}</td>
+          <td>{{ model_data.13.user_info.name }}</td>
+          <td>{{ model_data.13.time.tm_mon }}/{{ model_data.13.time.tm_mday }}/{{ model_data.13.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.13.uid }}/">{{ model_data.13.uid }}</a></td>
+        </tr>
+        {% endif %}
+        {% if num_model_data > 0 %}
+        <tr>
+          <td>{{ model_data.14.id }}</td>
+          <td>{{ model_data.14.task_parameters }}</td>
+          <td>{{ model_data.14.num_func_eval_per_task }}</td>
+          <td>{{ model_data.14.user_info.name }}</td>
+          <td>{{ model_data.14.time.tm_mon }}/{{ model_data.14.time.tm_mday }}/{{ model_data.14.time.tm_year }}</td>
+          <td><a href="/repo/archive/{{ model_data.14.uid }}/">{{ model_data.14.uid }}</a></td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    <table>
+      <tr>
+        Pages:
+        <td>
+        {% for page_num_model_data in num_pages_model_data %}
+        <a href="{% url 'repo:userdashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+          {% ifequal page_num_model_data current_page_model_data %}
+          [<b>{{ page_num_model_data }}</b>]
+          {% else %}
+          [{{ page_num_model_data }}]
+          {% endifequal %}
+        {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% else %}
+{% endifnotequal %}
+
+<a data-toggle="modal" data-target="#exampleModalLong">asdf</a>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
     </div>
   </div>
 </div>
+
+
 
 {% endblock %}

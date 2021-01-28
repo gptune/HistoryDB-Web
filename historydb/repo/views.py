@@ -313,281 +313,83 @@ class UserDashboard(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        applications_avail = historydb.get_applications_avail()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
+        user_email = request.user.email
 
-        application = request.GET.get("application", "")
-
-        if application != "":
-            print ("APPLICATION GIVEN: ", application)
-
-            machine_deps_list = ast.literal_eval(request.GET.get("machine_deps_list", ""))
-            software_deps_list = ast.literal_eval(request.GET.get("software_deps_list", ""))
-            users_list = ast.literal_eval(request.GET.get("users_list", ""))
-
-            historydb = HistoryDB_MongoDB()
-
-            search_data = ast.literal_eval(request.GET.get("search_data", ""))
-
-            application_info = historydb.load_application_info(application_name = application)
-
-            user_email = request.user.email
-
-            if "func_eval" in search_data:
-                perf_data = historydb.load_func_eval_filtered(application_name = application,
-                        machine_deps_list = machine_deps_list,
-                        software_deps_list = software_deps_list,
-                        users_list = users_list,
-                        user_email = user_email)
-                num_func_eval = len(perf_data)
-                print ("num_func_eval: ", num_func_eval)
-                num_evals_per_page = 15
-                if (num_func_eval%num_evals_per_page) == 0:
-                    num_pages = num_func_eval/num_evals_per_page
-                else:
-                    num_pages = int(num_func_eval/num_evals_per_page)+1
-                print ("num_pages: ", num_pages)
-                if (num_pages == 0):
-                    num_pages = 1
-                current_page = int(request.GET.get("current_page", 0))
-                print ("current_page: ", current_page)
-                start_index = (current_page)*num_evals_per_page
-                end_index = (current_page+1)*num_evals_per_page
-                if end_index > num_func_eval:
-                    end_index = num_func_eval
-                perf_data_web = perf_data[start_index:end_index]
-                for i in range(len(perf_data_web)):
-                    perf_data_web[i]["id"] = start_index+i
-                print (perf_data_web)
-            else:
-                perf_data_web = []
-                num_func_eval = 0
-                num_pages = 0
-                current_page = 0
-
-            if "model_data" in search_data:
-                model_data = historydb.load_model_data_filtered(
-                        application_name = application,
-                        machine_deps_list = machine_deps_list,
-                        software_deps_list = software_deps_list,
-                        users_list = users_list)
-                num_model_data = len(model_data)
-                num_model_data_per_page = 15
-                if (num_model_data %num_model_data_per_page) == 0:
-                    num_pages_model_data = num_model_data/num_model_data_per_page
-                else:
-                    num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
-                if (num_pages_model_data == 0):
-                    num_pages_model_data = 1
-                current_page_model_data = int(request.GET.get("current_page_model_data", 0))
-                start_index_model_data = (current_page_model_data)*num_model_data_per_page
-                end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
-                if end_index_model_data > num_model_data:
-                    end_index_model_data = num_model_data
-                model_data_web = model_data[start_index_model_data:end_index_model_data]
-                for i in range(len(model_data_web)):
-                    model_data_web[i]["id"] = start_index_model_data+i
-                    model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
-                    model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
-                    model_data_web[i]["num_func_eval_per_task"] = \
-                            int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
-            else:
-                model_data_web = []
-                num_model_data = 0
-                num_pages_model_data = 0
-                current_page_model_data = 0
-
-            context = {
-                    "application_info" : json.dumps(application_info),
-                    "application" : application,
-                    "applications_avail" : applications_avail,
-                    "perf_data" : perf_data_web,
-                    "num_func_eval" : num_func_eval,
-                    "num_pages" : range(num_pages),
-                    "model_data" : model_data_web,
-                    "num_model_data" : num_model_data,
-                    "num_pages_model_data" : range(num_pages_model_data),
-                    "current_page_model_data" : current_page_model_data,
-                    "machine_deps_avail" : json.dumps(machine_deps_avail),
-                    "software_deps_avail" : json.dumps(software_deps_avail),
-                    "users_avail" : json.dumps(users_avail),
-                    "machine_deps_list" : json.dumps(machine_deps_list),
-                    "software_deps_list" : json.dumps(software_deps_list),
-                    "users_list" : json.dumps(users_list),
-                    "current_page" : current_page,
-                    "search_data" : json.dumps(search_data)
-                    }
-
-            return render(request, 'repo/userdashboard.html', context)
-
+        func_eval_list = historydb.load_func_eval_by_user(user_email = user_email)
+        num_func_eval = len(func_eval_list)
+        print ("num_func_eval: ", num_func_eval)
+        num_evals_per_page = 30
+        if (num_func_eval%num_evals_per_page) == 0:
+            num_pages_func_eval = num_func_eval/num_evals_per_page
         else:
-            historydb = HistoryDB_MongoDB()
+            num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
+        if (num_pages_func_eval == 0):
+            num_pages_func_eval = 1
+        current_page_func_eval = int(request.GET.get("current_page_func_eval", 0))
+        print ("current_page_func_eval: ", current_page_func_eval)
+        start_index = (current_page_func_eval)*num_evals_per_page
+        end_index = (current_page_func_eval+1)*num_evals_per_page
+        if end_index > num_func_eval:
+            end_index = num_func_eval
+        func_eval_web = func_eval_list[start_index:end_index]
+        for i in range(len(func_eval_web)):
+            func_eval_web[i]["id"] = start_index+i
+        print (func_eval_web)
 
-            print ("APPLICATION NOT GIVEN: ", application)
-
-            perf_data_web = []
-            num_func_eval = 0
-            num_pages = 0
-            current_page = 0
-
-            model_data_web = []
-            num_model_data = 0
-            num_pages_model_data = 0
-            current_page_model_data = 0
-
-            context = {
-                    "application_info" : json.dumps({"application":application}),
-                    "application" : application,
-                    "applications_avail" : applications_avail,
-                    "perf_data" : perf_data_web,
-                    "num_func_eval" : num_func_eval,
-                    "num_pages" : range(num_pages),
-                    "model_data" : model_data_web,
-                    "num_model_data" : num_model_data,
-                    "num_pages_model_data" : range(num_pages_model_data),
-                    "current_page_model_data" : current_page_model_data,
-                    "machine_deps_avail" : json.dumps(machine_deps_avail),
-                    "software_deps_avail" : json.dumps(software_deps_avail),
-                    "users_avail" : json.dumps(users_avail),
-                    "machine_deps_list" : json.dumps(machine_deps_avail),
-                    "software_deps_list" : json.dumps(software_deps_avail),
-                    "users_list" : json.dumps(users_avail),
-                    "current_page" : current_page,
-                    "search_data" : json.dumps({})
-                    }
-
-            return render(request, 'repo/userdashboard.html', context)
-
-    def post(self, request, **kwargs):
-        historydb = HistoryDB_MongoDB()
-
-        applications_avail = historydb.get_applications_avail()
-        print (applications_avail)
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        print (machine_deps_avail)
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
-
-        application = request.POST["application"]
-
-        application_info = historydb.load_application_info(application_name = application)
-        print ("APPLICATION_INFO")
-        print (application_info)
-
-        machine_deps_list = []
-        post_values = request.POST.getlist('machine_deps_list')
-        for i in range(len(post_values)):
-            machine_deps_list.append(json.loads(post_values[i]))
-        print ("machine_deps_list")
-        print (machine_deps_list)
-
-        software_deps_list = []
-        post_values = request.POST.getlist('software_deps_list')
-        for i in range(len(post_values)):
-            software_deps_list.append(json.loads(post_values[i]))
-        print ("software_deps_list")
-        print (software_deps_list)
-
-        users_list = []
-        post_values = request.POST.getlist('users_list')
-        for i in range(len(post_values)):
-            users_list.append(json.loads(post_values[i]))
-        print ("users_list")
-        print (users_list)
-
-        search_data = request.POST.getlist("search_data")
-        print ("search_data")
-        print (search_data)
-
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
-
-        if "func_eval" in search_data:
-            perf_data = historydb.load_func_eval_filtered(application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list,
-                    user_email = user_email)
-            num_func_eval = len(perf_data)
-            num_evals_per_page = 15
-            if (num_func_eval%num_evals_per_page) == 0:
-                num_pages = num_func_eval/num_evals_per_page
-            else:
-                num_pages = int(num_func_eval/num_evals_per_page)+1
-            if (num_pages == 0):
-                num_pages = 1
-            current_page = 0
-            start_index = (current_page)*num_evals_per_page
-            end_index = (current_page+1)*num_evals_per_page
-            if end_index > num_func_eval:
-                end_index = num_func_eval
-            perf_data_web = perf_data[start_index:end_index]
-
-            for i in range(len(perf_data_web)):
-                perf_data_web[i]["id"] = start_index+i
+        model_data = historydb.load_model_data_by_user(user_email = user_email)
+        num_model_data = len(model_data)
+        num_model_data_per_page = 30
+        if (num_model_data %num_model_data_per_page) == 0:
+            num_pages_model_data = num_model_data/num_model_data_per_page
         else:
-            perf_data_web = []
-            num_func_eval = 0
-            num_pages = 0
-            current_page = 0
-
-        if "model_data" in search_data:
-            model_data = historydb.load_model_data_filtered(
-                    application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list)
-            num_model_data = len(model_data)
-            num_model_data_per_page = 15
-            if (num_model_data %num_model_data_per_page) == 0:
-                num_pages_model_data = num_model_data/num_model_data_per_page
-            else:
-                num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
-            if (num_pages_model_data == 0):
-                num_pages_model_data = 1
-            current_page_model_data = 0
-            start_index_model_data = (current_page_model_data)*num_model_data_per_page
-            end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
-            if end_index_model_data > num_model_data:
-                end_index_model_data = num_model_data
-            model_data_web = model_data[start_index_model_data:end_index_model_data]
-            for i in range(len(model_data_web)):
-                model_data_web[i]["id"] = start_index_model_data+i
-                model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
-                model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
-                model_data_web[i]["num_func_eval_per_task"] = \
-                        int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
-        else:
-            model_data_web = []
-            num_model_data = 0
-            num_pages_model_data = 0
-            current_page_model_data = 0
+            num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
+        if (num_pages_model_data == 0):
+            num_pages_model_data = 1
+        current_page_model_data = int(request.GET.get("current_page_model_data", 0))
+        start_index_model_data = (current_page_model_data)*num_model_data_per_page
+        end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
+        if end_index_model_data > num_model_data:
+            end_index_model_data = num_model_data
+        model_data_web = model_data[start_index_model_data:end_index_model_data]
+        for i in range(len(model_data_web)):
+            model_data_web[i]["id"] = start_index_model_data+i
+            model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
+            model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
+            model_data_web[i]["num_func_eval_per_task"] = \
+                    int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
 
         context = {
-                "application_info" : json.dumps(application_info),
-                "applications_avail" : applications_avail,
-                "application" : application,
-                "perf_data" : perf_data_web,
+                "func_eval" : func_eval_web,
                 "num_func_eval" : num_func_eval,
-                "num_pages" : range(num_pages),
-                "current_page" : current_page,
+                "num_pages_func_eval" : range(num_pages_func_eval),
+                "current_page_func_eval" : current_page_func_eval,
                 "model_data" : model_data_web,
                 "num_model_data" : num_model_data,
                 "num_pages_model_data" : range(num_pages_model_data),
                 "current_page_model_data" : current_page_model_data,
-                "machine_deps_avail" : json.dumps(machine_deps_avail),
-                "software_deps_avail" : json.dumps(software_deps_avail),
-                "users_avail" : json.dumps(users_avail),
-                "machine_deps_list" : json.dumps(machine_deps_list),
-                "software_deps_list" : json.dumps(software_deps_list),
-                "users_list" : json.dumps(users_list),
-                "search_data" : json.dumps(search_data)
                 }
 
         return render(request, 'repo/userdashboard.html', context)
+
+    def post(self, request, **kwargs):
+        context = {}
+
+        return render(request, 'repo/userdashboard.html', context)
+
+class EntryDel(TemplateView):
+    def get(self, request, **kwargs):
+        context = {}
+
+        return render(request, 'repo/userdashboard.html', context)
+
+    def post(self, request, **kwargs):
+        entry_uid = request.POST["entry_uid"]
+        application_name = request.POST["application_name"]
+
+        historydb = HistoryDB_MongoDB()
+        historydb.delete_perf_data_by_uid(application_name, entry_uid)
+
+        return redirect(reverse_lazy('repo:userdashboard')) #, kwargs={'username': user.username}))
 
 class Export(TemplateView):
 
