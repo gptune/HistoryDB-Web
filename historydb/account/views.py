@@ -36,6 +36,7 @@ def signup(request):
             activation_code = ""
             for i in range(6):
                 activation_code += random.choice('1234567890')
+            print ("user activation code: ", activation_code)
             user.profile.activation_code = activation_code
 
             try:
