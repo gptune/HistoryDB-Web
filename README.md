@@ -6,6 +6,7 @@ The web framework is based on Django and uses Bootstrap for pretty webpages.
 ## Prerequisite and installation
 
 - Python (version >= 3.7)
+
 - Django installed
 ```
 python -m pip install django
@@ -22,7 +23,10 @@ python -m pip install pymongo
 ```
 python -m pip install django-widget-tweaks
 ```
-- mongodb installed
+
+- NOTE: please make sure your PYTHONPATH indicates Django, markdown, pymongo, djang-widget-tweaks modules.
+
+- mongodb installed (Ubuntu)
 ```
 $ sudo apt-get install -y wget
 $ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
@@ -33,29 +37,46 @@ $ sudo apt-get update
 $ sudo apt-get install -y mongodb-org
 ```
 
+- mongodb installed (Mac)
+```
+$ brew tap mongodb/brew
+$ brew install mongodb-community@4.0
+```
+
 - create your own Django secret key
 ```
 $ python create_new_key.py
 ```
-- set SQLite DB for the Django project
+- set SQLite DB for the Django application
 ```
 cd historydb
 $ python manage.py makemigrations
 $ python manage.py migrate
 ```
+- create an admin account for the Django application
+```
+cd historydb
+$ python manage.py createsuperuser
+```
+
 ## Run (testing/debugging mode)
 
-- run MongoDB daemon
+- run MongoDB daemon: this daemon will hang in the terminal to wait for some events. You can use "mongod --dbpath "path" &" to run it as a background process.
 ```
 mkdir "whateverpath"
 cd "whateverpath"
 $ mkdir "whateverpath"
 $ mongod --dbpath "whateverpath" 
 ```
-- run Django web framework
+
+- run the Django web application
 ```
 cd historydb
 $ python manage.py runserver
 ```
 
-access "https://localhost:8000" from a web browser
+access "http://localhost:8000" from a web browser (https is currently not supported)
+
+## Note on user sign-up in the current test version
+
+- User sign-up: When a user signs-up, the Django application try to send an activation code to the user email. It requires the sender email login credentials which are not in this Github repository for security. So, you will not receive an activation code via email unless you add login credentials in a file. Instead, the Django application will show the user activation code in your terminal which is running "$ python manage.py runserver". You can use it to complete the sign-up.
