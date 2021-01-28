@@ -376,6 +376,31 @@ class UserDashboard(TemplateView):
 
         return render(request, 'repo/userdashboard.html', context)
 
+class EntryAccess(TemplateView):
+    def get(self, request, **kwargs):
+        context = {}
+
+        return render(request, 'repo/userdashboard.html', context)
+
+    def post(self, request, **kwargs):
+        entry_uid = request.POST["entry_uid"]
+        application_name = request.POST["application_name"]
+
+        accessibility_type = request.POST['accessibility']
+        access_group_given = request.POST.getlist('group_invites')
+        access_group = [elem for elem in access_group_given if elem != ""]
+        print ("access group:", access_group)
+
+        accessibility = {}
+        accessibility["type"] = accessibility_type
+        if (accessibility_type == "group"):
+            accessibility["group"] = access_group
+
+        historydb = HistoryDB_MongoDB()
+        historydb.update_entry_accessibility(application_name, entry_uid, accessibility)
+
+        return redirect(reverse_lazy('repo:userdashboard')) #, kwargs={'username': user.username}))
+
 class EntryDel(TemplateView):
     def get(self, request, **kwargs):
         context = {}
@@ -616,7 +641,7 @@ class Upload(TemplateView):
 
         accessibility = {}
         accessibility["type"] = accessibility_type
-        if (accessibility_type == "team"):
+        if (accessibility_type == "group"):
             accessibility["group"] = access_group
 
         historydb = HistoryDB_MongoDB()

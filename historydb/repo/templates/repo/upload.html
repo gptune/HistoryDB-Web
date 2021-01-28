@@ -34,7 +34,7 @@
     document.getElementById('group_invites_div').style.display = 'none';
   }
 
-  function UploadTeam() {
+  function UploadGroup() {
     document.getElementById('group_invites_div').style.display = 'block';
   }
 
@@ -111,8 +111,8 @@
             <label class="custom-control-label" for="private">Not now. I want to keep this data private for now</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="team" name="accessibility" value="team" type="radio" class="custom-control-input" onClick="UploadTeam();" required>
-            <label class="custom-control-label" for="team">I want to share this data with specific users</label>
+            <input id="group" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup();" required>
+            <label class="custom-control-label" for="group">I want to share this data with specific users</label>
           </div>
         </div>
 

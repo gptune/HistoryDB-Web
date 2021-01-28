@@ -558,7 +558,10 @@ class HistoryDB_MongoDB(dict):
             user_email):
         if "accessibility" in perf_data:
             print (perf_data)
-            if perf_data['accessibility']['type'] == 'public':
+
+            if perf_data['user_info']['email'] == user_email:
+                return True
+            elif perf_data['accessibility']['type'] == 'public':
                 return True
             elif perf_data['accessibility']['type'] == 'private':
                 if perf_data['user_info']['email'] == user_email:
@@ -789,6 +792,12 @@ class HistoryDB_MongoDB(dict):
     def delete_perf_data_by_uid(self, application_name, entry_uid):
         application_db = self.db[application_name]
         application_db.delete_one({"uid": entry_uid})
+
+        return None
+
+    def update_entry_accessibility(self, application_name, entry_uid, accessibility):
+        application_db = self.db[application_name]
+        application_db.update_one({"uid": entry_uid}, {"$set": {"accessibility":accessibility}})
 
         return None
 
