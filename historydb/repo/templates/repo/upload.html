@@ -25,6 +25,29 @@
     document.getElementById("file_upload_form_div").style.display = 'none';
     document.getElementById("text_upload_form_div").style.display = 'block';
   }
+
+  function UploadPublic() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
+  function UploadPrivate() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
+  function UploadTeam() {
+    document.getElementById('group_invites_div').style.display = 'block';
+  }
+
+  function AddEmailInvites() {
+    var div = document.getElementById('group_invites_div');
+
+    var email_invite = document.createElement('input');
+    email_invite.type = 'email';
+    email_invite.classList.add('form-control');
+    email_invite.setAttribute('name', 'group_invites');
+
+    div.appendChild(email_invite);
+  }
 </script>
 
 <div class="container" style="max-width: 560px">
@@ -37,7 +60,7 @@
       {% csrf_token %}
       <div class="mb-3">
         <div class="mb-3">
-          <label for="applicationVal">Application</label>
+          <label for="applicationVal"><b>Application</b></label>
           <select class="custom-select d-block w-100" name="application" id="applicationVal">
             <option value="" label="Choose..." selected></option>
             {% if applications_avail %}
@@ -51,12 +74,12 @@
 
           <div class="d-block text-right mt-3">
               <label>Can't find your application?</label><br>
-              <a id="add_app_tab" href="{% url 'repo:addapp' %}">Add an application</a>
+              <a id="add_app_tab" href="{% url 'repo:addapp' %}">Add a new application</a>
           </div>
         </div>
 
         <div class="d-block my-3">
-          <label>Upload Type</label>
+          <label><b>Upload type</b></label>
           <div class="custom-control custom-radio">
             <input class="custom-control-input" id="file_upload" name="upload_type" type="radio" value="file_upload" checked  onChange="UpdateUploadOptionFile();" required>
             <label class="custom-control-label" for="file_upload">JSON file</label>
@@ -75,6 +98,30 @@
         <div class="form-group" id="text_upload_form_div" style="display: none;">
           <label for="text_upload_form">JSON text upload</label>
           <textarea class="form-control" id="text_upload_form" name="text_upload_form" rows="20"></textarea>
+        </div>
+
+        <div class="d-block my-3">
+          <label><b>Make it public?</b></label>
+          <div class="custom-control custom-radio">
+            <input id="public" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic();" checked required>
+            <label class="custom-control-label" for="public">Yes. I want to make this data public</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input id="private" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate();" required>
+            <label class="custom-control-label" for="private">Not now. I want to keep this data private for now</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input id="team" name="accessibility" value="team" type="radio" class="custom-control-input" onClick="UploadTeam();" required>
+            <label class="custom-control-label" for="team">I want to share this data with specific users</label>
+          </div>
+        </div>
+
+        <div id="group_invites_div" style="display: none;">
+          <span>
+            <label for="group_invites"><b>List of email addresses who can access this data</b></label>
+            <button type="button" onClick="AddEmailInvites();">Add more</button>
+          </span>
+          <input type="email" class="form-control" name="group_invites">
         </div>
 
         <div class="mb-3">

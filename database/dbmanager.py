@@ -547,11 +547,31 @@ class HistoryDB_MongoDB(dict):
 
         return search_data_avail
 
+    def check_perf_data_accessibility(self,
+            perf_data,
+            user_email):
+        if "accessibility" in perf_data:
+            print (perf_data)
+            if perf_data['accessibility']['type'] == 'public':
+                return True
+            elif perf_data['accessibility']['type'] == 'private':
+                if perf_data['user_info']['email'] == user_email:
+                    return True
+                else:
+                    return False
+            elif perf_data['accessibility']['type'] == 'group':
+                for invite in perf_data['accessibility']['group']:
+                    if invite == user_email:
+                        return True
+
+        return False
+
     def load_func_eval_filtered(self,
             application_name,
             machine_deps_list,
             software_deps_list,
             users_list,
+            user_email,
             **kwargs):
         func_eval_filtered = []
 
@@ -580,7 +600,8 @@ class HistoryDB_MongoDB(dict):
                 if (machine_deps_str in machine_deps_str_list):
                     if (software_deps_str in software_deps_str_list):
                         if (user_str in users_str_list):
-                            func_eval_filtered.append(func_eval)
+                            if self.check_perf_data_accessibility(func_eval, user_email):
+                                func_eval_filtered.append(func_eval)
             except:
                 continue
 
@@ -608,18 +629,20 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def load_perf_data_by_uid(self, perf_data_uid):
+    def load_perf_data_by_uid(self, perf_data_uid, user_email):
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
             application_db = self.db[application_name]
             func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
             for func_eval in func_eval_list:
                 if func_eval["uid"] == perf_data_uid:
-                    return func_eval
+                    if self.check_perf_data_accessibility(func_eval, user_email):
+                        return func_eval
             model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
             for model_data in model_data_list:
-                if model_data["uid"] == model_data_uid:
-                    return model_data
+                if model_data["uid"] == perf_data_uid:
+                    if self.check_perf_data_accessibility(model_data, user_email):
+                        return model_data
 
         return None
 
@@ -641,7 +664,7 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, user_info, application_name, json_data):
+    def upload_func_eval(self, json_data, user_info, application_name, accessibility):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
@@ -657,6 +680,7 @@ class HistoryDB_MongoDB(dict):
             for func_eval in func_eval_list:
                 func_eval["document_type"] = "func_eval"
                 func_eval["user_info"] = user_info
+                func_eval["accessibility"] = accessibility
                 if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
                     collection.insert_one(func_eval)
                     num_added_func_eval += 1
@@ -670,6 +694,7 @@ class HistoryDB_MongoDB(dict):
             machine_deps_list,
             software_deps_list,
             users_list,
+            user_email,
             **kwargs):
         model_data_filtered = []
 
@@ -702,7 +727,7 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_filtered
 
-    def upload_model_data(self, user_info, application_name, json_data):
+    def upload_model_data(self, json_data, user_info, application_name, accessibility):
         print ("Upload surrogate model data")
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
@@ -718,6 +743,7 @@ class HistoryDB_MongoDB(dict):
             for model_data in model_data_list:
                 model_data["document_type"] = "model_data"
                 model_data["user_info"] = user_info
+                model_data["accessibility"] = accessibility
                 if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
                     collection.insert_one(model_data)
                     num_added_model_data += 1
@@ -735,8 +761,8 @@ if __name__ == "__main__":
     with open(sys.argv[1], "r") as f_in:
         data = f_in.read()
         json_data = json.loads(data)
-    historydb.upload_func_eval({"name":"younghyun"}, {"name:":"PDGEQRF", "library":"ScaLAPACK"}, json_data)
-    historydb.upload_model_data({"name":"younghyun"}, {"name":"PDGEQRF", "library":"ScaLAPACK"}, json_data)
+    historydb.upload_func_eval(json_data, {"name":"younghyun"}, {"name:":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
+    historydb.upload_model_data(json_data, {"name":"younghyun"}, {"name":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
 
     json_data = historydb.load_json_data("PDGEQRF")
     with open("asdf.json", "w") as f_out:

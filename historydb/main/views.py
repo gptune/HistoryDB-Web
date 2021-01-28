@@ -20,6 +20,10 @@ class Index(TemplateView):
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
         context = {
                 "applications_avail" : applications_avail,
                 "applications_avail_per_library" : applications_avail_per_library,
@@ -40,6 +44,10 @@ class Index(TemplateView):
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
         machine_deps_list = machine_deps_avail[application]
         software_deps_list = software_deps_avail[application]
         users_list = users_avail[application]
@@ -50,7 +58,8 @@ class Index(TemplateView):
             perf_data = historydb.load_func_eval_filtered(application_name = application,
                     machine_deps_list = machine_deps_list,
                     software_deps_list = software_deps_list,
-                    users_list = users_list)
+                    users_list = users_list,
+                    user_email = user_email)
             num_func_eval = len(perf_data)
             num_evals_per_page = 15
             if (num_func_eval%num_evals_per_page) == 0:

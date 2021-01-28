@@ -32,6 +32,10 @@ class Dashboard(TemplateView):
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
         application = request.GET.get("application", "")
 
         if application != "":
@@ -51,7 +55,8 @@ class Dashboard(TemplateView):
                 perf_data = historydb.load_func_eval_filtered(application_name = application,
                         machine_deps_list = machine_deps_list,
                         software_deps_list = software_deps_list,
-                        users_list = users_list)
+                        users_list = users_list,
+                        user_email = user_email)
                 num_func_eval = len(perf_data)
                 print ("num_func_eval: ", num_func_eval)
                 num_evals_per_page = 15
@@ -83,7 +88,8 @@ class Dashboard(TemplateView):
                         application_name = application,
                         machine_deps_list = machine_deps_list,
                         software_deps_list = software_deps_list,
-                        users_list = users_list)
+                        users_list = users_list,
+                        user_email = user_email)
                 num_model_data = len(model_data)
                 num_model_data_per_page = 15
                 if (num_model_data %num_model_data_per_page) == 0:
@@ -212,11 +218,16 @@ class Dashboard(TemplateView):
         print ("search_data")
         print (search_data)
 
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
         if "func_eval" in search_data:
             perf_data = historydb.load_func_eval_filtered(application_name = application,
                     machine_deps_list = machine_deps_list,
                     software_deps_list = software_deps_list,
-                    users_list = users_list)
+                    users_list = users_list,
+                    user_email = user_email)
             num_func_eval = len(perf_data)
             num_evals_per_page = 15
             if (num_func_eval%num_evals_per_page) == 0:
@@ -245,7 +256,8 @@ class Dashboard(TemplateView):
                     application_name = application,
                     machine_deps_list = machine_deps_list,
                     software_deps_list = software_deps_list,
-                    users_list = users_list)
+                    users_list = users_list,
+                    user_email = user_email)
             num_model_data = len(model_data)
             num_model_data_per_page = 15
             if (num_model_data %num_model_data_per_page) == 0:
@@ -321,11 +333,14 @@ class UserDashboard(TemplateView):
 
             application_info = historydb.load_application_info(application_name = application)
 
+            user_email = request.user.email
+
             if "func_eval" in search_data:
                 perf_data = historydb.load_func_eval_filtered(application_name = application,
                         machine_deps_list = machine_deps_list,
                         software_deps_list = software_deps_list,
-                        users_list = users_list)
+                        users_list = users_list,
+                        user_email = user_email)
                 num_func_eval = len(perf_data)
                 print ("num_func_eval: ", num_func_eval)
                 num_evals_per_page = 15
@@ -486,11 +501,16 @@ class UserDashboard(TemplateView):
         print ("search_data")
         print (search_data)
 
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
         if "func_eval" in search_data:
             perf_data = historydb.load_func_eval_filtered(application_name = application,
                     machine_deps_list = machine_deps_list,
                     software_deps_list = software_deps_list,
-                    users_list = users_list)
+                    users_list = users_list,
+                    user_email = user_email)
             num_func_eval = len(perf_data)
             num_evals_per_page = 15
             if (num_func_eval%num_evals_per_page) == 0:
@@ -576,12 +596,16 @@ class Export(TemplateView):
         machine_deps_list = json.loads(request.GET.get("machine_deps_list", "{}"))
         software_deps_list = json.loads(request.GET.get("software_deps_list", "{}"))
         users_list = json.loads(request.GET.get("users_list", "{}"))
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
 
         historydb = HistoryDB_MongoDB()
         perf_data = historydb.load_func_eval_filtered(application_name = application,
                 machine_deps_list = machine_deps_list,
                 software_deps_list = software_deps_list,
-                users_list = users_list)
+                users_list = users_list,
+                user_email = user_email)
 
         context = { "perf_data" : perf_data, }
 
@@ -747,10 +771,12 @@ class Upload(TemplateView):
 
         print ("user name: ", request.user.username)
         print ("user email: ", request.user.email)
+        print ("group invites: ", request.POST.getlist('group_invites'))
 
         user_info = {}
         user_info["name"] = request.user.username
         user_info["email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
 
         application_name = request.POST["application"]
         print ("application_name: ", application_name)
@@ -781,10 +807,20 @@ class Upload(TemplateView):
                     }
             return render(request, 'repo/return.html', context)
 
+        accessibility_type = request.POST['accessibility']
+        access_group_given = request.POST.getlist('group_invites')
+        access_group = [elem for elem in access_group_given if elem != ""]
+        print ("access group:", access_group)
+
+        accessibility = {}
+        accessibility["type"] = accessibility_type
+        if (accessibility_type == "team"):
+            accessibility["group"] = access_group
+
         historydb = HistoryDB_MongoDB()
         try:
-            num_added_func_eval = historydb.upload_func_eval(user_info, application_name, json_data)
-            num_added_model_data = historydb.upload_model_data(user_info, application_name, json_data)
+            num_added_func_eval = historydb.upload_func_eval(json_data, user_info, application_name, accessibility)
+            num_added_model_data = historydb.upload_model_data(json_data, user_info, application_name, accessibility)
         except:
             print ("Not able to upload the given data")
             context = {
@@ -839,6 +875,7 @@ class AddApp(TemplateView):
         user_info = {}
         user_info["name"] = request.user.username
         user_info["email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
 
         application_name = request.POST["application_name"]
         library_name = request.POST["application_category"]
@@ -873,8 +910,21 @@ class AddApp(TemplateView):
 
 def query(request, perf_data_uid):
     historydb = HistoryDB_MongoDB()
-    perf_data = historydb.load_perf_data_by_uid(perf_data_uid)
-    context = { "perf_data" : perf_data, }
+
+    user_email = ""
+    if request.user.is_authenticated:
+        user_email = request.user.email
+
+    perf_data = historydb.load_perf_data_by_uid(perf_data_uid, user_email)
+    if perf_data is not None:
+        context = {
+                "return" : "success",
+                "perf_data" : perf_data, }
+    else:
+        context = {
+                "return" : "failure",
+                "message" : "cannot access the performance data"
+                }
 
     return render(request, 'repo/detail.html', context)
 

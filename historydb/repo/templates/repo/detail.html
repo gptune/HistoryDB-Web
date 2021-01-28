@@ -7,7 +7,15 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     </head>
     <body>
+        {% ifequal return "success" %}
         <pre>{{ perf_data | pprint }}</pre>
-        </p>
+        {% else %}
+        <div class="container">
+          <h2>Sorry! Something Went Wrong</h2>
+          <p class="lead">
+          {{ message }}
+          </p>
+        </div>
+        {% endifequal %}
     </body>
 </html>
