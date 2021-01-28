@@ -11,25 +11,29 @@
     $('#nav-item-repo').addClass('active');
   });
 
-  function UploadPublic() {
-    document.getElementById('group_invites_div').style.display = 'none';
+  function UploadPublic(func_eval_uid) {
+      alert(func_eval_uid);
+    document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
   }
 
-  function UploadPrivate() {
-    document.getElementById('group_invites_div').style.display = 'none';
+  function UploadPrivate(func_eval_uid) {
+      alert(func_eval_uid);
+    document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
   }
 
-  function UploadGroup() {
-    document.getElementById('group_invites_div').style.display = 'block';
+  function UploadGroup(func_eval_uid) {
+      alert(func_eval_uid);
+    document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'block';
   }
 
-  function AddEmailInvites() {
-    var div = document.getElementById('group_invites_div');
+  function AddEmailInvites(func_eval_elem_uid) {
+    alert('1234');
+    var div = document.getElementById('group_invites_div_'+func_eval_elem_uid);
 
     var email_invite = document.createElement('input');
-    email_invite.type = 'email';
+    email_invite.type = "email";
     email_invite.classList.add('form-control');
-    email_invite.setAttribute('name', 'group_invites');
+    email_invite.setAttribute("name", "group_invites");
 
     div.appendChild(email_invite);
   }
@@ -85,7 +89,7 @@
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="accessModalLongTitle">Deleting Function Evaluation Data</h5>
+                  <h5 class="modal-title" id="accessModalLongTitle">Data Accessibility</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -99,24 +103,25 @@
                     <div class="d-block my-3">
                       <label><b>Make it public?</b></label>
                       <div class="custom-control custom-radio">
-                        <input id="public" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic();" checked required>
-                        <label class="custom-control-label" for="public">Yes. I want to make this data public</label>
+                          <input id="public_{{func_eval_elem.uid}}" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic('{{ func_eval_elem.uid }}');" checked required>
+                        <label class="custom-control-label" for="public_{{func_eval_elem.uid}}">Yes. I want to make this data public</label>
                       </div>
                       <div class="custom-control custom-radio">
-                        <input id="private" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate();" required>
-                        <label class="custom-control-label" for="private">Not now. I want to keep this data private for now</label>
+                          <input id="private_{{func_eval_elem.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ func_eval_elem.uid }}');" required>
+                        <label class="custom-control-label" for="private_{{func_eval_elem.uid}}">Not now. I want to keep this data private for now</label>
                       </div>
                       <div class="custom-control custom-radio">
-                        <input id="group" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup();" required>
-                        <label class="custom-control-label" for="group">I want to share this data with specific users</label>
+                          <input id="group_{{func_eval_elem.uid}}" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup('{{ func_eval_elem.uid }}');" required>
+                        <label class="custom-control-label" for="group_{{func_eval_elem.uid}}">I want to share this data with specific users</label>
                       </div>
                     </div>
 
-                    <div id="group_invites_div" style="display: none;">
+                    <div id="group_invites_div_{{func_eval_elem.uid}}" style="display: none;">
                       <span>
                         <label for="group_invites"><b>List of email addresses who can access this data</b></label>
-                        <button type="button" onClick="AddEmailInvites();">Add more</button>
+                        <button type="button" onClick="AddEmailInvites('{{ func_eval_elem.uid }}');">Add more</button>
                       </span>
+                      <input type="email" class="form-control" name="group_invites">
                       <input type="email" class="form-control" name="group_invites">
                     </div>
 
@@ -375,29 +380,5 @@
 
 {% else %}
 {% endifnotequal %}
-
-<a data-toggle="modal" data-target="#exampleModalLong">asdf</a>
-<!-- Modal -->
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 
 {% endblock %}

@@ -320,7 +320,7 @@ class UserDashboard(TemplateView):
         print ("num_func_eval: ", num_func_eval)
         num_evals_per_page = 30
         if (num_func_eval%num_evals_per_page) == 0:
-            num_pages_func_eval = num_func_eval/num_evals_per_page
+            num_pages_func_eval = int(num_func_eval/num_evals_per_page)
         else:
             num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
         if (num_pages_func_eval == 0):
@@ -387,7 +387,9 @@ class EntryAccess(TemplateView):
         application_name = request.POST["application_name"]
 
         accessibility_type = request.POST['accessibility']
+        #access_group_given = request.POST.getlist('group_invites_'+entry_uid)
         access_group_given = request.POST.getlist('group_invites')
+        print ("access_group_given: ", access_group_given)
         access_group = [elem for elem in access_group_given if elem != ""]
         print ("access group:", access_group)
 
