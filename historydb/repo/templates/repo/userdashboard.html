@@ -26,9 +26,9 @@
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'block';
   }
 
-  function AddEmailInvites(func_eval_elem_uid) {
+  function AddEmailInvites(func_eval_uid) {
     alert('1234');
-    var div = document.getElementById('group_invites_div_'+func_eval_elem_uid);
+    var div = document.getElementById('group_invites_div_'+func_eval_uid);
 
     var email_invite = document.createElement('input');
     email_invite.type = "email";
@@ -39,9 +39,9 @@
   }
 </script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 
 {% ifnotequal num_func_eval 0 %}
 <div class="container">
@@ -71,21 +71,21 @@
         </tr>
       </thead>
       <tbody>
-        {% for func_eval_elem in func_eval %}
+        {% for func_eval in func_eval_list %}
           <tr>
-            <td><a href="/repo/archive/{{ func_eval_elem.uid }}/">{{ func_eval_elem.id }}</a></td>
-            <td>{{ func_eval_elem.application }}</td>
-            <td>{{ func_eval_elem.I }}</td>
-            <td>{{ func_eval_elem.P }}</td>
-            <td>{{ func_eval_elem.O }}</td>
-            <td>{{ func_eval_elem.user_info.name }}</td>
-            <td>{{ func_eval_elem.time.tm_mon }}/{{ func_eval_elem.time.tm_mday }}/{{ func_eval_elem.time.tm_year }}</td>
-            <td>{{ func_eval_elem.accessibility.type }} <a data-toggle="modal" data-target="#accessModalLong_{{ func_eval_elem.uid }}"><span class="glyphicon glyphicon-edit"></span></a></td>
-            <td><a href="/repo/archive/{{ func_eval_elem.uid }}/"><span class="glyphicon glyphicon-file"></span></a></td>
-            <td><a data-toggle="modal" data-target="#deleteModalLong_{{ func_eval_elem.uid }}"><span class="glyphicon glyphicon-trash"></span></a></td>
+            <td><a href="/repo/archive/{{ func_eval.uid }}/">{{ func_eval.id }}</a></td>
+            <td>{{ func_eval.application }}</td>
+            <td>{{ func_eval.I }}</td>
+            <td>{{ func_eval.P }}</td>
+            <td>{{ func_eval.O }}</td>
+            <td>{{ func_eval.user_info.name }}</td>
+            <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
+            <td>{{ func_eval.accessibility.type }} <a data-toggle="modal" data-target="#accessModalLong_{{ func_eval.uid }}"><span class="glyphicon glyphicon-edit"></span></a></td>
+            <td><a href="/repo/archive/{{ func_eval.uid }}/"><span class="glyphicon glyphicon-file"></span></a></td>
+            <td><a data-toggle="modal" data-target="#deleteModalLong_{{ func_eval.uid }}"><span class="glyphicon glyphicon-trash"></span></a></td>
           </tr>
 
-          <div class="modal fade" id="accessModalLong_{{ func_eval_elem.uid }}" tabindex="-1" role="dialog" aria-labelledby="accessModalLongTitle" aria-hidden="true">
+          <div class="modal fade" id="accessModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="accessModalLongTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -96,30 +96,30 @@
                 </div>
                 <form method="POST" action="{% url 'repo:entryaccess' %}">
                   {% csrf_token %}
-                  <input type="hidden" name="entry_uid" value={{ func_eval_elem.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval_elem.application }}></input>
+                  <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
                   <div class="modal-body">
 
                     <div class="d-block my-3">
                       <label><b>Make it public?</b></label>
                       <div class="custom-control custom-radio">
-                          <input id="public_{{func_eval_elem.uid}}" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic('{{ func_eval_elem.uid }}');" checked required>
-                        <label class="custom-control-label" for="public_{{func_eval_elem.uid}}">Yes. I want to make this data public</label>
+                          <input id="public_{{func_eval.uid}}" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic('{{ func_eval.uid }}');" checked required>
+                        <label class="custom-control-label" for="public_{{func_eval.uid}}">Yes. I want to make this data public</label>
                       </div>
                       <div class="custom-control custom-radio">
-                          <input id="private_{{func_eval_elem.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ func_eval_elem.uid }}');" required>
-                        <label class="custom-control-label" for="private_{{func_eval_elem.uid}}">Not now. I want to keep this data private for now</label>
+                          <input id="private_{{func_eval.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ func_eval.uid }}');" required>
+                        <label class="custom-control-label" for="private_{{func_eval.uid}}">Not now. I want to keep this data private for now</label>
                       </div>
                       <div class="custom-control custom-radio">
-                          <input id="group_{{func_eval_elem.uid}}" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup('{{ func_eval_elem.uid }}');" required>
-                        <label class="custom-control-label" for="group_{{func_eval_elem.uid}}">I want to share this data with specific users</label>
+                          <input id="group_{{func_eval.uid}}" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup('{{ func_eval.uid }}');" required>
+                        <label class="custom-control-label" for="group_{{func_eval.uid}}">I want to share this data with specific users</label>
                       </div>
                     </div>
 
-                    <div id="group_invites_div_{{func_eval_elem.uid}}" style="display: none;">
+                    <div id="group_invites_div_{{func_eval.uid}}" style="display: none;">
                       <span>
                         <label for="group_invites"><b>List of email addresses who can access this data</b></label>
-                        <button type="button" onClick="AddEmailInvites('{{ func_eval_elem.uid }}');">Add more</button>
+                        <button type="button" onClick="AddEmailInvites('{{ func_eval.uid }}');">Add more</button>
                       </span>
                       <input type="email" class="form-control" name="group_invites">
                       <input type="email" class="form-control" name="group_invites">
@@ -136,7 +136,7 @@
           </div>
 
 
-          <div class="modal fade" id="deleteModalLong_{{ func_eval_elem.uid }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLongTitle" aria-hidden="true">
+          <div class="modal fade" id="deleteModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLongTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
@@ -147,8 +147,8 @@
                 </div>
                 <form method="POST" action="{% url 'repo:entrydel' %}">
                   {% csrf_token %}
-                  <input type="hidden" name="entry_uid" value={{ func_eval_elem.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval_elem.application }}></input>
+                  <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
                   <div class="modal-body">
                     Are you sure to delete this item?
                   </div>
@@ -208,156 +208,16 @@
         </tr>
       </thead>
       <tbody>
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.0.id }}</td>
-          <td>{{ model_data.0.task_parameters }}</td>
-          <td>{{ model_data.0.num_func_eval_per_task }}</td>
-          <td>{{ model_data.0.user_info.name }}</td>
-          <td>{{ model_data.0.time.tm_mon }}/{{ model_data.0.time.tm_mday }}/{{ model_data.0.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.0.uid }}/">{{ model_data.0.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 1 %}
-        <tr>
-          <td>{{ model_data.1.id }}</td>
-          <td>{{ model_data.1.task_parameters }}</td>
-          <td>{{ model_data.1.num_func_eval_per_task }}</td>
-          <td>{{ model_data.1.user_info.name }}</td>
-          <td>{{ model_data.1.time.tm_mon }}/{{ model_data.1.time.tm_mday }}/{{ model_data.1.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.1.uid }}/">{{ model_data.1.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.2.id }}</td>
-          <td>{{ model_data.2.task_parameters }}</td>
-          <td>{{ model_data.2.num_func_eval_per_task }}</td>
-          <td>{{ model_data.2.user_info.name }}</td>
-          <td>{{ model_data.2.time.tm_mon }}/{{ model_data.2.time.tm_mday }}/{{ model_data.2.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.2.uid }}/">{{ model_data.2.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.3.id }}</td>
-          <td>{{ model_data.3.task_parameters }}</td>
-          <td>{{ model_data.3.num_func_eval_per_task }}</td>
-          <td>{{ model_data.3.user_info.name }}</td>
-          <td>{{ model_data.3.time.tm_mon }}/{{ model_data.3.time.tm_mday }}/{{ model_data.3.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.3.uid }}/">{{ model_data.3.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.4.id }}</td>
-          <td>{{ model_data.4.task_parameters }}</td>
-          <td>{{ model_data.4.num_func_eval_per_task }}</td>
-          <td>{{ model_data.4.user_info.name }}</td>
-          <td>{{ model_data.4.time.tm_mon }}/{{ model_data.4.time.tm_mday }}/{{ model_data.4.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.4.uid }}/">{{ model_data.4.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.5.id }}</td>
-          <td>{{ model_data.5.task_parameters }}</td>
-          <td>{{ model_data.5.num_func_eval_per_task }}</td>
-          <td>{{ model_data.5.user_info.name }}</td>
-          <td>{{ model_data.5.time.tm_mon }}/{{ model_data.5.time.tm_mday }}/{{ model_data.5.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.5.uid }}/">{{ model_data.5.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.6.id }}</td>
-          <td>{{ model_data.6.task_parameters }}</td>
-          <td>{{ model_data.6.num_func_eval_per_task }}</td>
-          <td>{{ model_data.6.user_info.name }}</td>
-          <td>{{ model_data.6.time.tm_mon }}/{{ model_data.6.time.tm_mday }}/{{ model_data.6.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.6.uid }}/">{{ model_data.6.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.7.id }}</td>
-          <td>{{ model_data.7.task_parameters }}</td>
-          <td>{{ model_data.7.num_func_eval_per_task }}</td>
-          <td>{{ model_data.7.user_info.name }}</td>
-          <td>{{ model_data.7.time.tm_mon }}/{{ model_data.7.time.tm_mday }}/{{ model_data.7.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.7.uid }}/">{{ model_data.7.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.8.id }}</td>
-          <td>{{ model_data.8.task_parameters }}</td>
-          <td>{{ model_data.8.num_func_eval_per_task }}</td>
-          <td>{{ model_data.8.user_info.name }}</td>
-          <td>{{ model_data.8.time.tm_mon }}/{{ model_data.8.time.tm_mday }}/{{ model_data.8.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.8.uid }}/">{{ model_data.8.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.9.id }}</td>
-          <td>{{ model_data.9.task_parameters }}</td>
-          <td>{{ model_data.9.num_func_eval_per_task }}</td>
-          <td>{{ model_data.9.user_info.name }}</td>
-          <td>{{ model_data.9.time.tm_mon }}/{{ model_data.9.time.tm_mday }}/{{ model_data.9.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.9.uid }}/">{{ model_data.9.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.10.id }}</td>
-          <td>{{ model_data.10.task_parameters }}</td>
-          <td>{{ model_data.10.num_func_eval_per_task }}</td>
-          <td>{{ model_data.10.user_info.name }}</td>
-          <td>{{ model_data.10.time.tm_mon }}/{{ model_data.10.time.tm_mday }}/{{ model_data.10.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.10.uid }}/">{{ model_data.10.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.11.id }}</td>
-          <td>{{ model_data.11.task_parameters }}</td>
-          <td>{{ model_data.11.num_func_eval_per_task }}</td>
-          <td>{{ model_data.11.user_info.name }}</td>
-          <td>{{ model_data.11.time.tm_mon }}/{{ model_data.11.time.tm_mday }}/{{ model_data.11.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.11.uid }}/">{{ model_data.11.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.12.id }}</td>
-          <td>{{ model_data.12.task_parameters }}</td>
-          <td>{{ model_data.12.num_func_eval_per_task }}</td>
-          <td>{{ model_data.12.user_info.name }}</td>
-          <td>{{ model_data.12.time.tm_mon }}/{{ model_data.12.time.tm_mday }}/{{ model_data.12.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.12.uid }}/">{{ model_data.12.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.13.id }}</td>
-          <td>{{ model_data.13.task_parameters }}</td>
-          <td>{{ model_data.13.num_func_eval_per_task }}</td>
-          <td>{{ model_data.13.user_info.name }}</td>
-          <td>{{ model_data.13.time.tm_mon }}/{{ model_data.13.time.tm_mday }}/{{ model_data.13.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.13.uid }}/">{{ model_data.13.uid }}</a></td>
-        </tr>
-        {% endif %}
-        {% if num_model_data > 0 %}
-        <tr>
-          <td>{{ model_data.14.id }}</td>
-          <td>{{ model_data.14.task_parameters }}</td>
-          <td>{{ model_data.14.num_func_eval_per_task }}</td>
-          <td>{{ model_data.14.user_info.name }}</td>
-          <td>{{ model_data.14.time.tm_mon }}/{{ model_data.14.time.tm_mday }}/{{ model_data.14.time.tm_year }}</td>
-          <td><a href="/repo/archive/{{ model_data.14.uid }}/">{{ model_data.14.uid }}</a></td>
-        </tr>
-        {% endif %}
+        {% for model_data in model_data_list %}
+          <tr>
+            <td>{{ model_data.id }}</td>
+            <td>{{ model_data.task_parameters }}</td>
+            <td>{{ model_data.num_func_eval_per_task }}</td>
+            <td>{{ model_data.user_info.name }}</td>
+            <td>{{ model_data.time.tm_mon }}/{{ model_data.time.tm_mday }}/{{ model_data.time.tm_year }}</td>
+            <td><a href="/repo/archive/{{ model_data.uid }}/">{{ model_data.uid }}</a></td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
     <table>
