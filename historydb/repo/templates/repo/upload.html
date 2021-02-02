@@ -117,11 +117,8 @@
         </div>
 
         <div id="group_invites_div" style="display: none;">
-          <span>
-            <label for="group_invites"><b>List of email addresses who can access this data</b></label>
-            <button type="button" onClick="AddEmailInvites();">Add more</button>
-          </span>
-          <input type="email" class="form-control" name="group_invites">
+          <label for="group_invites"><b>List of emails/groupnames who can access this data (comma separated)</b></label>
+          <textarea class="form-control" id="group_invites" name="group_invites" rows="5"></textarea>
         </div>
 
         <div class="mb-3">

@@ -387,11 +387,9 @@ class EntryAccess(TemplateView):
         application_name = request.POST["application_name"]
 
         accessibility_type = request.POST['accessibility']
-        #access_group_given = request.POST.getlist('group_invites_'+entry_uid)
-        access_group_given = request.POST.getlist('group_invites')
-        print ("access_group_given: ", access_group_given)
-        access_group = [elem for elem in access_group_given if elem != ""]
-        print ("access group:", access_group)
+        access_group_given = request.POST['group_invites']
+        print ('access group: ', access_group_given)
+        access_group = access_group_given.split(';')
 
         accessibility = {}
         accessibility["type"] = accessibility_type
@@ -480,7 +478,7 @@ class Upload(TemplateView):
 
         print ("user name: ", request.user.username)
         print ("user email: ", request.user.email)
-        print ("group invites: ", request.POST.getlist('group_invites'))
+        print ("group invites: ", request.POST['group_invites'])
 
         user_info = {}
         user_info["name"] = request.user.username
@@ -517,9 +515,9 @@ class Upload(TemplateView):
             return render(request, 'repo/return.html', context)
 
         accessibility_type = request.POST['accessibility']
-        access_group_given = request.POST.getlist('group_invites')
-        access_group = [elem for elem in access_group_given if elem != ""]
-        print ("access group:", access_group)
+        access_group_given = request.POST['group_invites']
+        print ('access group: ', access_group_given)
+        access_group = access_group_given.split(';')
 
         accessibility = {}
         accessibility["type"] = accessibility_type

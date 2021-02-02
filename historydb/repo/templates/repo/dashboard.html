@@ -59,35 +59,6 @@
   </form>
 </div>
 
-{% ifnotequal application "" %}
-<div class="container">
-  <br><br>
-  <hr>
-  <h2>Search Condition</h2>
-  <div id="select_deps">
-  </div>
-  <div class="container mb-3 row">
-    <div class="col" id="application_cond">
-    </div>
-    <div class="col" id="machine_deps_cond">
-    </div>
-    <div class="col" id="software_deps_cond">
-    </div>
-    <div class="col" id="users_cond">
-    </div>
-  </div>
-</div>
-
-<script type="text/javascript">
-  var application_info = {{ application_info | safe | escape }};
-  var machine_deps = {{ machine_deps_list | safe | escape }};
-  var software_deps = {{ software_deps_list | safe | escape }};
-  var users = {{ users_list | safe | escape }};
-  UpdateCond(application_info, machine_deps, software_deps, users);
-</script>
-{% else %}
-{% endifnotequal %}
-
 {% ifnotequal num_func_eval 0 %}
 <div class="container">
   <br><br>
@@ -130,7 +101,7 @@
             <td>{{ func_eval.user_info.name }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
-              <a href="/repo/archive/{{ func_eval.uid }}/" style="color:#000000;">
+              <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                   <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
                   <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
@@ -138,6 +109,31 @@
               </a>
             </td>
           </tr>
+
+          <div class="modal fade" id="detailModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'repo:entrydel' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
+                  <div class="modal-body">
+                    <pre>{{ func_eval | pprint }}</pre>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
         {% endfor %}
       </tbody>
     </table>
@@ -201,7 +197,7 @@
             <td>{{ model_data.user_info.name }}</td>
             <td>{{ model_data.time.tm_mon }}/{{ model_data.time.tm_mday }}/{{ model_data.time.tm_year }}</td>
             <td>
-              <a href="/repo/archive/{{ model_data.uid }}/" style="color:#000000;">
+              <a data-toggle="modal" data-target="#detailModalLong_{{ model_data.uid }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                   <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
                   <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
@@ -209,6 +205,31 @@
               </a>
             </td>
           </tr>
+
+          <div class="modal fade" id="detailModalLong_{{ model_data.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'repo:entrydel' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
+                  <div class="modal-body">
+                    <pre>{{ model_data | pprint }}</pre>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
         {% endfor %}
       </tbody>
     </table>

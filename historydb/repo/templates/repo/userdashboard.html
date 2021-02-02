@@ -12,22 +12,18 @@
   });
 
   function UploadPublic(func_eval_uid) {
-      alert(func_eval_uid);
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
   }
 
   function UploadPrivate(func_eval_uid) {
-      alert(func_eval_uid);
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
   }
 
   function UploadGroup(func_eval_uid) {
-      alert(func_eval_uid);
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'block';
   }
 
   function AddEmailInvites(func_eval_uid) {
-    alert('1234');
     var div = document.getElementById('group_invites_div_'+func_eval_uid);
 
     var email_invite = document.createElement('input');
@@ -82,7 +78,7 @@
               </a>
             </td>
             <td>
-              <a href="/repo/archive/{{ func_eval.uid }}/" style="color:#000000;">
+              <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                   <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
                   <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
@@ -131,12 +127,8 @@
                     </div>
 
                     <div id="group_invites_div_{{func_eval.uid}}" style="display: none;">
-                      <span>
-                        <label for="group_invites"><b>List of email addresses who can access this data</b></label>
-                        <button type="button" onClick="AddEmailInvites('{{ func_eval.uid }}');">Add more</button>
-                      </span>
-                      <input type="email" class="form-control" name="group_invites">
-                      <input type="email" class="form-control" name="group_invites">
+                      <label for="group_invites"><b>List of emails/groupnames who can access this data (comma separated)</b></label>
+                      <textarea class="form-control" id="group_invites" name="group_invites" rows="5"></textarea>
                     </div>
 
                   </div>
@@ -149,6 +141,29 @@
             </div>
           </div>
 
+          <div class="modal fade" id="detailModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'repo:entrydel' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
+                  <div class="modal-body">
+                    <pre>{{ func_eval | pprint }}</pre>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
 
           <div class="modal fade" id="deleteModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLongTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -242,7 +257,7 @@
               </a>
             </td>
             <td>
-              <a href="/repo/archive/{{ model_data.uid }}/" style="color:#000000;">
+              <a data-toggle="modal" data-target="#detailModalLong_{{ model_data.uid }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                   <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
                   <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
@@ -291,18 +306,38 @@
                     </div>
 
                     <div id="group_invites_div_{{model_data.uid}}" style="display: none;">
-                      <span>
-                        <label for="group_invites"><b>List of email addresses who can access this data</b></label>
-                        <button type="button" onClick="AddEmailInvites('{{ model_data.uid }}');">Add more</button>
-                      </span>
-                      <input type="email" class="form-control" name="group_invites">
-                      <input type="email" class="form-control" name="group_invites">
+                      <label for="group_invites"><b>List of email addresses who can access this data</b></label>
+                      <textarea class="form-control" id="group_invites" name="group_invites" rows="5"></textarea>
                     </div>
 
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Update</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="detailModalLong_{{ model_data.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST" action="{% url 'repo:entrydel' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
+                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
+                  <div class="modal-body">
+                    <pre>{{ model_data | pprint }}</pre>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   </div>
                 </form>
               </div>
