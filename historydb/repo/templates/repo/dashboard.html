@@ -96,8 +96,7 @@
     <h2 class="h2">Function Evaluation Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -111,24 +110,33 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Input Task</th>
+          <th>Application</th>
+          <th>Task Parameter</th>
           <th>Tuning Parameter</th>
           <th>Output Result</th>
-          <th>User Name</th>
+          <th>Owner</th>
           <th>Date</th>
-          <th>UID (Details)</th>
+          <th>Details</th>
         </tr>
       </thead>
       <tbody>
-        {% for perf_data in perf_data_list %}
+        {% for func_eval in func_eval_list %}
           <tr>
-            <td>{{ perf_data.id }}</td>
-            <td>{{ perf_data.I }}</td>
-            <td>{{ perf_data.P }}</td>
-            <td>{{ perf_data.O }}</td>
-            <td>{{ perf_data.user_info.name }}</td>
-            <td>{{ perf_data.time.tm_mon }}/{{ perf_data.time.tm_mday }}/{{ perf_data.time.tm_year }}</td>
-            <td><a href="/repo/archive/{{ perf_data.uid }}/">{{ perf_data.uid }}</a></td>
+            <td>{{ func_eval.id }}</td>
+            <td>{{ func_eval.application }}</td>
+            <td>{{ func_eval.I }}</td>
+            <td>{{ func_eval.P }}</td>
+            <td>{{ func_eval.O }}</td>
+            <td>{{ func_eval.user_info.name }}</td>
+            <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
+            <td>
+              <a href="/repo/archive/{{ func_eval.uid }}/" style="color:#000000;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                  <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                </svg>
+              </a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -137,13 +145,12 @@
       <tr>
         Pages:
         <td>
-        {% for page_num in num_pages %}
-        <!-- <a href="/listSpecificPageWork?current_page={{page_num}}" > -->
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
-          {% ifequal page_num current_page %}
-          [<b>{{ page_num }}</b>]
+        {% for page_num_func_eval in num_pages_func_eval %}
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+          {% ifequal page_num_func_eval current_page_func_eval %}
+          [<b>{{ page_num_func_eval }}</b>]
           {% else %}
-          [{{ page_num }}]
+          [{{ page_num_func_eval }}]
           {% endifequal %}
         {% endfor %}
         </td>
@@ -163,8 +170,7 @@
     <h2 class="h2">Model Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <!-- <button type="button" class="btn btn-sm btn-outline-secondary">Share</button> -->
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page={{page_num}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -177,22 +183,31 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Trained task parameters to build the model</th>
-          <th>Num function evaluations per task</th>
-          <th>User Name</th>
+          <th>Application</th>
+          <th>Task parameter</th>
+          <th>Num samples</th>
+          <th>Owner</th>
           <th>Date</th>
-          <th>UID (Details)</th>
+          <th>Details</th>
         </tr>
       </thead>
       <tbody>
         {% for model_data in model_data_list %}
           <tr>
             <td>{{ model_data.id }}</td>
+            <td>{{ model_data.application }}</td>
             <td>{{ model_data.task_parameters }}</td>
             <td>{{ model_data.num_func_eval_per_task }}</td>
             <td>{{ model_data.user_info.name }}</td>
             <td>{{ model_data.time.tm_mon }}/{{ model_data.time.tm_mday }}/{{ model_data.time.tm_year }}</td>
-            <td><a href="/repo/archive/{{ model_data.uid }}/">{{ model_data.uid }}</a></td>
+            <td>
+              <a href="/repo/archive/{{ model_data.uid }}/" style="color:#000000;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                  <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                </svg>
+              </a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -202,7 +217,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

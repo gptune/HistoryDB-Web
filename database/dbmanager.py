@@ -603,6 +603,7 @@ class HistoryDB_MongoDB(dict):
 
         for func_eval in func_eval_list:
             try:
+                func_eval["application"] = application_name
                 machine_deps_str = str(func_eval["machine_deps"])
                 software_deps_str = str(func_eval["compile_deps"])
                 user_str = str(func_eval["user_info"])
@@ -728,6 +729,7 @@ class HistoryDB_MongoDB(dict):
         model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
 
         for model_data in model_data_list:
+            model_data["application"] = application_name
             func_eval_sample = self.load_func_eval_by_uid(model_data["func_eval"][0])
             machine_deps_str = str(func_eval_sample["machine_deps"])
             software_deps_str = str(func_eval_sample["compile_deps"])

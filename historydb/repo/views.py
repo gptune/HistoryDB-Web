@@ -52,36 +52,36 @@ class Dashboard(TemplateView):
             application_info = historydb.load_application_info(application_name = application)
 
             if "func_eval" in search_data:
-                perf_data = historydb.load_func_eval_filtered(application_name = application,
+                func_eval_list = historydb.load_func_eval_filtered(application_name = application,
                         machine_deps_list = machine_deps_list,
                         software_deps_list = software_deps_list,
                         users_list = users_list,
                         user_email = user_email)
-                num_func_eval = len(perf_data)
+                num_func_eval = len(func_eval_list)
                 print ("num_func_eval: ", num_func_eval)
                 num_evals_per_page = 15
                 if (num_func_eval%num_evals_per_page) == 0:
-                    num_pages = num_func_eval/num_evals_per_page
+                    num_pages_func_eval = num_func_eval/num_evals_per_page
                 else:
-                    num_pages = int(num_func_eval/num_evals_per_page)+1
-                print ("num_pages: ", num_pages)
-                if (num_pages == 0):
-                    num_pages = 1
-                current_page = int(request.GET.get("current_page", 0))
-                print ("current_page: ", current_page)
-                start_index = (current_page)*num_evals_per_page
-                end_index = (current_page+1)*num_evals_per_page
+                    num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
+                print ("num_pages_func_eval: ", num_pages_func_eval)
+                if (num_pages_func_eval == 0):
+                    num_pages_func_eval = 1
+                current_page_func_eval = int(request.GET.get("current_page_func_eval", 0))
+                print ("current_page_func_eval: ", current_page_func_eval)
+                start_index = (current_page_func_eval)*num_evals_per_page
+                end_index = (current_page_func_eval+1)*num_evals_per_page
                 if end_index > num_func_eval:
                     end_index = num_func_eval
-                perf_data_web = perf_data[start_index:end_index]
-                for i in range(len(perf_data_web)):
-                    perf_data_web[i]["id"] = start_index+i
-                print (perf_data_web)
+                func_eval_web = func_eval_list[start_index:end_index]
+                for i in range(len(func_eval_web)):
+                    func_eval_web[i]["id"] = start_index+i
+                print (func_eval_web)
             else:
-                perf_data_web = []
+                func_eval_web = []
                 num_func_eval = 0
-                num_pages = 0
-                current_page = 0
+                num_pages_func_eval = 0
+                current_page_func_eval = 0
 
             if "model_data" in search_data:
                 model_data = historydb.load_model_data_filtered(
@@ -120,9 +120,10 @@ class Dashboard(TemplateView):
                     "application_info" : json.dumps(application_info),
                     "application" : application,
                     "applications_avail" : applications_avail,
-                    "perf_data_list" : perf_data_web,
+                    "func_eval_list" : func_eval_web,
                     "num_func_eval" : num_func_eval,
-                    "num_pages" : range(num_pages),
+                    "num_pages_func_eval" : range(num_pages_func_eval),
+                    "current_page_func_eval" : current_page_func_eval,
                     "model_data_list" : model_data_web,
                     "num_model_data" : num_model_data,
                     "num_pages_model_data" : range(num_pages_model_data),
@@ -133,7 +134,6 @@ class Dashboard(TemplateView):
                     "machine_deps_list" : json.dumps(machine_deps_list),
                     "software_deps_list" : json.dumps(software_deps_list),
                     "users_list" : json.dumps(users_list),
-                    "current_page" : current_page,
                     "search_data" : json.dumps(search_data)
                     }
 
@@ -144,10 +144,10 @@ class Dashboard(TemplateView):
 
             print ("APPLICATION NOT GIVEN: ", application)
 
-            perf_data_web = []
+            func_eval_web = []
             num_func_eval = 0
-            num_pages = 0
-            current_page = 0
+            num_pages_func_eval = 0
+            current_page_func_eval = 0
 
             model_data_web = []
             num_model_data = 0
@@ -158,9 +158,10 @@ class Dashboard(TemplateView):
                     "application_info" : json.dumps({"application":application}),
                     "application" : application,
                     "applications_avail" : applications_avail,
-                    "perf_data_list" : perf_data_web,
+                    "func_eval_list" : func_eval_web,
                     "num_func_eval" : num_func_eval,
-                    "num_pages" : range(num_pages),
+                    "num_pages_func_eval" : range(num_pages_func_eval),
+                    "current_page_func_eval" : current_page_func_eval,
                     "model_data_list" : model_data_web,
                     "num_model_data" : num_model_data,
                     "num_pages_model_data" : range(num_pages_model_data),
@@ -171,7 +172,6 @@ class Dashboard(TemplateView):
                     "machine_deps_list" : json.dumps(machine_deps_avail),
                     "software_deps_list" : json.dumps(software_deps_avail),
                     "users_list" : json.dumps(users_avail),
-                    "current_page" : current_page,
                     "search_data" : json.dumps({})
                     }
 
@@ -223,33 +223,33 @@ class Dashboard(TemplateView):
             user_email = request.user.email
 
         if "func_eval" in search_data:
-            perf_data = historydb.load_func_eval_filtered(application_name = application,
+            func_eval_list = historydb.load_func_eval_filtered(application_name = application,
                     machine_deps_list = machine_deps_list,
                     software_deps_list = software_deps_list,
                     users_list = users_list,
                     user_email = user_email)
-            num_func_eval = len(perf_data)
+            num_func_eval = len(func_eval_list)
             num_evals_per_page = 15
             if (num_func_eval%num_evals_per_page) == 0:
-                num_pages = num_func_eval/num_evals_per_page
+                num_pages_func_eval = num_func_eval/num_evals_per_page
             else:
-                num_pages = int(num_func_eval/num_evals_per_page)+1
-            if (num_pages == 0):
-                num_pages = 1
-            current_page = 0
-            start_index = (current_page)*num_evals_per_page
-            end_index = (current_page+1)*num_evals_per_page
+                num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
+            if (num_pages_func_eval == 0):
+                num_pages_func_eval = 1
+            current_page_func_eval = 0
+            start_index = (current_page_func_eval)*num_evals_per_page
+            end_index = (current_page_func_eval+1)*num_evals_per_page
             if end_index > num_func_eval:
                 end_index = num_func_eval
-            perf_data_web = perf_data[start_index:end_index]
+            func_eval_web = func_eval_list[start_index:end_index]
 
-            for i in range(len(perf_data_web)):
-                perf_data_web[i]["id"] = start_index+i
+            for i in range(len(func_eval_web)):
+                func_eval_web[i]["id"] = start_index+i
         else:
-            perf_data_web = []
+            func_eval_web = []
             num_func_eval = 0
-            num_pages = 0
-            current_page = 0
+            num_pages_func_eval = 0
+            current_page_func_eval = 0
 
         if "model_data" in search_data:
             model_data = historydb.load_model_data_filtered(
@@ -288,10 +288,10 @@ class Dashboard(TemplateView):
                 "application_info" : json.dumps(application_info),
                 "applications_avail" : applications_avail,
                 "application" : application,
-                "perf_data_list" : perf_data_web,
+                "func_eval_list" : func_eval_web,
                 "num_func_eval" : num_func_eval,
-                "num_pages" : range(num_pages),
-                "current_page" : current_page,
+                "num_pages_func_eval" : range(num_pages_func_eval),
+                "current_page_func_eval" : current_page_func_eval,
                 "model_data_list" : model_data_web,
                 "num_model_data" : num_model_data,
                 "num_pages_model_data" : range(num_pages_model_data),
