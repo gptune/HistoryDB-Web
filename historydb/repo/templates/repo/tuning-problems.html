@@ -1,0 +1,45 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h1>Applications (Tuning Problems) in Our Database</h1>
+  </div>
+
+  <div class="table-responsive">
+
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Application (Tuning Problem)</th>
+          <th>Task space</th>
+          <th>Tuning space</th>
+          <th>Output space</th>
+          <th>Software dependencies</th>
+          <th>Source code</th>
+          <th>Creator</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <table>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -37,11 +37,11 @@
 
 <div class="container" style="max-width: 560px">
   <div class="py-5 text-center">
-    <h1>Add Application</h1>
+    <h1>Applications in Our Database</h1>
   </div>
 
   <div class="container">
-    <form method="POST" action="{% url 'repo:addapp' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form method="POST" action="{% url 'repo:add-applications' %}" enctype="multipart/form-data" class="needs-validation" novalidate>
       {% csrf_token %}
       <div class="mb-3">
         <label for="applicationVal">Please check if we already have the same application</label>

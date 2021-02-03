@@ -198,7 +198,7 @@
         <td>
         {% for page_num_func_eval in num_pages_func_eval %}
         <!-- <a href="/listSpecificPageWork?current_page_func_eval={{page_num_func_eval}}" > -->
-        <a href="{% url 'repo:userdashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:user-dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_func_eval current_page_func_eval %}
           [<b>{{ page_num_func_eval }}</b>]
           {% else %}
@@ -376,7 +376,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:userdashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:user-dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

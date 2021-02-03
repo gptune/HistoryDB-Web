@@ -1,0 +1,44 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h1>Machine Information in Our Database</h1>
+  </div>
+
+  <div class="table-responsive">
+
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Machine Name</th>
+          <th>System Model</th>
+          <th>Processor</th>
+          <th>Coprocessor/Accelerator</th>
+          <th>Interconnect</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <table>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

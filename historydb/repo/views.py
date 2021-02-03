@@ -369,18 +369,18 @@ class UserDashboard(TemplateView):
                 "current_page_model_data" : current_page_model_data,
                 }
 
-        return render(request, 'repo/userdashboard.html', context)
+        return render(request, 'repo/user-dashboard.html', context)
 
     def post(self, request, **kwargs):
         context = {}
 
-        return render(request, 'repo/userdashboard.html', context)
+        return render(request, 'repo/user-dashboard.html', context)
 
 class EntryAccess(TemplateView):
     def get(self, request, **kwargs):
         context = {}
 
-        return render(request, 'repo/userdashboard.html', context)
+        return render(request, 'repo/user-dashboard.html', context)
 
     def post(self, request, **kwargs):
         entry_uid = request.POST["entry_uid"]
@@ -399,13 +399,13 @@ class EntryAccess(TemplateView):
         historydb = HistoryDB_MongoDB()
         historydb.update_entry_accessibility(application_name, entry_uid, accessibility)
 
-        return redirect(reverse_lazy('repo:userdashboard')) #, kwargs={'username': user.username}))
+        return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
 
 class EntryDel(TemplateView):
     def get(self, request, **kwargs):
         context = {}
 
-        return render(request, 'repo/userdashboard.html', context)
+        return render(request, 'repo/user-dashboard.html', context)
 
     def post(self, request, **kwargs):
         entry_uid = request.POST["entry_uid"]
@@ -414,7 +414,7 @@ class EntryDel(TemplateView):
         historydb = HistoryDB_MongoDB()
         historydb.delete_perf_data_by_uid(application_name, entry_uid)
 
-        return redirect(reverse_lazy('repo:userdashboard')) #, kwargs={'username': user.username}))
+        return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
 
 class Export(TemplateView):
 
@@ -545,7 +545,34 @@ class Upload(TemplateView):
                 }
         return render(request, 'repo/return.html', context)
 
-class AddApp(TemplateView):
+class TuningProblems(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/tuning-problems.html', context)
+
+class AddTuningProblems(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/add-tuning-problems.html', context)
+
+class Applications(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/applications.html', context)
+
+class AddApplications(TemplateView):
     def get(self, request, **kwargs):
         print ("======== Upload GET ========")
 
@@ -568,7 +595,7 @@ class AddApp(TemplateView):
                 "applications_avail_per_library" : applications_avail_per_library,
                 }
 
-        return render(request, 'repo/addapp.html', context)
+        return render(request, 'repo/add-applications.html', context)
 
     def post(self, request, **kwargs):
         print ("======== Upload POST ========")
@@ -614,6 +641,42 @@ class AddApp(TemplateView):
                 "message": "The application information has been added"
                 }
         return render(request, 'repo/return.html', context)
+
+class Architectures(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/architectures.html', context)
+
+class AddArchitectures(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/add-architectures.html', context)
+
+class Machines(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = { }
+
+        return render(request, 'repo/machines.html', context)
+
+class AddMachines(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = { }
+
+        return render(request, 'repo/add-machines.html', context)
 
 def query(request, perf_data_uid):
     historydb = HistoryDB_MongoDB()

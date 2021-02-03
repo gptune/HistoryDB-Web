@@ -38,16 +38,17 @@
         <li class="nav-item dropdown" id="nav-item-about">
           <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
           <div class="dropdown-menu" aria-labelledby="dropdown01">
-            <a class="dropdown-item" href="{% url 'main:about' %}">About GPTune</a>
+            <a class="dropdown-item" href="{% url 'main:about' %}">About</a>
             <a class="dropdown-item" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
           </div>
         </li>
         <li class="nav-item dropdown" id="nav-item-repo">
           <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Repository</a>
           <div class="dropdown-menu" aria-labelledby="dropdown02">
-            <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard</a>
-            <a class="dropdown-item" href="{% url 'repo:upload' %}">Upload Data</a>
-            <a class="dropdown-item" href="{% url 'repo:addapp' %}">Add Application</a>
+            <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard (Performance Data Browser)</a>
+            <a class="dropdown-item" href="{% url 'repo:upload' %}">Upload Performance Data</a>
+            <a class="dropdown-item" href="{% url 'repo:tuning-problems' %}">Tuning Problems in Database</a>
+            <a class="dropdown-item" href="{% url 'repo:machines' %}">Machines in Database</a>
           </div>
         </li>
         <li class="nav-item dropdown" id="nav-item-documentation">
@@ -58,17 +59,17 @@
         </li>
         {% if user.is_authenticated %}
         <li class="nav-item dropdown" id="nav-item-account">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-                <a class="dropdown-item" href="{% url 'account:profile' %}">My Profile</a>
-                <a class="dropdown-item" href="{% url 'account:group' %}">My Groups</a>
-                <a class="dropdown-item" href="{% url 'repo:userdashboard' %}">My Data</a>
-                <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
-            </div>
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <a class="dropdown-item" href="{% url 'account:profile' %}">My Profile</a>
+            <a class="dropdown-item" href="{% url 'account:group' %}">My Groups</a>
+            <a class="dropdown-item" href="{% url 'repo:user-dashboard' %}">My Data</a>
+            <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
+          </div>
         </li>
         {% else %}
         <li class="nav-item" id="nav-item-login">
-            <a class="nav-link" href="{% url 'account:login' %}">Login</a>
+          <a class="nav-link" href="{% url 'account:login' %}">Login</a>
         </li>
         {% endif %}
       </ul>
