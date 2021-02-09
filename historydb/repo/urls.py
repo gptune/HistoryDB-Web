@@ -18,6 +18,10 @@ urlpatterns = [
     path('add-architectures/', views.Architectures.as_view(), name='add-architectures'),
     path('machines/', views.Machines.as_view(), name='machines'),
     path('add-machines/', views.AddMachines.as_view(), name='add-machines'),
+    path('user-groups/', views.UserGroups.as_view(), name='user-groups'),
+    path('add-group/', views.AddGroup.as_view(), name='add-group'),
+    path('update-roles/', views.UpdateRoles.as_view(), name='update-roles'),
+    path('invite-member/', views.InviteMember.as_view(), name='invite-member'),
     path('export/', views.Export.as_view(), name='export'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]

@@ -678,6 +678,159 @@ class AddMachines(TemplateView):
 
         return render(request, 'repo/add-machines.html', context)
 
+class UserGroups(TemplateView):
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            historydb = HistoryDB_MongoDB()
+            user_groups = historydb.load_user_collaboration_groups(request.user.email)
+            for i in range(len(user_groups)):
+                user_groups[i]['no'] = i+1
+                for member in user_groups[i]['members']:
+                    if member['email'] == request.user.email:
+                        user_groups[i]['my_role'] = member['role']
+                        break
+            print ("USER GROUPS")
+            print (user_groups)
+            context = { "user_groups" : user_groups }
+            return render(request, 'repo/user-groups.html', context)
+
+class AddGroup(TemplateView):
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            historydb = HistoryDB_MongoDB()
+            context = {
+                    "user_email" : request.user.email
+                    }
+            return render(request, 'repo/add-group.html', context)
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            group_name = request.POST['group_name']
+
+            invites_emails = request.POST.getlist('invites_emails')
+            invites_roles = request.POST.getlist('invites_roles')
+
+            print ("invites_emails: ", invites_emails)
+            print ("invites_roles: ", invites_roles)
+
+            group_details = {}
+            group_details['group_name'] = group_name
+            group_details['submitter'] = {
+                    'user_name': request.user.username,
+                    'user_email': request.user.email
+                    }
+            group_members = []
+            for i in range(len(invites_emails)):
+                group_members.append({"email":invites_emails[i], "role":invites_roles[i]})
+            group_details['members'] = group_members
+
+            import uuid
+            group_details["uid"] = str(uuid.uuid1())
+
+            historydb = HistoryDB_MongoDB()
+            ret = historydb.add_collaboration_group(group_details)
+            if ret == 0:
+                context = {
+                        "header": "Adding a collaboration group",
+                        "message": "Your collaboration group has been added successfully."
+                        }
+                return render(request, 'repo/add-group-return.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Adding a collaboration group",
+                        "message": "Failed: The same group number already exists"
+                        }
+                return render(request, 'repo/add-group-return.html', context)
+
+class UpdateRoles(TemplateView):
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            group_uid = request.POST['group_uid']
+            invites_emails = request.POST.getlist('invites_emails')
+            invites_roles = request.POST.getlist('invites_roles')
+
+            print ("group_uid: ", group_uid)
+            print ("invites_emails: ", invites_emails)
+            print ("invites_roles: ", invites_roles)
+
+            group_members = []
+            for i in range(len(invites_emails)):
+                group_members.append({"email":invites_emails[i], "role":invites_roles[i]})
+
+            historydb = HistoryDB_MongoDB()
+            ret = historydb.update_group_members(group_uid, group_members)
+            if ret == 0:
+                user_groups = historydb.load_user_collaboration_groups(request.user.email)
+                for i in range(len(user_groups)):
+                    user_groups[i]['no'] = i+1
+                    for member in user_groups[i]['members']:
+                        if member['email'] == request.user.email:
+                            user_groups[i]['my_role'] = member['role']
+                            break
+                print ("USER GROUPS")
+                print (user_groups)
+                context = { "user_groups" : user_groups }
+                return render(request, 'repo/user-groups.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Updating group members",
+                        "message": "Updating group members was unsuccessful."
+                        }
+                return render(request, 'repo/add-group-return.html', context)
+            else:
+                context = {
+                        "header": "Updating group members",
+                        "message": "Updating group members was unsuccessful."
+                        }
+                return render(request, 'repo/add-group-return.html', context)
+
+class InviteMember(TemplateView):
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            group_uid = request.POST['group_uid']
+            invite_email = request.POST['invite_email']
+            invite_role = request.POST['invite_role']
+
+            print ("group_uid: ", group_uid)
+            print ("invite_email: ", invite_email)
+            print ("invite_role: ", invite_role)
+
+            historydb = HistoryDB_MongoDB()
+
+            ret = historydb.add_group_member(group_uid, invite_email, invite_role)
+            if ret == 0:
+                user_groups = historydb.load_user_collaboration_groups(request.user.email)
+                for i in range(len(user_groups)):
+                    user_groups[i]['no'] = i+1
+                    for member in user_groups[i]['members']:
+                        if member['email'] == request.user.email:
+                            user_groups[i]['my_role'] = member['role']
+                            break
+                print ("USER GROUPS")
+                print (user_groups)
+                context = { "user_groups" : user_groups }
+                return render(request, 'repo/user-groups.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Adding a group member",
+                        "message": "Additing a group member was unsuccessful."
+                        }
+                return render(request, 'repo/add-group-return.html', context)
+
 def query(request, perf_data_uid):
     historydb = HistoryDB_MongoDB()
 

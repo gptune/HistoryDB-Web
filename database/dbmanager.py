@@ -61,10 +61,51 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_list
 
-    def add_user_to_group(self, groupname, username):
-        # [TODO] add user collaboration group information
+    def load_user_collaboration_groups(self, user_email, **kwargs):
+        user_groups = []
 
-        return None
+        groups_db = self.db["group"]
+        groups_list = groups_db.find()
+
+        for group_data in groups_list:
+            try:
+                group_members = group_data["members"]
+                for member_data in group_members:
+                    if (member_data['email'] == user_email):
+                        user_groups.append(group_data)
+                        break
+            except:
+                continue
+
+        return user_groups
+
+    def add_collaboration_group(self, group_details, **kwargs):
+        groups_db = self.db["group"]
+        if groups_db.count_documents({"group_name":{"$eq":group_details['group_name']}}) == 0:
+            groups_db.insert_one(group_details)
+            return 0
+        else:
+            return -1
+
+    def add_group_member(self, group_uid, invite_email, invite_role):
+        groups_db = self.db["group"]
+        try:
+            group_data = groups_db.find({"uid":{"$eq":group_uid}})[0]
+            group_members = group_data["members"]
+            group_members.append({"email":invite_email, "role":invite_role})
+            groups_db.update_one({"uid":group_uid}, {"$set":{"members":group_members}})
+            return 0
+        except:
+            return -1
+
+    def update_group_members(self, group_uid, group_members):
+        groups_db = self.db["group"]
+        try:
+            group_data = groups_db.find({"uid":{"$eq":group_uid}})[0]
+            groups_db.update_one({"uid":group_uid}, {"$set":{"members":group_members}})
+            return 0
+        except:
+            return -1
 
     def load_application_info(self, application_name, **kwargs):
         collection = self.db[application_name]
@@ -477,15 +518,29 @@ if __name__ == "__main__":
     import sys
     import json
 
-    print (sys.argv[1])
+    #print (sys.argv[1])
     historydb = HistoryDB_MongoDB()
-    with open(sys.argv[1], "r") as f_in:
-        data = f_in.read()
-        json_data = json.loads(data)
-    historydb.upload_func_eval(json_data, {"name":"younghyun"}, {"name:":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
-    historydb.upload_model_data(json_data, {"name":"younghyun"}, {"name":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
+#    with open(sys.argv[1], "r") as f_in:
+#        data = f_in.read()
+#        json_data = json.loads(data)
+#    historydb.upload_func_eval(json_data, {"name":"younghyun"}, {"name:":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
+#    historydb.upload_model_data(json_data, {"name":"younghyun"}, {"name":"PDGEQRF", "library":"ScaLAPACK"}, {"type":"public"})
+#
+#    json_data = historydb.load_json_data("PDGEQRF")
+#    with open("asdf.json", "w") as f_out:
+#        json.dump(json_data, f_out, indent=2)
 
-    json_data = historydb.load_json_data("PDGEQRF")
-    with open("asdf.json", "w") as f_out:
-        json.dump(json_data, f_out, indent=2)
-
+    #group_details = {
+    #        "group_name": "mygroup",
+    #        "members" : [
+    #            {
+    #                "email": "member1@example.com",
+    #                "level": "edit"
+    #            },
+    #            {
+    #                "email": "member2@example.com",
+    #                "level": "view"
+    #            }
+    #            ]
+    #        }
+    #historydb.add_collaboration_group(group_details)
