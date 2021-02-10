@@ -2,10 +2,93 @@
 {% load static %}
 {% block content %}
 
-<div class="container">
-    <font face="Lucida Grande">
-    {{ markdown_html | safe }}
+<style>
+
+li a {
+  display: block;
+  color: #000;
+  padding: 0px 16px;
+  text-decoration: none;
+}
+
+li a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+li a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+</style>
+
+<link rel="stylesheet" href="{% static 'css/github.css' %}">
+
+<div>
+  <ul style="list-style-type: none; margin: 0; padding: 0; width: 20%; background-color: #f1f1f1; position: fixed; height: 100%; overflow: auto;">
+    <font size=3px>
+
+    <li><a href="{% url 'documentation:query' document_name='historydb_motivation' %}"><b>History DB</b></a></li>
+
+    {% ifequal document_name 'historydb_motivation' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='historydb_motivation' %}">Motivation</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='historydb_motivation' %}">Motivation</a></li>
+    {% endifequal %}
+
+    {% ifequal document_name 'historydb_features' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='historydb_features' %}">Features</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='historydb_features' %}">Features</a></li>
+    {% endifequal %}
+
+    <br>
+
+    <li><a href="{% url 'documentation:query' document_name='userguide_funceval' %}"><b>User Guide</b></a></li>
+
+    {% ifequal document_name 'userguide_funceval' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='userguide_funceval' %}">Function Evaluation Data</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='userguide_funceval' %}">Function Evaluation Data</a></li>
+    {% endifequal %}
+
+    {% ifequal document_name 'userguide_surrogatemodel' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='userguide_surrogatemodel' %}">Surrogate Models</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='userguide_surrogatemodel' %}">Surrogate Models</a></li>
+    {% endifequal %}
+
+    <br>
+
+    <li><a class="disabled" href="#"><b>CK-GPTune</b></a></li>
+
+    {% ifequal document_name 'ckgptune_background' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='ckgptune_background' %}">Background</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='ckgptune_background' %}">Background</a></li>
+    {% endifequal %}
+
+    {% ifequal document_name 'ckgptune_installation' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='ckgptune_installation' %}">Installation</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='ckgptune_installation' %}">Installation</a></li>
+    {% endifequal %}
+
+    {% ifequal document_name 'ckgptune_examples' %}
+    <li><a class="active" href="{% url 'documentation:query' document_name='ckgptune_examples' %}">Examples</a></li>
+    {% else %}
+    <li><a href="{% url 'documentation:query' document_name='ckgptune_examples' %}">Examples</a></li>
+    {% endifequal %}
+
     </font>
+  </ul>
+
+  <div style="margin-left:25%; margin-right:10%; padding:1px 16px; height:90%;">
+    <font face="Lucida Grande" size=3px>
+      {{ markdown_html | safe }}
+    </font>
+  </div>
 </div>
 
 {% endblock %}

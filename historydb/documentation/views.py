@@ -12,9 +12,6 @@ def markdown_to_html(value):
     return mark_safe(markdown.markdown(value, extensions=extensions))
 
 # Create your views here.
-def index(request):
-    return render(request, 'documentation/index.html')
-
 def query(request, document_name):
     documentation_dir = Path(__file__).resolve().parent.parent.parent
     documentation_file = os.path.join(documentation_dir, 'documentation/'+document_name+'.md')
@@ -23,6 +20,7 @@ def query(request, document_name):
         markdown_html = markdown_to_html(markdown_string)
 
     context = {
+            "document_name" : document_name,
             "markdown_html" : markdown_html
             }
 

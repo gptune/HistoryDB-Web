@@ -1,5 +1,7 @@
 # Motivation and Goals
 
+GPTune is an autotuner for high-performance computing codes, relying on multitask learning to help solve the underlying black-box optimization problem. GPTune is part of the xSDK4ECP project supported by the Exascale Computing Project (ECP).
+
 GPTune is designed to tune high-performance application codes as "black-boxes", running them for carefully chosen tuning parameter values and building a performance model (i.e. surrogate model) based on the measured performance (i.e. function evaluation data) [1].
 One of the main costs with this approach is the expensive black-box objective function (i.e. run and measure the application on a parallel machine).
 To reduce this cost, the history database aims to provide the following features:

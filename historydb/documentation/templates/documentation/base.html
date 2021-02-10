@@ -1,179 +1,93 @@
 <!doctype html>
 {% load static %}
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Jekyll v4.1.1">
-    <title>Dashboard Template · Bootstrap</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+  <meta name="generator" content="Jekyll v4.1.1">
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <title>GPTune History Database</title>
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="{% static 'css/carousel.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-    <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="{% static 'css/starter-template.css' %}">
-    <link rel="stylesheet" href="{% static 'css/github.css' %}">
-  </head>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('')</script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
-  <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">GPTune History DB</a>
+  <script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+</head>
 
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">GPTune History DB</a>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item" id="nav-item-home">
-            <a class="nav-link" href="{% url 'main:index' %}">Home<span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item dropdown" id="nav-item-about">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="{% url 'main:about' %}">About GPTune</a>
-              <a class="dropdown-item" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown" id="nav-item-repo">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Repository</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown02">
-              <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard (Performance Data Browser)</a>
-              <a class="dropdown-item" href="{% url 'repo:upload' %}">Upload Performance Data</a>
-              <a class="dropdown-item" href="{% url 'repo:tuning-problems' %}">Tuning Problems in Database</a>
-              <a class="dropdown-item" href="{% url 'repo:machines' %}">Machines in Database</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown" id="nav-item-documentation">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown03">
-              <a class="dropdown-item" href="{% url 'documentation:index' %}">Manual</a>
-            </div>
-          </li>
-          {% if user.is_authenticated %}
-          <li class="nav-item dropdown" id="nav-item-account">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="{% url 'account:profile' %}">My Profile</a>
-              <a class="dropdown-item" href="{% url 'account:group' %}">My Groups</a>
-              <a class="dropdown-item" href="{% url 'repo:user-dashboard' %}">My Data</a>
-              <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
-            </div>
-          </li>
-          {% else %}
-          <li class="nav-item" id="nav-item-login">
-            <a class="nav-link" href="{% url 'account:login' %}">Login</a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-          <div class="sidebar-sticky pt-3">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="accordin-heading" href="{% url 'documentation:index' %}">
-                  <span data-feather="home"></span>
-                  Home
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a class="accordin-heading" data-toggle="collapse" data-target="#submenu1" href="{% url 'documentation:index' %}">
-                  <span data-feather="home"></span>
-                  Overview
-                </a>
-
-                <ul class="nav nav-list" id="submenu1">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'documentation:query' document_name='motivation' %}">
-                      <span data-feather="file"></span>
-                      Motivation and Goals
-                    </a>
-                  </li>
-                </ul>
-
-                <ul class="nav nav-list" id="submenu1">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'documentation:query' document_name='features' %}">
-                      <span data-feather="file"></span>
-                      History Database Features
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              <li class="nav-item">
-                <a class="accordin-heading" data-toggle="collapse" data-target="#submenu2" href="{% url 'documentation:index' %}">
-                  <span data-feather="home"></span>
-                  UserGuide
-                </a>
-
-                <ul class="nav nav-list" id="submenu2">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'documentation:query' document_name='funceval' %}">
-                      <span data-feather="file"></span>
-                      Re-using Function Evaluation Data
-                    </a>
-                  </li>
-                </ul>
-
-                <ul class="nav nav-list" id="submenu2">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'documentation:query' document_name='surrogatemodel' %}">
-                      <span data-feather="file"></span>
-                      Re-using Surrogate Models
-                    </a>
-                  </li>
-                </ul>
-
-                <ul class="nav nav-list" id="submenu2">
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'documentation:query' document_name='ck-gptune' %}">
-                      <span data-feather="file"></span>
-                      Using CK-GPTune
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" id="nav-item-home">
+          <a class="nav-link" href="{% url 'main:index' %}">Home<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item dropdown" id="nav-item-about">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <a class="dropdown-item" href="{% url 'main:about' %}">About</a>
+            <a class="dropdown-item" href="https://github.com/gptune/GPTune/tree/history_db">Github</a>
           </div>
-        </nav>
-
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-
-          {% block content %}
-          {% endblock %}
-
-        </main>
-      </div>
+        </li>
+        <li class="nav-item dropdown" id="nav-item-repo">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Repository</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown02">
+            <a class="dropdown-item" href="{% url 'repo:dashboard' %}">Dashboard (Performance Data Browser)</a>
+            <a class="dropdown-item" href="{% url 'repo:upload' %}">Upload Performance Data</a>
+            <a class="dropdown-item" href="{% url 'repo:tuning-problems' %}">Open Tuning Problems</a>
+            <a class="dropdown-item" href="{% url 'repo:machines' %}">Machine List</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown" id="nav-item-documentation">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentation</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown03">
+            <a class="dropdown-item" href="{% url 'documentation:query' document_name='historydb_motivation' %}">Manual</a>
+          </div>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown" id="nav-item-account">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <a class="dropdown-item" href="{% url 'account:profile' %}">My Profile</a>
+            <a class="dropdown-item" href="{% url 'repo:user-groups' %}">My Groups</a>
+            <a class="dropdown-item" href="{% url 'repo:user-dashboard' %}">My Data</a>
+            <a class="dropdown-item" href="{% url 'account:logout' %}">Logout</a>
+          </div>
+        </li>
+        {% else %}
+        <li class="nav-item" id="nav-item-login">
+          <a class="nav-link" href="{% url 'account:login' %}">Login</a>
+        </li>
+        {% endif %}
+      </ul>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script>window.jQuery || document.write('')</script><script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script></body>
+  </nav>
+
+  <main role="main">
+    {% block content %}
+    {% endblock %}
+    <footer class="container" style="margin-left:25%; margin-right:10%;">
+      <hr>
+      <p>&copy; 2021 GPTune-Dev. All rights reserved.</p>
+    </footer>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+</body>
+
 </html>

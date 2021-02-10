@@ -6,8 +6,7 @@ The performance data is saved as dictionaries in JavaScript Object Notation ([JS
 JSON is becoming more popular and easy to add/remove data fields, so it is easy for us to organize data for database queries and gradually improve the data format.
 In what follows, we present the features provided by the GPTune history database.
 
----
-### Re-using Function Evaluation Data
+## Re-using Function Evaluation Data
 
 Users can allow GPTune to store function evaluation data obtained from autotuning into data files.
 Each data file contains the function evaluation results obtained from the GPTune's Bayesian optimization model.
@@ -21,7 +20,7 @@ If GPTune is run in parallel and multiple processes need to update performance d
 GPTune users can choose to load the previous function evaluation data when starting a new autotuning.
 This feature will be useful whether or not a user wants to share data to or from other users.
 
-### Re-using GP Surrogate Model
+## Re-using GP Surrogate Model
 
 GPTune uses Bayesian optimization to iteratively build a Gaussian Process (GP) surrogate model~\cite{gramacy2020surrogates}~\footnote{Refer to Section 3 in the GPTune UserGuide~\cite{GPTuneUserGuide} for more details about how GPTune builds surrogate models.}, by running the application at carefully chosen tuning parameter values.
 In addition to the ability to reuse previous function evaluation data, the history database also supports storing and loading trained GP surrogate models; users can use this feature to save the GP surrogate model after finishing some autotuning and load a trained model to continue autotuning afterward (with no additional model updates or fewer updates).
@@ -29,14 +28,14 @@ Again, this feature will be useful whether or not a user wants to share data to 
 GPTune provides a Python interface to run MLA after loading a GP surrogate model from the database.
 While it supports several model selection criterion to select the model such as MLE (Maximum Likelihood Estimation), AIC (Akaike Information Criterion), and BIC (Bayesian Information Criterion), users can also select a model based on their own method based on the provided statistics information; the history database provides some statistics (e.g. likelihood, gradients) of the model.
 
-### Machine/Software Dependencies When Re-using Autotuning Data
+## Machine/Software Dependencies When Re-using Autotuning Data
 
 In addition to performance data obtained from autotuning, the history database also records the machine configuration (e.g. the number of nodes/cores used) and software information (e.g. which software libraries are used for that application) into the JSON file.
 Users can provide this information manually when calling GPTune, but they can also leverage a workflow automation tool called CK-GPTune~\cite{CKGPTune} to manage the information automatically.
 With CK-GPTune, users need to define the application's software dependencies with a meta-description file, then CK-GPTune detects the software packages/libraries that have dependencies, based on the Collective Knowledge (CK) technology~\cite{Fursin:2020}.
 Users can therefore determine which performance data are relevant for re-using (learning) from a possibly different machine or software versions or configurations.
 
-### Workflow Automation for Reproducing Performance Data
+## Workflow Automation for Reproducing Performance Data
 
 CK-GPTune not only provides automatic software detection, but also allows you to define/run automated workflows (e.g. experiment, analysis) using a command line interface and meta description files.
 In CK-GPTune, we currently provide workflow automation for four example codes (e.g. ScaLAPACK's PDGEQRF~\cite{Blackford:1997:Scalapack}) that users can install/run/autotune using simple commands, and plan to provide more examples.
@@ -44,7 +43,7 @@ Users can also automate their program workflows and share them with other users 
 This will allow users to reproduce performance data from the same and different users.
 For more information about CK-GPTune, please refer to our Github web pages~\cite{CKGPTune}.
 
-### Using the Public Shared Database
+## Using the Public Shared Database
 
 The currently working version of the history database already supports the aforementioned features, however, it only supports storing/loading performance data of each user separately (on the local storage).
 To harness the power of crowdtuning, we are now focusing on developing a public shared database to allow users to upload their performance data or download performance data provided by other users.
