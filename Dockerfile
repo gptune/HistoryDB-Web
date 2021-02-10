@@ -1,6 +1,5 @@
 FROM debian:stable
 
-WORKDIR /app
 RUN apt-get update
 RUN apt-get install git -y
 RUN git clone https://github.com/gptune/HistoryDB-Web /srv/HistoryDB-Web
@@ -21,5 +20,3 @@ RUN echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | 
 RUN apt-get update
 RUN apt-get install -y mongodb-org
 
-COPY /srv/HistoryDB-Web/docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
