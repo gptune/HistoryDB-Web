@@ -59,14 +59,22 @@ cd historydb
 $ python manage.py createsuperuser
 ```
 
+## Set environment
+
+- Set location for database files
+```
+$ export HISTORYDB_STORAGE "dbfiledirectory"
+$ mkdir -p $HISTORYDB_STORAGE/sqlite_data
+$ export HISTORYDB_SQLITE_DATA = $HISTORYDB_STORAGE/sqlite_data
+$ mkdir -p $HISTORYDB_STORAGE/mongodb_data
+$ export HISTORYDB_MONGODB_DATA = $HISTORYDB_STORAGE/mongodb_data
+```
+
 ## Run (testing/debugging mode)
 
 - run MongoDB daemon: this daemon will hang in the terminal to wait for some events. You can use "mongod --dbpath "path" &" to run it as a background process.
 ```
-mkdir "whateverpath"
-cd "whateverpath"
-$ mkdir "whateverpath"
-$ mongod --dbpath "whateverpath" 
+$ mongod --dbpath $HISTORYDB_MONGODB_DATA
 ```
 
 - run the Django web application
