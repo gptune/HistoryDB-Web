@@ -3,7 +3,7 @@ FROM debian:stable
 WORKDIR /app
 RUN apt-get update
 RUN apt-get install git -y
-RUN git clone https://github.com/gptune/HistoryDB-Web
+RUN git clone https://github.com/gptune/HistoryDB-Web /srv/HistoryDB-Web
 
 RUN apt-get install -y python3
 RUN apt-get install -y python3-pip
@@ -21,9 +21,5 @@ RUN echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" | 
 RUN apt-get update
 RUN apt-get install -y mongodb-org
 
-WORKDIR HistoryDB-Web
-RUN python3 create_new_key.py
-
-WORKDIR historydb
-RUN python3 manage.py makemigrations
-RUN python3 manage.py migrate
+COPY /srv/HistoryDB-Web/docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
