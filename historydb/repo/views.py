@@ -554,14 +554,14 @@ class TuningProblems(TemplateView):
 
         return render(request, 'repo/tuning-problems.html', context)
 
-class AddTuningProblems(TemplateView):
+class AddTuningProblem(TemplateView):
 
     def get(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
         context = {}
 
-        return render(request, 'repo/add-tuning-problems.html', context)
+        return render(request, 'repo/add-tuning-problem.html', context)
 
 class Applications(TemplateView):
 
@@ -669,14 +669,41 @@ class Machines(TemplateView):
 
         return render(request, 'repo/machines.html', context)
 
-class AddMachines(TemplateView):
+class AddMachine(TemplateView):
 
     def get(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
-        context = { }
+        def get_list_from_file(filename):
+            items = []
+            with open(filename, "r") as f_in:
+                lines = f_in.readlines()
+                for line in lines:
+                    items.append(line)
+            return items
 
-        return render(request, 'repo/add-machines.html', context)
+        system_models_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/system_models_list.csv")
+        processors_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/processors_list.csv")
+        interconnect_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/interconnect_list.csv")
+
+        country_list = []
+        import pycountry
+        for country in list(pycountry.countries):
+            country_list.append(country.name)
+        country_list.sort()
+
+        print (system_models_list)
+        print (processors_list)
+        print (country_list)
+
+        context = {
+                "system_models_list" : system_models_list,
+                "processors_list" : processors_list,
+                "interconnect_list" : interconnect_list,
+                "country_list" : country_list,
+                }
+
+        return render(request, 'repo/add-machine.html', context)
 
 class UserGroups(TemplateView):
 

@@ -1,0 +1,147 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+
+  function AddProcessorInfo() {
+    var processor_info_div = document.getElementById('processor_info_div');
+    clone = processor_info_div.cloneNode(true);
+    clone.id = 'processor_info_div_last';
+    document.getElementById('processor_info_div_div').appendChild(clone);
+  }
+
+  function RemoveProcessorInfo() {
+    document.getElementById('processor_info_div_last').remove();
+  }
+
+</script>
+
+<div class="container" style="max-width: 700px">
+  <div class="py-5 text-center">
+    <h1>Add Machine Information</h1>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="{% url 'repo:add-machine' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div id="add-form" style="display:block;">
+
+        <div class="mb-3">
+          <label for="machine_name"><b>Name of your machine</b></label>
+          <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="system_model"><b>Choose system model</b></label>
+          <select class="custom-select d-block w-100" id="system_model" name="system_model">
+            <option value="" label="Choose..."></option>
+            {% for system_model in system_models_list %}
+            <option value="{{ system_model }}" label="{{ system_model }}"></option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div id="processor_info_div_div" class="mb-3">
+          <div class="row">
+            <div class="col">
+              <label><b>Processor/Accelerator/Co-Processor</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddProcessorInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveProcessorInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div id="processor_info_div" style="background-color: #f1f1f1">
+            <div class="mb-3" style="padding: 10px;">
+              <label for="processor"><b>Processor model</b></label>
+              <select class="custom-select d-block w-100" id="processor_model" name="processor_model">
+                <option value="" label="Choose..."></option>
+                {% for processor in processors_list %}
+                <option value="owner" label="{{ processor }}"></option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="row" style="padding: 10px;">
+              <div class="col">
+                <label for="processor_nodes">Number of total nodes</label>
+                <input type="number" class="form-control" id="processor_nodes" name="processor_nodes">
+              </div>
+              <div class="col">
+                <label for="processor_cores">Number of total cores</label>
+                <input type="number" class="form-control" id="processor_cores" name="processor_cores">
+              </div>
+            </div>
+
+            <div class="row" style="padding: 10px;">
+              <div class="col">
+                <label>Memory size per node (GB)</label>
+                <input type="number" class="form-control" id="processor_memory" name="processor_memory">
+              </div>
+              <div class="col">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="machine_interconnect"><b>Interconnect</b></label>
+          <select class="custom-select d-block w-100" for="machine_interconnect" name="machine_interconnect">
+            <option value="" label="Choose..."></option>
+            {% for interconnect in interconnect_list %}
+            <option value="owner" label="{{ interconnect }}"></option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label id="machine_site"><b>Site</b></label>
+          <input type="text" class="form-control" id="machine_site" name="machine_site" required>
+        </div>
+
+        <div class="mb-3">
+          <label id="machine_country"><b>Country/Location</b></label>
+          <select class="custom-select d-block w-100" id="machine_country" name="machine_country" required>
+            <option value="" label="Choose..."></option>
+            {% for country in country_list %}
+            <option value="owner" label="{{ country }}"></option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="machine_year"><b>Year</b></label>
+          <input type="number" class="form-control" id="machine_year" name="machine_year" required>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

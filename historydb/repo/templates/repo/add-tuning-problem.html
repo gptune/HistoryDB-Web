@@ -1,0 +1,267 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+
+  function AddSoftwareInfo() {
+    var software_info_div = document.getElementById('software_info_div');
+    clone = software_info_div.cloneNode(true);
+    clone.id = 'software_info_div_last';
+    document.getElementById('software_info_div_div').appendChild(clone);
+  }
+
+  function RemoveSoftwareInfo() {
+    document.getElementById('software_info_div_last').remove();
+  }
+
+  function AddTaskInfo() {
+    var task_info_div = document.getElementById('task_info_div');
+    clone = task_info_div.cloneNode(true);
+    clone.id = 'task_info_div_last';
+    document.getElementById('task_info_div_div').appendChild(clone);
+  }
+
+  function RemoveTaskInfo() {
+    document.getElementById('task_info_div_last').remove();
+  }
+
+  function AddParameterInfo() {
+    var parameter_info_div = document.getElementById('parameter_info_div');
+    clone = parameter_info_div.cloneNode(true);
+    clone.id = 'parameter_info_div_last';
+    document.getElementById('parameter_info_div_div').appendChild(clone);
+  }
+
+  function RemoveParameterInfo() {
+    document.getElementById('parameter_info_div_last').remove();
+  }
+
+
+  function AddOutputInfo() {
+    var output_info_div = document.getElementById('output_info_div');
+    clone = output_info_div.cloneNode(true);
+    clone.id = 'output_info_div_last';
+    document.getElementById('output_info_div_div').appendChild(clone);
+  }
+
+  function RemoveOutputInfo() {
+    document.getElementById('output_info_div_last').remove();
+  }
+
+</script>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h1>Add a Tuning Problem</h1>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="{% url 'repo:add-tuning-problem' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div id="add-form" style="display:block;">
+
+        <div class="mb-3">
+          <label for="machine_name"><b>Name of the tuning problem</b></label>
+          <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="system_model"><b>Library/Category</b></label>
+          <select class="custom-select d-block w-100" id="system_model" name="system_model">
+            <option value="" label="Choose..."></option>
+            {% for category in category_list %}
+            <option value="{{ category }}" label="{{ category_list }}"></option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div id="task_info_div_div" class="mb-3">
+          <div class="row">
+            <div class="col">
+              <label><b>Task Space</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddTaskInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveTaskInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div id="task_info_div" style="background-color: #f1f1f1">
+            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+              <div class="row">
+                <div class="col">
+                  <label>Name</label>
+                  <input type="text" class="form-control" name="task_name" required>
+                </div>
+                <div class="col">
+                  <label>Type</label>
+                  <select class="custom-select d-block w-100" id="task_type" name="task_type" required>
+                    <option value="" label="Choose..."></option>
+                    <option value="integer" label="Integer"></option>
+                    <option value="real" label="Real"></option>
+                    <option value="categorical" label="Categorical"></option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label>Description</label>
+                  <input type="text" class="form-control" name="task_description">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="parameter_info_div_div" class="mb-3">
+          <div class="row">
+            <div class="col">
+              <label><b>Tuning Parameter Space</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddParameterInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveParameterInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div id="parameter_info_div" style="background-color: #f1f1f1">
+            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+              <div class="row">
+                <div class="col">
+                  <label>Name</label>
+                  <input type="text" class="form-control" name="parameter_name" required>
+                </div>
+                <div class="col">
+                  <label>Type</label>
+                  <select class="custom-select d-block w-100" id="parameter_type" name="parameter_type">
+                    <option value="" label="Choose..."></option>
+                    <option value="integer" label="Integer"></option>
+                    <option value="integer" label="Real"></option>
+                    <option value="integer" label="Categorical"></option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label>Description</label>
+                  <input type="text" class="form-control" name="parameter_description">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="output_info_div_div" class="mb-3">
+          <div class="row">
+            <div class="col">
+              <label><b>Output Space</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddOutputInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveOutputInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div id="output_info_div" style="background-color: #f1f1f1">
+            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+              <div class="row">
+                <div class="col">
+                  <label>Name</label>
+                  <input type="text" class="form-control" name="output_name" required>
+                </div>
+                <div class="col">
+                  <label>Type</label>
+                  <select class="custom-select d-block w-100" id="output_type" name="output_type">
+                    <option value="" label="Choose..."></option>
+                    <option value="integer" label="Integer"></option>
+                    <option value="integer" label="Real"></option>
+                    <option value="integer" label="Categorical"></option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label>Description</label>
+                  <input type="text" class="form-control" name="output_description">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="software_info_div_div" class="mb-3">
+          <div class="row">
+            <div class="col">
+              <label><b>Required Software Package Information</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddSoftwareInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveSoftwareInfo();">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div id="software_info_div" style="background-color: #f1f1f1">
+            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+              <label for="software">Software name</label>
+              <select class="custom-select d-block w-100" id="software_name" name="software_name">
+                <option value="" label="Choose..."></option>
+                {% for software in softwares_list %}
+                <option value="owner" label="{{ software }}"></option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="problem_year"><b>Year</b></label>
+          <input type="number" class="form-control" id="problem_year" name="problem_year" required>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
