@@ -14,7 +14,6 @@ import json
 def signup(request):
     if request.method == "POST":
         if request.POST["password1"] == request.POST["password2"]:
-            #print (request.POST["password1"])
             user = User.objects.create_user(
                     username = request.POST["username"],
                     email = request.POST["email"],
@@ -27,9 +26,6 @@ def signup(request):
             user.profile.affiliation = request.POST["affiliation"]
             user.profile.ecp_member = request.POST["ecp_member"]
 
-            collaboration_groups = ['temp_initial_group'] # TEMP: TODO: remove this
-            user.profile.collaboration_groups = json.dumps(collaboration_groups)
-
             # 6-digit activation code
             import random
             random.seed()
@@ -40,19 +36,16 @@ def signup(request):
             user.profile.activation_code = activation_code
 
             try:
-                #from django.contrib.auth.tokens import default_token_generator
-                #user_token = default_token_generator.make_token(user)
-                #print ("token: ", user_token)
-
                 from django.contrib.sites.shortcuts import get_current_site
                 current_site = get_current_site(request)
 
-                message = 'Greetings from GPTune-Dev!\n'
-                message += 'You are registered in the GPTune History Database Web.\n'
-                message += 'Please use this code to activate your account.\n'
-                message += 'Code: ' + activation_code
-
-                email = EmailMessage('Thank you for signing up!', message, to=[request.POST["email"]])
+                email_subject = "Thanks for Joining GPTune History Database!"
+                email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
+                        "You are receiving this message because someone is trying to register in the GPTune history database.\n" + \
+                        "Please use this code to verify this email and confirm your registration.\n" + \
+                        "Code: " + activation_code + "\n\n" + \
+                        "Best Regards,\nGPTune-Dev"
+                email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@berkeley.edu'], reply_to=['gptune-dev@lbl.gov'])
                 email.send()
             except:
                 print ("Something went wrong with email sending")
@@ -133,12 +126,9 @@ class ProfileDashboard(TemplateView):
 
         username = request.POST['username']
         password = request.POST['password']
-        #print ("username: ", username)
-        #print ("password: ", password)
 
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
-            #user = User.objects.get(username=username)
             user.profile.first_name = request.POST['firstname']
             user.profile.last_name = request.POST['lastname']
             user.profile.position = request.POST['position']
