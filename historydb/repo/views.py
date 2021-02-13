@@ -559,9 +559,33 @@ class AddTuningProblem(TemplateView):
     def get(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
-        context = {}
+        def get_list_from_file(filename):
+            items = []
+            with open(filename, "r") as f_in:
+                lines = f_in.readlines()
+                for line in lines:
+                    items.append(line)
+            return items
+
+        category_list = ["SuperLU","ScaLAPACK","LAPACK","Desktop Application"]
+        software_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/ck_soft_list.csv")
+        software_list.sort()
+
+        context = {
+                "category_list": category_list,
+                "software_list": software_list,
+                }
 
         return render(request, 'repo/add-tuning-problem.html', context)
+
+class AddTuningCategory(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        context = {}
+
+        return render(request, 'repo/add-tuning-category.html', context)
 
 class Applications(TemplateView):
 

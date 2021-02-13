@@ -13,54 +13,26 @@
     $('#nav-item-repo').addClass('active');
   });
 
-  function AddSoftwareInfo() {
-    var software_info_div = document.getElementById('software_info_div');
-    clone = software_info_div.cloneNode(true);
-    clone.id = 'software_info_div_last';
-    document.getElementById('software_info_div_div').appendChild(clone);
+  function AddInputDivField(input_div_id, input_div_name) {
+    var input_div = document.getElementById(input_div_id);
+
+    var num_inputs = document.getElementsByName(input_div_name).length+1;
+
+    clone = input_div.cloneNode(true);
+    clone.id = input_div_id + '_' + num_inputs;
+    inputs = clone.getElementsByTagName('input');
+    for (var z=0; z<inputs.length; z++)
+      inputs[z].value = "";
+    input_div.parentNode.appendChild(clone);
   }
 
-  function RemoveSoftwareInfo() {
-    document.getElementById('software_info_div_last').remove();
+  function RemoveInputDivField(input_div_id, input_div_name) {
+    var num_inputs = document.getElementsByName(input_div_name).length;
+    document.getElementById(input_div_id+'_'+num_inputs).remove();
   }
-
-  function AddTaskInfo() {
-    var task_info_div = document.getElementById('task_info_div');
-    clone = task_info_div.cloneNode(true);
-    clone.id = 'task_info_div_last';
-    document.getElementById('task_info_div_div').appendChild(clone);
-  }
-
-  function RemoveTaskInfo() {
-    document.getElementById('task_info_div_last').remove();
-  }
-
-  function AddParameterInfo() {
-    var parameter_info_div = document.getElementById('parameter_info_div');
-    clone = parameter_info_div.cloneNode(true);
-    clone.id = 'parameter_info_div_last';
-    document.getElementById('parameter_info_div_div').appendChild(clone);
-  }
-
-  function RemoveParameterInfo() {
-    document.getElementById('parameter_info_div_last').remove();
-  }
-
-
-  function AddOutputInfo() {
-    var output_info_div = document.getElementById('output_info_div');
-    clone = output_info_div.cloneNode(true);
-    clone.id = 'output_info_div_last';
-    document.getElementById('output_info_div_div').appendChild(clone);
-  }
-
-  function RemoveOutputInfo() {
-    document.getElementById('output_info_div_last').remove();
-  }
-
 </script>
 
-<div class="container">
+<div class="container" style="max-width: 700px">
   <div class="py-5 text-center">
     <h1>Add a Tuning Problem</h1>
   </div>
@@ -77,27 +49,35 @@
         </div>
 
         <div class="mb-3">
-          <label for="system_model"><b>Library/Category</b></label>
+          <div class="row">
+            <div class="col">
+              <label for="system_model"><b>Category</b></label>
+            </div>
+            <div class="col text-right">
+              <a href="{% url 'repo:add-tuning-category' %}">Add another category</a>
+            </div>
+          </div>
+
           <select class="custom-select d-block w-100" id="system_model" name="system_model">
             <option value="" label="Choose..."></option>
             {% for category in category_list %}
-            <option value="{{ category }}" label="{{ category_list }}"></option>
+            <option value="{{ category }}" label="{{ category }}"></option>
             {% endfor %}
           </select>
         </div>
 
-        <div id="task_info_div_div" class="mb-3">
+        <div class="mb-3">
           <div class="row">
             <div class="col">
               <label><b>Task Space</b></label>
             </div>
             <div class="col d-block text-right">
-              <a onClick="AddTaskInfo();">
+              <a onClick="AddInputDivField('task_info_div', 'task_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
                 </svg>
               </a>
-              <a onClick="RemoveTaskInfo();">
+              <a onClick="RemoveInputDivField('task_info_div', 'task_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
                 </svg>
@@ -105,7 +85,7 @@
             </div>
           </div>
 
-          <div id="task_info_div" style="background-color: #f1f1f1">
+          <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
             <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
               <div class="row">
                 <div class="col">
@@ -130,18 +110,18 @@
           </div>
         </div>
 
-        <div id="parameter_info_div_div" class="mb-3">
+        <div class="mb-3">
           <div class="row">
             <div class="col">
               <label><b>Tuning Parameter Space</b></label>
             </div>
             <div class="col d-block text-right">
-              <a onClick="AddParameterInfo();">
+              <a onClick="AddInputDivField('parameter_info_div', 'parameter_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
                 </svg>
               </a>
-              <a onClick="RemoveParameterInfo();">
+              <a onClick="RemoveInputDivField('parameter_info_div', 'parameter_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
                 </svg>
@@ -149,7 +129,7 @@
             </div>
           </div>
 
-          <div id="parameter_info_div" style="background-color: #f1f1f1">
+          <div id="parameter_info_div" name="parameter_info" style="background-color: #f1f1f1">
             <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
               <div class="row">
                 <div class="col">
@@ -174,18 +154,18 @@
           </div>
         </div>
 
-        <div id="output_info_div_div" class="mb-3">
+        <div class="mb-3">
           <div class="row">
             <div class="col">
               <label><b>Output Space</b></label>
             </div>
             <div class="col d-block text-right">
-              <a onClick="AddOutputInfo();">
+              <a onClick="AddInputDivField('output_info_div', 'output_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
                 </svg>
               </a>
-              <a onClick="RemoveOutputInfo();">
+              <a onClick="RemoveInputDivField('output_info_div', 'output_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
                 </svg>
@@ -193,7 +173,7 @@
             </div>
           </div>
 
-          <div id="output_info_div" style="background-color: #f1f1f1">
+          <div id="output_info_div" name="output_info" style="background-color: #f1f1f1">
             <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
               <div class="row">
                 <div class="col">
@@ -218,30 +198,30 @@
           </div>
         </div>
 
-        <div id="software_info_div_div" class="mb-3">
+        <div class="mb-3">
           <div class="row">
             <div class="col">
               <label><b>Required Software Package Information</b></label>
             </div>
             <div class="col d-block text-right">
-              <a onClick="AddSoftwareInfo();">
+              <a onClick="AddInputDivField('software_info_div', 'software_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
                 </svg>
               </a>
-              <a onClick="RemoveSoftwareInfo();">
+              <a onClick="RemoveInputDivField('software_info_div', 'software_info');">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
                   <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
                 </svg>
               </a>
             </div>
           </div>
-          <div id="software_info_div" style="background-color: #f1f1f1">
+          <div id="software_info_div" name="software_info" style="background-color: #f1f1f1">
             <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
               <label for="software">Software name</label>
               <select class="custom-select d-block w-100" id="software_name" name="software_name">
                 <option value="" label="Choose..."></option>
-                {% for software in softwares_list %}
+                {% for software in software_list %}
                 <option value="owner" label="{{ software }}"></option>
                 {% endfor %}
               </select>

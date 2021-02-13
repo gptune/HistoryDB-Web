@@ -12,6 +12,7 @@ urlpatterns = [
     path('upload/', views.Upload.as_view(), name='upload'),
     path('tuning-problems/', views.TuningProblems.as_view(), name='tuning-problems'),
     path('add-tuning-problem/', views.AddTuningProblem.as_view(), name='add-tuning-problem'),
+    path('add-tuning-category/', views.AddTuningCategory.as_view(), name='add-tuning-category'),
     path('applications/', views.Applications.as_view(), name='applications'),
     path('add-applications/', views.AddApplications.as_view(), name='add-applications'),
     path('architectures/', views.Architectures.as_view(), name='architectures'),
