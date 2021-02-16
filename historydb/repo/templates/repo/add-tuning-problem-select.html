@@ -1,0 +1,62 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div class="container" style="max-width: 700px">
+  <div class="py-5 text-center">
+    <h1>Add a Tuning Problem</h1>
+  </div>
+
+  <div class="row mb-3 text-center">
+    <div class="col">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+          <h4 class="my-0 fw-normal">Tuning Problem</h4>
+        </div>
+        <div class="card-body">
+          <h2>Providing Information about the Tuning Problem</h2>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li>Name of the tuning problem</li>
+            <li>Task space</li>
+            <li>Parameter space</li>
+            <li>Output space</li>
+          </ul>
+          <a href="{% url 'repo:add-tuning-problem' %}">
+            <button type="button" class="w-100 btn btn-lg btn-primary">Add</button>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+          <h4 class="my-0 fw-normal">Reproducible Workflow</h4>
+        </div>
+        <div class="card-body">
+          <h2>Providing Information to Reproduce Your Tuning Workflow</h2>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li>Compile Command</li>
+            <li>Run Command</li>
+          </ul>
+          <a href="{% url 'repo:add-reproducible-workflow' %}">
+            <button type="button" class="w-100 btn btn-lg btn-primary">Add</button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+{% endblock %}
