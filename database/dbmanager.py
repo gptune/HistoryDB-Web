@@ -514,6 +514,43 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
+    def add_machine_info(self, machine_info, user_info):
+        machine_db = self.db["machine_db"]
+
+        machine_document = {}
+        machine_document["machine_info"] = machine_info
+        machine_document["user_info"] = user_info
+
+        import time
+        now = time.localtime()
+
+        machine_document["update_time"] = {
+                "tm_year":now.tm_year,
+                "tm_mon":now.tm_mon,
+                "tm_mday":now.tm_mday,
+                "tm_hour":now.tm_hour,
+                "tm_min":now.tm_min,
+                "tm_sec":now.tm_sec,
+                "tm_wday":now.tm_wday,
+                "tm_yday":now.tm_yday,
+                "tm_isdst":now.tm_isdst
+                }
+
+        import uuid
+        machine_document["uid"] = str(uuid.uuid1())
+
+        machine_db.insert_one(machine_document)
+
+        return None
+
+    def load_all_machine_info(self, **kwargs):
+        machine_info_list = []
+
+        for machine_info in self.db["machine_db"].find():
+            machine_info_list.append(machine_info)
+
+        return machine_info_list
+
 if __name__ == "__main__":
     import sys
     import json

@@ -731,15 +731,28 @@ class AddArchitectures(TemplateView):
 class Machines(TemplateView):
 
     def get(self, request, **kwargs):
-        historydb = HistoryDB_MongoDB()
+        #if not request.user.is_authenticated:
+        #    return redirect(reverse_lazy('account:login'))
 
-        context = { }
+        historydb = HistoryDB_MongoDB()
+        machine_info_list = historydb.load_all_machine_info()
+        for i in range(len(machine_info_list)):
+            machine_info_list[i]["id"] = i
+
+        num_machines = len(machine_info_list)
+
+        context = {
+                "machine_info_list" : machine_info_list
+                }
 
         return render(request, 'repo/machines.html', context)
 
 class AddMachine(TemplateView):
 
     def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         historydb = HistoryDB_MongoDB()
 
         def get_list_from_file(filename):
@@ -799,6 +812,45 @@ class AddMachine(TemplateView):
                 }
 
         return render(request, 'repo/add-machine.html', context)
+
+    def post(self, request, **kwargs):
+        machine_info = {}
+
+        machine_name = request.POST['machine_name']
+        system_models = request.POST.getlist('system_model_name')
+        processor_model_names = request.POST.getlist('processor_model_name')
+        num_processor_models = len(processor_model_names)
+        num_nodes = request.POST.getlist('num_nodes')
+        num_cores = request.POST.getlist('num_cores')
+        num_sockets = request.POST.getlist('num_sockets')
+        memory_size = request.POST.getlist('memory_size')
+        interconnects = request.POST.getlist('interconnect_name')
+
+        print ("machine_name: ", machine_name)
+        print ("processor_models: ", processor_model_names)
+        print ("interconnects: ", interconnects)
+
+        machine_info["machine_name"] = machine_name
+        machine_info["system_model"] = system_models
+        machine_info["processor_model"] = {}
+        for i in range(num_processor_models):
+            processor_model_info = {}
+            processor_model_info["num_nodes"] = num_nodes[i]
+            processor_model_info["num_cores"] = num_cores[i]
+            processor_model_info["num_sockets"] = num_sockets[i]
+            processor_model_info["memory_size"] = memory_size[i]
+            machine_info["processor_model"][processor_model_names[i]] = processor_model_info
+        machine_info["interconnect"] = interconnects
+
+        user_info = {}
+        user_info["user_name"] = request.user.username
+        user_info["email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
+
+        historydb = HistoryDB_MongoDB()
+        historydb.add_machine_info(machine_info, user_info)
+
+        return redirect(reverse_lazy('repo:machines'))
 
 class UserGroups(TemplateView):
 
