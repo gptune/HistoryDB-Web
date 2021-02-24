@@ -1,0 +1,223 @@
+{
+    "processors_database": {
+        "Intel Xeon E5-2698 v3": {
+            "name": "Intel Xeon E5-2698 v3",
+            "family": "Intel Xeon Processor E5 v3 Family",
+            "CPU specifications": {
+                "num_cores": 16,
+                "num_threads": 32,
+                "base_frequency_ghz": 2.3,
+                "max_frequency_ghz": 3.6,
+                "last_level_cache_size_mb": 40
+            },
+            "memory specifications": {
+            },
+            "tags": ["intel", "xeon", "e5-2698", "E5", "E5-2698", "2698", "v3"]
+        },
+        "Intel Xeon Phi Processor 7250": {
+            "name": "Intel Xeon Phi Processor 7250",
+            "family": "Intel Xeon Phi x200 Product Family",
+            "performance specifications": {
+                "num_cores": 68,
+                "num_threads": 68,
+                "base_frequency_ghz": 1.4,
+                "max_frequency_ghz": 1.6,
+                "last_level_cache_size_mb": 34
+            },
+            "memory specifications" : {
+                "memory type": "DDR4-2400"
+            },
+            "tags": ["intel", "xeon phi", "Xeon Phi", "7250"]
+        }
+    },
+    "processors_map": {
+        "Intel": {
+            "Core Processors": {
+            },
+            "Xeon Processors": {
+                "Intel Xeon Processor E7 v4 Family": [
+                    "Intel Xeon Processor E7-8894 v4",
+                    "Intel Xeon Processor E7-8893 v4",
+                    "Intel Xeon Processor E7-8891 v4",
+                    "Intel Xeon Processor E7-8890 v4",
+                    "Intel Xeon Processor E7-8880 v4",
+                    "Intel Xeon Processor E7-8870 v4",
+                    "Intel Xeon Processor E7-8867 v4",
+                    "Intel Xeon Processor E7-8860 v4",
+                    "Intel Xeon Processor E7-4850 v4",
+                    "Intel Xeon Processor E7-4830 v4",
+                    "Intel Xeon Processor E7-4820 v4",
+                    "Intel Xeon Processor E7-4809 v4"
+                ],
+                "Intel Xeon Processor E7 v3 Family": [
+                ],
+                "Intel Xeon Processor E7 v2 Family": [
+                ],
+                "Intel Xeon Processor E7 Family": [
+                ],
+                "Intel Xeon Processor E5 v4 Family": [
+                ],
+                "Intel Xeon Processor E5 v3 Family": [
+                    "Intel Xeon Processor E5-2699 v3",
+                    "Intel Xeon Processor E5-4669 v3",
+                    "Intel Xeon Processor E5-2438L v3",
+                    "Intel Xeon Processor E5-1428L v3",
+                    "Intel Xeon Processor E5-4667 v3",
+                    "Intel Xeon Processor E5-2428L v3",
+                    "Intel Xeon Processor E5-1620 v3",
+                    "Intel Xeon Processor E5-4660 v3",
+                    "Intel Xeon Processor E5-2418L v3",
+                    "Intel Xeon Processor E5-1630 v3",
+                    "Intel Xeon Processor E5-2698 v3",
+                    "Intel Xeon Processor E5-4655 v3",
+                    "Intel Xeon Processor E5-2408L v3",
+                    "Intel Xeon Processor E5-2697 v3",
+                    "Intel Xeon Processor E5-1650 v3",
+                    "Intel Xeon Processor E5-4648 v3",
+                    "Intel Xeon Processor E5-1680 v3",
+                    "Intel Xeon Processor E5-2695 v3",
+                    "Intel Xeon Processor E5-4640 v3",
+                    "Intel Xeon Processor E5-2690 v3",
+                    "Intel Xeon Processor E5-4627 v3",
+                    "Intel Xeon Processor E5-2687W v3",
+                    "Intel Xeon Processor E5-4620 v3",
+                    "Intel Xeon Processor E5-4610 v3",
+                    "Intel Xeon Processor E5-2683 v3",
+                    "Intel Xeon Processor E5-2680 v3",
+                    "Intel Xeon Processor E5-2670 v3",
+                    "Intel Xeon Processor E5-2667 v3",
+                    "Intel Xeon Processor E5-2660 v3",
+                    "Intel Xeon Processor E5-2658A v3",
+                    "Intel Xeon Processor E5-2658 v3",
+                    "Intel Xeon Processor E5-2650L v3",
+                    "Intel Xeon Processor E5-2650 v3",
+                    "Intel Xeon Processor E5-2648 v3",
+                    "Intel Xeon Processor E5-2643 v3",
+                    "Intel Xeon Processor E5-2640 v3",
+                    "Intel Xeon Processor E5-2637 v3",
+                    "Intel Xeon Processor E5-2630L v3",
+                    "Intel Xeon Processor E5-2630 v3",
+                    "Intel Xeon Processor E5-2628L v3",
+                    "Intel Xeon Processor E5-2623 v3",
+                    "Intel Xeon Processor E5-2620 v3",
+                    "Intel Xeon Processor E5-2618L v3",
+                    "Intel Xeon Processor E5-2609 v3",
+                    "Intel Xeon Processor E5-2608L v3",
+                    "Intel Xeon Processor E5-2603L v3"
+                ],
+                "Intel Xeon Processor E5 v2 Family": [
+                ],
+                "Intel Xeon Processor E5 Family": [
+                ],
+                "Intel Xeon Processor E3 v4 Family": [
+                ],
+                "Intel Xeon Processor E3 v2 Family": [
+                ],
+                "Intel Xeon Processor E3 Family": [
+                ]
+            },
+            "Xeon Phi Processors": {
+                "Intel Xeon Phi x100 Product Family": [
+                    "Intel Xeon Phi Coprocessor 7120A",
+                    "Intel Xeon Phi Coprocessor 7120D",
+                    "Intel Xeon Phi Coprocessor 7120P",
+                    "Intel Xeon Phi Coprocessor 7120X",
+                    "Intel Xeon Phi Coprocessor 5120D",
+                    "Intel Xeon Phi Coprocessor 5120P",
+                    "Intel Xeon Phi Coprocessor 3120A",
+                    "Intel Xeon Phi Coprocessor 3120P"
+                ],
+                "Intel Xeon Phi 72x5 Processor Family": [
+                    "Intel Xeon Phi Processor 7295",
+                    "Intel Xeon Phi Processor 7285",
+                    "Intel Xeon Phi Processor 7235"
+                ],
+                "Intel Xeon Phi x200 Product Family": [
+                    "Intel Xeon Phi Processor 7290F",
+                    "Intel Xeon Phi Processor 7290",
+                    "Intel Xeon Phi Processor 7250F",
+                    "Intel Xeon Phi Processor 7250",
+                    "Intel Xeon Phi Processor 7230F",
+                    "Intel Xeon Phi Processor 7230",
+                    "Intel Xeon Phi Processor 7210F",
+                    "Intel Xeon Phi Processor 7210"
+                ]
+            }
+        }
+    },
+    "processors_tree": {
+        "Intel": {
+            "Core Processors": {
+            },
+            "Xeon Processors": {
+                "Intel Xeon Processor E7 v4 Family": [
+                    "Intel Xeon Processor E7-8894 v4",
+                    "Intel Xeon Processor E7-4809 v4"
+                ],
+                "Intel Xeon Processor E5 v3 Family": [
+                    "Intel Xeon Processor E5-2608L v3",
+                    "Intel Xeon Processor E5-2603L v3"
+                ]
+            },
+            "Xeon Phi Processors": {
+                "Intel Xeon Phi x100 Product Family": [
+                    "Intel Xeon Phi Coprocessor 3120A",
+                    "Intel Xeon Phi Coprocessor 3120P"
+                ],
+                "Intel Xeon Phi x200 Product Family": [
+                    "Intel Xeon Phi Processor 7210"
+                ]
+            }
+        }
+    },
+    "processors_jstree": {
+        "core" : {
+        "data" : [
+            { "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
+            { "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
+            { "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
+            { "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" }
+        ]
+        }
+    },
+    "system_models_map": {
+        "Cray": ["Cray XC30", "Cray XC40"],
+        "IBM": ["Power System AC922"],
+        "NVIDIA": ["DGX-1", "DGX-2"]
+    },
+    "system_models_tree": {
+        "Cray": ["Cray XC30", "Cray XC40"],
+        "IBM": ["Power System AC922"],
+        "NVIDIA": ["DGX-1", "DGX-2"]
+    },
+    "interconnect_tree": {
+        "Ethernet": [
+            "Ethernet 200G",
+            "Ethernet 100G",
+            "Ethernet 40G",
+            "Ethernet 25G",
+            "Ethernet 10G"
+        ],
+        "Infiniband": [],
+        "Aries": [],
+        "Omni-Path": [],
+        "Cutom": [],
+        "Tofu": []
+    },
+    "machine_list": {
+        "Cori": {
+            "system_model": "Cray XC40",
+            "processor": {
+                "name": "IntelXeonE50000",
+                "tags": ["Haswell","haswell","Xeon"]
+            },
+            "coprocessor": {
+                "name": "IntelXeonE50000",
+                "tags": ["KNL","XeonPhi"]
+            },
+            "interconnect": {
+                "tags": ["Aries","aries"]
+            }
+        }
+    }
+}

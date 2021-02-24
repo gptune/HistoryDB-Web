@@ -7,29 +7,21 @@
 {% block content %}
 
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<script type="text/javascript" src="{% static 'js/add-machine.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
   });
-
-  function AddProcessorInfo() {
-    var processor_info_div = document.getElementById('processor_info_div');
-    clone = processor_info_div.cloneNode(true);
-    clone.id = 'processor_info_div_last';
-    document.getElementById('processor_info_div_div').appendChild(clone);
-  }
-
-  function RemoveProcessorInfo() {
-    document.getElementById('processor_info_div_last').remove();
-  }
-
 </script>
 
 <div class="container" style="max-width: 700px">
   <div class="py-5 text-center">
     <h1>Add Machine Information</h1>
   </div>
+
 
   <div class="container">
     <form method="POST" action="{% url 'repo:add-machine' %}" enctype="multipart/form-data">
@@ -43,75 +35,76 @@
         </div>
 
         <div class="mb-3">
-          <label for="system_model"><b>Choose system model</b></label>
-          <select class="custom-select d-block w-100" id="system_model" name="system_model">
-            <option value="" label="Choose..."></option>
-            {% for system_model in system_models_list %}
-            <option value="{{ system_model }}" label="{{ system_model }}"></option>
-            {% endfor %}
-          </select>
-        </div>
+          <label><b>Choose System Model(s)</b></label>
 
-        <div id="processor_info_div_div" class="mb-3">
-          <div class="row">
-            <div class="col">
-              <label><b>Processor/Accelerator/Co-Processor</b></label>
-            </div>
-            <div class="col d-block text-right">
-              <a onClick="AddProcessorInfo();">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
-                </svg>
-              </a>
-              <a onClick="RemoveProcessorInfo();">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
-                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
-                </svg>
-              </a>
-            </div>
+          <div id="selected_system_models"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="system_models_tree"></div>
           </div>
 
-          <div id="processor_info_div" style="background-color: #f1f1f1">
-            <div class="mb-3" style="padding: 10px;">
-              <label for="processor"><b>Processor model</b></label>
-              <select class="custom-select d-block w-100" id="processor_model" name="processor_model">
-                <option value="" label="Choose..."></option>
-                {% for processor in processors_list %}
-                <option value="owner" label="{{ processor }}"></option>
-                {% endfor %}
-              </select>
-            </div>
+          <script>
+            var system_models_jstree = {{ system_models_jstree | safe | escape }};
+            $('#system_models_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedSystemModels(this, data.selected);
+                }
+              })
+              .jstree(system_models_jstree);
+          </script>
 
-            <div class="row" style="padding: 10px;">
-              <div class="col">
-                <label for="processor_nodes">Number of total nodes</label>
-                <input type="number" class="form-control" id="processor_nodes" name="processor_nodes">
-              </div>
-              <div class="col">
-                <label for="processor_cores">Number of total cores</label>
-                <input type="number" class="form-control" id="processor_cores" name="processor_cores">
-              </div>
-            </div>
-
-            <div class="row" style="padding: 10px;">
-              <div class="col">
-                <label>Memory size per node (GB)</label>
-                <input type="number" class="form-control" id="processor_memory" name="processor_memory">
-              </div>
-              <div class="col">
-              </div>
-            </div>
-          </div>
+          <div id="system_model_info"></div>
         </div>
 
         <div class="mb-3">
-          <label for="machine_interconnect"><b>Interconnect</b></label>
-          <select class="custom-select d-block w-100" for="machine_interconnect" name="machine_interconnect">
-            <option value="" label="Choose..."></option>
-            {% for interconnect in interconnect_list %}
-            <option value="owner" label="{{ interconnect }}"></option>
-            {% endfor %}
-          </select>
+          <label><b>Choose Processor/Accelerator/Co-Processor Model(s)</b></label>
+
+          <div id="selected_processor_models_div"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="proc_tree"></div>
+          </div>
+          <script>
+            var processors_jstree = {{ processors_jstree | safe | escape }};
+            $('#proc_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+
+                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedProcessorModels(this, data.selected);
+                }
+              })
+              .jstree(processors_jstree);
+          </script>
+
+          <div id="processor_model_info"></div>
+
+        </div>
+
+        <div class="mb-3">
+          <label for="machine_interconnect"><b>Choose Interconnect(s)</b></label>
+
+          <div id="selected_interconnects"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="interconnect_tree"></div>
+          </div>
+          <script>
+            var interconnect_jstree = {{ interconnect_jstree | safe | escape }};
+            $('#interconnect_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+
+                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedInterconnect(this, data.selected);
+                }
+              })
+              .jstree(interconnect_jstree);
+          </script>
+
+          <div id="interconnect_info"></div>
         </div>
 
         <div class="mb-3">
@@ -120,18 +113,13 @@
         </div>
 
         <div class="mb-3">
-          <label id="machine_country"><b>Country/Location</b></label>
-          <select class="custom-select d-block w-100" id="machine_country" name="machine_country" required>
+          <label><b>Country/Location</b></label>
+          <select class="custom-select d-block w-100" name="machine_country" required>
             <option value="" label="Choose..."></option>
             {% for country in country_list %}
             <option value="owner" label="{{ country }}"></option>
             {% endfor %}
           </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="machine_year"><b>Year</b></label>
-          <input type="number" class="form-control" id="machine_year" name="machine_year" required>
         </div>
 
         <div class="mb-3">

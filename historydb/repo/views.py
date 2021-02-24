@@ -593,6 +593,16 @@ class AddReproducibleWorkflow(TemplateView):
     def get(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
+        tuning_problem_list = {
+                "PDGEQRF": {
+                    "task_space": {
+                        "m":{
+                            }
+
+                        }
+                    }
+                }
+
         def get_list_from_file(filename):
             items = []
             with open(filename, "r") as f_in:
@@ -740,24 +750,51 @@ class AddMachine(TemplateView):
                     items.append(line)
             return items
 
-        system_models_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/system_models_list.csv")
-        processors_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/processors_list.csv")
-        interconnect_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/interconnect_list.csv")
-
         country_list = []
         import pycountry
         for country in list(pycountry.countries):
             country_list.append(country.name)
         country_list.sort()
 
-        print (system_models_list)
-        print (processors_list)
         print (country_list)
 
+        def get_data_from_file(filename, keyword):
+            print (filename)
+            with open(filename, "r") as f_in:
+                data = json.load(f_in)
+                return data[keyword]
+
+        def convert_to_jstree_json(tree_json):
+            jstree_json = {}
+            node_array = []
+
+            def walk(parent, node):
+                for key, value in node.items():
+                    if isinstance(value, dict):
+                        print ("parent: ", parent, " key: ", key)
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        walk(key, value)
+                    elif isinstance(value, list):
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        for item in value:
+                            node_array.append({"id": item, "parent": key, "text": item, "icon": "jstree-file"})
+                        print ("parent: ", parent, " value: ", value)
+
+            walk("#", tree_json)
+            print (json.dumps(node_array))
+
+            jstree_json["core"] = {"data": node_array}
+
+            return jstree_json
+
+        system_models_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "system_models_tree"))
+        processors_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "processors_tree"))
+        interconnect_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "interconnect_tree"))
+
         context = {
-                "system_models_list" : system_models_list,
-                "processors_list" : processors_list,
-                "interconnect_list" : interconnect_list,
+                "system_models_jstree" : system_models_jstree,
+                "processors_jstree" : processors_jstree,
+                "interconnect_jstree" : interconnect_jstree,
                 "country_list" : country_list,
                 }
 

@@ -51,25 +51,7 @@
         <div class="mb-3">
           <div class="row">
             <div class="col">
-              <label for="system_model"><b>Category</b></label>
-            </div>
-            <div class="col text-right">
-              <a href="{% url 'repo:add-tuning-category' %}">Add another category</a>
-            </div>
-          </div>
-
-          <select class="custom-select d-block w-100" id="system_model" name="system_model">
-            <option value="" label="Choose..."></option>
-            {% for category in category_list %}
-            <option value="{{ category }}" label="{{ category }}"></option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <div class="row">
-            <div class="col">
-              <label><b>Task Space</b></label>
+              <label><b>Task Parameter</b></label>
             </div>
             <div class="col d-block text-right">
               <a onClick="AddInputDivField('task_info_div', 'task_info');">
