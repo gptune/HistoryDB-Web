@@ -581,7 +581,46 @@ class AddTuningProblem(TemplateView):
         software_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/ck_soft_list.csv")
         software_list.sort()
 
+
+        def get_data_from_file(filename, keyword):
+            print (filename)
+            with open(filename, "r") as f_in:
+                data = json.load(f_in)
+                return data[keyword]
+
+        def convert_to_jstree_json(tree_json):
+            jstree_json = {}
+            node_array = []
+
+            def walk(parent, node):
+                for key, value in node.items():
+                    if isinstance(value, dict):
+                        print ("parent: ", parent, " key: ", key)
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        walk(key, value)
+                    elif isinstance(value, list):
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        for item in value:
+                            node_array.append({"id": item, "parent": key, "text": item, "icon": "jstree-file"})
+                        print ("parent: ", parent, " value: ", value)
+
+            walk("#", tree_json)
+            print (json.dumps(node_array))
+
+            jstree_json["core"] = {"data": node_array}
+
+            return jstree_json
+
+        category_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "category_tree"))
+        category_tree = get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "category_tree")
+        software_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "software_tree"))
+        print ("category_tree: ", category_tree)
+        print ("category_jstree: ", category_jstree)
+        print ("software_jstree: ", software_jstree)
+
         context = {
+                "category_jstree": category_jstree,
+                "software_jstree": software_jstree,
                 "category_list": category_list,
                 "software_list": software_list,
                 }

@@ -7,7 +7,10 @@
 {% block content %}
 
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<script type="text/javascript" src="{% static 'js/add-tuning-problem.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
@@ -44,26 +47,35 @@
       <div id="add-form" style="display:block;">
 
         <div class="mb-3">
-          <label for="machine_name"><b>Name of the tuning problem</b></label>
-          <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+          <label><b>Tuning Problem</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px;">
+              <label for="machine_name">Tuning Problem Name</label>
+              <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+          </div>
         </div>
 
         <div class="mb-3">
-          <div class="row">
-            <div class="col">
-              <label for="system_model"><b>Category</b></label>
-            </div>
-            <div class="col text-right">
-              <a href="{% url 'repo:add-tuning-category' %}">Add another category</a>
-            </div>
+          <label><b>Choose Category/Categories</b></label>
+
+          <div id="selected_category"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="category_tree"></div>
           </div>
 
-          <select class="custom-select d-block w-100" id="system_model" name="system_model">
-            <option value="" label="Choose..."></option>
-            {% for category in category_list %}
-            <option value="{{ category }}" label="{{ category }}"></option>
-            {% endfor %}
-          </select>
+          <script>
+            var category_jstree = {{ category_jstree | safe | escape }};
+            $('#category_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedCategory(this, data.selected);
+                }
+              })
+              .jstree(category_jstree);
+          </script>
+
+          <div id="category_info"></div>
         </div>
 
         <div class="mb-3">
@@ -199,39 +211,35 @@
         </div>
 
         <div class="mb-3">
-          <div class="row">
-            <div class="col">
-              <label><b>Required Software Package Information</b></label>
-            </div>
-            <div class="col d-block text-right">
-              <a onClick="AddInputDivField('software_info_div', 'software_info');">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
-                </svg>
-              </a>
-              <a onClick="RemoveInputDivField('software_info_div', 'software_info');">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
-                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
-                </svg>
-              </a>
-            </div>
+          <label><b>Required Software Information</b></label>
+
+          <div id="selected_software"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="software_tree"></div>
           </div>
-          <div id="software_info_div" name="software_info" style="background-color: #f1f1f1">
-            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
-              <label for="software">Software name</label>
-              <select class="custom-select d-block w-100" id="software_name" name="software_name">
-                <option value="" label="Choose..."></option>
-                {% for software in software_list %}
-                <option value="owner" label="{{ software }}"></option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
+
+          <script>
+            var software_jstree = {{ software_jstree | safe | escape }};
+            $('#software_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedSoftware(this, data.selected);
+                }
+              })
+              .jstree(software_jstree);
+          </script>
+
+          <div id="software_info"></div>
         </div>
 
         <div class="mb-3">
-          <label for="problem_year"><b>Year</b></label>
-          <input type="number" class="form-control" id="problem_year" name="problem_year" required>
+          <label><b>More information</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px;">
+              <label for="application_description">Please describe little bit about the tuning problem</label>
+              <textarea class="form-control" id="application_description" name="application_description" rows="5"></textarea>
+          </div>
         </div>
 
         <div class="mb-3">

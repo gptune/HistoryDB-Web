@@ -30,8 +30,28 @@
       <div id="add-form" style="display:block;">
 
         <div class="mb-3">
-          <label for="machine_name"><b>Name of your machine</b></label>
-          <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+          <label><b>Machine Information</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px;">
+            <div class="mb-3">
+              <label for="machine_name">Machine name</label>
+              <input type="text" class="form-control" id="machine_name" name="machine_name" required>
+            </div>
+
+            <div class="mb-3">
+              <label id="machine_site">Site/Institute</label>
+              <input type="text" class="form-control" id="machine_site" name="machine_site" required>
+            </div>
+
+            <div class="mb-3">
+              <label>Country/Location</label>
+              <select class="custom-select d-block w-100" name="machine_country" required>
+                <option value="" label="Choose..."></option>
+                {% for country in country_list %}
+                <option value="owner" label="{{ country }}"></option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
         </div>
 
         <div class="mb-3">
@@ -105,21 +125,6 @@
           </script>
 
           <div id="interconnect_info"></div>
-        </div>
-
-        <div class="mb-3">
-          <label id="machine_site"><b>Site</b></label>
-          <input type="text" class="form-control" id="machine_site" name="machine_site" required>
-        </div>
-
-        <div class="mb-3">
-          <label><b>Country/Location</b></label>
-          <select class="custom-select d-block w-100" name="machine_country" required>
-            <option value="" label="Choose..."></option>
-            {% for country in country_list %}
-            <option value="owner" label="{{ country }}"></option>
-            {% endfor %}
-          </select>
         </div>
 
         <div class="mb-3">
