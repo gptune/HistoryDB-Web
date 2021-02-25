@@ -190,21 +190,5 @@
         "Omni-Path": [],
         "Cutom": [],
         "Tofu": []
-    },
-    "machine_list": {
-        "Cori": {
-            "system_model": "Cray XC40",
-            "processor": {
-                "name": "IntelXeonE50000",
-                "tags": ["Haswell","haswell","Xeon"]
-            },
-            "coprocessor": {
-                "name": "IntelXeonE50000",
-                "tags": ["KNL","XeonPhi"]
-            },
-            "interconnect": {
-                "tags": ["Aries","aries"]
-            }
-        }
     }
 }

@@ -30,11 +30,12 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Machine Name</th>
+          <th>UniqueName</th>
+          <th>MachineName</th>
           <th>User</th>
-          <th>Last Update</th>
-          <th>System Model</th>
-          <th>Processor Model</th>
+          <th>LastUpdate</th>
+          <th>SystemModel</th>
+          <th>ProcessorModel</th>
           <th>Interconnect</th>
           <th>Details</th>
         </tr>
@@ -43,6 +44,9 @@
         {% for machine_info in machine_info_list %}
         <tr>
           <td>{{ machine_info.id }}</td>
+          <td>
+            {{ machine_info.machine_info.machine_name }}-{{ machine_info.user_info.user_name }}-{{ machine_info.update_time.tm_mon }}{{ machine_info.update_time.tm_mday }}{{ machine_info.update_time.tm_year }}
+          </td>
           <td>
             {{ machine_info.machine_info.machine_name }}
           </td>

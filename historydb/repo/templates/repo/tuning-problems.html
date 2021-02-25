@@ -20,7 +20,7 @@
   </div>
 
   <div class="d-block text-right mt-3">
-    <a href="{% url 'repo:add-tuning-problem-select' %}">Add a new tuning problem</a>
+    <a href="{% url 'repo:add-tuning-problem' %}">Add a new tuning problem</a>
   </div>
 
   <div class="table-responsive">
@@ -29,9 +29,10 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>UniqueName</th>
           <th>TuningProblem</th>
           <th>User</th>
-          <th>Last Update</th>
+          <th>LastUpdate</th>
           <th>TaskSpace</th>
           <th>TuningSpace</th>
           <th>OutputSpace</th>
@@ -42,6 +43,9 @@
         {% for tuning_problem in tuning_problem_list %}
         <tr>
           <td>{{ tuning_problem.id }}</td>
+          <td>
+            {{ tuning_problem.tuning_problem_info.tuning_problem_name }}-{{ tuning_problem.user_info.user_name }}-{{ tuning_problem.update_time.tm_mon }}{{ tuning_problem.update_time.tm_mday }}{{ tuning_problem.update_time.tm_year }}
+          </td>
           <td>
             {{ tuning_problem.tuning_problem_info.tuning_problem_name }}
           </td>
