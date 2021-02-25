@@ -53,17 +53,29 @@
           </td>
           <td>
             {% for task_info in tuning_problem.tuning_problem_info.task_info %}
-              {{ task_info.task_name }},
+              {% if forloop.last %}
+                {{ task_info.task_name }}
+              {% else %}
+                {{ task_info.task_name }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
             {% for parameter_info in tuning_problem.tuning_problem_info.parameter_info %}
-              {{ parameter_info.parameter_name }},
+              {% if forloop.last %}
+                {{ parameter_info.parameter_name }}
+              {% else %}
+                {{ parameter_info.parameter_name }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
             {% for output_info in tuning_problem.tuning_problem_info.output_info %}
-              {{ output_info.output_name }},
+              {% if forloop.last %}
+                {{ output_info.output_name }}
+              {% else %}
+                {{ output_info.output_name }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
@@ -85,7 +97,7 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <pre>{{ tuning_problem | pprint }}</pre>
+                  <pre>{{ tuning_problem.tuning_problem_info | pprint }}</pre>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>

@@ -54,17 +54,29 @@
           </td>
           <td>
             {% for system_model in machine_info.machine_info.system_model %}
-              {{ system_model }},
+              {% if forloop.last %}
+                {{ system_model }}
+              {% else %}
+                {{ system_model }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
             {% for processor_model in machine_info.machine_info.processor_model %}
-              {{ processor_model }},
+              {% if forloop.last %}
+                {{ processor_model }}
+              {% else %}
+                {{ processor_model }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
             {% for interconnect in machine_info.machine_info.interconnect %}
-              {{ interconnect }},
+              {% if forloop.last %}
+                {{ interconnect }}
+              {% else %}
+                {{ interconnect }},
+              {% endif %}
             {% endfor %}
           </td>
           <td>
@@ -86,7 +98,7 @@
                   </button>
                 </div>
                 <div class="modal-body">
-                  <pre>{{ machine_info | pprint }}</pre>
+                  <pre>{{ machine_info.machine_info | pprint }}</pre>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Okay</button>
