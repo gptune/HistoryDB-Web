@@ -573,6 +573,9 @@ class AddTuningProblemSelect(TemplateView):
 class AddTuningProblem(TemplateView):
 
     def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         historydb = HistoryDB_MongoDB()
 
         def get_list_from_file(filename):
