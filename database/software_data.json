@@ -1,0 +1,65 @@
+{
+    "software_map": {
+        "BLAS" : {
+            "name": "BLAS",
+            "tags": ["blas", "BLAS"]
+        },
+        "LAPACK": {
+            "name": "LAPACK",
+            "tags": ["lapack", "LAPACK"]
+        },
+        "ScaLAPACK": {
+        },
+        "PLASMA": {
+        },
+        "MAGMA": {
+        },
+        "Hypre": {
+        },
+        "SuperLU": {
+        }
+    },
+    "category_tree": {
+        "HPC Library": {
+            "Linear Algebra": [
+                "BLAS",
+                "LAPACK",
+                "ScaLAPACK",
+                "PLASMA",
+                "MAGMA"
+            ],
+            "Sparse Linear System": [
+                "Hypre",
+                "KLU",
+                "SuperLU"
+            ],
+            "FFT": [
+            ]
+        },
+        "Desktop Application": [],
+        "Other Applicat": []
+    },
+    "software_tree": {
+        "Lib": {
+            "Python": [
+                "onnx",
+                "coco-helper"
+            ],
+            "mpi": [ "intel" ],
+            "mpich": [],
+            "openmpi": [],
+            "caffe": [],
+            "tensorflow": []
+        },
+        "Compiler": {
+            "llvm": [],
+            "gfortran": []
+        },
+        "Bench": {
+        },
+        "Dataset": {
+        },
+        "Tool": {
+        }
+    }
+}

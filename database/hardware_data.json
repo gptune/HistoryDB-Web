@@ -30,7 +30,27 @@
             "tags": ["intel", "xeon phi", "Xeon Phi", "7250"]
         }
     },
-    "processors_map": {
+    "processors_tree": {
+        "AMD": {
+            "Opteron Processors": {
+            },
+            "EPYC Processors": {
+                "EPYC 7002 Series Processors": {
+                },
+                "EPYC 7001 Series Processors": {
+                }
+            },
+            "EPYC Embedded Processors": {
+            }
+        },
+        "IBM": {
+            "Power7": {
+            },
+            "Power8": {
+            },
+            "Power9": {
+            }
+        },
         "Intel": {
             "Core Processors": {
             },
@@ -143,41 +163,8 @@
                     "Intel Xeon Phi Processor 7210"
                 ]
             }
-        }
-    },
-    "processors_tree": {
-        "Intel": {
-            "Core Processors": {
-            },
-            "Xeon Processors": {
-                "Intel Xeon Processor E7 v4 Family": [
-                    "Intel Xeon Processor E7-8894 v4",
-                    "Intel Xeon Processor E7-4809 v4"
-                ],
-                "Intel Xeon Processor E5 v3 Family": [
-                    "Intel Xeon Processor E5-2608L v3",
-                    "Intel Xeon Processor E5-2603L v3"
-                ]
-            },
-            "Xeon Phi Processors": {
-                "Intel Xeon Phi x100 Product Family": [
-                    "Intel Xeon Phi Coprocessor 3120A",
-                    "Intel Xeon Phi Coprocessor 3120P"
-                ],
-                "Intel Xeon Phi x200 Product Family": [
-                    "Intel Xeon Phi Processor 7210"
-                ]
-            }
-        }
-    },
-    "processors_jstree": {
-        "core" : {
-        "data" : [
-            { "id" : "ajson1", "parent" : "#", "text" : "Simple root node" },
-            { "id" : "ajson2", "parent" : "#", "text" : "Root node 2" },
-            { "id" : "ajson3", "parent" : "ajson2", "text" : "Child 1" },
-            { "id" : "ajson4", "parent" : "ajson2", "text" : "Child 2" }
-        ]
+        },
+        "NVIDIA": {
         }
     },
     "system_models_map": {
