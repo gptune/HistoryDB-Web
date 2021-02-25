@@ -614,9 +614,9 @@ class AddTuningProblem(TemplateView):
 
             return jstree_json
 
-        category_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "category_tree"))
-        category_tree = get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "category_tree")
-        software_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/software_data.json", "software_tree"))
+        category_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "category_tree"))
+        category_tree = get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "category_tree")
+        software_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "software_tree"))
         print ("category_tree: ", category_tree)
         print ("category_jstree: ", category_jstree)
         print ("software_jstree: ", software_jstree)
@@ -907,9 +907,9 @@ class AddMachine(TemplateView):
 
             return jstree_json
 
-        system_models_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "system_models_tree"))
-        processors_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "processors_tree"))
-        interconnect_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_STORAGE"]+"/hardware_data.json", "interconnect_tree"))
+        system_models_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/hardware_data.json", "system_models_tree"))
+        processors_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/hardware_data.json", "processors_tree"))
+        interconnect_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/hardware_data.json", "interconnect_tree"))
 
         context = {
                 "system_models_jstree" : system_models_jstree,
