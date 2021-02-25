@@ -584,9 +584,6 @@ class AddTuningProblem(TemplateView):
             return items
 
         category_list = ["SuperLU","ScaLAPACK","LAPACK","Desktop Application"]
-        software_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/ck_soft_list.csv")
-        software_list.sort()
-
 
         def get_data_from_file(filename, keyword):
             print (filename)
@@ -628,7 +625,6 @@ class AddTuningProblem(TemplateView):
                 "category_jstree": category_jstree,
                 "software_jstree": software_jstree,
                 "category_list": category_list,
-                "software_list": software_list,
                 }
 
         return render(request, 'repo/add-tuning-problem.html', context)
@@ -726,12 +722,9 @@ class AddReproducibleWorkflow(TemplateView):
             return items
 
         category_list = ["SuperLU","ScaLAPACK","LAPACK","Desktop Application"]
-        software_list = get_list_from_file(os.environ["HISTORYDB_STORAGE"]+"/ck_soft_list.csv")
-        software_list.sort()
 
         context = {
                 "category_list": category_list,
-                "software_list": software_list,
                 }
 
         return render(request, 'repo/add-reproducible-workflow.html', context)
