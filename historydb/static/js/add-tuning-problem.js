@@ -75,6 +75,7 @@ function UpdateSelectedSoftware(element, data_selected)
     label.innerHTML = "Which type of information is needed?";
     var options = document.createElement('select');
     options.classList.add('custom-select');
+    options.setAttribute('name', 'software_type');
     var op = document.createElement('option');
     op.setAttribute('value', '');
     op.setAttribute('label', 'Choose...');

@@ -551,6 +551,43 @@ class HistoryDB_MongoDB(dict):
 
         return machine_info_list
 
+    def add_tuning_problem(self, tuning_problem_info, user_info, **kwargs):
+        tuning_problem_db = self.db["tuning_problem_db"]
+
+        tuning_problem_document = {}
+        tuning_problem_document["tuning_problem_info"] = tuning_problem_info
+        tuning_problem_document["user_info"] = user_info
+
+        import time
+        now = time.localtime()
+
+        tuning_problem_document["update_time"] = {
+                "tm_year":now.tm_year,
+                "tm_mon":now.tm_mon,
+                "tm_mday":now.tm_mday,
+                "tm_hour":now.tm_hour,
+                "tm_min":now.tm_min,
+                "tm_sec":now.tm_sec,
+                "tm_wday":now.tm_wday,
+                "tm_yday":now.tm_yday,
+                "tm_isdst":now.tm_isdst
+                }
+
+        import uuid
+        tuning_problem_document["uid"] = str(uuid.uuid1())
+
+        tuning_problem_db.insert_one(tuning_problem_document)
+
+        return None
+
+    def load_all_tuning_problems(self, **kwargs):
+        tuning_problem_list = []
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            tuning_problem_list.append(tuning_problem)
+
+        return tuning_problem_list
+
 if __name__ == "__main__":
     import sys
     import json

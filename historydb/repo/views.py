@@ -548,9 +548,15 @@ class Upload(TemplateView):
 class TuningProblems(TemplateView):
 
     def get(self, request, **kwargs):
-        historydb = HistoryDB_MongoDB()
 
-        context = {}
+        historydb = HistoryDB_MongoDB()
+        tuning_problem_list = historydb.load_all_tuning_problems()
+        for i in range(len(tuning_problem_list)):
+            tuning_problem_list[i]["id"] = i
+
+        context = {
+                "tuning_problem_list" : tuning_problem_list
+                }
 
         return render(request, 'repo/tuning-problems.html', context)
 
@@ -626,6 +632,75 @@ class AddTuningProblem(TemplateView):
                 }
 
         return render(request, 'repo/add-tuning-problem.html', context)
+
+    def post(self, request, **kwargs):
+        tuning_problem = {}
+
+        tuning_problem["tuning_problem_name"] = request.POST['tuning_problem_name']
+        tuning_problem["category"] = request.POST['category_name']
+        tuning_problem["description"] = request.POST['tuning_problem_description']
+
+        task_names = request.POST.getlist('task_name')
+        task_types = request.POST.getlist('task_type')
+        task_descriptions = request.POST.getlist('task_description')
+        num_tasks = len(task_names)
+
+        tuning_problem["task_info"] = []
+        for i in range(num_tasks):
+            tuning_problem["task_info"].append({
+                "task_name": task_names[i],
+                "task_type": task_types[i],
+                "task_description": task_descriptions[i],
+                })
+
+        parameter_names = request.POST.getlist('parameter_name')
+        parameter_types = request.POST.getlist('parameter_type')
+        parameter_descriptions = request.POST.getlist('parameter_description')
+        num_parameters = len(parameter_names)
+
+        tuning_problem["parameter_info"] = []
+        for i in range(num_parameters):
+            tuning_problem["parameter_info"].append({
+                "parameter_name": parameter_names[i],
+                "parameter_type": parameter_types[i],
+                "parameter_description": parameter_descriptions[i]
+                })
+
+        output_names = request.POST.getlist('output_name')
+        output_types = request.POST.getlist('output_type')
+        output_descriptions = request.POST.getlist('output_description')
+        num_outputs = len(output_names)
+
+        tuning_problem["output_info"] = []
+        for i in range(num_outputs):
+            tuning_problem["output_info"].append({
+                "output_name": output_names[i],
+                "output_type": output_types[i],
+                "output_description": output_descriptions[i]
+                })
+
+        required_software_names = request.POST.getlist('software_name')
+        required_software_types = request.POST.getlist('software_name')
+        num_software_packages = len(required_software_names)
+
+        tuning_problem["required_software_info"] = []
+        for i in range(num_software_packages):
+            tuning_problem["required_software_info"].append({
+                "software_name": required_software_names[i],
+                "software_type": required_software_types[i]
+                })
+
+        print ("tuning_problem: ", tuning_problem)
+
+        user_info = {}
+        user_info["user_name"] = request.user.username
+        user_info["email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
+
+        historydb = HistoryDB_MongoDB()
+        historydb.add_tuning_problem(tuning_problem, user_info)
+
+        return redirect(reverse_lazy('repo:tuning-problems'))
 
 class AddReproducibleWorkflow(TemplateView):
 
