@@ -28,3 +28,14 @@ def query(request, document_name):
 
     return render(request, 'documentation/query.html', context)
 
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
+
+def gptune_user_guide(request):
+    fs = FileSystemStorage()
+
+    with fs.open('GPTune_UsersGuide.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+
