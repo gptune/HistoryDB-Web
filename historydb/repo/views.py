@@ -679,7 +679,7 @@ class AddTuningProblem(TemplateView):
                 })
 
         required_software_names = request.POST.getlist('software_name')
-        required_software_types = request.POST.getlist('software_name')
+        required_software_types = request.POST.getlist('software_type')
         num_software_packages = len(required_software_names)
 
         tuning_problem["required_software_info"] = []

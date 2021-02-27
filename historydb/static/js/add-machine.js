@@ -156,7 +156,7 @@ function UpdateSelectedInterconnect(element, data_selected)
     interconnect_div.innerHTML = "";
 
     var label = document.createElement('label');
-    label.innerHTML = "Selected system model";
+    label.innerHTML = "Selected interconnect";
     var interconnect = document.createElement('input');
     interconnect.type = 'text';
     interconnect.classList.add('form-control');

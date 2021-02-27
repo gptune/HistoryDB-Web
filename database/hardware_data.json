@@ -168,9 +168,30 @@
         }
     },
     "system_models_map": {
-        "Cray": ["Cray XC30", "Cray XC40"],
-        "IBM": ["Power System AC922"],
-        "NVIDIA": ["DGX-1", "DGX-2"]
+        "Cray": [
+            "Cray XC30",
+            "Cray XC40",
+            "Cray XC50",
+            "Cray CS-Strom"
+        ],
+        "Dell": [
+            "PowerEdge C4140",
+            "PowerEdge C6420"
+        ],
+        "Fugaku": {
+            "Fugaku": []
+        },
+        "IBM": [
+            "Power System AC922"
+        ],
+        "Sumway": [
+            "Sunway MPP"
+        ],
+        "NVIDIA": [
+            "DGX-1",
+            "DGX-2",
+            "DGX A100"
+        ]
     },
     "system_models_tree": {
         "Cray": ["Cray XC30", "Cray XC40"],

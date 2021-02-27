@@ -160,4 +160,3 @@ STATICFILES_DIRS = (
 )
 
 MEDIA_ROOT = os.path.join(Path(__file__).resolve().parent.parent.parent, "media")
-print (MEDIA_ROOT)

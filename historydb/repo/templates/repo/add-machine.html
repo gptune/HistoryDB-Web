@@ -42,15 +42,6 @@
               <input type="text" class="form-control" id="machine_site" name="machine_site" required>
             </div>
 
-            <div class="mb-3">
-              <label>Country/Location</label>
-              <select class="custom-select d-block w-100" name="machine_country" required>
-                <option value="" label="Choose..."></option>
-                {% for country in country_list %}
-                <option value="owner" label="{{ country }}"></option>
-                {% endfor %}
-              </select>
-            </div>
           </div>
         </div>
 

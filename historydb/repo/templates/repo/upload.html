@@ -60,7 +60,7 @@
       {% csrf_token %}
       <div class="mb-3">
         <div class="mb-3">
-          <label for="applicationVal"><b>Application</b></label>
+          <label for="applicationVal"><b>Tuning Problem</b></label>
           <select class="custom-select d-block w-100" name="application" id="applicationVal">
             <option value="" label="Choose..." selected></option>
             {% if applications_avail %}
@@ -73,8 +73,27 @@
           </select>
 
           <div class="d-block text-right mt-3">
-              <label>Can't find your application?</label><br>
-              <a id="add_app_tab" href="{% url 'repo:add-applications' %}">Add a new application</a>
+              <label>Can't find your tuning problem?</label><br>
+              <a href="{% url 'repo:add-tuning-problem' %}">Add a tuning problem</a>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="machineVal"><b>Machine</b></label>
+          <select class="custom-select d-block w-100" name="machine" id="machineVal">
+            <option value="" label="Choose..." selected></option>
+            {% if machines_avail %}
+            {% for machine_avail in machines_avail %}
+            <option value="{{ machine_avail.name }}">{{ machine_avail.name }} ({{ machine_avail.library }})</option>
+            </li>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+          </select>
+
+          <div class="d-block text-right mt-3">
+              <label>Can't find your machine?</label><br>
+              <a href="{% url 'repo:add-machine' %}">Add machine information</a>
           </div>
         </div>
 
