@@ -31,30 +31,136 @@
         }
     },
     "processors_tree": {
+        "ARM": [
+            "ARM A64FX 48C"
+        ],
         "AMD": {
             "Opteron Processors": {
             },
-            "EPYC Processors": {
-                "EPYC 7002 Series Processors": {
-                },
-                "EPYC 7001 Series Processors": {
-                }
-            },
-            "EPYC Embedded Processors": {
-            }
+            "EPYC Processors": [
+                "AMD EPYC 7F72",
+                "AMD EPYC 7F52",
+                "AMD EPYC 7F32",
+                "AMD EPYC 7H12",
+                "AMD EPYC 7742",
+                "AMD EPYC 7702",
+                "AMD EPYC 7702P",
+                "AMD EPYC 7662",
+                "AMD EPYC 7642",
+                "AMD EPYC 7552",
+                "AMD EPYC 7542",
+                "AMD EPYC 7532",
+                "AMD EPYC 7502",
+                "AMD EPYC 7502P",
+                "AMD EPYC 7452",
+                "AMD EPYC 7402",
+                "AMD EPYC 7402P",
+                "AMD EPYC 7352",
+                "AMD EPYC 7302",
+                "AMD EPYC 7302P",
+                "AMD EPYC 7282",
+                "AMD EPYC 7272",
+                "AMD EPYC 7262",
+                "AMD EPYC 7252",
+                "AMD EPYC 7232P",
+                "AMD EPYC 7601",
+                "AMD EPYC 7551P",
+                "AMD EPYC 7551",
+                "AMD EPYC 7501",
+                "AMD EPYC 7451",
+                "AMD EPYC 7401P",
+                "AMD EPYC 7401",
+                "AMD EPYC 7371",
+                "AMD EPYC 7351P",
+                "AMD EPYC 7351",
+                "AMD EPYC 7301",
+                "AMD EPYC 7281",
+                "AMD EPYC 7261",
+                "AMD EPYC 7251"
+            ]
         },
-        "IBM": {
-            "Power7": {
-            },
-            "Power8": {
-            },
-            "Power9": {
-            }
-        },
+        "IBM": [
+            "IBM Power9 22C",
+            "IBM Power9 20C",
+            "IBM Power9 18C",
+            "IBM Power9 16C"
+        ],
         "Intel": {
             "Core Processors": {
+                "Intel Core X-series Processors": [],
+                "Intel Core Processors with Intel Hybrid Technology": [],
+                "10th Generation Intel Core i9 Processors": [],
+                "9th Generation Intel Core i9 Processors": [],
+                "8th Generation Intel Core i9 Processors": [],
+                "11th Generation Intel Core i7 Processors": [],
+                "10th Generation Intel Core i7 Processors": [],
+                "9th Generation Intel Core i7 Processors": [],
+                "8th Generation Intel Core i7 Processors": [],
+                "7th Generation Intel Core i7 Processors": [],
+                "6th Generation Intel Core i7 Processors": [],
+                "5th Generation Intel Core i7 Processors": [],
+                "4th Generation Intel Core i7 Processors": [],
+                "11th Generation Intel Core i5 Processors": [],
+                "10th Generation Intel Core i5 Processors": [],
+                "9th Generation Intel Core i5 Processors": [],
+                "8th Generation Intel Core i5 Processors": [],
+                "7th Generation Intel Core i5 Processors": []
             },
             "Xeon Processors": {
+                "Intel Xeon Scalable Processors": [
+                    "Intel Xeon Platinum 8180 Processor",
+                    "Intel Xeon Platinum 8176F Processor",
+                    "Intel Xeon Platinum 8176 Processor",
+                    "Intel Xeon Platinum 8170 Processor",
+                    "Intel Xeon Platinum 8168 Processor",
+                    "Intel Xeon Platinum 8164 Processor",
+                    "Intel Xeon Platinum 8160T Processor",
+                    "Intel Xeon Platinum 8160F Processor",
+                    "Intel Xeon Platinum 8160 Processor",
+                    "Intel Xeon Platinum 8158 Processor",
+                    "Intel Xeon Platinum 8156 Processor",
+                    "Intel Xeon Platinum 8153 Processor",
+                    "Intel Xeon Gold 6154 Processor",
+                    "Intel Xeon Gold 6152 Processor",
+                    "Intel Xeon Gold 6150 Processor",
+                    "Intel Xeon Gold 6148F Processor",
+                    "Intel Xeon Gold 6148 Processor",
+                    "Intel Xeon Gold 6146 Processor",
+                    "Intel Xeon Gold 6144 Processor",
+                    "Intel Xeon Gold 6142F Processor",
+                    "Intel Xeon Gold 6142 Processor",
+                    "Intel Xeon Gold 6140 Processor",
+                    "Intel Xeon Gold 6138T Processor",
+                    "Intel Xeon Gold 6138P Processor",
+                    "Intel Xeon Gold 6138F Processor",
+                    "Intel Xeon Gold 6138 Processor",
+                    "Intel Xeon Gold 6136 Processor",
+                    "Intel Xeon Gold 6134 Processor",
+                    "Intel Xeon Gold 6132 Processor",
+                    "Intel Xeon Gold 6130T Processor",
+                    "Intel Xeon Gold 6130F Processor",
+                    "Intel Xeon Gold 6130 Processor",
+                    "Intel Xeon Gold 6128 Processor",
+                    "Intel Xeon Gold 6126T Processor",
+                    "Intel Xeon Gold 6126F Processor",
+                    "Intel Xeon Gold 6126 Processor",
+                    "Intel Xeon Gold 5122 Processor",
+                    "Intel Xeon Gold 5120T Processor",
+                    "Intel Xeon Gold 5120 Processor",
+                    "Intel Xeon Gold 5119T Processor",
+                    "Intel Xeon Gold 5118 Processor",
+                    "Intel Xeon Gold 5115 Processor",
+                    "Intel Xeon Silver 4116T Processor",
+                    "Intel Xeon Silver 4116 Processor",
+                    "Intel Xeon Silver 4114T Processor",
+                    "Intel Xeon Silver 4114 Processor",
+                    "Intel Xeon Silver 4112 Processor",
+                    "Intel Xeon Silver 4110 Processor",
+                    "Intel Xeon Silver 4109T Processor",
+                    "Intel Xeon Silver 4108 Processor",
+                    "Intel Xeon Bronze 3106 Processor",
+                    "Intel Xeon Bronze 3104 Processor"
+                ],
                 "Intel Xeon Processor E7 v4 Family": [
                     "Intel Xeon Processor E7-8894 v4",
                     "Intel Xeon Processor E7-8893 v4",
@@ -70,12 +176,106 @@
                     "Intel Xeon Processor E7-4809 v4"
                 ],
                 "Intel Xeon Processor E7 v3 Family": [
+                    "Intel Xeon Processor E7-8893 v3",
+                    "Intel Xeon Processor E7-8891 v3",
+                    "Intel Xeon Processor E7-8890 v3",
+                    "Intel Xeon Processor E7-8880L v3",
+                    "Intel Xeon Processor E7-8880 v3",
+                    "Intel Xeon Processor E7-8870 v3",
+                    "Intel Xeon Processor E7-8867 v3",
+                    "Intel Xeon Processor E7-8860 v3",
+                    "Intel Xeon Processor E7-4850 v3",
+                    "Intel Xeon Processor E7-4830 v3",
+                    "Intel Xeon Processor E7-4820 v3",
+                    "Intel Xeon Processor E7-4809 v3"
                 ],
                 "Intel Xeon Processor E7 v2 Family": [
+                    "Intel Xeon Processor E7-8850 v2",
+                    "Intel Xeon Processor E7-8857 v2",
+                    "Intel Xeon Processor E7-8870 v2",
+                    "Intel Xeon Processor E7-8880 v2",
+                    "Intel Xeon Processor E7-8880L v2",
+                    "Intel Xeon Processor E7-8890 v2",
+                    "Intel Xeon Processor E7-8891 v2",
+                    "Intel Xeon Processor E7-8893 v2",
+                    "Intel Xeon Processor E7-4890 v2",
+                    "Intel Xeon Processor E7-4880 v2",
+                    "Intel Xeon Processor E7-4870 v2",
+                    "Intel Xeon Processor E7-4860 v2",
+                    "Intel Xeon Processor E7-4850 v2",
+                    "Intel Xeon Processor E7-4830 v2",
+                    "Intel Xeon Processor E7-4820 v2",
+                    "Intel Xeon Processor E7-4809 v2",
+                    "Intel Xeon Processor E7-2890 v2",
+                    "Intel Xeon Processor E7-2880 v2",
+                    "Intel Xeon Processor E7-2870 v2",
+                    "Intel Xeon Processor E7-2850 v2"
                 ],
                 "Intel Xeon Processor E7 Family": [
+                    "Intel Xeon Processor E7-8870",
+                    "Intel Xeon Processor E7-8867L",
+                    "Intel Xeon Processor E7-8860",
+                    "Intel Xeon Processor E7-8850",
+                    "Intel Xeon Processor E7-8837",
+                    "Intel Xeon Processor E7-8830",
+                    "Intel Xeon Processor E7-4870",
+                    "Intel Xeon Processor E7-4860",
+                    "Intel Xeon Processor E7-4850",
+                    "Intel Xeon Processor E7-4830",
+                    "Intel Xeon Processor E7-4820",
+                    "Intel Xeon Processor E7-4807",
+                    "Intel Xeon Processor E7-2870",
+                    "Intel Xeon Processor E7-2860",
+                    "Intel Xeon Processor E7-2850",
+                    "Intel Xeon Processor E7-2830",
+                    "Intel Xeon Processor E7-2820",
+                    "Intel Xeon Processor E7-2803"
                 ],
                 "Intel Xeon Processor E5 v4 Family": [
+                    "Intel Xeon Processor E5-4669 v4",
+                    "Intel Xeon Processor E5-4667 v4",
+                    "Intel Xeon Processor E5-4660 v4",
+                    "Intel Xeon Processor E5-4655 v4",
+                    "Intel Xeon Processor E5-4650 v4",
+                    "Intel Xeon Processor E5-4640 v4",
+                    "Intel Xeon Processor E5-4628L v4",
+                    "Intel Xeon Processor E5-4627 v4",
+                    "Intel Xeon Processor E5-4620 v4",
+                    "Intel Xeon Processor E5-4610 v4",
+                    "Intel Xeon Processor E5-2699A v4",
+                    "Intel Xeon Processor E5-2699R v4",
+                    "Intel Xeon Processor E5-2699 v4",
+                    "Intel Xeon Processor E5-2698 v4",
+                    "Intel Xeon Processor E5-2697 v4",
+                    "Intel Xeon Processor E5-2697A v4",
+                    "Intel Xeon Processor E5-2695 v4",
+                    "Intel Xeon Processor E5-2690 v4",
+                    "Intel Xeon Processor E5-2687W v4",
+                    "Intel Xeon Processor E5-2683 v4",
+                    "Intel Xeon Processor E5-2680 v4",
+                    "Intel Xeon Processor E5-2667 v4",
+                    "Intel Xeon Processor E5-2660 v4",
+                    "Intel Xeon Processor E5-2658 v4",
+                    "Intel Xeon Processor E5-2650 v4",
+                    "Intel Xeon Processor E5-2650L v4",
+                    "Intel Xeon Processor E5-2648L v4",
+                    "Intel Xeon Processor E5-2643 v4",
+                    "Intel Xeon Processor E5-2640 v4",
+                    "Intel Xeon Processor E5-2637 v4",
+                    "Intel Xeon Processor E5-2630 v4",
+                    "Intel Xeon Processor E5-2630L v4",
+                    "Intel Xeon Processor E5-2628L v4",
+                    "Intel Xeon Processor E5-2623 v4",
+                    "Intel Xeon Processor E5-2620 v4",
+                    "Intel Xeon Processor E5-2618L v4",
+                    "Intel Xeon Processor E5-2609 v4",
+                    "Intel Xeon Processor E5-2608L v4",
+                    "Intel Xeon Processor E5-2603 v4",
+                    "Intel Xeon Processor E5-1680 v4",
+                    "Intel Xeon Processor E5-1660 v4",
+                    "Intel Xeon Processor E5-1650 v4",
+                    "Intel Xeon Processor E5-1630 v4",
+                    "Intel Xeon Processor E5-1620 v4"
                 ],
                 "Intel Xeon Processor E5 v3 Family": [
                     "Intel Xeon Processor E5-2699 v3",
@@ -93,6 +293,8 @@
                     "Intel Xeon Processor E5-2408L v3",
                     "Intel Xeon Processor E5-2697 v3",
                     "Intel Xeon Processor E5-1650 v3",
+                    "Intel Xeon Processor E5-4650 v3",
+                    "Intel Xeon Processor E5-1660 v3",
                     "Intel Xeon Processor E5-4648 v3",
                     "Intel Xeon Processor E5-1680 v3",
                     "Intel Xeon Processor E5-2695 v3",
@@ -111,7 +313,7 @@
                     "Intel Xeon Processor E5-2658 v3",
                     "Intel Xeon Processor E5-2650L v3",
                     "Intel Xeon Processor E5-2650 v3",
-                    "Intel Xeon Processor E5-2648 v3",
+                    "Intel Xeon Processor E5-2648L v3",
                     "Intel Xeon Processor E5-2643 v3",
                     "Intel Xeon Processor E5-2640 v3",
                     "Intel Xeon Processor E5-2637 v3",
@@ -123,17 +325,101 @@
                     "Intel Xeon Processor E5-2618L v3",
                     "Intel Xeon Processor E5-2609 v3",
                     "Intel Xeon Processor E5-2608L v3",
-                    "Intel Xeon Processor E5-2603L v3"
+                    "Intel Xeon Processor E5-2603 v3"
                 ],
                 "Intel Xeon Processor E5 v2 Family": [
+                    "Intel Xeon Processor E5-4603 v2",
+                    "Intel Xeon Processor E5-2603 v2",
+                    "Intel Xeon Processor E5-2403 v2",
+                    "Intel Xeon Processor E5-1620 v2",
+                    "Intel Xeon Processor E5-4607 v2",
+                    "Intel Xeon Processor E5-1428L v2",
+                    "Intel Xeon Processor E5-2609 v2",
+                    "Intel Xeon Processor E5-2407 v2",
+                    "Intel Xeon Processor E5-4610 v2",
+                    "Intel Xeon Processor E5-1650 v2",
+                    "Intel Xeon Processor E5-2418L v2",
+                    "Intel Xeon Processor E5-2618L v2",
+                    "Intel Xeon Processor E5-4620 v2",
+                    "Intel Xeon Processor E5-2620 v2",
+                    "Intel Xeon Processor E5-1660 v2",
+                    "Intel Xeon Processor E5-2420 v2",
+                    "Intel Xeon Processor E5-4624L v2",
+                    "Intel Xeon Processor E5-2428L v2",
+                    "Intel Xeon Processor E5-2628L v2",
+                    "Intel Xeon Processor E5-4627 v2",
+                    "Intel Xeon Processor E5-2630 v2",
+                    "Intel Xeon Processor E5-2430 v2",
+                    "Intel Xeon Processor E5-4640 v2",
+                    "Intel Xeon Processor E5-2630L v2",
+                    "Intel Xeon Processor E5-2430L v2",
+                    "Intel Xeon Processor E5-2637 v2",
+                    "Intel Xeon Processor E5-4650 v2",
+                    "Intel Xeon Processor E5-2440 v2",
+                    "Intel Xeon Processor E5-2448L v2",
+                    "Intel Xeon Processor E5-4657L v2",
+                    "Intel Xeon Processor E5-2640 v2",
+                    "Intel Xeon Processor E5-2643 v2",
+                    "Intel Xeon Processor E5-2450 v2",
+                    "Intel Xeon Processor E5-2450L v2",
+                    "Intel Xeon Processor E5-2648L v2",
+                    "Intel Xeon Processor E5-2650 v2",
+                    "Intel Xeon Processor E5-2470 v2",
+                    "Intel Xeon Processor E5-2650L v2",
+                    "Intel Xeon Processor E5-2658 v2",
+                    "Intel Xeon Processor E5-2660 v2",
+                    "Intel Xeon Processor E5-2667 v2",
+                    "Intel Xeon Processor E5-2670 v2",
+                    "Intel Xeon Processor E5-2680 v2",
+                    "Intel Xeon Processor E5-2687W v2",
+                    "Intel Xeon Processor E5-2690 v2",
+                    "Intel Xeon Processor E5-2695 v2",
+                    "Intel Xeon Processor E5-2697 v2"
                 ],
                 "Intel Xeon Processor E5 Family": [
-                ],
-                "Intel Xeon Processor E3 v4 Family": [
-                ],
-                "Intel Xeon Processor E3 v2 Family": [
-                ],
-                "Intel Xeon Processor E3 Family": [
+                    "Intel Xeon Processor E5-2403",
+                    "Intel Xeon Processor E5-2603",
+                    "Intel Xeon Processor E5-4603",
+                    "Intel Xeon Processor E5-4607",
+                    "Intel Xeon Processor E5-2407",
+                    "Intel Xeon Processor E5-2418L",
+                    "Intel Xeon Processor E5-4610",
+                    "Intel Xeon Processor E5-1620",
+                    "Intel Xeon Processor E5-1428L",
+                    "Intel Xeon Processor E5-2609",
+                    "Intel Xeon Processor E5-4617",
+                    "Intel Xeon Processor E5-2420",
+                    "Intel Xeon Processor E5-2620",
+                    "Intel Xeon Processor E5-1650",
+                    "Intel Xeon Processor E5-4620",
+                    "Intel Xeon Processor E5-2428L",
+                    "Intel Xeon Processor E5-1660",
+                    "Intel Xeon Processor E5-2430",
+                    "Intel Xeon Processor E5-4640",
+                    "Intel Xeon Processor E5-2430L",
+                    "Intel Xeon Processor E5-4650",
+                    "Intel Xeon Processor E5-2630",
+                    "Intel Xeon Processor E5-2440",
+                    "Intel Xeon Processor E5-2448L",
+                    "Intel Xeon Processor E5-2630L",
+                    "Intel Xeon Processor E5-4650L",
+                    "Intel Xeon Processor E5-2450",
+                    "Intel Xeon Processor E5-2637",
+                    "Intel Xeon Processor E5-2640",
+                    "Intel Xeon Processor E5-2450L",
+                    "Intel Xeon Processor E5-2470",
+                    "Intel Xeon Processor E5-2643",
+                    "Intel Xeon Processor E5-2648L",
+                    "Intel Xeon Processor E5-2650",
+                    "Intel Xeon Processor E5-2650L",
+                    "Intel Xeon Processor E5-2658",
+                    "Intel Xeon Processor E5-2660",
+                    "Intel Xeon Processor E5-2665",
+                    "Intel Xeon Processor E5-2667",
+                    "Intel Xeon Processor E5-2670",
+                    "Intel Xeon Processor E5-2680",
+                    "Intel Xeon Processor E5-2687W",
+                    "Intel Xeon Processor E5-2690"
                 ]
             },
             "Xeon Phi Processors": {
@@ -143,7 +429,7 @@
                     "Intel Xeon Phi Coprocessor 7120P",
                     "Intel Xeon Phi Coprocessor 7120X",
                     "Intel Xeon Phi Coprocessor 5120D",
-                    "Intel Xeon Phi Coprocessor 5120P",
+                    "Intel Xeon Phi Coprocessor 5110P",
                     "Intel Xeon Phi Coprocessor 3120A",
                     "Intel Xeon Phi Coprocessor 3120P"
                 ],
@@ -164,39 +450,70 @@
                 ]
             }
         },
-        "NVIDIA": {
-        }
-    },
-    "system_models_map": {
-        "Cray": [
-            "Cray XC30",
-            "Cray XC40",
-            "Cray XC50",
-            "Cray CS-Strom"
-        ],
-        "Dell": [
-            "PowerEdge C4140",
-            "PowerEdge C6420"
-        ],
-        "Fugaku": {
-            "Fugaku": []
-        },
-        "IBM": [
-            "Power System AC922"
-        ],
-        "Sumway": [
-            "Sunway MPP"
-        ],
         "NVIDIA": [
-            "DGX-1",
-            "DGX-2",
-            "DGX A100"
+            "NVIDIA Volta GV100",
+            "NVIDIA Tesla V100 SXM2",
+            "NVIDIA Tesla V100",
+            "NVIDIA Tesla P100",
+            "NVIDIA Tesla K80",
+            "NVIDIA Tesla K20x",
+            "NVIDIA Tesla K40m",
+            "NVIDIA A100"
+        ],
+        "Sunway": [
         ]
     },
     "system_models_tree": {
-        "Cray": ["Cray XC30", "Cray XC40"],
-        "IBM": ["Power System AC922"],
-        "NVIDIA": ["DGX-1", "DGX-2"]
+        "HPC System": {
+            "Cray": [
+                "Cray XC30",
+                "Cray XC40",
+                "Cray XC50",
+                "Cray CS-Strom",
+                "Cray CS500"
+            ],
+            "Dell": [
+                "Dell PowerEdge C4140",
+                "Dell PowerEdge C6420",
+                "Dell PowerEdge C6525"
+            ],
+            "Fugaku": [
+                "Fujitsu PRIMEHPC FX1000",
+                "Fujitsu PRIMEHPC CX2570 M4"
+            ],
+            "IBM": [
+                "IBM Power System AC922"
+            ],
+            "Sumway": [
+                "Sunway MPP"
+            ],
+            "Supermicro": [
+                "Supermicro SYS-2029TP-HTR"
+            ],
+            "NVIDIA": [
+                "NVIDIA DGX-1",
+                "NVIDIA DGX-2",
+                "NVIDIA DGX A100"
+            ],
+            "Lenovo": [
+                "Lenovo ThinkSystem SD650",
+                "Lenovo C1040"
+            ],
+            "HP": [
+                "HP Apollo 9000"
+            ],
+            "HPE": [
+                "HPE SGI 8600",
+                "HPE Cray EX"
+            ]
+        },
+        "Desktop/Labtop": {
+            "Apple": [
+                "Apple iMac",
+                "Apple MacBook Air",
+                "Apple MacBook Pro"
+            ]
+        }
     },
     "interconnect_tree": {
         "Ethernet": [
@@ -206,7 +523,11 @@
             "Ethernet 25G",
             "Ethernet 10G"
         ],
-        "Infiniband": [],
+        "Infiniband": [
+            "Infiniband HDR",
+            "Infiniband EDR",
+            "Infiniband FDR"
+        ],
         "Aries": [],
         "Omni-Path": [],
         "Cutom": [],
