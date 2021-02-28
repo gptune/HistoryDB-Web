@@ -58,6 +58,13 @@
             <a class="dropdown-item" href="{% url 'documentation:query' document_name='historydb_motivation' %}">HistoryDB User Guide</a>
           </div>
         </li>
+        <li class="nav-item dropdown" id="nav-item-documentation">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Discussion</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown04">
+            <a class="dropdown-item" href="https://github.com/gptune/GPTune/issues">Forum</a>
+            <a class="dropdown-item" href="#">Survey</a>
+          </div>
+        </li>
         {% if user.is_authenticated %}
         <li class="nav-item dropdown" id="nav-item-account">
           <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Signed In As {{ user.username }}</a>

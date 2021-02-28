@@ -83,7 +83,8 @@
             "IBM Power9 22C",
             "IBM Power9 20C",
             "IBM Power9 18C",
-            "IBM Power9 16C"
+            "IBM Power9 16C",
+            "IBM Power7 8C"
         ],
         "Intel": {
             "Core Processors": {
@@ -104,7 +105,23 @@
                 "10th Generation Intel Core i5 Processors": [],
                 "9th Generation Intel Core i5 Processors": [],
                 "8th Generation Intel Core i5 Processors": [],
-                "7th Generation Intel Core i5 Processors": []
+                "7th Generation Intel Core i5 Processors": [],
+                "6th Generation Intel Core i5 Processors": [],
+                "5th Generation Intel Core i5 Processors": [],
+                "4th Generation Intel Core i5 Processors": [],
+                "11th Generation Intel Core i3 Processors": [],
+                "10th Generation Intel Core i3 Processors": [],
+                "9th Generation Intel Core i3 Processors": [],
+                "8th Generation Intel Core i3 Processors": [],
+                "7th Generation Intel Core i3 Processors": [],
+                "6th Generation Intel Core i3 Processors": [],
+                "5th Generation Intel Core i3 Processors": [],
+                "4th Generation Intel Core i3 Processors": [],
+                "8th Generation Intel Core m Processors": [],
+                "7th Generation Intel Core m Processors": [],
+                "6th Generation Intel Core m Processors": [],
+                "5th Generation Intel Core M Processors": [],
+                "Legacy Intel Core Processors": []
             },
             "Xeon Processors": {
                 "Intel Xeon Scalable Processors": [
@@ -461,6 +478,7 @@
             "NVIDIA A100"
         ],
         "Sunway": [
+            "Sunway SW26010 260C"
         ]
     },
     "system_models_tree": {
@@ -505,6 +523,60 @@
             "HPE": [
                 "HPE SGI 8600",
                 "HPE Cray EX"
+            ]
+        },
+        "Cloud Serive": {
+            "Azure": [
+                "Azure AI + Machine Learning",
+                "Azure Analytics",
+                "Azure Blockchain",
+                "Azure Compute",
+                "Azure Containers",
+                "Azure Databases",
+                "Azure DevOps",
+                "Azure Developer Tools",
+                "Azure Hybrid + Multicloud",
+                "Azure Identity",
+                "Azure Integration",
+                "Azure Internet of Things",
+                "Azure Management and Governance",
+                "Azure Media",
+                "Azure Migration",
+                "Azure Mixed Reality",
+                "Azure Mobile",
+                "Azure Networking",
+                "Azure Security",
+                "Azure Storage",
+                "Azure Web",
+                "Azure Windows Virtual Desktop"
+            ],
+            "AWS": [
+                "AWS Analytics",
+                "AWS Application Integration",
+                "AWS AWS Cost Management",
+                "AWS Blockchain",
+                "AWS Business Applications",
+                "AWS Compute",
+                "AWS Containers",
+                "AWS Customer Engagement",
+                "AWS Database",
+                "AWS Developer Tools",
+                "AWS End User Computing",
+                "AWS Front-End Web & Mobile",
+                "AWS Game Tech",
+                "AWS Internet of Things",
+                "AWS Machine Learning",
+                "AWS Management & Governance",
+                "AWS Media Services",
+                "AWS Migration & Transfer",
+                "AWS Networking & Content Delivery",
+                "AWS Quantum Technologies",
+                "AWS Robotics",
+                "AWS Satellite",
+                "AWS Security, Identity, & Compliance",
+                "AWS Serverless",
+                "AWS Storage",
+                "AWS VR & AR"
             ]
         },
         "Desktop/Labtop": {
