@@ -39,3 +39,6 @@ def gptune_user_guide(request):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
 
+from django.shortcuts import redirect
+def historydb_user_guide(request):
+    return redirect('https://gptune-history-database.readthedocs.io/en/latest/')
