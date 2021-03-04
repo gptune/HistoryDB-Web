@@ -150,6 +150,9 @@ class Index(TemplateView):
 def about(request):
     return render(request, 'main/about.html')
 
+def publications(request):
+    return render(request, 'main/publications.html')
+
 def acknowledgement(request):
     return render(request, 'main/acknowledgement.html')
 
