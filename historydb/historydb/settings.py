@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'main.apps.MainConfig',
     'widget_tweaks',
+    'docs',
 ]
 
 MIDDLEWARE = [
@@ -160,3 +161,5 @@ STATICFILES_DIRS = (
 )
 
 MEDIA_ROOT = os.path.join(Path(__file__).resolve().parent.parent.parent, "media")
+
+DOCS_ROOT = os.environ['HISTORYDB_DOCS_ROOT']
