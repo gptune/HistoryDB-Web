@@ -18,6 +18,8 @@ function UpdateSelectedCategory(element, data_selected)
     category_div.classList.add('mb-3');
     category_div.style.padding = '10px';
     category_div.style.backgroundColor = '#f1f1f1';
+    category_div.style.paddingLeft = '20px';
+    category_div.style.paddingRight = '20px';
     category_div.innerHTML = "";
 
     var label = document.createElement('label');
@@ -25,6 +27,7 @@ function UpdateSelectedCategory(element, data_selected)
     var category = document.createElement('input');
     category.type = 'text';
     category.classList.add('form-control');
+    category.classList.add('mb-3');
     category.setAttribute('name', 'category_name');
     category.setAttribute('value', data_selected[i]);
     category.setAttribute('readonly', true);
@@ -32,6 +35,16 @@ function UpdateSelectedCategory(element, data_selected)
 
     category_div.appendChild(label);
     category_div.appendChild(category);
+
+    var label = document.createElement('label');
+    label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
+    var tags = document.createElement('input');
+    tags.type = 'text';
+    tags.classList.add('form-control');
+    tags.setAttribute('name', 'category_tags');
+
+    category_div.appendChild(label);
+    category_div.appendChild(tags);
 
     document.getElementById('category_info').appendChild(category_div);
   }
@@ -62,6 +75,7 @@ function UpdateSelectedSoftware(element, data_selected)
     var software = document.createElement('input');
     software.type = 'text';
     software.classList.add('form-control');
+    software.classList.add('mb-3');
     software.setAttribute('name', 'software_name');
     software.setAttribute('value', data_selected[i]);
     software.setAttribute('readonly', true);
@@ -70,11 +84,11 @@ function UpdateSelectedSoftware(element, data_selected)
     software_div.appendChild(label);
     software_div.appendChild(software);
 
-    var options_div = document.createElement('div');
     var label = document.createElement('label');
     label.innerHTML = "Which type of information is needed?";
     var options = document.createElement('select');
     options.classList.add('custom-select');
+    options.classList.add('mb-3');
     options.setAttribute('name', 'software_type');
     var op = document.createElement('option');
     op.setAttribute('value', '');
@@ -93,46 +107,19 @@ function UpdateSelectedSoftware(element, data_selected)
     op.setAttribute('label', 'any text value (e.g. git/svn commit ID, dataset name)');
     options.appendChild(op);
 
-    options_div.appendChild(label);
-    options_div.appendChild(options);
+    software_div.appendChild(label);
+    software_div.appendChild(options);
 
-    software_div.appendChild(options_div);
+    var label = document.createElement('label');
+    label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
+    var tags = document.createElement('input');
+    tags.type = 'text';
+    tags.classList.add('form-control');
+    tags.setAttribute('name', 'software_tags');
 
-    //var option_div = document.createElement('div');
-    //option_div.classList.add('panel_group');
-    //option_div.classList.add('custom-control');
-    //option_div.classList.add('custom-checkbox');
-    //var option1 = document.createElement('input');
-    //option1.type = 'checkbox';
-    //option1.classList.add('custom-control-input');
-    //option1.setAttribute('id', 'option1');
-    //option1.setAttribute('value', 'option1');
-    //option1.setAttribute('name', 'software_info_type');
-    //var option1_label = document.createElement('label');
-    //option1_label.classList.add('custom-control-label');
-    //option1_label.htmlFor = option1.id;
-    //option1_label.innerHTML = "Version";
-
-    //option_div.appendChild(option1);
-    //option_div.appendChild(option1_label);
-
-    //var option2 = document.createElement('input');
-    //option2.type = 'checkbox';
-    //option2.classList.add('custom-control-input');
-    //option2.setAttribute('id', 'option2');
-    //option2.setAttribute('value', 'option2');
-    //option2.setAttribute('name', 'software_info_type');
-    //var option2_label = document.createElement('label');
-    //option2_label.classList.add('custom-control-label');
-    //option2_label.htmlFor = option2.id;
-    //option2_label.innerHTML = "Version";
-
-    //option_div.appendChild(option2);
-    //option_div.appendChild(option2_label);
-
-    //software_div.appendChild(option_div);
+    software_div.appendChild(label);
+    software_div.appendChild(tags);
 
     document.getElementById('software_info').appendChild(software_div);
-    //document.getElementById('software_info').appendChild(option_div);
   }
 }

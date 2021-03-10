@@ -20,6 +20,7 @@ from dbmanager import HistoryDB_MongoDB
 import os
 import json
 import ast
+import re
 
 class Dashboard(TemplateView):
     def get(self, request, **kwargs):
@@ -576,9 +577,16 @@ class TuningProblems(TemplateView):
     def get(self, request, **kwargs):
 
         historydb = HistoryDB_MongoDB()
-        tuning_problem_list = historydb.load_all_tuning_problems()
-        for i in range(len(tuning_problem_list)):
+        tuning_problem_list_ = historydb.load_all_tuning_problems()
+
+        tuning_problem_list = [{} for i in range(len(tuning_problem_list_))]
+        for i in range(len(tuning_problem_list_)):
             tuning_problem_list[i]["id"] = i
+            tuning_problem_list[i]["tuning_problem_info"] = tuning_problem_list_[i]["tuning_problem_info"]
+            tuning_problem_list[i]["tuning_problem_name"] = tuning_problem_list_[i]["tuning_problem_name"]
+            tuning_problem_list[i]["unique_name"] = tuning_problem_list_[i]["unique_name"]
+            tuning_problem_list[i]["user_name"] = tuning_problem_list_[i]["user_info"]["user_name"]
+            tuning_problem_list[i]["update_time"] = tuning_problem_list_[i]["update_time"]
 
         context = {
                 "tuning_problem_list" : tuning_problem_list
@@ -604,18 +612,7 @@ class AddTuningProblem(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        def get_list_from_file(filename):
-            items = []
-            with open(filename, "r") as f_in:
-                lines = f_in.readlines()
-                for line in lines:
-                    items.append(line)
-            return items
-
-        category_list = ["SuperLU","ScaLAPACK","LAPACK","Desktop Application"]
-
         def get_data_from_file(filename, keyword):
-            print (filename)
             with open(filename, "r") as f_in:
                 data = json.load(f_in)
                 return data[keyword]
@@ -627,52 +624,53 @@ class AddTuningProblem(TemplateView):
             def walk(parent, node):
                 for key, value in node.items():
                     if isinstance(value, dict):
-                        print ("parent: ", parent, " key: ", key)
                         node_array.append({"id": key, "parent": parent, "text": key})
                         walk(key, value)
                     elif isinstance(value, list):
                         node_array.append({"id": key, "parent": parent, "text": key})
                         for item in value:
                             node_array.append({"id": item, "parent": key, "text": item, "icon": "jstree-file"})
-                        print ("parent: ", parent, " value: ", value)
 
             walk("#", tree_json)
-            print (json.dumps(node_array))
 
             jstree_json["core"] = {"data": node_array}
 
             return jstree_json
 
         category_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "category_tree"))
-        category_tree = get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "category_tree")
         software_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "software_tree"))
-        print ("category_tree: ", category_tree)
-        print ("category_jstree: ", category_jstree)
-        print ("software_jstree: ", software_jstree)
 
         context = {
                 "category_jstree": category_jstree,
                 "software_jstree": software_jstree,
-                "category_list": category_list,
                 }
 
         return render(request, 'repo/add-tuning-problem.html', context)
 
     def post(self, request, **kwargs):
-        tuning_problem = {}
+        tuning_problem_name = request.POST['tuning_problem_name']
 
-        tuning_problem["tuning_problem_name"] = request.POST['tuning_problem_name']
-        tuning_problem["category"] = request.POST['category_name']
-        tuning_problem["description"] = request.POST['tuning_problem_description']
+        tuning_problem_info = {}
+
+        category_names = request.POST.getlist('category_name')
+        category_tags = request.POST.getlist('category_tags')
+        tuning_problem_info["category"] = []
+        for i in range(len(category_names)):
+            tuning_problem_info["category"].append({
+                "category_name": category_names[i],
+                "category_tags": re.split(', |,', category_tags[i])
+                })
+
+        tuning_problem_info["description"] = request.POST['tuning_problem_description']
 
         task_names = request.POST.getlist('task_name')
         task_types = request.POST.getlist('task_type')
         task_descriptions = request.POST.getlist('task_description')
         num_tasks = len(task_names)
 
-        tuning_problem["task_info"] = []
+        tuning_problem_info["task_info"] = []
         for i in range(num_tasks):
-            tuning_problem["task_info"].append({
+            tuning_problem_info["task_info"].append({
                 "task_name": task_names[i],
                 "task_type": task_types[i],
                 "task_description": task_descriptions[i],
@@ -683,9 +681,9 @@ class AddTuningProblem(TemplateView):
         parameter_descriptions = request.POST.getlist('parameter_description')
         num_parameters = len(parameter_names)
 
-        tuning_problem["parameter_info"] = []
+        tuning_problem_info["parameter_info"] = []
         for i in range(num_parameters):
-            tuning_problem["parameter_info"].append({
+            tuning_problem_info["parameter_info"].append({
                 "parameter_name": parameter_names[i],
                 "parameter_type": parameter_types[i],
                 "parameter_description": parameter_descriptions[i]
@@ -696,9 +694,9 @@ class AddTuningProblem(TemplateView):
         output_descriptions = request.POST.getlist('output_description')
         num_outputs = len(output_names)
 
-        tuning_problem["output_info"] = []
+        tuning_problem_info["output_info"] = []
         for i in range(num_outputs):
-            tuning_problem["output_info"].append({
+            tuning_problem_info["output_info"].append({
                 "output_name": output_names[i],
                 "output_type": output_types[i],
                 "output_description": output_descriptions[i]
@@ -706,16 +704,17 @@ class AddTuningProblem(TemplateView):
 
         required_software_names = request.POST.getlist('software_name')
         required_software_types = request.POST.getlist('software_type')
-        num_software_packages = len(required_software_names)
+        required_software_tags = request.POST.getlist('software_tags')
 
-        tuning_problem["required_software_info"] = []
-        for i in range(num_software_packages):
-            tuning_problem["required_software_info"].append({
+        tuning_problem_info["required_software_info"] = []
+        for i in range(len(required_software_names)):
+            tuning_problem_info["required_software_info"].append({
                 "software_name": required_software_names[i],
-                "software_type": required_software_types[i]
+                "software_type": required_software_types[i],
+                "software_tags": re.split(', |,', required_software_tags[i])
                 })
 
-        print ("tuning_problem: ", tuning_problem)
+        print ("tuning_problem_info: ", tuning_problem_info)
 
         user_info = {}
         user_info["user_name"] = request.user.username
@@ -723,7 +722,7 @@ class AddTuningProblem(TemplateView):
         user_info["affiliation"] = request.user.profile.affiliation
 
         historydb = HistoryDB_MongoDB()
-        historydb.add_tuning_problem(tuning_problem, user_info)
+        historydb.add_tuning_problem(tuning_problem_name, tuning_problem_info, user_info)
 
         return redirect(reverse_lazy('repo:tuning-problems'))
 

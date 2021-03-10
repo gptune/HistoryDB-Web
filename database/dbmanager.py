@@ -195,8 +195,9 @@ class HistoryDB_MongoDB(dict):
         machine_configurations_avail = {}
 
         for tuning_problem in self.db["tuning_problem_db"].find():
-            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-            collection_name = collection_name.replace("-","_")
+            collection_name = tuning_problem["unique_name"]
+            #collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            #collection_name = collection_name.replace("-","_")
             print ("Collection_name: ", collection_name)
 
             machine_configurations_avail[collection_name] = []
@@ -218,8 +219,9 @@ class HistoryDB_MongoDB(dict):
         software_configurations_avail = {}
 
         for tuning_problem in self.db["tuning_problem_db"].find():
-            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-            collection_name = collection_name.replace("-","_")
+            collection_name = tuning_problem["unique_name"]
+            #collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            #collection_name = collection_name.replace("-","_")
             print ("Collection_name: ", collection_name)
 
             software_configurations_avail[collection_name] = []
@@ -241,8 +243,9 @@ class HistoryDB_MongoDB(dict):
         user_configurations_avail = {}
 
         for tuning_problem in self.db["tuning_problem_db"].find():
-            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-            collection_name = collection_name.replace("-","_")
+            collection_name = tuning_problem["unique_name"]
+            #collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            #collection_name = collection_name.replace("-","_")
             print ("Collection_name: ", collection_name)
 
             user_configurations_avail[collection_name] = []
@@ -623,7 +626,7 @@ class HistoryDB_MongoDB(dict):
 
         return machine_info_list
 
-    def add_tuning_problem(self, tuning_problem_info, user_info, **kwargs):
+    def add_tuning_problem(self, tuning_problem_name, tuning_problem_info, user_info, **kwargs):
         tuning_problem_db = self.db["tuning_problem_db"]
 
         tuning_problem_document = {}
@@ -632,7 +635,6 @@ class HistoryDB_MongoDB(dict):
 
         import time
         now = time.localtime()
-
         tuning_problem_document["update_time"] = {
                 "tm_year":now.tm_year,
                 "tm_mon":now.tm_mon,
@@ -648,9 +650,11 @@ class HistoryDB_MongoDB(dict):
         import uuid
         tuning_problem_document["uid"] = str(uuid.uuid1())
 
-        collection_name = tuning_problem_document["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem_document["user_info"]["user_name"]+"_"+tuning_problem_document["uid"]
-        collection_name = collection_name.replace("-","_")
-        tuning_problem_document["collection_name"] = collection_name
+        unique_name = tuning_problem_name+"_"+tuning_problem_document["uid"]
+        unique_name = unique_name.replace("-","_")
+
+        tuning_problem_document["tuning_problem_name"] = tuning_problem_name
+        tuning_problem_document["unique_name"] = unique_name
 
         tuning_problem_db.insert_one(tuning_problem_document)
 

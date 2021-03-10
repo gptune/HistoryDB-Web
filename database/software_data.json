@@ -30,337 +30,337 @@
     "software_tree": {
         "_comment": "the software data list is obtained from CK (https://cknowledge.io/c/soft/)",
         "lib": {
-            "python": {
-                "onnx": {},
-                "coco-helper": {},
-                "imagenet-helper": {},
-                "tf2onnx": {},
-                "mlperf": {
-                    "loadgen": {}
-                },
-                "imageio": {},
-                "networkx": {},
-                "pillow": {},
-                "sox": {},
-                "defusedxml": {},
-                "scipy": {},
-                "cv2": {},
-                "absl": {},
-                "pandas": {},
-                "requests": {},
-                "zmq": {},
-                "test-generator": {},
-                "matplotlib": {},
-                "onnxruntime": {},
-                "pycuda": {},
-                "numpy": {},
-                "cython": {},
-                "tensorflow": {}
+          "lib.python": {
+            "lib.python.onnx": {},
+            "lib.python.coco-helper": {},
+            "lib.python.imagenet-helper": {},
+            "lib.python.tf2onnx": {},
+            "lib.python.mlperf": {
+              "lib.python.mlperf.loadgen": {}
             },
-            "mlperf": {
-                "loadgen": {
-                    "static": {}
-                }
+            "lib.python.imageio": {},
+            "lib.python.networkx": {},
+            "lib.python.pillow": {},
+            "lib.python.sox": {},
+            "lib.python.defusedxml": {},
+            "lib.python.scipy": {},
+            "lib.python.cv2": {},
+            "lib.python.absl": {},
+            "lib.python.pandas": {},
+            "lib.python.requests": {},
+            "lib.python.zmq": {},
+            "lib.python.test-generator": {},
+            "lib.python.matplotlib": {},
+            "lib.python.onnxruntime": {},
+            "lib.python.pycuda": {},
+            "lib.python.numpy": {},
+            "lib.python.cython": {},
+            "lib.python.tensorflow": {}
+          },
+          "lib.mlperf": {
+            "lib.mlperf.loadgen": {
+              "lib.mlperf.loadgen.static": {}
+            }
+          },
+          "lib.mace": {},
+          "lib.gemmlowp": {},
+          "lib.eigen": {},
+          "lib.xnnpack": {},
+          "lib.protobuf": {
+            "lib.protobuf.host": {}
+          },
+          "lib.armcl": {},
+          "lib.rtl": {
+            "lib.rtl.milepost": {
+              "lib.rtl.milepost.codelet": {}
             },
-            "mace": {},
-            "gemmlowp": {},
-            "eigen": {},
-            "xnnpack": {},
-            "protobuf": {
-                "host": {}
-            },
-            "armcl": {},
-            "rtl": {
-                "milepost": {
-                    "codelet": {}
-                },
-                "polybench": {},
-                "xopenme": {}
-            },
-            "glog": {},
-            "cufft": {},
-            "cjson": {
-                "2013": {}
-            },
-            "toon": {},
-            "clblas": {},
-            "hdf5": {
-                "static": {}
-            },
-            "qt": {},
-            "mpi": {
-                "intel": {}
-            },
-            "leveldb": {},
-            "cloog": {},
-            "viennacl": {
-                "src": {}
-            },
-            "lapack": {},
-            "cudnn": {},
-            "blas": {},
-            "isl": {},
-            "nccl": {},
-            "openblas": {},
-            "ncurses": {},
-            "papi": {},
-            "libjpeg": {},
-            "openme": {
-                "java": {}
-            },
-            "mpc": {},
-            "mpfr": {},
-            "glew": {},
-            "flatbuffers": {},
-            "clblast": {},
-            "opengl": {},
-            "isaac": {},
-            "parmetis": {},
-            "fmt": {},
-            "ppl": {},
-            "xml2": {},
-            "commons-io": {},
-            "hpctoolkit": {
-                "libmonitor": {}
-            },
-            "openmpi": {},
-            "tiny-dnn": {},
-            "mpich": {},
-            "tbb": {},
-            "lmdb": {},
-            "freeglut": {},
-            "gbenchmark": {},
-            "netcdf": {},
-            "gmp": {},
-            "cublas": {},
-            "opencl": {},
-            "boost": {},
-            "android": {
-                "aux": {}
-            },
-            "junit": {},
-            "gflags": {},
-            "metis": {},
-            "xsmm": {},
-            "libdnn": {},
-            "opencv": {},
-            "tensorflow": {
-                "source": {},
-                "make": {},
-                "static": {}
-            },
-            "tflite": {
-                "static": {},
-                "static-old": {}
-            },
-            "tensorflow_cc": {},
-            "keras": {},
-            "caffe": {},
-            "dnnproxy": {},
-            "nntest": {}
+            "lib.rtl.polybench": {},
+            "lib.rtl.xopenme": {}
+          },
+          "lib.glog": {},
+          "lib.cufft": {},
+          "lib.cjson": {
+            "lib.cjson.2013": {}
+          },
+          "lib.toon": {},
+          "lib.clblas": {},
+          "lib.hdf5": {
+            "lib.hdf5.static": {}
+          },
+          "lib.qt": {},
+          "lib.mpi": {
+            "lib.mpi.intel": {}
+          },
+          "lib.leveldb": {},
+          "lib.cloog": {},
+          "lib.viennacl": {
+            "lib.viennacl.src": {}
+          },
+          "lib.lapack": {},
+          "lib.cudnn": {},
+          "lib.blas": {},
+          "lib.isl": {},
+          "lib.nccl": {},
+          "lib.openblas": {},
+          "lib.ncurses": {},
+          "lib.papi": {},
+          "lib.libjpeg": {},
+          "lib.openme": {
+            "lib.openme.java": {}
+          },
+          "lib.mpc": {},
+          "lib.mpfr": {},
+          "lib.glew": {},
+          "lib.flatbuffers": {},
+          "lib.clblast": {},
+          "lib.opengl": {},
+          "lib.isaac": {},
+          "lib.parmetis": {},
+          "lib.fmt": {},
+          "lib.ppl": {},
+          "lib.xml2": {},
+          "lib.commons-io": {},
+          "lib.hpctoolkit": {
+            "lib.hpctoolkit.libmonitor": {}
+          },
+          "lib.openmpi": {},
+          "lib.tiny-dnn": {},
+          "lib.mpich": {},
+          "lib.tbb": {},
+          "lib.lmdb": {},
+          "lib.freeglut": {},
+          "lib.gbenchmark": {},
+          "lib.netcdf": {},
+          "lib.gmp": {},
+          "lib.cublas": {},
+          "lib.opencl": {},
+          "lib.boost": {},
+          "lib.android": {
+            "lib.android.aux": {}
+          },
+          "lib.junit": {},
+          "lib.gflags": {},
+          "lib.metis": {},
+          "lib.xsmm": {},
+          "lib.libdnn": {},
+          "lib.opencv": {},
+          "lib.tensorflow": {
+            "lib.tensorflow.source": {},
+            "lib.tensorflow.make": {},
+            "lib.tensorflow.static": {}
+          },
+          "lib.tflite": {
+            "lib.tflite.static": {},
+            "lib.tflite.static-old": {}
+          },
+          "lib.tensorflow_cc": {},
+          "lib.keras": {},
+          "lib.caffe": {},
+          "lib.dnnproxy": {},
+          "lib.nntest": {}
         },
         "bench": {
-            "mlmodelscope": {},
-            "sylt": {},
-            "fai-pep": {},
-            "slambench": {},
-            "spec": {
-                "cpu95": {},
-                "cpu2006": {},
-                "cpu2000": {}
-            },
-            "deep500": {},
-            "pencil": {}
+          "bench.mlmodelscope": {},
+          "bench.sylt": {},
+          "bench.fai-pep": {},
+          "bench.slambench": {},
+          "bench.spec": {
+            "bench.spec.cpu95": {},
+            "bench.spec.cpu2006": {},
+            "bench.spec.cpu2000": {}
+          },
+          "bench.deep500": {},
+          "bench.pencil": {}
         },
         "config": {
-            "loadgen": {}
+          "config.loadgen": {}
         },
         "model": {
-            "onnx": {},
-            "tensorflow-models-api": {},
-            "tensorflow-model": {},
-            "tensorflow": {
-                "object-detection": {},
-                "py": {}
-            },
-            "squeezedet": {},
-            "yad2k": {},
-            "caffe": {}
+          "model.onnx": {},
+          "model.tensorflow-models-api": {},
+          "model.tensorflow-model": {},
+          "model.tensorflow": {
+            "model.tensorflow.object-detection": {},
+            "model.tensorflow.py": {}
+          },
+          "model.squeezedet": {},
+          "model.yad2k": {},
+          "model.caffe": {}
         },
         "mlperf": {
-            "inference": {
-                "source": {}
-            }
+          "mlperf.inference": {
+            "mlperf.inference.source": {}
+          }
         },
         "tool": {
-            "texinfo": {},
-            "hpctoolkit": {
-                "externals": {}
-            },
-            "glslangvalidator": {},
-            "hyperwords": {},
-            "valgrind": {},
-            "spack": {},
-            "sox": {},
-            "thrift": {},
-            "bazel": {},
-            "cltune": {},
-            "show-cuda-devices": {},
-            "flac": {},
-            "coco": {},
-            "dvdt": {
-                "prof": {}
-            },
-            "antlr": {},
-            "codelet-finder": {},
-            "scons": {},
-            "cere": {},
-            "cmake": {},
-            "wget": {},
-            "toolchain": {
-                "standalone": {}
-            },
-            "easybuild": {},
-            "icl": {
-                "ogl": {
-                    "testing": {}
-                }
-            },
-            "adb": {},
-            "show-opencl-devices": {}
+          "tool.texinfo": {},
+          "tool.hpctoolkit": {
+            "tool.hpctoolkit.externals": {}
+          },
+          "tool.glslangvalidator": {},
+          "tool.hyperwords": {},
+          "tool.valgrind": {},
+          "tool.spack": {},
+          "tool.sox": {},
+          "tool.thrift": {},
+          "tool.bazel": {},
+          "tool.cltune": {},
+          "tool.show-cuda-devices": {},
+          "tool.flac": {},
+          "tool.coco": {},
+          "tool.dvdt": {
+            "tool.dvdt.prof": {}
+          },
+          "tool.antlr": {},
+          "tool.codelet-finder": {},
+          "tool.scons": {},
+          "tool.cere": {},
+          "tool.cmake": {},
+          "tool.wget": {},
+          "tool.toolchain": {
+            "tool.toolchain.standalone": {}
+          },
+          "tool.easybuild": {},
+          "tool.icl": {
+            "tool.icl.ogl": {
+              "tool.icl.ogl.testing": {}
+            }
+          },
+          "tool.adb": {},
+          "tool.show-opencl-devices": {}
         },
         "script": {
-            "ck": {}
+          "script.ck": {}
         },
         "dataset": {
-            "librispeech": {
-                "preprocessed": {}
+          "dataset.librispeech": {
+            "dataset.librispeech.preprocessed": {}
+          },
+          "dataset.imagenet": {
+            "dataset.imagenet.train": {
+              "dataset.imagenet.train.mxnet": {},
+              "dataset.imagenet.train.tf": {},
+              "dataset.imagenet.train.cntk": {}
             },
-            "imagenet": {
-                "train": {
-                    "mxnet": {},
-                    "tf": {},
-                    "cntk": {}
-                },
-                "val": {
-                    "lmdb": {}
-                },
-                "preprocessed": {
-                    "rgbf32": {}
-                },
-                "aux": {}
+            "dataset.imagenet.val": {
+              "dataset.imagenet.val.lmdb": {}
             },
-            "mnist": {},
-            "openimages": {},
-            "object-detection": {
-                "preprocessed": {}
+            "dataset.imagenet.preprocessed": {
+              "dataset.imagenet.preprocessed.rgbf32": {}
             },
-            "coco": {
-                "2017": {
-                    "val": {}
-                },
-                "2014": {
-                    "val": {}
-                }
+            "dataset.imagenet.aux": {}
+          },
+          "dataset.mnist": {},
+          "dataset.openimages": {},
+          "dataset.object-detection": {
+            "dataset.object-detection.preprocessed": {}
+          },
+          "dataset.coco": {
+            "dataset.coco.2017": {
+              "dataset.coco.2017.val": {}
             },
-            "tensorflow": {
-                "imagenet": {
-                    "stripped": {
-                        "aux": {}
-                    },
-                    "aux": {},
-                    "val": {}
-                },
-                "slim": {}
+            "dataset.coco.2014": {
+              "dataset.coco.2014.val": {}
+            }
+          },
+          "dataset.tensorflow": {
+            "dataset.tensorflow.imagenet": {
+              "dataset.tensorflow.imagenet.stripped": {
+                "dataset.tensorflow.imagenet.stripped.aux": {}
+              },
+              "dataset.tensorflow.imagenet.aux": {},
+              "dataset.tensorflow.imagenet.val": {}
             },
-            "kitti": {},
-            "pet": {},
-            "voc": {}
+            "dataset.tensorflow.slim": {}
+          },
+          "dataset.kitti": {},
+          "dataset.pet": {},
+          "dataset.voc": {}
         },
         "compiler": {
-            "ctuning-cc": {},
-            "computecpp": {},
-            "perl": {},
-            "xsb": {},
-            "tvm": {},
-            "cuda": {},
-            "pluto": {},
-            "java": {},
-            "pocc": {},
-            "llvm": {
-                "android": {
-                    "ndk": {}
-                }
+          "compiler.ctuning-cc": {},
+          "compiler.computecpp": {},
+          "compiler.perl": {},
+          "compiler.xsb": {},
+          "compiler.tvm": {},
+          "compiler.cuda": {},
+          "compiler.pluto": {},
+          "compiler.java": {},
+          "compiler.pocc": {},
+          "compiler.llvm": {
+            "compiler.llvm.android": {
+              "compiler.llvm.android.ndk": {}
+            }
+          },
+          "compiler.python": {},
+          "compiler.ppcg": {},
+          "compiler.open64": {},
+          "compiler.gfortran": {},
+          "compiler.pencilcc": {},
+          "compiler.microsoft": {},
+          "compiler.gcc": {
+            "compiler.gcc.android": {
+              "compiler.gcc.android.ndk": {}
             },
-            "python": {},
-            "ppcg": {},
-            "open64": {},
-            "gfortran": {},
-            "pencilcc": {},
-            "microsoft": {},
-            "gcc": {
-                "android": {
-                    "ndk": {}
-                },
-                "milepost": {}
-            },
-            "glow": {},
-            "icc": {},
-            "php": {},
-            "pgi": {},
-            "julia": {}
+            "compiler.gcc.milepost": {}
+          },
+          "compiler.glow": {},
+          "compiler.icc": {},
+          "compiler.php": {},
+          "compiler.pgi": {},
+          "compiler.julia": {}
         },
         "autotuning": {
-            "fco": {},
-            "ccc": {},
-            "cltune": {}
+          "autotuning.fco": {},
+          "autotuning.ccc": {},
+          "autotuning.cltune": {}
         },
         "sdk": {
-            "microsoft": {}
+          "sdk.microsoft": {}
         },
         "dialogue": {
-            "base": {},
-            "custom": {}
+          "dialogue.base": {},
+          "dialogue.custom": {}
         },
         "math": {
-            "orange": {},
-            "r": {}
+          "math.orange": {},
+          "math.r": {}
         },
         "perf": {
-            "likwid": {},
-            "vtune": {}
+          "perf.likwid": {},
+          "perf.vtune": {}
         },
         "plugin": {
-            "llvm": {},
-            "openme": {
-                "ctuning": {}
-            },
-            "milepost": {
-                "ctuning": {}
-            }
+          "plugin.llvm": {},
+          "plugin.openme": {
+            "plugin.openme.ctuning": {}
+          },
+          "plugin.milepost": {
+            "plugin.milepost.ctuning": {}
+          }
         },
         "android": {
-            "ndk": {
-                "toolchain": {}
-            },
-            "sdk": {}
+          "android.ndk": {
+            "android.ndk.toolchain": {}
+          },
+          "android.sdk": {}
         },
         "env": {
-            "msys2": {}
+          "env.msys2": {}
         },
         "labelmap": {
-            "object-detection": {}
+          "labelmap.object-detection": {}
         },
         "utils": {
-            "unix": {
-                "win": {}
-            }
+          "utils.unix": {
+            "utils.unix.win": {}
+          }
         },
         "demo": {
-            "squeezedet": {}
+          "demo.squeezedet": {}
         },
         "nntest": {
-            "plugin": {}
+          "nntest.plugin": {}
         }
     }
 }

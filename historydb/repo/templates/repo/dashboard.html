@@ -30,7 +30,8 @@
           <option value="" label="Choose..." selected></option>
           {% if tuning_problems_avail %}
           {% for tuning_problem in tuning_problems_avail %}
-          <option value="{{ tuning_problem.collection_name }}">{{ tuning_problem.tuning_problem_info.tuning_problem_name }} ({{ tuning_problem.tuning_problem_info.category }}) ({{ tuning_problem.user_info.user_name }})</option>
+          <option value="{{ tuning_problem.collection_name }}">
+          {{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.tuning_problem_info.category }}) ({{ tuning_problem.user_info.user_name }})</option>
           </li>
           {% endfor %}
           {% else %}
