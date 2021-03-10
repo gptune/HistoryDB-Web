@@ -27,6 +27,15 @@ class Dashboard(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
+        tuning_problems_avail = historydb.load_all_tuning_problems()
+        machine_configurations_avail = historydb.get_machine_configurations_avail()
+        software_configurations_avail = historydb.get_software_configurations_avail()
+        user_configurations_avail = historydb.get_user_configurations_avail()
+
+        print ("machine_configurations_avail: ", machine_configurations_avail)
+        print ("software_configurations_avail: ", software_configurations_avail)
+        print ("user_configurations_avail: ", user_configurations_avail)
+
         applications_avail = historydb.get_applications_avail()
         machine_deps_avail = historydb.get_machine_deps_avail()
         software_deps_avail = historydb.get_software_deps_avail()
@@ -49,10 +58,8 @@ class Dashboard(TemplateView):
 
             search_data = ast.literal_eval(request.GET.get("search_data", ""))
 
-            application_info = historydb.load_application_info(application_name = application)
-
             if "func_eval" in search_data:
-                func_eval_list = historydb.load_func_eval_filtered(application_name = application,
+                func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = application,
                         machine_deps_list = machine_deps_list,
                         software_deps_list = software_deps_list,
                         users_list = users_list,
@@ -117,7 +124,10 @@ class Dashboard(TemplateView):
                 current_page_model_data = 0
 
             context = {
-                    "application_info" : json.dumps(application_info),
+                    "tuning_problems_avail" : tuning_problems_avail,
+                    "machine_configurations_avail" : machine_configurations_avail,
+                    "software_configurations_avail" : software_configurations_avail,
+                    "user_configurations_avail" : user_configurations_avail,
                     "application" : application,
                     "applications_avail" : applications_avail,
                     "func_eval_list" : func_eval_web,
@@ -155,7 +165,10 @@ class Dashboard(TemplateView):
             current_page_model_data = 0
 
             context = {
-                    "application_info" : json.dumps({"application":application}),
+                    "tuning_problems_avail" : tuning_problems_avail,
+                    "machine_configurations_avail" : machine_configurations_avail,
+                    "software_configurations_avail" : software_configurations_avail,
+                    "user_configurations_avail" : user_configurations_avail,
                     "application" : application,
                     "applications_avail" : applications_avail,
                     "func_eval_list" : func_eval_web,
@@ -180,18 +193,19 @@ class Dashboard(TemplateView):
     def post(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
+        tuning_problems_avail = historydb.load_all_tuning_problems()
+        machine_configurations_avail = historydb.get_machine_configurations_avail()
+        software_configurations_avail = historydb.get_software_configurations_avail()
+        user_configurations_avail = historydb.get_user_configurations_avail()
+
         applications_avail = historydb.get_applications_avail()
-        print (applications_avail)
         machine_deps_avail = historydb.get_machine_deps_avail()
-        print (machine_deps_avail)
         software_deps_avail = historydb.get_software_deps_avail()
         users_avail = historydb.get_users_avail()
 
         application = request.POST["application"]
-
-        application_info = historydb.load_application_info(application_name = application)
-        print ("APPLICATION_INFO")
-        print (application_info)
+        tuning_problem = request.POST["application"]
+        print ("tuning_problem: ", tuning_problem)
 
         machine_deps_list = []
         post_values = request.POST.getlist('machine_deps_list')
@@ -223,10 +237,10 @@ class Dashboard(TemplateView):
             user_email = request.user.email
 
         if "func_eval" in search_data:
-            func_eval_list = historydb.load_func_eval_filtered(application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list,
+            func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = application,
+                    machine_configurations_list = machine_deps_list,
+                    software_configurations_list = software_deps_list,
+                    user_configurations_list = users_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
             num_evals_per_page = 15
@@ -285,7 +299,10 @@ class Dashboard(TemplateView):
             current_page_model_data = 0
 
         context = {
-                "application_info" : json.dumps(application_info),
+                "tuning_problems_avail" : tuning_problems_avail,
+                "machine_configurations_avail" : machine_configurations_avail,
+                "software_configurations_avail" : software_configurations_avail,
+                "user_configurations_avail" : user_configurations_avail,
                 "applications_avail" : applications_avail,
                 "application" : application,
                 "func_eval_list" : func_eval_web,
@@ -454,6 +471,10 @@ class Upload(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
+        tuning_problems_avail = historydb.load_all_tuning_problems()
+        for tuning_problem in tuning_problems_avail:
+            tuning_problem.pop('_id')
+        machines_avail = historydb.load_all_machine_info()
         applications_avail = historydb.get_applications_avail()
         applications_avail_per_library = historydb.get_applications_avail_per_library()
         machine_deps_avail = historydb.get_machine_deps_avail()
@@ -461,6 +482,8 @@ class Upload(TemplateView):
         users_avail = historydb.get_users_avail()
 
         context = {
+                "tuning_problems_avail" : tuning_problems_avail,
+                "machines_avail" : machines_avail,
                 "applications_avail" : applications_avail,
                 "applications_avail_per_library" : applications_avail_per_library,
                 "machine_deps_avail" : json.dumps(machine_deps_avail),
@@ -485,8 +508,11 @@ class Upload(TemplateView):
         user_info["email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
-        application_name = request.POST["application"]
-        print ("application_name: ", application_name)
+        print ("tuning_problem: ", request.POST["tuning_problem"])
+        tuning_problem = ast.literal_eval(str(request.POST["tuning_problem"]))
+        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+        collection_name = collection_name.replace("-","_")
+        print ("Collection_name: ", collection_name)
 
         json_data = {}
 
@@ -526,8 +552,8 @@ class Upload(TemplateView):
 
         historydb = HistoryDB_MongoDB()
         try:
-            num_added_func_eval = historydb.upload_func_eval(json_data, user_info, application_name, accessibility)
-            num_added_model_data = historydb.upload_model_data(json_data, user_info, application_name, accessibility)
+            num_added_func_eval = historydb.upload_func_eval(json_data, user_info, tuning_problem, accessibility)
+            num_added_model_data = historydb.upload_model_data(json_data, user_info, tuning_problem, accessibility)
         except:
             print ("Not able to upload the given data")
             context = {

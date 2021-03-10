@@ -22,16 +22,17 @@
       <div class="mb-3">
         <b>Tuning Problem</b><br>
         <script>
-          var machine_deps_avail = {{ machine_deps_avail | safe | escape }};
-          var software_deps_avail = {{ software_deps_avail | safe | escape }};
-          var users_avail = {{ users_avail | safe | escape }};
+          var machine_configurations_avail = {{ machine_configurations_avail | safe | escape }};
+          var software_configurations_avail = {{ software_configurations_avail | safe | escape }};
+          var user_configurations_avail = {{ user_configurations_avail | safe | escape }};
         </script>
-        <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="UpdateDeps(machine_deps_avail, software_deps_avail, users_avail);">
+        <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="UpdateDeps(machine_configurations_avail, software_configurations_avail, user_configurations_avail);">
           <option value="" label="Choose..." selected></option>
-          {% if applications_avail %}
-            {% for application_avail in applications_avail %}
-              <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
-            {% endfor %}
+          {% if tuning_problems_avail %}
+          {% for tuning_problem in tuning_problems_avail %}
+          <option value="{{ tuning_problem.collection_name }}">{{ tuning_problem.tuning_problem_info.tuning_problem_name }} ({{ tuning_problem.tuning_problem_info.category }}) ({{ tuning_problem.user_info.user_name }})</option>
+          </li>
+          {% endfor %}
           {% else %}
           {% endif %}
         </select>
@@ -67,7 +68,7 @@
     <h2 class="h2">Function Evaluation Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -94,10 +95,10 @@
         {% for func_eval in func_eval_list %}
           <tr>
             <td>{{ func_eval.id }}</td>
-            <td>{{ func_eval.application }}</td>
-            <td>{{ func_eval.I }}</td>
-            <td>{{ func_eval.P }}</td>
-            <td>{{ func_eval.O }}</td>
+            <td>{{ func_eval.tuning_problem_name }}</td>
+            <td>{{ func_eval.task_parameter }}</td>
+            <td>{{ func_eval.tuning_parameter }}</td>
+            <td>{{ func_eval.evaluated_result }}</td>
             <td>{{ func_eval.user_info.name }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
@@ -142,7 +143,7 @@
         Pages:
         <td>
         {% for page_num_func_eval in num_pages_func_eval %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_func_eval current_page_func_eval %}
           [<b>{{ page_num_func_eval }}</b>]
           {% else %}
@@ -166,7 +167,7 @@
     <h2 class="h2">Model Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps_avail={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -238,7 +239,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

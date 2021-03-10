@@ -3,23 +3,23 @@
   "model_data": [],
   "func_eval": [
     {
-      "I": {
+      "task_parameter": {
         "m": 30000,
         "n": 30000
       },
-      "P": {
+      "tuning_parameter": {
         "mb": 5,
         "nb": 13,
         "nproc": 136,
         "p": 9
       },
-      "machine_deps": {
+      "machine_configuration": {
         "machine": "cori1",
         "type": "haswell",
         "nodes": 8,
         "cores": 32
       },
-      "compile_deps": {
+      "software_configuration": {
         "openmpi": {
           "version": "4.0.0",
           "version_split": [
@@ -39,8 +39,7 @@
           "tags": "lib,scalapack"
         }
       },
-      "runtime_deps": {},
-      "O": {
+      "evaluated_result": {
         "r": 15.148637
       },
       "time": {
@@ -57,23 +56,23 @@
       "uid": "cc7c03ec-6128-11eb-a40f-85c4081a47e2"
     },
     {
-      "I": {
+      "task_parameter": {
         "m": 30000,
         "n": 30000
       },
-      "P": {
+      "tuning_parameter": {
         "mb": 7,
         "nb": 3,
         "nproc": 216,
         "p": 122
       },
-      "machine_deps": {
+      "machine_configuration": {
         "machine": "cori1",
         "type": "haswell",
         "nodes": 8,
         "cores": 32
       },
-      "compile_deps": {
+      "software_configuration": {
         "openmpi": {
           "version": "4.0.0",
           "version_split": [
@@ -93,8 +92,7 @@
           "tags": "lib,scalapack"
         }
       },
-      "runtime_deps": {},
-      "O": {
+      "evaluated_result": {
         "r": 70.756161
       },
       "time": {
@@ -111,23 +109,23 @@
       "uid": "cc7c217e-6128-11eb-a40f-85c4081a47e2"
     },
     {
-      "I": {
+      "task_parameter": {
         "m": 30000,
         "n": 30000
       },
-      "P": {
+      "tuning_parameter": {
         "mb": 10,
         "nb": 8,
         "nproc": 205,
         "p": 200
       },
-      "machine_deps": {
+      "machine_configuration": {
         "machine": "cori1",
         "type": "haswell",
         "nodes": 8,
         "cores": 32
       },
-      "compile_deps": {
+      "software_configuration": {
         "openmpi": {
           "version": "4.0.0",
           "version_split": [
@@ -147,8 +145,7 @@
           "tags": "lib,scalapack"
         }
       },
-      "runtime_deps": {},
-      "O": {
+      "evaluated_result": {
         "r": 76.785903
       },
       "time": {
@@ -165,23 +162,23 @@
       "uid": "cc7c2dea-6128-11eb-a40f-85c4081a47e2"
     },
     {
-      "I": {
+      "task_parameter": {
         "m": 30000,
         "n": 30000
       },
-      "P": {
+      "tuning_parameter": {
         "mb": 5,
         "nb": 16,
         "nproc": 178,
         "p": 18
       },
-      "machine_deps": {
+      "machine_configuration": {
         "machine": "cori1",
         "type": "haswell",
         "nodes": 8,
         "cores": 32
       },
-      "compile_deps": {
+      "software_configuration": {
         "openmpi": {
           "version": "4.0.0",
           "version_split": [
@@ -201,8 +198,7 @@
           "tags": "lib,scalapack"
         }
       },
-      "runtime_deps": {},
-      "O": {
+      "evaluated_result": {
         "r": 17.679941
       },
       "time": {
@@ -219,23 +215,23 @@
       "uid": "cc7c4398-6128-11eb-a40f-85c4081a47e2"
     },
     {
-      "I": {
+      "task_parameter": {
         "m": 30000,
         "n": 30000
       },
-      "P": {
+      "tuning_parameter": {
         "mb": 10,
         "nb": 2,
         "nproc": 218,
         "p": 183
       },
-      "machine_deps": {
+      "machine_configuration": {
         "machine": "cori1",
         "type": "haswell",
         "nodes": 8,
         "cores": 32
       },
-      "compile_deps": {
+      "software_configuration": {
         "openmpi": {
           "version": "4.0.0",
           "version_split": [
@@ -255,8 +251,7 @@
           "tags": "lib,scalapack"
         }
       },
-      "runtime_deps": {},
-      "O": {
+      "evaluated_result": {
         "r": 98.853952
       },
       "time": {

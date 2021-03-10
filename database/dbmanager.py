@@ -191,6 +191,74 @@ class HistoryDB_MongoDB(dict):
 
         return applications_avail_per_library
 
+    def get_machine_configurations_avail(self, **kwargs):
+        machine_configurations_avail = {}
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            collection_name = collection_name.replace("-","_")
+            print ("Collection_name: ", collection_name)
+
+            machine_configurations_avail[collection_name] = []
+
+            func_eval_list = self.db[collection_name].find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                try:
+                    machine_configuration = func_eval["machine_configuration"]
+                    print ("dbmanager: machine_configuration: ", machine_configuration)
+                    if machine_configuration not in machine_configurations_avail[collection_name]:
+                        machine_configurations_avail[collection_name].append(machine_configuration)
+                except:
+                    print ("not able to load machine configuration of func_eval: ", func_eval["uid"])
+                    continue
+
+        return machine_configurations_avail
+
+    def get_software_configurations_avail(self, **kwargs):
+        software_configurations_avail = {}
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            collection_name = collection_name.replace("-","_")
+            print ("Collection_name: ", collection_name)
+
+            software_configurations_avail[collection_name] = []
+
+            func_eval_list = self.db[collection_name].find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                try:
+                    software_configuration = func_eval["software_configuration"]
+                    print ("dbmanager: software_configuration: ", software_configuration)
+                    if software_configuration not in software_configurations_avail[collection_name]:
+                        software_configurations_avail[collection_name].append(software_configuration)
+                except:
+                    print ("not able to load software configuration of func_eval: ", func_eval["uid"])
+                    continue
+
+        return software_configurations_avail
+
+    def get_user_configurations_avail(self, **kwargs):
+        user_configurations_avail = {}
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+            collection_name = collection_name.replace("-","_")
+            print ("Collection_name: ", collection_name)
+
+            user_configurations_avail[collection_name] = []
+
+            func_eval_list = self.db[collection_name].find({"document_type":{"$eq":"func_eval"}})
+            for func_eval in func_eval_list:
+                try:
+                    user_configuration = func_eval["user_info"]
+                    if user_configuration not in user_configurations_avail[collection_name]:
+                        user_configurations_avail[collection_name].append(user_configuration)
+                except:
+                    print ("not able to load software configuration of func_eval: ", func_eval["uid"])
+                    continue
+
+        return user_configurations_avail
+
     def get_machine_deps_avail(self, **kwargs):
         machine_deps_avail = {}
 
@@ -286,43 +354,37 @@ class HistoryDB_MongoDB(dict):
 
         return False
 
+    def get_tuning_problem_simple_name(self, tuning_problem_unique_name):
+        document = self.db["tuning_problem_db"].find({"collection_name":{"$eq":tuning_problem_unique_name}})[0]
+        print ("tuning_problem_simple_name: ", document["tuning_problem_info"]["tuning_problem_name"])
+        return document["tuning_problem_info"]["tuning_problem_name"]
+
     def load_func_eval_filtered(self,
-            application_name,
-            machine_deps_list,
-            software_deps_list,
-            users_list,
+            tuning_problem_unique_name,
+            machine_configurations_list,
+            software_configurations_list,
+            user_configurations_list,
             user_email,
             **kwargs):
         func_eval_filtered = []
 
-        machine_deps_str_list = []
-        software_deps_str_list = []
-        users_str_list = []
-        for i in range(len(machine_deps_list)):
-            machine_deps_str_list.append(str(machine_deps_list[i]))
-        for i in range(len(software_deps_list)):
-            software_deps_str_list.append(str(software_deps_list[i]))
-        for i in range(len(users_list)):
-            users_str_list.append(str(users_list[i]))
-
-        print ("machine_deps_str_list: ", machine_deps_str_list)
-        print ("software_deps_str_list: ", software_deps_str_list)
-        print ("users_str_list: ", users_str_list)
-
-        application_db = self.db[application_name]
+        application_db = self.db[tuning_problem_unique_name]
         func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+
+        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name)
 
         for func_eval in func_eval_list:
             try:
-                func_eval["application"] = application_name
-                machine_deps_str = str(func_eval["machine_deps"])
-                software_deps_str = str(func_eval["compile_deps"])
-                user_str = str(func_eval["user_info"])
-                if (machine_deps_str in machine_deps_str_list):
-                    if (software_deps_str in software_deps_str_list):
-                        if (user_str in users_str_list):
-                            if self.check_perf_data_accessibility(func_eval, user_email):
-                                func_eval_filtered.append(func_eval)
+                func_eval["tuning_problem_name"] = tuning_problem_simple_name
+                machine_configuration = func_eval["machine_configuration"]
+                software_configuration = func_eval["software_configuration"]
+                user_information = func_eval["user_info"]
+
+                if (machine_configuration in machine_configurations_list) and\
+                   (software_configuration in software_configurations_list) and\
+                   (user_information in user_configurations_list):
+                    if self.check_perf_data_accessibility(func_eval, user_email):
+                        func_eval_filtered.append(func_eval)
             except:
                 continue
 
@@ -388,13 +450,18 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, json_data, user_info, application_name, accessibility):
+    def upload_func_eval(self, json_data, user_info, tuning_problem, accessibility):
         print ("Upload function evaluation data")
+
+        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+        collection_name = collection_name.replace("-","_")
+        print ("collection_name: ", collection_name)
+
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
-        if not application_name in collist:
-            print (application_name + " is not exist in the database; create one.")
-        collection = self.db[application_name]
+        if not collection_name in collist:
+            print (collection_name + " is not exist in the database; create one.")
+        collection = self.db[collection_name]
 
         print (json_data)
         num_added_func_eval = 0
@@ -477,13 +544,18 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_by_user
 
-    def upload_model_data(self, json_data, user_info, application_name, accessibility):
+    def upload_model_data(self, json_data, user_info, tuning_problem, accessibility):
         print ("Upload surrogate model data")
+
+        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
+        collection_name = collection_name.replace("-","_")
+        print ("collection_name: ", collection_name)
+
         collist = self.db.list_collection_names()
         print ("Collection List: ", collist)
-        if not application_name in collist:
-            print (application_name + " is not exist in the database; create one.")
-        collection = self.db[application_name]
+        if not collection_name in collist:
+            print (collection_name + " is not exist in the database; create one.")
+        collection = self.db[collection_name]
 
         print (json_data)
         num_added_model_data = 0
@@ -576,6 +648,10 @@ class HistoryDB_MongoDB(dict):
         import uuid
         tuning_problem_document["uid"] = str(uuid.uuid1())
 
+        collection_name = tuning_problem_document["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem_document["user_info"]["user_name"]+"_"+tuning_problem_document["uid"]
+        collection_name = collection_name.replace("-","_")
+        tuning_problem_document["collection_name"] = collection_name
+
         tuning_problem_db.insert_one(tuning_problem_document)
 
         return None
@@ -587,6 +663,7 @@ class HistoryDB_MongoDB(dict):
             tuning_problem_list.append(tuning_problem)
 
         return tuning_problem_list
+
 
 if __name__ == "__main__":
     import sys

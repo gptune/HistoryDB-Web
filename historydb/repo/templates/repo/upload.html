@@ -60,12 +60,13 @@
       {% csrf_token %}
       <div class="mb-3">
         <div class="mb-3">
-          <label for="applicationVal"><b>Tuning Problem</b></label>
-          <select class="custom-select d-block w-100" name="application" id="applicationVal">
+          <label><b>Tuning Problem</b></label>
+
+          <select class="custom-select d-block w-100" name="tuning_problem">
             <option value="" label="Choose..." selected></option>
-            {% if applications_avail %}
-            {% for application_avail in applications_avail %}
-            <option value="{{ application_avail.name }}">{{ application_avail.name }} ({{ application_avail.library }})</option>
+            {% if tuning_problems_avail %}
+            {% for tuning_problem in tuning_problems_avail %}
+            <option value="{{ tuning_problem }}">{{ tuning_problem.tuning_problem_info.tuning_problem_name }} ({{ tuning_problem.tuning_problem_info.category }}) ({{ tuning_problem.user_info.user_name }})</option>
             </li>
             {% endfor %}
             {% else %}
@@ -83,8 +84,18 @@
           <select class="custom-select d-block w-100" name="machine" id="machineVal">
             <option value="" label="Choose..." selected></option>
             {% if machines_avail %}
-            {% for machine_avail in machines_avail %}
-            <option value="{{ machine_avail.name }}">{{ machine_avail.name }} ({{ machine_avail.library }})</option>
+            {% for machine in machines_avail %}
+            <option value="{{ machine.machine_info.uid }}">
+              {{ machine.machine_info.machine_name }}
+              ({% for system_model in machine.machine_info.system_model %}
+                {% if forloop.last %}
+                  {{ system_model }}
+                {% else %}
+                  {{ system_model }},
+                {% endif %}
+              {% endfor %})
+              ({{ machine.user_info.user_name }})
+            </option>
             </li>
             {% endfor %}
             {% else %}

@@ -1,6 +1,6 @@
 // Author: Younghyun Cho <younghyun@berkeley.edu>
 
-function UpdateDeps(machine_deps_avail, software_deps_avail, users_avail, search_data_avail) {
+function UpdateDeps(machine_deps_avail, software_deps_avail, users_avail) {
     var application_var = document.getElementById("applicationVal");
     var application_name = application_var.options[application_var.selectedIndex].value;
 
