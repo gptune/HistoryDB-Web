@@ -457,6 +457,7 @@ class Export(TemplateView):
         return render(request, 'repo/export.html', context)
 
 class Upload(TemplateView):
+
     def get(self, request, **kwargs):
         print ("======== Upload GET ========")
 
@@ -476,20 +477,12 @@ class Upload(TemplateView):
         for tuning_problem in tuning_problems_avail:
             tuning_problem.pop('_id')
         machines_avail = historydb.load_all_machine_info()
-        applications_avail = historydb.get_applications_avail()
-        applications_avail_per_library = historydb.get_applications_avail_per_library()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
+        for machine in machines_avail:
+            machine.pop('_id')
 
         context = {
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machines_avail" : machines_avail,
-                "applications_avail" : applications_avail,
-                "applications_avail_per_library" : applications_avail_per_library,
-                "machine_deps_avail" : json.dumps(machine_deps_avail),
-                "software_deps_avail" : json.dumps(software_deps_avail),
-                "users_avail" : json.dumps(users_avail),
                 }
 
         return render(request, 'repo/upload.html', context)
@@ -500,20 +493,19 @@ class Upload(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
-        print ("user name: ", request.user.username)
-        print ("user email: ", request.user.email)
-        print ("group invites: ", request.POST['group_invites'])
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
 
         user_info = {}
-        user_info["name"] = request.user.username
-        user_info["email"] = request.user.email
+        user_info["user_name"] = request.user.username
+        user_info["user_email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
-        print ("tuning_problem: ", request.POST["tuning_problem"])
-        tuning_problem = ast.literal_eval(str(request.POST["tuning_problem"]))
-        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-        collection_name = collection_name.replace("-","_")
-        print ("Collection_name: ", collection_name)
+        tuning_problem_unique_name = request.POST["tuning_problem"]
 
         json_data = {}
 
@@ -543,8 +535,7 @@ class Upload(TemplateView):
 
         accessibility_type = request.POST['accessibility']
         access_group_given = request.POST['group_invites']
-        print ('access group: ', access_group_given)
-        access_group = access_group_given.split(';')
+        access_group = re.split(', |,', access_group_given)
 
         accessibility = {}
         accessibility["type"] = accessibility_type
@@ -553,8 +544,8 @@ class Upload(TemplateView):
 
         historydb = HistoryDB_MongoDB()
         try:
-            num_added_func_eval = historydb.upload_func_eval(json_data, user_info, tuning_problem, accessibility)
-            num_added_model_data = historydb.upload_model_data(json_data, user_info, tuning_problem, accessibility)
+            num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, json_data, user_info, accessibility)
+            num_added_model_data = historydb.upload_model_data(tuning_problem_unique_name, json_data, user_info, accessibility)
         except:
             print ("Not able to upload the given data")
             context = {
@@ -563,13 +554,14 @@ class Upload(TemplateView):
                     }
             return render(request, 'repo/return.html', context)
 
-        print ("Your data has been uploaded")
+        print ("Submitted data has been uploaded")
         context = {
                 "header": "Success",
                 "message": "Your data has been uploaded",
                 "num_added_func_eval": num_added_func_eval,
                 "num_added_model_data": num_added_model_data
                 }
+
         return render(request, 'repo/return.html', context)
 
 class TuningProblems(TemplateView):
@@ -718,7 +710,7 @@ class AddTuningProblem(TemplateView):
 
         user_info = {}
         user_info["user_name"] = request.user.username
-        user_info["email"] = request.user.email
+        user_info["user_email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
         historydb = HistoryDB_MongoDB()
@@ -731,29 +723,7 @@ class AddReproducibleWorkflow(TemplateView):
     def get(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
-        tuning_problem_list = {
-                "PDGEQRF": {
-                    "task_space": {
-                        "m":{
-                            }
-
-                        }
-                    }
-                }
-
-        def get_list_from_file(filename):
-            items = []
-            with open(filename, "r") as f_in:
-                lines = f_in.readlines()
-                for line in lines:
-                    items.append(line)
-            return items
-
-        category_list = ["SuperLU","ScaLAPACK","LAPACK","Desktop Application"]
-
-        context = {
-                "category_list": category_list,
-                }
+        context = {}
 
         return render(request, 'repo/add-reproducible-workflow.html', context)
 
@@ -776,6 +746,7 @@ class Applications(TemplateView):
         return render(request, 'repo/applications.html', context)
 
 class AddApplications(TemplateView):
+
     def get(self, request, **kwargs):
         print ("======== Upload GET ========")
 
@@ -806,12 +777,9 @@ class AddApplications(TemplateView):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
 
-        print ("user name: ", request.user.username)
-        print ("user email: ", request.user.email)
-
         user_info = {}
-        user_info["name"] = request.user.username
-        user_info["email"] = request.user.email
+        user_info["user_name"] = request.user.username
+        user_info["user_email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
         application_name = request.POST["application_name"]
@@ -866,9 +834,6 @@ class AddArchitectures(TemplateView):
 class Machines(TemplateView):
 
     def get(self, request, **kwargs):
-        #if not request.user.is_authenticated:
-        #    return redirect(reverse_lazy('account:login'))
-
         historydb = HistoryDB_MongoDB()
         machine_info_list = historydb.load_all_machine_info()
         for i in range(len(machine_info_list)):
@@ -973,7 +938,7 @@ class AddMachine(TemplateView):
 
         user_info = {
                 "user_name": request.user.username,
-                "email": request.user.email,
+                "user_email": request.user.email,
                 "affiliation": request.user.profile.affiliation
                 }
 

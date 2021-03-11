@@ -453,23 +453,15 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, json_data, user_info, tuning_problem, accessibility):
-        print ("Upload function evaluation data")
-
-        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-        collection_name = collection_name.replace("-","_")
-        print ("collection_name: ", collection_name)
-
+    def upload_func_eval(self, tuning_problem_unique_name, json_data, user_info, accessibility):
+        collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
-        print ("Collection List: ", collist)
         if not collection_name in collist:
             print (collection_name + " is not exist in the database; create one.")
         collection = self.db[collection_name]
 
-        print (json_data)
         num_added_func_eval = 0
         if "func_eval" in json_data:
-            print ("func_eval exist")
             func_eval_list = json_data["func_eval"]
             for func_eval in func_eval_list:
                 func_eval["document_type"] = "func_eval"
@@ -547,23 +539,15 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_by_user
 
-    def upload_model_data(self, json_data, user_info, tuning_problem, accessibility):
-        print ("Upload surrogate model data")
-
-        collection_name = tuning_problem["tuning_problem_info"]["tuning_problem_name"]+"_"+tuning_problem["user_info"]["user_name"]+"_"+tuning_problem["uid"]
-        collection_name = collection_name.replace("-","_")
-        print ("collection_name: ", collection_name)
-
+    def upload_model_data(self, tuning_problem_unique_name, json_data, user_info, accessibility):
+        collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
-        print ("Collection List: ", collist)
         if not collection_name in collist:
             print (collection_name + " is not exist in the database; create one.")
         collection = self.db[collection_name]
 
-        print (json_data)
         num_added_model_data = 0
         if "model_data" in json_data:
-            print ("model_data exist")
             model_data_list = json_data["model_data"]
             for model_data in model_data_list:
                 model_data["document_type"] = "model_data"
@@ -670,7 +654,6 @@ class HistoryDB_MongoDB(dict):
             tuning_problem_list.append(tuning_problem)
 
         return tuning_problem_list
-
 
 if __name__ == "__main__":
     import sys
