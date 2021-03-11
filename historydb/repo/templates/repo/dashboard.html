@@ -26,12 +26,15 @@
           var software_configurations_avail = {{ software_configurations_avail | safe | escape }};
           var user_configurations_avail = {{ user_configurations_avail | safe | escape }};
         </script>
-        <select class="custom-select d-block w-100" name="application" id="applicationVal" onChange="UpdateDeps(machine_configurations_avail, software_configurations_avail, user_configurations_avail);">
+
+        <select class="custom-select d-block w-100" name="tuning_problem" id="tuning_problem_id" onChange="UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, user_configurations_avail);">
           <option value="" label="Choose..." selected></option>
           {% if tuning_problems_avail %}
           {% for tuning_problem in tuning_problems_avail %}
-          <option value="{{ tuning_problem.collection_name }}">
-          {{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.tuning_problem_info.category }}) ({{ tuning_problem.user_info.user_name }})</option>
+          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }}
+          (defined by: {{ tuning_problem.user_info.user_name }})
+          (update date: {{ tuning_problem.update_time.tm_mon }}/{{ tuning_problem.update_time.tm_mday }}/{{ tuning_problem.update_time.tm_year }})
+          </option>
           </li>
           {% endfor %}
           {% else %}
@@ -40,16 +43,16 @@
       </div>
 
       <div>
-        <div id="select_deps">
+        <div id="select_configurations">
         </div>
         <div class="container mb-3 row">
-          <div class="col" id="machine_deps">
+          <div class="col" id="machine_configurations">
           </div>
-          <div class="col" id="software_deps">
+          <div class="col" id="software_configurations">
           </div>
-          <div class="col" id="user_deps">
+          <div class="col" id="user_configurations">
           </div>
-          <div class="col" id="search_data">
+          <div class="col" id="search_options">
           </div>
         </div>
       </div>
@@ -69,7 +72,7 @@
     <h2 class="h2">Function Evaluation Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -83,10 +86,10 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Application</th>
+          <th>Tuning Problem</th>
           <th>Task Parameter</th>
           <th>Tuning Parameter</th>
-          <th>Output Result</th>
+          <th>Evaluated Result</th>
           <th>Owner</th>
           <th>Date</th>
           <th>Details</th>
@@ -100,7 +103,7 @@
             <td>{{ func_eval.task_parameter }}</td>
             <td>{{ func_eval.tuning_parameter }}</td>
             <td>{{ func_eval.evaluated_result }}</td>
-            <td>{{ func_eval.user_info.name }}</td>
+            <td>{{ func_eval.user_info.user_name }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
               <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
@@ -121,17 +124,12 @@
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <form method="POST" action="{% url 'repo:entrydel' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
-                  <div class="modal-body">
-                    <pre>{{ func_eval | pprint }}</pre>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  </div>
-                </form>
+                <div class="modal-body">
+                  <pre>{{ func_eval | pprint }}</pre>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
           </div>
@@ -144,7 +142,7 @@
         Pages:
         <td>
         {% for page_num_func_eval in num_pages_func_eval %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
           {% ifequal page_num_func_eval current_page_func_eval %}
           [<b>{{ page_num_func_eval }}</b>]
           {% else %}
@@ -168,7 +166,7 @@
     <h2 class="h2">Model Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -181,7 +179,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Application</th>
+          <th>Tuning Problem</th>
           <th>Task parameter</th>
           <th>Num samples</th>
           <th>Owner</th>
@@ -193,7 +191,7 @@
         {% for model_data in model_data_list %}
           <tr>
             <td>{{ model_data.id }}</td>
-            <td>{{ model_data.application }}</td>
+            <td>{{ model_data.tuning_problem_name }}</td>
             <td>{{ model_data.task_parameters }}</td>
             <td>{{ model_data.num_func_eval_per_task }}</td>
             <td>{{ model_data.user_info.name }}</td>
@@ -217,17 +215,12 @@
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <form method="POST" action="{% url 'repo:entrydel' %}">
-                  {% csrf_token %}
-                  <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
-                  <div class="modal-body">
-                    <pre>{{ model_data | pprint }}</pre>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  </div>
-                </form>
+                <div class="modal-body">
+                  <pre>{{ model_data | pprint }}</pre>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
           </div>
@@ -240,7 +233,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:dashboard' %}?application={{application}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

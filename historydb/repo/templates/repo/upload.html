@@ -34,6 +34,10 @@
     document.getElementById('group_invites_div').style.display = 'none';
   }
 
+  function UploadRegistered() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
   function UploadGroup() {
     document.getElementById('group_invites_div').style.display = 'block';
   }
@@ -134,7 +138,7 @@
             <label class="custom-control-label" for="public">I want to make this data publicly available</label>
           </div>
           <div class="custom-control custom-radio">
-            <input id="registered" name="accessibility" value="registered" type="radio" class="custom-control-input" onClick="UploadPublic();" checked required>
+            <input id="registered" name="accessibility" value="registered" type="radio" class="custom-control-input" onClick="UploadRegistered();" checked required>
             <label class="custom-control-label" for="registered">I want to share this data with registered users</label>
           </div>
           <div class="custom-control custom-radio">

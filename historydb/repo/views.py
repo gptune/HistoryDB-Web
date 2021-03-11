@@ -23,6 +23,7 @@ import ast
 import re
 
 class Dashboard(TemplateView):
+
     def get(self, request, **kwargs):
         print ("======== Dashboard GET ========")
 
@@ -37,33 +38,26 @@ class Dashboard(TemplateView):
         print ("software_configurations_avail: ", software_configurations_avail)
         print ("user_configurations_avail: ", user_configurations_avail)
 
-        applications_avail = historydb.get_applications_avail()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
-
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
 
-        application = request.GET.get("application", "")
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
 
-        if application != "":
-            print ("APPLICATION GIVEN: ", application)
-
-            machine_deps_list = ast.literal_eval(request.GET.get("machine_deps_list", ""))
-            software_deps_list = ast.literal_eval(request.GET.get("software_deps_list", ""))
-            users_list = ast.literal_eval(request.GET.get("users_list", ""))
+        if tuning_problem_unique_name != "":
+            machine_configurations_list = ast.literal_eval(request.GET.get("machine_configurations_list", ""))
+            software_configurations_list = ast.literal_eval(request.GET.get("software_configurations_list", ""))
+            user_configurations_list = ast.literal_eval(request.GET.get("user_configurations_list", ""))
 
             historydb = HistoryDB_MongoDB()
 
-            search_data = ast.literal_eval(request.GET.get("search_data", ""))
+            search_options = ast.literal_eval(request.GET.get("search_options", ""))
 
-            if "func_eval" in search_data:
-                func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = application,
-                        machine_deps_list = machine_deps_list,
-                        software_deps_list = software_deps_list,
-                        users_list = users_list,
+            if "func_eval" in search_options:
+                func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                        machine_configurations_list = machine_configurations_list,
+                        software_configurations_list = software_configurations_list,
+                        user_configurations_list = user_configurations_list,
                         user_email = user_email)
                 num_func_eval = len(func_eval_list)
                 print ("num_func_eval: ", num_func_eval)
@@ -91,12 +85,12 @@ class Dashboard(TemplateView):
                 num_pages_func_eval = 0
                 current_page_func_eval = 0
 
-            if "model_data" in search_data:
+            if "model_data" in search_options:
                 model_data = historydb.load_model_data_filtered(
-                        application_name = application,
-                        machine_deps_list = machine_deps_list,
-                        software_deps_list = software_deps_list,
-                        users_list = users_list,
+                        tuning_problem_unique_name = tuning_problem_unique_name,
+                        machine_configurations_list = machine_configurations_list,
+                        software_configurations_list = software_configurations_list,
+                        user_configurations_list = user_configurations_list,
                         user_email = user_email)
                 num_model_data = len(model_data)
                 num_model_data_per_page = 15
@@ -129,8 +123,7 @@ class Dashboard(TemplateView):
                     "machine_configurations_avail" : machine_configurations_avail,
                     "software_configurations_avail" : software_configurations_avail,
                     "user_configurations_avail" : user_configurations_avail,
-                    "application" : application,
-                    "applications_avail" : applications_avail,
+                    "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "func_eval_list" : func_eval_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages_func_eval" : range(num_pages_func_eval),
@@ -139,21 +132,16 @@ class Dashboard(TemplateView):
                     "num_model_data" : num_model_data,
                     "num_pages_model_data" : range(num_pages_model_data),
                     "current_page_model_data" : current_page_model_data,
-                    "machine_deps_avail" : json.dumps(machine_deps_avail),
-                    "software_deps_avail" : json.dumps(software_deps_avail),
-                    "users_avail" : json.dumps(users_avail),
-                    "machine_deps_list" : json.dumps(machine_deps_list),
-                    "software_deps_list" : json.dumps(software_deps_list),
-                    "users_list" : json.dumps(users_list),
-                    "search_data" : json.dumps(search_data)
+                    "machine_configurations_list" : json.dumps(machine_configurations_list),
+                    "software_configurations_list" : json.dumps(software_configurations_list),
+                    "user_configurations_list" : json.dumps(user_configurations_list),
+                    "search_options" : json.dumps(search_options)
                     }
 
             return render(request, 'repo/dashboard.html', context)
 
         else:
             historydb = HistoryDB_MongoDB()
-
-            print ("APPLICATION NOT GIVEN: ", application)
 
             func_eval_web = []
             num_func_eval = 0
@@ -170,8 +158,7 @@ class Dashboard(TemplateView):
                     "machine_configurations_avail" : machine_configurations_avail,
                     "software_configurations_avail" : software_configurations_avail,
                     "user_configurations_avail" : user_configurations_avail,
-                    "application" : application,
-                    "applications_avail" : applications_avail,
+                    "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "func_eval_list" : func_eval_web,
                     "num_func_eval" : num_func_eval,
                     "num_pages_func_eval" : range(num_pages_func_eval),
@@ -180,13 +167,10 @@ class Dashboard(TemplateView):
                     "num_model_data" : num_model_data,
                     "num_pages_model_data" : range(num_pages_model_data),
                     "current_page_model_data" : current_page_model_data,
-                    "machine_deps_avail" : json.dumps(machine_deps_avail),
-                    "software_deps_avail" : json.dumps(software_deps_avail),
-                    "users_avail" : json.dumps(users_avail),
-                    "machine_deps_list" : json.dumps(machine_deps_avail),
-                    "software_deps_list" : json.dumps(software_deps_avail),
-                    "users_list" : json.dumps(users_avail),
-                    "search_data" : json.dumps({})
+                    "machine_configurations_list" : json.dumps(machine_configurations_avail),
+                    "software_configurations_list" : json.dumps(software_configurations_avail),
+                    "user_configurations_list" : json.dumps(user_configurations_avail),
+                    "search_options" : json.dumps({})
                     }
 
             return render(request, 'repo/dashboard.html', context)
@@ -199,49 +183,43 @@ class Dashboard(TemplateView):
         software_configurations_avail = historydb.get_software_configurations_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
 
-        applications_avail = historydb.get_applications_avail()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
+        tuning_problem_unique_name = request.POST["tuning_problem"]
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
 
-        application = request.POST["application"]
-        tuning_problem = request.POST["application"]
-        print ("tuning_problem: ", tuning_problem)
-
-        machine_deps_list = []
-        post_values = request.POST.getlist('machine_deps_list')
+        machine_configurations_list = []
+        post_values = request.POST.getlist('machine_configurations_list')
         for i in range(len(post_values)):
-            machine_deps_list.append(json.loads(post_values[i]))
-        print ("machine_deps_list")
-        print (machine_deps_list)
+            machine_configurations_list.append(json.loads(post_values[i]))
+        print ("machine_configurations_list")
+        print (machine_configurations_list)
 
-        software_deps_list = []
-        post_values = request.POST.getlist('software_deps_list')
+        software_configurations_list = []
+        post_values = request.POST.getlist('software_configurations_list')
         for i in range(len(post_values)):
-            software_deps_list.append(json.loads(post_values[i]))
-        print ("software_deps_list")
-        print (software_deps_list)
+            software_configurations_list.append(json.loads(post_values[i]))
+        print ("software_configurations_list")
+        print (software_configurations_list)
 
-        users_list = []
-        post_values = request.POST.getlist('users_list')
+        user_configurations_list = []
+        post_values = request.POST.getlist('user_configurations_list')
         for i in range(len(post_values)):
-            users_list.append(json.loads(post_values[i]))
-        print ("users_list")
-        print (users_list)
+            user_configurations_list.append(json.loads(post_values[i]))
+        print ("user_configurations_list")
+        print (user_configurations_list)
 
-        search_data = request.POST.getlist("search_data")
-        print ("search_data")
-        print (search_data)
+        search_options = request.POST.getlist("search_options")
+        print ("search_options")
+        print (search_options)
 
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
 
-        if "func_eval" in search_data:
-            func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = application,
-                    machine_configurations_list = machine_deps_list,
-                    software_configurations_list = software_deps_list,
-                    user_configurations_list = users_list,
+        if "func_eval" in search_options:
+            func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                    machine_configurations_list = machine_configurations_list,
+                    software_configurations_list = software_configurations_list,
+                    user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
             num_evals_per_page = 15
@@ -266,12 +244,11 @@ class Dashboard(TemplateView):
             num_pages_func_eval = 0
             current_page_func_eval = 0
 
-        if "model_data" in search_data:
-            model_data = historydb.load_model_data_filtered(
-                    application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list,
+        if "model_data" in search_options:
+            model_data = historydb.load_model_data_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                    machine_configurations_list = machine_configurations_list,
+                    software_configurations_list = software_configurations_list,
+                    user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_model_data = len(model_data)
             num_model_data_per_page = 15
@@ -299,13 +276,15 @@ class Dashboard(TemplateView):
             num_pages_model_data = 0
             current_page_model_data = 0
 
+
+        print ("func_eval_list: ", func_eval_web)
+
         context = {
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,
                 "user_configurations_avail" : user_configurations_avail,
-                "applications_avail" : applications_avail,
-                "application" : application,
                 "func_eval_list" : func_eval_web,
                 "num_func_eval" : num_func_eval,
                 "num_pages_func_eval" : range(num_pages_func_eval),
@@ -314,18 +293,16 @@ class Dashboard(TemplateView):
                 "num_model_data" : num_model_data,
                 "num_pages_model_data" : range(num_pages_model_data),
                 "current_page_model_data" : current_page_model_data,
-                "machine_deps_avail" : json.dumps(machine_deps_avail),
-                "software_deps_avail" : json.dumps(software_deps_avail),
-                "users_avail" : json.dumps(users_avail),
-                "machine_deps_list" : json.dumps(machine_deps_list),
-                "software_deps_list" : json.dumps(software_deps_list),
-                "users_list" : json.dumps(users_list),
-                "search_data" : json.dumps(search_data)
+                "machine_configurations_list" : json.dumps(machine_configurations_list),
+                "software_configurations_list" : json.dumps(software_configurations_list),
+                "user_configurations_list" : json.dumps(user_configurations_list),
+                "search_options" : json.dumps(search_options)
                 }
 
         return render(request, 'repo/dashboard.html', context)
 
 class UserDashboard(TemplateView):
+
     def get(self, request, **kwargs):
         print ("======== User Dashboard GET ========")
 
@@ -402,7 +379,7 @@ class EntryAccess(TemplateView):
 
     def post(self, request, **kwargs):
         entry_uid = request.POST["entry_uid"]
-        application_name = request.POST["application_name"]
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
 
         accessibility_type = request.POST['accessibility']
         access_group_given = request.POST['group_invites']
@@ -415,7 +392,7 @@ class EntryAccess(TemplateView):
             accessibility["group"] = access_group
 
         historydb = HistoryDB_MongoDB()
-        historydb.update_entry_accessibility(application_name, entry_uid, accessibility)
+        historydb.update_entry_accessibility(tuning_problem_unique_name, entry_uid, accessibility)
 
         return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
 
@@ -427,29 +404,33 @@ class EntryDel(TemplateView):
 
     def post(self, request, **kwargs):
         entry_uid = request.POST["entry_uid"]
-        application_name = request.POST["application_name"]
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
 
         historydb = HistoryDB_MongoDB()
-        historydb.delete_perf_data_by_uid(application_name, entry_uid)
+        historydb.delete_perf_data_by_uid(tuning_problem_unique_name, entry_uid)
 
         return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
 
 class Export(TemplateView):
 
     def get(self, request, **kwargs):
-        application = request.GET.get("application", "")
-        machine_deps_list = json.loads(request.GET.get("machine_deps_list", "{}"))
-        software_deps_list = json.loads(request.GET.get("software_deps_list", "{}"))
-        users_list = json.loads(request.GET.get("users_list", "{}"))
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
+        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
 
+        print ("machine_configurations_list: ", machine_configurations_list)
+        print ("software_configurations_list: ", software_configurations_list)
+        print ("user_configurations_list: ", user_configurations_list)
+
         historydb = HistoryDB_MongoDB()
-        perf_data = historydb.load_func_eval_filtered(application_name = application,
-                machine_deps_list = machine_deps_list,
-                software_deps_list = software_deps_list,
-                users_list = users_list,
+        perf_data = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                user_configurations_list = user_configurations_list,
                 user_email = user_email)
 
         context = { "perf_data" : perf_data, }

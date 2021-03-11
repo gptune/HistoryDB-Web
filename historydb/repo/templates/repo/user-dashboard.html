@@ -19,6 +19,10 @@
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
   }
 
+  function UploadRegistered(func_eval_uid) {
+    document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'none';
+  }
+
   function UploadGroup(func_eval_uid) {
     document.getElementById('group_invites_div_'+func_eval_uid).style.display = 'block';
   }
@@ -47,11 +51,10 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Application</th>
+          <th>Tuning Problem</th>
           <th>Input Task</th>
           <th>Tuning Parameter</th>
           <th>Output Result</th>
-          <th>Username</th>
           <th>Date</th>
           <th>Accessibility</th>
           <th>Details</th>
@@ -62,11 +65,10 @@
         {% for func_eval in func_eval_list %}
           <tr>
             <td>{{ func_eval.id }}</td>
-            <td>{{ func_eval.application }}</td>
-            <td>{{ func_eval.I }}</td>
-            <td>{{ func_eval.P }}</td>
-            <td>{{ func_eval.O }}</td>
-            <td>{{ func_eval.user_info.name }}</td>
+            <td>{{ func_eval.tuning_problem_name }}</td>
+            <td>{{ func_eval.task_parameter }}</td>
+            <td>{{ func_eval.tuning_parameter }}</td>
+            <td>{{ func_eval.evaluated_result }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
               {{ func_eval.accessibility.type }}
@@ -107,7 +109,7 @@
                 <form method="POST" action="{% url 'repo:entryaccess' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ func_eval.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
 
                     <div class="d-block my-3">
@@ -119,6 +121,10 @@
                       <div class="custom-control custom-radio">
                           <input id="private_{{func_eval.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ func_eval.uid }}');" required>
                         <label class="custom-control-label" for="private_{{func_eval.uid}}">Not now. I want to keep this data private for now</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                          <input id="registered_{{func_eval.uid}}" name="accessibility" value="registered" type="radio" class="custom-control-input" onClick="UploadRegistered('{{ func_eval.uid }}');" required>
+                        <label class="custom-control-label" for="registered_{{func_eval.uid}}">I want to share this data with registered users</label>
                       </div>
                       <div class="custom-control custom-radio">
                           <input id="group_{{func_eval.uid}}" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup('{{ func_eval.uid }}');" required>
@@ -153,7 +159,7 @@
                 <form method="POST" action="{% url 'repo:entrydel' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ func_eval.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
                     <pre>{{ func_eval | pprint }}</pre>
                   </div>
@@ -177,7 +183,7 @@
                 <form method="POST" action="{% url 'repo:entrydel' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ func_eval.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ func_eval.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ func_eval.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
                     Are you sure to delete this item?
                   </div>
@@ -198,7 +204,7 @@
         <td>
         {% for page_num_func_eval in num_pages_func_eval %}
         <!-- <a href="/listSpecificPageWork?current_page_func_eval={{page_num_func_eval}}" > -->
-        <a href="{% url 'repo:user-dashboard' %}?application={{application}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:user-dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_func_eval current_page_func_eval %}
           [<b>{{ page_num_func_eval }}</b>]
           {% else %}
@@ -228,10 +234,9 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Application</th>
+          <th>Tuning Problem</th>
           <th>Task parameter</th>
           <th>Num samples</th>
-          <th>Username</th>
           <th>Date</th>
           <th>Accessibility</th>
           <th>Details</th>
@@ -242,10 +247,9 @@
         {% for model_data in model_data_list %}
           <tr>
             <td>{{ model_data.id }}</td>
-            <td>{{ model_data.application }}</td>
+            <td>{{ model_data.tuning_problem_name }}</td>
             <td>{{ model_data.task_parameters }}</td>
             <td>{{ model_data.num_func_eval_per_task }}</td>
-            <td>{{ model_data.user_info.name }}</td>
             <td>{{ model_data.time.tm_mon }}/{{ model_data.time.tm_mday }}/{{ model_data.time.tm_year }}</td>
             <td>
               {{ model_data.accessibility.type }}
@@ -286,22 +290,26 @@
                 <form method="POST" action="{% url 'repo:entryaccess' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
 
                     <div class="d-block my-3">
                       <label><b>Make it public?</b></label>
                       <div class="custom-control custom-radio">
                           <input id="public_{{model_data.uid}}" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic('{{ model_data.uid }}');" checked required>
-                        <label class="custom-control-label" for="public_{{model_data.uid}}">Yes. I want to make this data public</label>
+                        <label class="custom-control-label" for="public_{{model_data.uid}}">I want to make this data publicly available</label>
                       </div>
                       <div class="custom-control custom-radio">
-                          <input id="private_{{model_data.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ model_data.uid }}');" required>
-                        <label class="custom-control-label" for="private_{{model_data.uid}}">Not now. I want to keep this data private for now</label>
+                          <input id="registered_{{model_data.uid}}" name="accessibility" value="registered" type="radio" class="custom-control-input" onClick="UploadRegistered('{{ model_data.uid }}');" required>
+                        <label class="custom-control-label" for="registered_{{model_data.uid}}">I want to share this data with registered users</label>
                       </div>
                       <div class="custom-control custom-radio">
                           <input id="group_{{model_data.uid}}" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup('{{ model_data.uid }}');" required>
                         <label class="custom-control-label" for="group_{{model_data.uid}}">I want to share this data with specific users</label>
+                      </div>
+                      <div class="custom-control custom-radio">
+                          <input id="private_{{model_data.uid}}" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate('{{ model_data.uid }}');" required>
+                        <label class="custom-control-label" for="private_{{model_data.uid}}">I want to keep this data private for now</label>
                       </div>
                     </div>
 
@@ -332,7 +340,7 @@
                 <form method="POST" action="{% url 'repo:entrydel' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
                     <pre>{{ model_data | pprint }}</pre>
                   </div>
@@ -356,7 +364,7 @@
                 <form method="POST" action="{% url 'repo:entrydel' %}">
                   {% csrf_token %}
                   <input type="hidden" name="entry_uid" value={{ model_data.uid }}></input>
-                  <input type="hidden" name="application_name" value={{ model_data.application }}></input>
+                  <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
                   <div class="modal-body">
                     Are you sure to delete this item?
                   </div>
@@ -376,7 +384,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:user-dashboard' %}?application={{application}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:user-dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page={{current_page}}&current_page_model_data={{page_num_model_data}}&machine_deps={{machine_deps_avail}}&software_deps_avail={{software_deps_avail}}&users_avail={{users_avail}}&machine_deps_list={{machine_deps_list}}&software_deps_list={{software_deps_list}}&users_list={{users_list}}&search_data={{search_data}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}
