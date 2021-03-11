@@ -27,7 +27,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         var x2_1 = document.createElement('div');
         x2_1.classList.add('panel');
         x2_1.classList.add('panel-default');
-        x2_1.innerHTML = "<a data-toggle='collapse' href='#machine_configurations_option"+i+"_detail'>Option " + (i+1) + " (" + machine_configurations_avail[tuning_problem_unique_name][i]["machine"] + ")</a>";
+        x2_1.innerHTML = "<a data-toggle='collapse' href='#machine_configurations_option"+i+"_detail'>Option " + (i+1) + " (" + machine_configurations_avail[tuning_problem_unique_name][i]["machine_name"] + ")</a>";
 
         var x2_1_1 = document.createElement('div');
         x2_1_1.id = 'machine_configurations_option'+i+'_detail'
@@ -107,7 +107,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         var x2_1 = document.createElement('div');
         x2_1.classList.add('panel');
         x2_1.classList.add('panel-default');
-        x2_1.innerHTML = "<a data-toggle='collapse' href='#user_configurations_option"+i+"_detail'>Option " + (i+1) + " (" + user_configurations_avail[tuning_problem_unique_name][i]["name"] + ")</a>";
+        x2_1.innerHTML = "<a data-toggle='collapse' href='#user_configurations_option"+i+"_detail'>Option " + (i+1) + " (" + user_configurations_avail[tuning_problem_unique_name][i]["user_name"] + ")</a>";
 
         var x2_1_1 = document.createElement('div');
         x2_1_1.id = 'user_configurations_option'+i+'_detail'

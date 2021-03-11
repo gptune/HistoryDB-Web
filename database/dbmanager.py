@@ -449,7 +449,128 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def upload_func_eval(self, tuning_problem_unique_name, json_data, user_info, accessibility):
+    def check_tuning_problem_matching(self, tuning_problem_unique_name, func_eval):
+        tuning_problem_info = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]["tuning_problem_info"]
+        print ("tuning_problem_info: ", tuning_problem_info)
+
+        # check task information matching
+        task_info = {}
+        for task in tuning_problem_info["task_info"]:
+            task_info[task["task_name"]] = task["task_type"]
+
+        for task in func_eval["task_parameter"]:
+            if task not in task_info:
+                print ("task: " + str(task) + " not exists in the task definition")
+                return False
+            if type(func_eval["task_parameter"][task]) is int and task_info[task] != "integer":
+                print ("task: " + str(task) + " type does not match")
+                return False
+            if type(func_eval["task_parameter"][task]) is float and task_info[task] != "real":
+                print ("task: " + str(task) + " type does not match")
+                return False
+            if type(func_eval["task_parameter"][task]) is str and task_info[task] != "categorical":
+                print ("task: " + str(task) + " type does not match")
+                return False
+            print ("task: " + str(task) + " information matches")
+
+        # check parameter information matching
+        tuning_parameter_info = {}
+        for tuning_parameter in tuning_problem_info["parameter_info"]:
+            tuning_parameter_info[tuning_parameter["parameter_name"]] = tuning_parameter["parameter_type"]
+
+        for tuning_parameter in func_eval["tuning_parameter"]:
+            if tuning_parameter not in tuning_parameter_info:
+                print ("tuning_parameter: " + str(tuning_parameter) + " not exists in the parameter definition")
+                return False
+            if type(func_eval["tuning_parameter"][tuning_parameter]) is int and tuning_parameter_info[tuning_parameter] != "integer":
+                print ("parameter: " + str(tuning_parameter) + " type does not match")
+                return False
+            if type(func_eval["tuning_parameter"][tuning_parameter]) is float and tuning_parameter_info[tuning_parameter] != "real":
+                print ("parameter: " + str(tuning_parameter) + " type does not match")
+                return False
+            if type(func_eval["tuning_parameter"][tuning_parameter]) is str and tuning_parameter_info[tuning_parameter] != "categorical":
+                print ("parameter: " + str(tuning_parameter) + " type does not match")
+                return False
+            print ("tuning_parameter: " + str(tuning_parameter) + " information matches")
+
+        # check output information matching
+        output_info = {}
+        for output in tuning_problem_info["output_info"]:
+            output_info[output["output_name"]] = output["output_type"]
+
+        for output in func_eval["evaluation_result"]:
+            if output not in output_info:
+                print ("output: " + str(output) + " not exists in the output definition")
+                return False
+            if type(func_eval["evaluation_result"][output]) is int and output_info[output] != "integer":
+                print ("output: " + str(output) + " type does not match")
+                return False
+            if type(func_eval["evaluation_result"][output]) is float and output_info[output] != "real":
+                print ("output: " + str(output) + " type does not match")
+                return False
+            if type(func_eval["evaluation_result"][output]) is str and output_info[output] != "categorical":
+                print ("output: " + str(output) + " type does not match")
+                return False
+            print ("output: " + str(output) + " information matches")
+
+        return True
+
+    def check_software_information_matching(self, tuning_problem_unique_name, func_eval):
+        tuning_problem_info = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]["tuning_problem_info"]
+        print ("tuning_problem_info: ", tuning_problem_info)
+
+        # check required software information is given
+        required_software_list = tuning_problem_info["required_software_info"]
+        for required_software in required_software_list:
+            software_name_tags = []
+            software_name_tags.append(required_software["software_name"])
+            for name_tag in required_software["software_tags"]:
+                software_name_tags.append(name_tag)
+
+            software_information_type = required_software["software_type"]
+            software_information_type_given = ""
+
+            for name_tag in software_name_tags:
+                if name_tag in func_eval["software_configuration"]:
+                    software_information_type_given = func_eval["software_configuration"][name_tag]
+
+            if software_information_type_given == "":
+                print ("software information (" + required_software["software_name"] + ") is not given")
+                return False
+            elif software_information_type not in software_information_type_given:
+                print ("software information type (" + software_information_type + ") is not given")
+                return False
+
+        return True
+
+    def check_machine_information_matching(self, machine_unique_name, func_eval):
+        machine_info = self.db["machine_db"].find({"unique_name": {"$eq": machine_unique_name}})[0]["machine_info"]
+        print ("check_machine_information_matching: ", machine_info)
+
+        # check processor information is given
+        processor_list = machine_info["processor_model"]
+        processors_found = []
+
+        for processor in processor_list:
+            processor_name_tags = []
+            processor_name_tags.append(processor["processor_model_name"])
+            for name_tag in processor["processor_model_tags"]:
+                processor_name_tags.append(name_tag)
+
+            for name_tag in processor_name_tags:
+                print ("name_tag: ", name_tag)
+                if name_tag in func_eval["machine_configuration"]:
+                    processors_found.append(processor_name_tags[0])
+                    break
+
+        print ("processors_found: ", processors_found)
+        if (len(processors_found) > 0):
+            return True
+        else:
+            print ("processor (" + str(processor_list) + ") information is not given")
+            return False
+
+    def upload_func_eval(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility):
         collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
         if not collection_name in collist:
@@ -463,11 +584,20 @@ class HistoryDB_MongoDB(dict):
                 func_eval["document_type"] = "func_eval"
                 func_eval["user_info"] = user_info
                 func_eval["accessibility"] = accessibility
-                if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
-                    collection.insert_one(func_eval)
-                    num_added_func_eval += 1
+                if (self.check_tuning_problem_matching(tuning_problem_unique_name, func_eval)):
+                    if (self.check_software_information_matching(tuning_problem_unique_name, func_eval)):
+                        if (self.check_machine_information_matching(machine_unique_name, func_eval)):
+                            if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                                collection.insert_one(func_eval)
+                                num_added_func_eval += 1
+                            else:
+                                print ("func_eval: " + func_eval["uid"] + " already exist")
+                        else:
+                            print ("func_eval: " + func_eval["uid"] + " does not match the machine information")
+                    else:
+                        print ("func_eval: " + func_eval["uid"] + " does not match the software information")
                 else:
-                    print ("func_eval: " + func_eval["uid"] + " already exist")
+                    print ("func_eval: " + func_eval["uid"] + " does not match the tuning problem")
 
         return num_added_func_eval
 
@@ -527,7 +657,7 @@ class HistoryDB_MongoDB(dict):
 
         return model_data_by_user
 
-    def upload_model_data(self, tuning_problem_unique_name, json_data, user_info, accessibility):
+    def upload_model_data(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility):
         collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
         if not collection_name in collist:

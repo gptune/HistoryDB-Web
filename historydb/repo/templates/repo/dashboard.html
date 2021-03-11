@@ -72,7 +72,7 @@
     <h2 class="h2">Function Evaluation Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -102,7 +102,7 @@
             <td>{{ func_eval.tuning_problem_name }}</td>
             <td>{{ func_eval.task_parameter }}</td>
             <td>{{ func_eval.tuning_parameter }}</td>
-            <td>{{ func_eval.evaluated_result }}</td>
+            <td>{{ func_eval.evaluation_result }}</td>
             <td>{{ func_eval.user_info.user_name }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
@@ -142,7 +142,7 @@
         Pages:
         <td>
         {% for page_num_func_eval in num_pages_func_eval %}
-        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
           {% ifequal page_num_func_eval current_page_func_eval %}
           [<b>{{ page_num_func_eval }}</b>]
           {% else %}
@@ -166,7 +166,7 @@
     <h2 class="h2">Model Data</h2>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_model_data={{current_page_model_data}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
         <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
         </a>
       </div>
@@ -233,7 +233,7 @@
         Pages:
         <td>
         {% for page_num_model_data in num_pages_model_data %}
-        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_data={{search_data}}">
+        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{current_page_func_eval}}&current_page_model_data={{page_num_model_data}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
           {% ifequal page_num_model_data current_page_model_data %}
           [<b>{{ page_num_model_data }}</b>]
           {% else %}

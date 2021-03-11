@@ -487,6 +487,7 @@ class Upload(TemplateView):
         user_info["affiliation"] = request.user.profile.affiliation
 
         tuning_problem_unique_name = request.POST["tuning_problem"]
+        machine_unique_name = request.POST["machine"]
 
         json_data = {}
 
@@ -525,8 +526,8 @@ class Upload(TemplateView):
 
         historydb = HistoryDB_MongoDB()
         try:
-            num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, json_data, user_info, accessibility)
-            num_added_model_data = historydb.upload_model_data(tuning_problem_unique_name, json_data, user_info, accessibility)
+            num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
+            num_added_model_data = historydb.upload_model_data(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
         except:
             print ("Not able to upload the given data")
             context = {
@@ -555,6 +556,7 @@ class TuningProblems(TemplateView):
         tuning_problem_list = [{} for i in range(len(tuning_problem_list_))]
         for i in range(len(tuning_problem_list_)):
             tuning_problem_list[i]["id"] = i
+            tuning_problem_list[i]["uid"] = tuning_problem_list_[i]["uid"]
             tuning_problem_list[i]["tuning_problem_info"] = tuning_problem_list_[i]["tuning_problem_info"]
             tuning_problem_list[i]["tuning_problem_name"] = tuning_problem_list_[i]["tuning_problem_name"]
             tuning_problem_list[i]["unique_name"] = tuning_problem_list_[i]["unique_name"]
