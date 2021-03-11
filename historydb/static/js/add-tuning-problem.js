@@ -67,6 +67,8 @@ function UpdateSelectedSoftware(element, data_selected)
     var software_div = document.createElement('div');
     software_div.classList.add('mb-3');
     software_div.style.padding = '10px';
+    software_div.style.paddingLeft = '20px';
+    software_div.style.paddingRight = '20px';
     software_div.style.backgroundColor = '#f1f1f1';
     software_div.innerHTML = "";
 

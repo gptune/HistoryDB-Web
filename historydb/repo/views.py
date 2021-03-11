@@ -890,22 +890,6 @@ class AddMachine(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        def get_list_from_file(filename):
-            items = []
-            with open(filename, "r") as f_in:
-                lines = f_in.readlines()
-                for line in lines:
-                    items.append(line)
-            return items
-
-        country_list = []
-        import pycountry
-        for country in list(pycountry.countries):
-            country_list.append(country.name)
-        country_list.sort()
-
-        print (country_list)
-
         def get_data_from_file(filename, keyword):
             print (filename)
             with open(filename, "r") as f_in:
@@ -942,48 +926,59 @@ class AddMachine(TemplateView):
         context = {
                 "system_models_jstree" : system_models_jstree,
                 "processors_jstree" : processors_jstree,
-                "interconnect_jstree" : interconnect_jstree,
-                "country_list" : country_list,
+                "interconnect_jstree" : interconnect_jstree
                 }
 
         return render(request, 'repo/add-machine.html', context)
 
     def post(self, request, **kwargs):
-        machine_info = {}
-
         machine_name = request.POST['machine_name']
-        system_models = request.POST.getlist('system_model_name')
+
+        system_model_names = request.POST.getlist('system_model_name')
+        system_model_tags = request.POST.getlist('system_model_tags')
         processor_model_names = request.POST.getlist('processor_model_name')
-        num_processor_models = len(processor_model_names)
+        processor_model_tags = request.POST.getlist('processor_model_tags')
         num_nodes = request.POST.getlist('num_nodes')
         num_cores = request.POST.getlist('num_cores')
         num_sockets = request.POST.getlist('num_sockets')
         memory_size = request.POST.getlist('memory_size')
-        interconnects = request.POST.getlist('interconnect_name')
+        interconnect_names = request.POST.getlist('interconnect_name')
+        interconnect_tags = request.POST.getlist('interconnect_tags')
 
-        print ("machine_name: ", machine_name)
-        print ("processor_models: ", processor_model_names)
-        print ("interconnects: ", interconnects)
+        machine_info = {}
+        machine_info["system_model"] = []
+        for i in range(len(system_model_names)):
+            machine_info["system_model"].append({
+                "system_model_name": system_model_names[i],
+                "system_model_tags": re.split(', |,', system_model_tags[i])
+                })
 
-        machine_info["machine_name"] = machine_name
-        machine_info["system_model"] = system_models
-        machine_info["processor_model"] = {}
-        for i in range(num_processor_models):
-            processor_model_info = {}
-            processor_model_info["num_nodes"] = num_nodes[i]
-            processor_model_info["num_cores"] = num_cores[i]
-            processor_model_info["num_sockets"] = num_sockets[i]
-            processor_model_info["memory_size"] = memory_size[i]
-            machine_info["processor_model"][processor_model_names[i]] = processor_model_info
-        machine_info["interconnect"] = interconnects
+        machine_info["processor_model"] = []
+        for i in range(len(processor_model_names)):
+            machine_info["processor_model"].append({
+                "processor_model_name": processor_model_names[i],
+                "processor_model_tags": re.split(', |,', processor_model_tags[i]),
+                "num_nodes": num_nodes[i],
+                "num_cores": num_cores[i],
+                "num_sockets": num_sockets[i],
+                "memory_size": memory_size[i]
+                })
 
-        user_info = {}
-        user_info["user_name"] = request.user.username
-        user_info["email"] = request.user.email
-        user_info["affiliation"] = request.user.profile.affiliation
+        machine_info["interconnect"] = []
+        for i in range(len(interconnect_names)):
+            machine_info["interconnect"].append({
+                "interconnect_name": interconnect_names[i],
+                "interconnect_tags": re.split(', |,', interconnect_tags[i])
+                })
+
+        user_info = {
+                "user_name": request.user.username,
+                "email": request.user.email,
+                "affiliation": request.user.profile.affiliation
+                }
 
         historydb = HistoryDB_MongoDB()
-        historydb.add_machine_info(machine_info, user_info)
+        historydb.add_machine_info(machine_name, machine_info, user_info)
 
         return redirect(reverse_lazy('repo:machines'))
 

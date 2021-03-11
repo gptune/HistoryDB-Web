@@ -17,6 +17,8 @@ function UpdateSelectedSystemModels(element, data_selected)
     var system_model_div = document.createElement('div');
     system_model_div.classList.add('mb-3');
     system_model_div.style.padding = '10px';
+    system_model_div.style.paddingLeft = '20px';
+    system_model_div.style.paddingRight = '20px';
     system_model_div.style.backgroundColor = '#f1f1f1';
     system_model_div.innerHTML = "";
 
@@ -25,6 +27,7 @@ function UpdateSelectedSystemModels(element, data_selected)
     var system_model = document.createElement('input');
     system_model.type = 'text';
     system_model.classList.add('form-control');
+    system_model.classList.add('mb-3');
     system_model.setAttribute('name', 'system_model_name');
     system_model.setAttribute('value', data_selected[i]);
     system_model.setAttribute('readonly', true);
@@ -32,6 +35,17 @@ function UpdateSelectedSystemModels(element, data_selected)
 
     system_model_div.appendChild(label);
     system_model_div.appendChild(system_model);
+
+    var label = document.createElement('label');
+    label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
+    var tags = document.createElement('input');
+    tags.type = 'text';
+    tags.classList.add('form-control');
+    tags.classList.add('mb-3');
+    tags.setAttribute('name', 'system_model_tags');
+
+    system_model_div.appendChild(label);
+    system_model_div.appendChild(tags);
 
     document.getElementById('system_model_info').appendChild(system_model_div);
   }
@@ -54,10 +68,13 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var processor_info_div = document.createElement('div');
     processor_info_div.classList.add('mb-3');
     processor_info_div.style.backgroundColor = '#f1f1f1';
+    processor_info_div.style.padding = '10px';
+    processor_info_div.style.paddingLeft = '20px';
+    processor_info_div.style.paddingRight = '20px';
     processor_info_div.innerHTML = "";
 
     var processor_model_div = document.createElement('div');
-    processor_model_div.style.padding = "10px";
+    processor_model_div.classList.add('mb-3');
     var label = document.createElement('label');
     label.innerHTML = "Selected processor model";
     var processor_model = document.createElement('input');
@@ -73,7 +90,6 @@ function UpdateSelectedProcessorModels(element, data_selected)
 
     var processor_info1 = document.createElement('div');
     processor_info1.classList.add('row');
-    processor_info1.style.padding = '10px';
 
     var processor_info1_col1 = document.createElement('div');
     processor_info1_col1.classList.add('col');
@@ -82,6 +98,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var num_nodes = document.createElement('input');
     num_nodes.type = 'number';
     num_nodes.classList.add('form-control');
+    num_nodes.classList.add('mb-3');
     num_nodes.setAttribute('name', 'num_nodes');
     processor_info1_col1.appendChild(label);
     processor_info1_col1.appendChild(num_nodes);
@@ -93,6 +110,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var num_cores = document.createElement('input');
     num_cores.type = 'number';
     num_cores.classList.add('form-control');
+    num_cores.classList.add('mb-3');
     num_cores.setAttribute('name', 'num_cores');
     processor_info1_col2.appendChild(label);
     processor_info1_col2.appendChild(num_cores);
@@ -103,7 +121,6 @@ function UpdateSelectedProcessorModels(element, data_selected)
 
     var processor_info2 = document.createElement('div');
     processor_info2.classList.add('row');
-    processor_info2.style.padding = '10px';
 
     var processor_info1_col1 = document.createElement('div');
     processor_info1_col1.classList.add('col');
@@ -112,6 +129,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var num_sockets = document.createElement('input');
     num_sockets.type = 'number';
     num_sockets.classList.add('form-control');
+    num_sockets.classList.add('mb-3');
     num_sockets.setAttribute('name', 'num_sockets');
     processor_info1_col1.appendChild(label);
     processor_info1_col1.appendChild(num_sockets);
@@ -123,6 +141,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var memory_size = document.createElement('input');
     memory_size.type = 'number';
     memory_size.classList.add('form-control');
+    memory_size.classList.add('mb-3');
     memory_size.setAttribute('name', 'memory_size');
     processor_info1_col2.appendChild(label);
     processor_info1_col2.appendChild(memory_size);
@@ -130,6 +149,17 @@ function UpdateSelectedProcessorModels(element, data_selected)
     processor_info2.appendChild(processor_info1_col1);
     processor_info2.appendChild(processor_info1_col2);
     processor_info_div.appendChild(processor_info2);
+
+    var label = document.createElement('label');
+    label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
+    var tags = document.createElement('input');
+    tags.type = 'text';
+    tags.classList.add('form-control');
+    tags.classList.add('mb-3');
+    tags.setAttribute('name', 'processor_model_tags');
+
+    processor_info_div.appendChild(label);
+    processor_info_div.appendChild(tags);
 
     document.getElementById('processor_model_info').appendChild(processor_info_div);
   }
@@ -152,6 +182,8 @@ function UpdateSelectedInterconnect(element, data_selected)
     var interconnect_div = document.createElement('div');
     interconnect_div.classList.add('mb-3');
     interconnect_div.style.padding = '10px';
+    interconnect_div.style.paddingLeft = '20px';
+    interconnect_div.style.paddingRight = '20px';
     interconnect_div.style.backgroundColor = '#f1f1f1';
     interconnect_div.innerHTML = "";
 
@@ -160,6 +192,7 @@ function UpdateSelectedInterconnect(element, data_selected)
     var interconnect = document.createElement('input');
     interconnect.type = 'text';
     interconnect.classList.add('form-control');
+    interconnect.classList.add('mb-3');
     interconnect.setAttribute('name', 'interconnect_name');
     interconnect.setAttribute('value', data_selected[i]);
     interconnect.setAttribute('readonly', true);
@@ -167,6 +200,17 @@ function UpdateSelectedInterconnect(element, data_selected)
 
     interconnect_div.appendChild(label);
     interconnect_div.appendChild(interconnect);
+
+    var label = document.createElement('label');
+    label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
+    var tags = document.createElement('input');
+    tags.type = 'text';
+    tags.classList.add('form-control');
+    tags.classList.add('mb-3');
+    tags.setAttribute('name', 'interconnect_tags');
+
+    interconnect_div.appendChild(label);
+    interconnect_div.appendChild(tags);
 
     document.getElementById('interconnect_info').appendChild(interconnect_div);
   }

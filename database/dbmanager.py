@@ -589,7 +589,7 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
-    def add_machine_info(self, machine_info, user_info):
+    def add_machine_info(self, machine_name, machine_info, user_info):
         machine_db = self.db["machine_db"]
 
         machine_document = {}
@@ -613,6 +613,9 @@ class HistoryDB_MongoDB(dict):
 
         import uuid
         machine_document["uid"] = str(uuid.uuid1())
+
+        machine_document["machine_name"] = machine_name
+        machine_document["unique_name"] = (machine_name+"_"+machine_document["uid"]).replace("-","_")
 
         machine_db.insert_one(machine_document)
 
