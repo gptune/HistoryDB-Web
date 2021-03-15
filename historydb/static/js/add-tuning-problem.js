@@ -88,29 +88,46 @@ function UpdateSelectedSoftware(element, data_selected)
 
     var label = document.createElement('label');
     label.innerHTML = "Which type of information is needed?";
-    var options = document.createElement('select');
-    options.classList.add('custom-select');
-    options.classList.add('mb-3');
-    options.setAttribute('name', 'software_type');
-    var op = document.createElement('option');
-    op.setAttribute('value', '');
-    op.setAttribute('label', 'Choose...');
-    options.appendChild(op);
-    var op = document.createElement('option');
-    op.setAttribute('value', 'version_split');
-    op.setAttribute('label', 'version split number (e.g. major/minor/revision)');
-    options.appendChild(op);
-    var op = document.createElement('option');
-    op.setAttribute('value', 'version');
-    op.setAttribute('label', 'any kind of number (e.g. any type of version number)');
-    options.appendChild(op);
-    var op = document.createElement('option');
-    op.setAttribute('value', 'text');
-    op.setAttribute('label', 'any text value (e.g. git/svn commit ID, dataset name)');
-    options.appendChild(op);
-
     software_div.appendChild(label);
-    software_div.appendChild(options);
+
+    var version_split_div = document.createElement('div');
+    version_split_div.classList.add('custom-control');
+    version_split_div.classList.add('custom-radio');
+    var version_split = document.createElement('input');
+    version_split.id = 'version_split_' + i;
+    alert(version_split.id);
+    version_split.type = 'radio';
+    version_split.classList.add('custom-control-input');
+    version_split.setAttribute('name', 'software_type'+i);
+    version_split.setAttribute('value', 'version_split');
+    version_split.setAttribute('checked', true);
+    var label_ = document.createElement('label');
+    label_.classList.add('custom-control-label');
+    label_.htmlFor = version_split.id;
+    label_.innerHTML = 'Version split number in 3d vector (e.g. [major, minor, revision])';
+    version_split_div.appendChild(version_split);
+    version_split_div.appendChild(label_);
+    software_div.appendChild(version_split_div);
+
+    var version_text_div = document.createElement('div');
+    version_text_div.classList.add('custom-control');
+    version_text_div.classList.add('custom-radio');
+    var version_text = document.createElement('input');
+    version_text.id = 'version_text_' + i;
+    alert(version_text.id);
+    version_text.type = 'radio';
+    version_text.classList.add('custom-control-input');
+    version_text.classList.add('mb-3');
+    version_text.setAttribute('name', 'software_type'+i);
+    version_text.setAttribute('value', 'version_text');
+    var label_ = document.createElement('label');
+    label_.classList.add('custom-control-label');
+    label_.classList.add('mb-3');
+    label_.htmlFor = version_text.id;
+    label_.innerHTML = 'Text value (e.g. git/svn commit ID, dataset name)';
+    version_text_div.appendChild(version_text);
+    version_text_div.appendChild(label_);
+    software_div.appendChild(version_text_div);
 
     var label = document.createElement('label');
     label.innerHTML = "Tag names that can be used instead of the given full name (comma separated)";
