@@ -14,22 +14,15 @@ class Index(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        applications_avail = historydb.get_applications_avail()
-        applications_avail_per_library = historydb.get_applications_avail_per_library()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
+        tuning_problems_avail_per_category = historydb.load_tuning_problems_per_category()
+        print ("tuning_problems_avail_per_category: ", tuning_problems_avail_per_category)
 
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
 
         context = {
-                "applications_avail" : applications_avail,
-                "applications_avail_per_library" : applications_avail_per_library,
-                "machine_deps_avail" : json.dumps(machine_deps_avail),
-                "software_deps_avail" : json.dumps(software_deps_avail),
-                "users_avail" : json.dumps(users_avail),
+                "tuning_problems_avail_per_category": tuning_problems_avail_per_category,
                 }
 
         return render(request, 'main/index.html', context)
@@ -37,36 +30,28 @@ class Index(TemplateView):
     def post(self, request, **kwargs):
         historydb = HistoryDB_MongoDB()
 
-        application = request.POST["application"]
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
 
-        application_info = historydb.load_application_info(application_name = application)
-        print ("APPLICATION_INFO")
-        print (application_info)
+        tuning_problems_avail = historydb.load_all_tuning_problems()
+        machine_configurations_avail = historydb.get_machine_configurations_avail()
+        software_configurations_avail = historydb.get_software_configurations_avail()
+        user_configurations_avail = historydb.get_user_configurations_avail()
 
-        applications_avail = historydb.get_applications_avail()
-        machine_deps_avail = historydb.get_machine_deps_avail()
-        software_deps_avail = historydb.get_software_deps_avail()
-        users_avail = historydb.get_users_avail()
-
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
-
-        machine_deps_list = machine_deps_avail[application]
-        software_deps_list = software_deps_avail[application]
-        users_list = users_avail[application]
+        machine_configurations_list = machine_configurations_avail[tuning_problem_unique_name]
+        software_configurations_list = software_configurations_avail[tuning_problem_unique_name]
+        user_configurations_list = user_configurations_avail[tuning_problem_unique_name]
 
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
 
-        search_data = ['func_eval']
+        search_options = ['func_eval']
 
-        if "func_eval" in search_data:
-            func_eval_list = historydb.load_func_eval_filtered(application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list,
+        if "func_eval" in search_options:
+            func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                    machine_configurations_list = machine_configurations_list,
+                    software_configurations_list = software_configurations_list,
+                    user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
             num_evals_per_page = 15
@@ -91,12 +76,11 @@ class Index(TemplateView):
             num_pages_func_eval = 0
             current_page_func_eval = 0
 
-        if "model_data" in search_data:
-            model_data = historydb.load_model_data_filtered(
-                    application_name = application,
-                    machine_deps_list = machine_deps_list,
-                    software_deps_list = software_deps_list,
-                    users_list = users_list,
+        if "model_data" in search_options:
+            model_data = historydb.load_model_data_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                    machine_configurations_list = machine_configurations_list,
+                    software_configurations_list = software_configurations_list,
+                    user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_model_data = len(model_data)
             num_model_data_per_page = 15
@@ -124,10 +108,15 @@ class Index(TemplateView):
             num_pages_model_data = 0
             current_page_model_data = 0
 
+
+        print ("func_eval_list: ", func_eval_web)
+
         context = {
-                "application_info" : json.dumps(application_info),
-                "applications_avail" : applications_avail,
-                "application" : application,
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "tuning_problems_avail" : tuning_problems_avail,
+                "machine_configurations_avail" : machine_configurations_avail,
+                "software_configurations_avail" : software_configurations_avail,
+                "user_configurations_avail" : user_configurations_avail,
                 "func_eval_list" : func_eval_web,
                 "num_func_eval" : num_func_eval,
                 "num_pages_func_eval" : range(num_pages_func_eval),
@@ -136,13 +125,10 @@ class Index(TemplateView):
                 "num_model_data" : num_model_data,
                 "num_pages_model_data" : range(num_pages_model_data),
                 "current_page_model_data" : current_page_model_data,
-                "machine_deps_avail" : json.dumps(machine_deps_avail),
-                "software_deps_avail" : json.dumps(software_deps_avail),
-                "users_avail" : json.dumps(users_avail),
-                "machine_deps_list" : json.dumps(machine_deps_list),
-                "software_deps_list" : json.dumps(software_deps_list),
-                "users_list" : json.dumps(users_list),
-                "search_data" : json.dumps(search_data)
+                "machine_configurations_list" : json.dumps(machine_configurations_list),
+                "software_configurations_list" : json.dumps(software_configurations_list),
+                "user_configurations_list" : json.dumps(user_configurations_list),
+                "search_options" : json.dumps(search_options)
                 }
 
         return render(request, 'repo/dashboard.html', context)

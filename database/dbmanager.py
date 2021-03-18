@@ -773,6 +773,25 @@ class HistoryDB_MongoDB(dict):
 
         return tuning_problem_list
 
+    def load_tuning_problems_per_category(self, **kwargs):
+        tuning_problems_avail_per_category = {}
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            for category in tuning_problem["tuning_problem_info"]["category"]:
+                category_name = category["category_name"]
+
+                if category_name not in tuning_problems_avail_per_category:
+                    tuning_problems_avail_per_category[category_name] = []
+
+                tuning_problems_avail_per_category[category_name].append({
+                    "tuning_problem_name": tuning_problem["tuning_problem_name"],
+                    "user_info": tuning_problem["user_info"],
+                    "update_time": tuning_problem["update_time"],
+                    "unique_name": tuning_problem["unique_name"]
+                    })
+
+        return tuning_problems_avail_per_category
+
 if __name__ == "__main__":
     import sys
     import json
