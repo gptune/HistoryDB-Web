@@ -94,7 +94,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var processor_info1_col1 = document.createElement('div');
     processor_info1_col1.classList.add('col');
     var label = document.createElement('label');
-    label.innerHTML = "Number of total nodes";
+    label.innerHTML = "Number of compute nodes";
     var num_nodes = document.createElement('input');
     num_nodes.type = 'number';
     num_nodes.classList.add('form-control');
@@ -106,7 +106,7 @@ function UpdateSelectedProcessorModels(element, data_selected)
     var processor_info1_col2 = document.createElement('div');
     processor_info1_col2.classList.add('col');
     var label = document.createElement('label');
-    label.innerHTML = "Number of total cores";
+    label.innerHTML = "Number of physical cores per node";
     var num_cores = document.createElement('input');
     num_cores.type = 'number';
     num_cores.classList.add('form-control');
