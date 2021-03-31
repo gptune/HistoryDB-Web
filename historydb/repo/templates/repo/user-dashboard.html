@@ -68,7 +68,7 @@
             <td>{{ func_eval.tuning_problem_name }}</td>
             <td>{{ func_eval.task_parameter }}</td>
             <td>{{ func_eval.tuning_parameter }}</td>
-            <td>{{ func_eval.evaluated_result }}</td>
+            <td>{{ func_eval.evaluation_result }}</td>
             <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
             <td>
               {{ func_eval.accessibility.type }}
@@ -225,7 +225,7 @@
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Model Data</h2>
+    <h2 class="h2">Surrogate Models</h2>
   </div>
   <div class="table-responsive">
     number of function evaluation result: {{ num_model_data }}

@@ -403,7 +403,8 @@ class HistoryDB_MongoDB(dict):
     def load_func_eval_by_user(self, user_email):
         func_eval_by_user = []
 
-        for collection_name in self.db.list_collection_names():
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["unique_name"]
             application_db = self.db[collection_name]
             func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
             for func_eval in func_eval_list:
@@ -647,7 +648,8 @@ class HistoryDB_MongoDB(dict):
     def load_model_data_by_user(self, user_email):
         model_data_by_user = []
 
-        for collection_name in self.db.list_collection_names():
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["unique_name"]
             application_db = self.db[collection_name]
             model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
             for model_data in model_data_list:
