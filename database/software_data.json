@@ -96,6 +96,7 @@
           "lib.viennacl": {
             "lib.viennacl.src": {}
           },
+          "ilb.scalapack": {},
           "lib.lapack": {},
           "lib.cudnn": {},
           "lib.blas": {},
