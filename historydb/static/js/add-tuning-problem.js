@@ -95,7 +95,6 @@ function UpdateSelectedSoftware(element, data_selected)
     version_split_div.classList.add('custom-radio');
     var version_split = document.createElement('input');
     version_split.id = 'version_split_' + i;
-    alert(version_split.id);
     version_split.type = 'radio';
     version_split.classList.add('custom-control-input');
     version_split.setAttribute('name', 'software_type'+i);
@@ -114,7 +113,6 @@ function UpdateSelectedSoftware(element, data_selected)
     version_text_div.classList.add('custom-radio');
     var version_text = document.createElement('input');
     version_text.id = 'version_text_' + i;
-    alert(version_text.id);
     version_text.type = 'radio';
     version_text.classList.add('custom-control-input');
     version_text.classList.add('mb-3');

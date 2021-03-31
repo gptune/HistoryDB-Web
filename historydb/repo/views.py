@@ -422,16 +422,29 @@ class Export(TemplateView):
         if request.user.is_authenticated:
             user_email = request.user.email
 
-        print ("machine_configurations_list: ", machine_configurations_list)
-        print ("software_configurations_list: ", software_configurations_list)
-        print ("user_configurations_list: ", user_configurations_list)
+        search_options = json.loads(request.GET.get("search_options", "[]"))
+
+        #print ("machine_configurations_list: ", machine_configurations_list)
+        #print ("software_configurations_list: ", software_configurations_list)
+        #print ("user_configurations_list: ", user_configurations_list)
 
         historydb = HistoryDB_MongoDB()
-        perf_data = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+
+        perf_data = []
+
+        if "func_eval" in search_options:
+            perf_data.extend(historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                 machine_configurations_list = machine_configurations_list,
                 software_configurations_list = software_configurations_list,
                 user_configurations_list = user_configurations_list,
-                user_email = user_email)
+                user_email = user_email))
+        if "model_data" in search_options:
+            perf_data.extend(historydb.load_model_data_filtered(
+                tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                user_configurations_list = user_configurations_list,
+                user_email = user_email))
 
         context = { "perf_data" : perf_data, }
 

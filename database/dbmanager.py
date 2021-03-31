@@ -618,8 +618,9 @@ class HistoryDB_MongoDB(dict):
         for model_data in model_data_list:
             try:
                 model_data["tuning_problem_name"] = tuning_problem_simple_name
-                machine_configuration = model_data["machine_configuration"]
-                software_configuration = model_data["software_configuration"]
+                func_eval = self.load_func_eval_by_uid(model_data["func_eval"][0])
+                machine_configuration = func_eval["machine_configuration"]
+                software_configuration = func_eval["software_configuration"]
                 user_information = model_data["user_info"]
 
                 if (machine_configuration in machine_configurations_list) and\
