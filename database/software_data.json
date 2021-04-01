@@ -1,31 +1,59 @@
 {
     "category_tree": {
         "HPC Library": {
-            "Linear Algebra": [
+            "Dense Linear Algebra": [
                 "BLAS",
                 "LAPACK",
                 "ScaLAPACK",
                 "PLASMA",
-                "MAGMA"
+                "MAGMA",
+                "STRUMPACK"
             ],
-            "Sparse Linear System": [
+            "Sparse Linear Algebra": [
                 "Hypre",
                 "KLU",
+                "SuperLU_DIST",
                 "SuperLU",
-                "PETSc"
+                "STRUMPACK",
+                "PETSc",
+                "Ginkgo"
+            ],
+            "FFT": [
+                "FFTX",
+                "heFFTe"
+            ],
+            "Graphs": [
+            ],
+            "Other Domain-Specific/Math Libraries": [
+                "LibPFASST",
+                "SUNDIALS",
+                "ArborX",
+                "DataTransferKit",
+                "Tasmanian",
+                "ForTrilinos"
+            ]
+        },
+        "HPC Application": {
+            "Dense Linear Algebra": [
+            ],
+            "Sparse Linear Algebra": [
             ],
             "FFT": [
             ],
-            "Domain-Specific Library": [
-                "LibPFASST"
+            "N-body Method": [
+            ],
+            "Structured Grid": [
+            ],
+            "Unstructured Grid": [
+            ],
+            "Graphs": [
             ]
         },
-        "HPC Application": {},
         "ML Library": {},
         "ML Application": {},
         "Server Application": {},
         "Desktop Application": {},
-        "Other": {}
+        "Other (Beyond Application-Level)": {}
     },
     "software_tree": {
         "_comment": "the software data list is obtained from CK (https://cknowledge.io/c/soft/)",
@@ -121,6 +149,7 @@
           "lib.opengl": {},
           "lib.isaac": {},
           "lib.parmetis": {},
+          "lib.mkl": {},
           "lib.fmt": {},
           "lib.ppl": {},
           "lib.xml2": {},
