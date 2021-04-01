@@ -550,6 +550,8 @@ class HistoryDB_MongoDB(dict):
 
         # check processor information is given
         processor_list = machine_info["processor_model"]
+        if (len(processor_list) == 0): # no processor info is given (no need to check)
+            return True
         processors_found = []
 
         for processor in processor_list:

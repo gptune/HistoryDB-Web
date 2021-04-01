@@ -53,7 +53,7 @@
         "ML Application": {},
         "Server Application": {},
         "Desktop Application": {},
-        "Other (Beyond Application-Level)": {}
+        "Other": {}
     },
     "software_tree": {
         "_comment": "the software data list is obtained from CK (https://cknowledge.io/c/soft/)",
