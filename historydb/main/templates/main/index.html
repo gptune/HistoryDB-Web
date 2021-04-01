@@ -75,7 +75,7 @@
         <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
           <option value="" label="Choose..." selected></option>
           {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.SuperLU %}
+          {% for tuning_problem in tuning_problems_avail_per_category.SuperLU_DIST %}
           <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
           </li>
           {% endfor %}

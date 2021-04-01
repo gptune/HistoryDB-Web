@@ -1,7 +1,7 @@
 {
     "category_tree": {
         "HPC Library": {
-            "Dense Linear Algebra": [
+            "Dense Linear Algebra Library": [
                 "BLAS",
                 "LAPACK",
                 "ScaLAPACK",
@@ -9,7 +9,7 @@
                 "MAGMA",
                 "STRUMPACK"
             ],
-            "Sparse Linear Algebra": [
+            "Sparse Linear Algebra Library": [
                 "Hypre",
                 "KLU",
                 "SuperLU_DIST",
@@ -18,11 +18,11 @@
                 "PETSc",
                 "Ginkgo"
             ],
-            "FFT": [
+            "FFT Library": [
                 "FFTX",
                 "heFFTe"
             ],
-            "Graphs": [
+            "Graphs Library": [
             ],
             "Other Domain-Specific/Math Libraries": [
                 "LibPFASST",
@@ -34,19 +34,19 @@
             ]
         },
         "HPC Application": {
-            "Dense Linear Algebra": [
+            "Dense Linear Algebra Application": [
             ],
-            "Sparse Linear Algebra": [
+            "Sparse Linear Algebra Application": [
             ],
-            "FFT": [
+            "FFT Application": [
             ],
-            "N-body Method": [
+            "N-body Method Application": [
             ],
-            "Structured Grid": [
+            "Structured Grid Application": [
             ],
-            "Unstructured Grid": [
+            "Unstructured Grid Application": [
             ],
-            "Graphs": [
+            "Graphs Application": [
             ]
         },
         "ML Library": {},
