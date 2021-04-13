@@ -68,7 +68,7 @@
             $('#category_tree')
               .on("changed.jstree", function (e, data) {
                 if(data.selected.length) {
-                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
                   UpdateSelectedCategory(this, data.selected);
                 }
               })
@@ -224,7 +224,7 @@
             $('#software_tree')
               .on("changed.jstree", function (e, data) {
                 if(data.selected.length) {
-                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
                   UpdateSelectedSoftware(this, data.selected);
                 }
               })

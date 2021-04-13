@@ -59,7 +59,7 @@
             $('#system_models_tree')
               .on("changed.jstree", function (e, data) {
                 if(data.selected.length) {
-                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
                   UpdateSelectedSystemModels(this, data.selected);
                 }
               })
@@ -83,7 +83,7 @@
               .on("changed.jstree", function (e, data) {
                 if(data.selected.length) {
 
-                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
                   UpdateSelectedProcessorModels(this, data.selected);
                 }
               })
@@ -108,7 +108,7 @@
               .on("changed.jstree", function (e, data) {
                 if(data.selected.length) {
 
-                  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
                   UpdateSelectedInterconnect(this, data.selected);
                 }
               })
