@@ -145,5 +145,8 @@ def acknowledgement(request):
 def membership(request):
     return render(request, 'main/membership.html')
 
+def ecp2021(request):
+    return render(request, 'main/ecp2021.html')
+
 def base(request):
     return render(request, 'main/base.html')

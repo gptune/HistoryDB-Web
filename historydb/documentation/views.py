@@ -47,6 +47,14 @@ def gptune_tutorial_ecp2021(request):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
 
+def gptune_hands_on(request):
+    fs = FileSystemStorage()
+
+    with fs.open('GPTune_HandsOnInstructions.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+
 from django.shortcuts import redirect
 def historydb_user_guide(request):
     return redirect('https://gptune-history-database.readthedocs.io/en/latest/')

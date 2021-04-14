@@ -13,5 +13,6 @@ urlpatterns = [
     path('publications', views.publications, name='publications'),
     path('acknowledgement', views.acknowledgement, name='acknowledgement'),
     path('membership', views.membership, name='membership'),
+    path('ecp2021', views.ecp2021, name='ecp2021'),
     path('base', views.base, name='base'),
 ]
