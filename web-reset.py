@@ -21,3 +21,11 @@ with open("./historydb/email_settings.json", "w") as f_out:
 
     import json
     f_out.write(json.dumps(data))
+
+with open("./historydb/google_recaptcha_keys.json", "w") as f_out:
+    data = {}
+    data["SITE_KEY"] = read_from_file("/secrets/google_recaptcha_site_key")
+    data["SECRET_KEY"] = read_from_file("/secrets/google_recaptcha_secret_key")
+
+    import json
+    f_out.write(json.dumps(data))

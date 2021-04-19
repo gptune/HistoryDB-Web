@@ -58,6 +58,21 @@ EMAIL_HOST_USER = get_email_setting_data("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = get_email_setting_data("EMAIL_HOST_PASSWORD")
 SERVER_EMAIL = get_email_setting_data("SERVER_EMAIL")
 
+google_recaptcha_setting_file = os.path.join(BASE_DIR, 'google_recaptcha_keys.json')
+def get_google_recaptcha_setting_data(setting):
+    try:
+        with open(google_recaptcha_setting_file, "r") as f_in:
+            google_recaptcha_setting_data = json.loads(f_in.read())
+            data = google_recaptcha_setting_data[setting]
+            if data == "yes":
+                return True
+            else:
+                return data
+    except:
+        return ""
+
+GOOGLE_RECAPTCHA_SITE_KEY = get_google_recaptcha_setting_data("SITE_KEY")
+GOOGLE_RECAPTCHA_SECRET_KEY = get_google_recaptcha_setting_data("SECRET_KEY")
 
 # Application definition
 

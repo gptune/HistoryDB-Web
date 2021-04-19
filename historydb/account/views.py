@@ -8,6 +8,10 @@ from django.urls import reverse_lazy
 
 from django.core.mail import EmailMessage
 
+from django.conf import settings
+from django.contrib import messages
+
+import requests
 import json
 
 # Create your views here.
@@ -26,36 +30,56 @@ def signup(request):
             user.profile.affiliation = request.POST["affiliation"]
             user.profile.ecp_member = request.POST["ecp_member"]
 
-            # 6-digit activation code
-            import random
-            random.seed()
-            activation_code = ""
-            for i in range(6):
-                activation_code += random.choice('1234567890')
-            print ("user activation code: ", activation_code)
-            user.profile.activation_code = activation_code
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            data = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+            result = r.json()
 
-            try:
-                from django.contrib.sites.shortcuts import get_current_site
-                current_site = get_current_site(request)
+            if result['success']:
+                print ("recaptcah success!")
 
-                email_subject = "Thanks for Joining GPTune History Database!"
-                email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
-                        "You are receiving this message because someone is trying to register in the GPTune history database.\n" + \
-                        "Please use this code to verify this email and confirm your registration.\n" + \
-                        "Code: " + activation_code + "\n\n" + \
-                        "Best Regards,\nGPTune-Dev"
-                email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@lbl.gov'], reply_to=['gptune-dev@lbl.gov'])
-                email.send()
-            except:
-                print ("Something went wrong with email sending")
+                # 6-digit activation code
+                import random
+                random.seed()
+                activation_code = ""
+                for i in range(6):
+                    activation_code += random.choice('1234567890')
+                print ("user activation code: ", activation_code)
+                user.profile.activation_code = activation_code
 
-            user.save()
+                try:
+                    from django.contrib.sites.shortcuts import get_current_site
+                    current_site = get_current_site(request)
 
-            return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
+                    email_subject = "Thanks for Joining GPTune History Database!"
+                    email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
+                            "You are receiving this message because someone is trying to register in the GPTune history database.\n" + \
+                            "Please use this code to verify this email and confirm your registration.\n" + \
+                            "Code: " + activation_code + "\n\n" + \
+                            "Best Regards,\nGPTune-Dev"
+                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=[], reply_to=['gptune-dev@lbl.gov'])
+                    email.send()
+                except:
+                    print ("Something went wrong with email sending")
+
+                user.save()
+
+                return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
+            else:
+                print ("Invalid reCAPTCHA.")
+                return render(request, 'account/signup.html')
+
         return render(request, 'account/signup.html')
 
-    return render(request, 'account/signup.html')
+    else:
+        context = {
+            "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
+        }
+
+        return render(request, 'account/signup.html', context)
 
 def login(request):
     if request.method == "POST":
