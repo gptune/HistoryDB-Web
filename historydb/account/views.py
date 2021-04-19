@@ -18,18 +18,6 @@ import json
 def signup(request):
     if request.method == "POST":
         if request.POST["password1"] == request.POST["password2"]:
-            user = User.objects.create_user(
-                    username = request.POST["username"],
-                    email = request.POST["email"],
-                    password = request.POST["password1"],
-                    is_active = False)
-
-            user.first_name = request.POST["firstname"]
-            user.last_name = request.POST["lastname"]
-            user.profile.position = request.POST["position"]
-            user.profile.affiliation = request.POST["affiliation"]
-            user.profile.ecp_member = request.POST["ecp_member"]
-
             recaptcha_response = request.POST.get('g-recaptcha-response')
             data = {
                 'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
@@ -40,6 +28,18 @@ def signup(request):
 
             if result['success']:
                 print ("recaptcah success!")
+
+                user = User.objects.create_user(
+                        username = request.POST["username"],
+                        email = request.POST["email"],
+                        password = request.POST["password1"],
+                        is_active = False)
+
+                user.first_name = request.POST["firstname"]
+                user.last_name = request.POST["lastname"]
+                user.profile.position = request.POST["position"]
+                user.profile.affiliation = request.POST["affiliation"]
+                user.profile.ecp_member = request.POST["ecp_member"]
 
                 # 6-digit activation code
                 import random
