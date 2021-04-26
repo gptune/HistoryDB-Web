@@ -17,6 +17,10 @@ from django.contrib import auth
 
 from dbmanager import HistoryDB_MongoDB
 
+from django.conf import settings
+#from django.contrib import messages
+
+import requests
 import os
 import json
 import ast
@@ -837,8 +841,6 @@ class Machines(TemplateView):
         for i in range(len(machine_info_list)):
             machine_info_list[i]["id"] = i
 
-        num_machines = len(machine_info_list)
-
         context = {
                 "machine_info_list" : machine_info_list
                 }
@@ -944,6 +946,133 @@ class AddMachine(TemplateView):
         historydb.add_machine_info(machine_name, machine_info, user_info)
 
         return redirect(reverse_lazy('repo:machines'))
+
+class AnalyticalModels(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        historydb = HistoryDB_MongoDB()
+
+        user_email = ""
+        if request.user.is_authenticated:
+            user_email = request.user.email
+
+        analytical_model_list = historydb.load_all_analytical_models(user_email)
+        for i in range(len(analytical_model_list)):
+            analytical_model_list[i]["id"] = i
+
+        print (analytical_model_list)
+
+        context = {
+            "analytical_model_list" : analytical_model_list
+        }
+
+        return render(request, 'repo/analytical-models.html', context)
+
+class AddAnalyticalModel(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        context = {
+            "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
+        }
+
+        return render(request, 'repo/add-analytical-model.html', context)
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
+        user_info = {}
+        user_info["user_name"] = request.user.username
+        user_info["user_email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
+
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+
+        if result['success']:
+            model_name = request.POST['model_name']
+            model_description = request.POST['model_description']
+
+            print ("model_name: ", model_name)
+            print ("model_description: ", model_description)
+
+            model_data = {}
+            model_data['model_name'] = model_name
+            model_data['model_description'] = model_description
+
+            data_type_list = request.POST.getlist('data_type')
+            for data_type in data_type_list:
+                print ("data_type: ", data_type)
+
+                if data_type == "data_type_python_code":
+                    model_data['model_code_python'] = request.POST['model_code_python']
+                elif data_type == "data_type_any_code":
+                    model_data['model_code_any'] = request.POST['model_code_any']
+                elif data_type == "data_type_pointer_to_code":
+                    model_data['model_pointer'] = request.POST['model_pointer']
+
+            update_type_list = request.POST.getlist('update_type')
+            if len(update_type_list) > 0:
+                model_data['update_required'] = 'yes'
+            else:
+                model_data['update_required'] = 'no'
+
+            for update_type in update_type_list:
+                print ("update_type: ", update_type)
+
+                if update_type == "update_type_python_code":
+                    model_data['model_update_code_python'] = request.POST['model_update_code_python']
+                elif update_type == "update_type_any_code":
+                    model_data['model_update_code_any'] = request.POST['model_update_code_any']
+                elif update_type == "update_type_pointer_to_code":
+                    model_data['model_update_pointer'] = request.POST['model_update_pointer']
+
+            check_update_required = request.POST['check_update_required']
+            print ("check_update_required: ", check_update_required)
+
+            accessibility_type = request.POST['accessibility']
+            access_group_given = request.POST['group_invites']
+            print ("accessibility_type: ", accessibility_type)
+            print ('access group: ', access_group_given)
+            access_group = access_group_given.split(';')
+
+            accessibility = {}
+            accessibility["type"] = accessibility_type
+            if (accessibility_type == "group"):
+                accessibility["group"] = access_group
+
+            historydb = HistoryDB_MongoDB()
+            if (historydb.upload_analytical_model(model_name, model_data, user_info, accessibility) == True):
+                return redirect(reverse_lazy('repo:analytical-models'))
+            else:
+                context = {
+                    "header": "Something went wrong",
+                    "message": "Failed to upload the analytical model"
+                }
+                return render(request, 'repo/return.html', context)
+        else:
+            context = {
+                "header": "Something went wrong",
+                "message": "Failed to upload the analytical model"
+            }
+            return render(request, 'repo/return.html', context)
 
 class UserGroups(TemplateView):
 

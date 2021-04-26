@@ -1,0 +1,286 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script type="text/javascript" src="{% static 'js/add-analytical-model.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+
+  function NeedModelUpdateForm() {
+    document.getElementById("update_model_form_div").style.display = 'block';
+  }
+
+  function WithoutModelUpdateForm() {
+    document.getElementById("update_model_form_div").style.display = 'none';
+  }
+
+  function UpdateModelDataType() {
+    if (document.getElementById("data_type_python_code").checked == true ||
+        document.getElementById("data_type_any_code").checked == true ||
+        document.getElementById("data_type_pointer_to_code").checked == true) {
+      document.getElementById("data_type_div").style.display = 'block';
+    } else if (document.getElementById("data_type_python_code").checked == false &&
+        document.getElementById("data_type_any_code").checked == false &&
+        document.getElementById("data_type_pointer_to_code").checked == false) {
+      document.getElementById("data_type_div").style.display = 'none';
+    }
+
+    if (document.getElementById("data_type_python_code").checked == true) {
+      document.getElementById("data_type_python_code_div").style.display = 'block';
+    } else {
+      document.getElementById("data_type_python_code_div").style.display = 'none';
+    }
+
+    if (document.getElementById("data_type_any_code").checked == true) {
+      document.getElementById("data_type_any_code_div").style.display = 'block';
+    } else {
+      document.getElementById("data_type_any_code_div").style.display = 'none';
+    }
+
+    if (document.getElementById("data_type_pointer_to_code").checked == true) {
+      document.getElementById("data_type_pointer_to_code_div").style.display = 'block';
+    } else {
+      document.getElementById("data_type_pointer_to_code_div").style.display = 'none';
+    }
+  }
+
+  function UpdateModelUpdateType() {
+    if (document.getElementById("update_type_python_code").checked == true ||
+        document.getElementById("update_type_any_code").checked == true ||
+        document.getElementById("update_type_pointer_to_code").checked == true) {
+      document.getElementById("update_type_div").style.display = 'block';
+    } else if (document.getElementById("update_type_python_code").checked == false &&
+        document.getElementById("update_type_any_code").checked == false &&
+        document.getElementById("update_type_pointer_to_code").checked == false) {
+      document.getElementById("update_type_div").style.display = 'none';
+    }
+
+    if (document.getElementById("update_type_python_code").checked == true) {
+      document.getElementById("update_type_python_code_div").style.display = 'block';
+    } else {
+      document.getElementById("update_type_python_code_div").style.display = 'none';
+    }
+
+    if (document.getElementById("update_type_any_code").checked == true) {
+      document.getElementById("update_type_any_code_div").style.display = 'block';
+    } else {
+      document.getElementById("update_type_any_code_div").style.display = 'none';
+    }
+
+    if (document.getElementById("update_type_pointer_to_code").checked == true) {
+      document.getElementById("update_type_pointer_to_code_div").style.display = 'block';
+    } else {
+      document.getElementById("update_type_pointer_to_code_div").style.display = 'none';
+    }
+  }
+
+  function UploadPublic() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
+  function UploadPrivate() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
+  function UploadRegistered() {
+    document.getElementById('group_invites_div').style.display = 'none';
+  }
+
+  function UploadGroup() {
+    document.getElementById('group_invites_div').style.display = 'block';
+  }
+
+  function AddEmailInvites() {
+    var div = document.getElementById('group_invites_div');
+
+    var email_invite = document.createElement('input');
+    email_invite.type = 'email';
+    email_invite.classList.add('form-control');
+    email_invite.setAttribute('name', 'group_invites');
+
+    div.appendChild(email_invite);
+  }
+
+</script>
+
+<div class="container" style="max-width: 700px">
+  <div class="py-5 text-center">
+    <h1>Add an Analytical Model</h1>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="{% url 'repo:add-analytical-model' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div id="add-form" style="display:block;">
+
+        <div class="mb-3">
+          <label><b>Model Information</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px; padding-left: 20px; padding-right: 20px;">
+            <div class="mb-3">
+              <label for="model_name">Model name</label>
+              <input type="text" class="form-control" id="model_name" name="model_name" required>
+            </div>
+            <div class="mb-3">
+              <label>Description</label>
+              <textarea class="form-control" id="model_description" name="model_description" rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block my-3">
+          <label><b>What type(s) of data would you provide to reproduce the model?</b></label>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="data_type_python_code" name="data_type" id="data_type_python_code" onClick="UpdateModelDataType();">
+            <label class="custom-control-label" for="data_type_python_code">Python code (might be GPTune compatible)</label>
+            <br>
+          </div>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="data_type_any_code" name="data_type" id="data_type_any_code" onClick="UpdateModelDataType();">
+            <label class="custom-control-label" for="data_type_any_code">Any type of (pseudo) code (require porting to re-use)</label>
+            <br>
+          </div>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="data_type_pointer_to_code" name="data_type" id="data_type_pointer_to_code" onClick="UpdateModelDataType()">
+            <label class="custom-control-label" for="data_type_pointer_to_code">Link/pointer to the model</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="data_type_div" style="display:none;">
+          <label><b>Analytical Model</b></label>
+          <div style="background-color: #f1f1f1; padding: 20px; padding-left: 20px; padding-right: 20px;">
+            <div class="form-group" id="data_type_python_code_div" style="display:none;">
+              <label><b>Python code (might be GPTune compatible)</b></label>
+              <textarea class="form-control" id="model_code_python" name="model_code_python" rows="20">
+import numpy as np
+
+def model(point):
+    # point[t]
+    # point[x]
+
+    return</textarea>
+            </div>
+            <div class="form-group" id="data_type_any_code_div" style="display:none;">
+              <label><b>Any type of code</b></label>
+              <textarea class="form-control" id="model_code_any" name="model_code_any" rows="20"></textarea>
+            </div>
+            <div class="form-group" id="data_type_pointer_to_code_div" style="display:none;">
+              <label><b>Link/pointer to the model (e.g. Github, Bitbucket)</b></label>
+              <textarea class="form-control" id="model_pointer" name="model_pointer" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Does this model need to be updated?</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="update_required" name="check_update_required" type="radio" value="update_required" onChange="NeedModelUpdateForm();" required>
+            <label class="custom-control-label" for="update_required">Yes</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="update_not_required" name="check_update_required" type="radio" value="update_not_required" checked onChange="WithoutModelUpdateForm();" required>
+            <label class="custom-control-label" for="update_not_required">No</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="update_model_form_div" style="display: none;">
+          <label><b>What type(s) of data would you provide to update the model?</b></label>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="update_type_python_code" name="update_type" id="update_type_python_code" onClick="UpdateModelUpdateType();">
+            <label class="custom-control-label" for="update_type_python_code">Python code (might be GPTune compatible)</label>
+            <br>
+          </div>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="update_type_any_code" name="update_type" id="update_type_any_code" onClick="UpdateModelUpdateType();">
+            <label class="custom-control-label" for="update_type_any_code">Any type of (pseudo) code (require porting to re-use)</label>
+            <br>
+          </div>
+          <div class="panel_group custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" value="update_type_pointer_to_code" name="update_type" id="update_type_pointer_to_code" onClick="UpdateModelUpdateType()">
+            <label class="custom-control-label" for="update_type_pointer_to_code">Link/pointer to the model</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="update_type_div" style="display:none;">
+          <label><b>Python code (might be GPTune compatible)</b></label>
+          <div style="background-color: #f1f1f1; padding: 20px; padding-left: 20px; padding-right: 20px;">
+            <div class="form-group" id="update_type_python_code_div" style="display:none;">
+              <label><b>Python code (might be GPTune compatible)</b></label>
+              <textarea class="form-control" id="model_update_code_python" name="model_update_code_python" rows="20">
+import numpy as np
+
+def model(point):
+    # point[t]
+    # point[x]
+
+    return</textarea>
+            </div>
+            <div class="form-group" id="update_type_any_code_div" style="display:none;">
+              <label><b>Any type of code (may require porting to re-use)</b></label>
+              <textarea class="form-control" id="model_update_code_any" name="model_update_code_any" rows="20"></textarea>
+            </div>
+            <div class="form-group" id="update_type_pointer_to_code_div" style="display:none;">
+              <label><b>Link/pointer to the model source to update</b></label>
+              <textarea class="form-control" id="model_update_pointer" name="model_update_pointer" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-block my-3">
+          <label><b>Make it public?</b></label>
+          <div class="custom-control custom-radio">
+            <input id="public" name="accessibility" value="public" type="radio" class="custom-control-input" onClick="UploadPublic();" checked required>
+            <label class="custom-control-label" for="public">I want to make this data publicly available</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input id="registered" name="accessibility" value="registered" type="radio" class="custom-control-input" onClick="UploadRegistered();" checked required>
+            <label class="custom-control-label" for="registered">I want to share this data with registered users</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input id="group" name="accessibility" value="group" type="radio" class="custom-control-input" onClick="UploadGroup();" required>
+            <label class="custom-control-label" for="group">I want to share this data with specific users</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input id="private" name="accessibility" value="private" type="radio" class="custom-control-input" onClick="UploadPrivate();" required>
+            <label class="custom-control-label" for="private">I want to keep this data private for now</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="group_invites_div" style="display: none;">
+          <label for="group_invites"><b>List of emails/groupnames who can access this data (comma separated)</b></label>
+          <textarea class="form-control" id="group_invites" name="group_invites" rows="5"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Please email us at gptune-dev@lbl.gov if you want to suggest modifications/additions to this form.</b></label>
+        </div>
+
+        <div class="d-block my-3">
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey={{ GOOGLE_RECAPTCHA_SITE_KEY }}></div>
+        </div>
+
+        <br>
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

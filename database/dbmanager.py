@@ -342,7 +342,7 @@ class HistoryDB_MongoDB(dict):
                 else:
                     return False
             elif perf_data['accessibility']['type'] == 'private':
-                if perf_data['user_info']['email'] == user_email:
+                if perf_data['user_info']['user_email'] == user_email:
                     return True
                 else:
                     return False
@@ -796,6 +796,80 @@ class HistoryDB_MongoDB(dict):
                     })
 
         return tuning_problems_avail_per_category
+
+    def load_all_analytical_models(self, user_email, **kwargs):
+        db = self.db["analytical_model_db"]
+
+        analytical_model_list = []
+
+        for document in self.db['analytical_model_db'].find():
+            if 'accessibility' in document:
+                if document['user_info']['user_email'] == user_email:
+                    analytical_model_list.append(document)
+                elif document['accessibility']['type'] == 'public':
+                    analytical_model_list.append(document)
+                elif document['accessibility']['type'] == 'registered':
+                    if user_email != "":
+                        analytical_model_list.append(document)
+                elif document['accessibility']['type'] == 'private':
+                    if document['user_info']['user_email'] == user_email:
+                        analytical_model_list.append(document)
+                elif document['accessibility']['type'] == 'group':
+                    if user_email in document['accessibility']['group']:
+                        analytical_model_list.append(document)
+
+        return analytical_model_list
+
+    def upload_analytical_model(self, model_name, model_data, user_info, accessibility, **kwargs):
+        try:
+            db = self.db["analytical_model_db"]
+
+            document = {}
+            document["model_name"] = model_name
+            document["model_data"] = model_data
+            document["user_info"] = user_info
+            document["accessibility"] = accessibility
+
+            import uuid
+            document["uid"] = str(uuid.uuid1())
+
+            unique_name = model_name+"_"+document["uid"]
+            unique_name = unique_name.replace("-","_")
+
+            document["unique_name"] = unique_name
+
+            import time
+            now = time.localtime()
+
+            document["update_time"] = {
+                "tm_year":now.tm_year,
+                "tm_mon":now.tm_mon,
+                "tm_mday":now.tm_mday,
+                "tm_hour":now.tm_hour,
+                "tm_min":now.tm_min,
+                "tm_sec":now.tm_sec,
+                "tm_wday":now.tm_wday,
+                "tm_yday":now.tm_yday,
+                "tm_isdst":now.tm_isdst
+            }
+
+            document["upload_time"] = {
+                "tm_year":now.tm_year,
+                "tm_mon":now.tm_mon,
+                "tm_mday":now.tm_mday,
+                "tm_hour":now.tm_hour,
+                "tm_min":now.tm_min,
+                "tm_sec":now.tm_sec,
+                "tm_wday":now.tm_wday,
+                "tm_yday":now.tm_yday,
+                "tm_isdst":now.tm_isdst
+            }
+
+            db.insert_one(document)
+
+            return True
+        except:
+            return False
 
 if __name__ == "__main__":
     import sys
