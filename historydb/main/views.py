@@ -148,5 +148,8 @@ def membership(request):
 def ecp2021(request):
     return render(request, 'main/ecp2021.html')
 
+def release(request):
+    return render(request, 'main/release.html')
+
 def base(request):
     return render(request, 'main/base.html')

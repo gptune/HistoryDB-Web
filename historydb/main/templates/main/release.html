@@ -1,0 +1,30 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-about').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <br><br>
+  <h1>Release</h1><br>
+
+  <h2>GPTune 2.0.0</h2>
+  <p class="lead">
+    <ul>
+      <li>Download: <a href="{% static 'releases/GPTune-2.0.0.tar.gz' %}">GPTune-2.0.0.tar.gz</a></li>
+      <li>GPTune 2.0.0 Release Notes (Under Construction)</li>
+      <li>Updated: Apr 22, 2021</li>
+    </ul>
+  </p>
+</div>
+
+{% endblock %}
