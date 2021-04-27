@@ -142,7 +142,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x.appendChild(x1);
         var label1 = document.createElement("label");
         label1.classList.add('custom-control-label');
-        label1.innerHTML = 'func_eval';
+        label1.innerHTML = 'Function evaluation';
         label1.htmlFor = x1.id;
         x.appendChild(label1);
         search_options_div.appendChild(x);
@@ -156,13 +156,13 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         var x1 = document.createElement("input");
         x1.type = 'checkbox';
         x1.classList.add('custom-control-input');
-        x1.setAttribute("value", "model_data");
+        x1.setAttribute("value", "surrogate_model");
         x1.setAttribute("name", "search_options");
-        x1.setAttribute("id", "search_options_model_data");
+        x1.setAttribute("id", "search_options_surrogate_model");
         x.appendChild(x1);
         var label1 = document.createElement("label");
         label1.classList.add('custom-control-label');
-        label1.innerHTML = 'model_data';
+        label1.innerHTML = 'Surrogate models';
         label1.htmlFor = x1.id;
         x.appendChild(label1);
         search_options_div.appendChild(x);

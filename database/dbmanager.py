@@ -38,7 +38,7 @@ class HistoryDB_MongoDB(dict):
         json_data = {}
         json_data["name"] = application_name
         json_data["application_info"] = []
-        json_data["model_data"] = []
+        json_data["surrogate_model"] = []
         json_data["func_eval"] = []
 
         collection = self.db[application_name]
@@ -46,20 +46,20 @@ class HistoryDB_MongoDB(dict):
             document["_id"] = str(document["_id"])
             if document["document_type"] == "application_info":
                 json_data["application_info"].append(document)
-            elif document["document_type"] == "model_data":
-                json_data["model_data"].append(document)
+            elif document["document_type"] == "surrogate_model":
+                json_data["surrogate_model"].append(document)
             elif document["document_type"] == "func_eval":
                 json_data["func_eval"].append(document)
 
         return json_data
 
-    def load_model_data(self, application_name, **kwargs):
-        model_data_list = []
+    def load_surrogate_models(self, tuning_problem_name, **kwargs):
+        surrogate_model_list = []
 
-        collection = self.db[application_name]
-        model_data_list = collection.find({"document_type":{"$eq":"model_data"}})
+        for document in self.db[tuning_problem_name].find({"document_Tyep":{"$eq":"surrogate_model"}}):
+            surrogate_model_list.append(document)
 
-        return model_data_list
+        return surrogate_model_list
 
     def load_user_collaboration_groups(self, user_email, **kwargs):
         user_groups = []
@@ -314,15 +314,15 @@ class HistoryDB_MongoDB(dict):
 
         return users_avail
 
-    def get_search_data_avail(self, **kwargs):
-        search_data_avail = {}
+    #def get_search_data_avail(self, **kwargs):
+    #    search_data_avail = {}
 
-        applications_list = self.db.list_collection_names()
-        for application_name in applications_list:
-            search_data_avail[application_name]  = ["func_eval", "model_data"]
-            # TODO: collect available search data type from database
+    #    applications_list = self.db.list_collection_names()
+    #    for application_name in applications_list:
+    #        search_data_avail[application_name]  = ["func_eval", "model_data"]
+    #        # TODO: collect available search data type from database
 
-        return search_data_avail
+    #    return search_data_avail
 
     def check_perf_data_accessibility(self,
             perf_data,
@@ -424,11 +424,11 @@ class HistoryDB_MongoDB(dict):
                 if func_eval["uid"] == perf_data_uid:
                     if self.check_perf_data_accessibility(func_eval, user_email):
                         return func_eval
-            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
-            for model_data in model_data_list:
-                if model_data["uid"] == perf_data_uid:
-                    if self.check_perf_data_accessibility(model_data, user_email):
-                        return model_data
+            surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
+            for surrogate_model in surrogate_model_list:
+                if surrogate_model["uid"] == perf_data_uid:
+                    if self.check_perf_data_accessibility(surrogate_model, user_email):
+                        return surrogate_model
 
         return None
 
@@ -604,85 +604,96 @@ class HistoryDB_MongoDB(dict):
 
         return num_added_func_eval
 
-    def load_model_data_filtered(self,
+    def load_surrogate_models_filtered(self,
             tuning_problem_unique_name,
             machine_configurations_list,
             software_configurations_list,
             user_configurations_list,
             user_email,
             **kwargs):
-        model_data_filtered = []
+        surrogate_model_list_filtered = []
 
         application_db = self.db[tuning_problem_unique_name]
-        model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
+        surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
 
         tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name)
 
-        for model_data in model_data_list:
+        for surrogate_model in surrogate_model_list:
             try:
-                model_data["tuning_problem_name"] = tuning_problem_simple_name
-                func_eval = self.load_func_eval_by_uid(model_data["func_eval"][0])
+                surrogate_model["tuning_problem_name"] = tuning_problem_simple_name
+                func_eval = self.load_func_eval_by_uid(surrogate_model["func_eval"][0])
                 machine_configuration = func_eval["machine_configuration"]
                 software_configuration = func_eval["software_configuration"]
-                user_information = model_data["user_info"]
+                user_information = surrogate_model["user_info"]
 
                 if (machine_configuration in machine_configurations_list) and\
                    (software_configuration in software_configurations_list) and\
                    (user_information in user_configurations_list):
-                    if self.check_perf_data_accessibility(model_data, user_email):
-                        model_data_filtered.append(model_data)
+                    if self.check_perf_data_accessibility(surrogate_model, user_email):
+                        surrogate_model_list_filtered.append(surrogate_model)
             except:
                 continue
 
-        return model_data_filtered
+        return surrogate_model_list_filtered
 
-    def load_model_data_by_uid(self, model_data_uid):
+    def load_surrogate_models_by_uid(self, surrogate_model_uid):
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
             application_db = self.db[application_name]
-            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
-            for model_data in model_data_list:
-                if model_data["uid"] == model_data_uid:
-                    return model_data
+            surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
+            for surrogate_model in surrogate_model_list:
+                if surrogate_model["uid"] == surrogate_model_uid:
+                    return surrogate_model
 
         return None
 
-    def load_model_data_by_user(self, user_email):
-        model_data_by_user = []
+    def load_surrogate_models_by_user(self, user_email):
+        surrogate_model_by_user = []
 
         for tuning_problem in self.db["tuning_problem_db"].find():
             collection_name = tuning_problem["unique_name"]
             application_db = self.db[collection_name]
-            model_data_list = application_db.find({"document_type":{"$eq":"model_data"}})
-            for model_data in model_data_list:
-                if model_data["user_info"]["user_email"] == user_email:
-                    model_data["tuning_problem_name"] = self.get_tuning_problem_simple_name(collection_name)
-                    model_data["tuning_problem_unique_name"] = collection_name
-                    model_data_by_user.append(model_data)
+            surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
+            for surrogate_model in surrogate_model_list:
+                if surrogate_model["user_info"]["user_email"] == user_email:
+                    surrogate_model["tuning_problem_name"] = self.get_tuning_problem_simple_name(collection_name)
+                    surrogate_model["tuning_problem_unique_name"] = collection_name
+                    surrogate_model_by_user.append(surrogate_model)
 
-        return model_data_by_user
+        return surrogate_model_by_user
 
-    def upload_model_data(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility):
+    def upload_surrogate_models(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility):
         collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
         if not collection_name in collist:
             print (collection_name + " is not exist in the database; create one.")
         collection = self.db[collection_name]
 
-        num_added_model_data = 0
-        if "model_data" in json_data:
-            model_data_list = json_data["model_data"]
-            for model_data in model_data_list:
-                model_data["document_type"] = "model_data"
-                model_data["user_info"] = user_info
-                model_data["accessibility"] = accessibility
-                if (collection.count_documents({"uid": {"$eq":model_data["uid"]}}) == 0):
-                    collection.insert_one(model_data)
-                    num_added_model_data += 1
+        num_added_surrogate_models = 0
+        if "surrogate_model" in json_data:
+            surrogate_model_list = json_data["surrogate_model"]
+            for surrogate_model in surrogate_model_list:
+                surrogate_model["document_type"] = "surrogate_model"
+                surrogate_model["user_info"] = user_info
+                surrogate_model["accessibility"] = accessibility
+                if (collection.count_documents({"uid": {"$eq":surrogate_model["uid"]}}) == 0):
+                    collection.insert_one(surrogate_model)
+                    num_added_surrogate_models += 1
                 else:
-                    print ("model_data: " + model_data["uid"] + " already exist")
+                    print ("surrogate_model: " + surrogate_model["uid"] + " already exist")
+        if "model_data" in json_data:
+            surrogate_model_list = json_data["model_data"]
+            for surrogate_model in surrogate_model_list:
+                surrogate_model["document_type"] = "surrogate_model"
+                surrogate_model["user_info"] = user_info
+                surrogate_model["accessibility"] = accessibility
+                if (collection.count_documents({"uid": {"$eq":surrogate_model["uid"]}}) == 0):
+                    collection.insert_one(surrogate_model)
+                    num_added_surrogate_models += 1
+                else:
+                    print ("surrogate_model: " + surrogate_model["uid"] + " already exist")
 
-        return num_added_model_data
+        return num_added_surrogate_models
 
     def delete_perf_data_by_uid(self, tuning_problem_unique_name, entry_uid):
         application_db = self.db[tuning_problem_unique_name]
