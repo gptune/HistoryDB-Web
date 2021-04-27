@@ -19,6 +19,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x1.setAttribute('id', 'machine_configurations_option'+i);
         x1.setAttribute('value', JSON.stringify(machine_configurations_avail[tuning_problem_unique_name][i], null, 2));
         x1.setAttribute('name', 'machine_configurations_list');
+        x1.setAttribute('checked', true);
 
         var x2 = document.createElement('label');
         x2.classList.add('custom-control-label');
@@ -59,6 +60,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x1.setAttribute('id', 'software_configurations_option'+i);
         x1.setAttribute('value', JSON.stringify(software_configurations_avail[tuning_problem_unique_name][i], null, 2));
         x1.setAttribute('name', 'software_configurations_list');
+        x1.setAttribute('checked', true);
 
         var x2 = document.createElement('label');
         x2.classList.add('custom-control-label');
@@ -99,6 +101,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x1.setAttribute('id', 'user_configurations_option'+i);
         x1.setAttribute('value', JSON.stringify(user_configurations_avail[tuning_problem_unique_name][i], null, 2));
         x1.setAttribute('name', 'user_configurations_list');
+        x1.setAttribute('checked', true);
 
         var x2 = document.createElement('label');
         x2.classList.add('custom-control-label');
@@ -139,6 +142,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x1.setAttribute("value", "func_eval");
         x1.setAttribute("name", "search_options");
         x1.setAttribute("id", "search_options_func_eval");
+        x1.setAttribute('checked', true);
         x.appendChild(x1);
         var label1 = document.createElement("label");
         label1.classList.add('custom-control-label');
@@ -159,6 +163,7 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x1.setAttribute("value", "surrogate_model");
         x1.setAttribute("name", "search_options");
         x1.setAttribute("id", "search_options_surrogate_model");
+        x1.setAttribute('checked', true);
         x.appendChild(x1);
         var label1 = document.createElement("label");
         label1.classList.add('custom-control-label');
