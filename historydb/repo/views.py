@@ -481,6 +481,7 @@ class Upload(TemplateView):
         context = {
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machines_avail" : machines_avail,
+                "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
                 }
 
         return render(request, 'repo/upload.html', context)
@@ -503,65 +504,80 @@ class Upload(TemplateView):
         user_info["user_email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
-        tuning_problem_unique_name = request.POST["tuning_problem"]
-        machine_unique_name = request.POST["machine"]
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
 
-        json_data = {}
+        if result['success']:
+            tuning_problem_unique_name = request.POST["tuning_problem"]
+            machine_unique_name = request.POST["machine"]
 
-        upload_type = "file"
-        try:
-            f = request.FILES["file_upload_form"]
-            data = f.read()
-        except:
-            upload_type = "text"
+            json_data = {}
 
-        if upload_type == "text":
+            upload_type = "file"
             try:
-                json_text = request.POST["text_upload_form"]
-                data = json_text
+                f = request.FILES["file_upload_form"]
+                data = f.read()
             except:
-                data = {}
+                upload_type = "text"
 
-        try:
-            json_data = json.loads(data)
-        except:
-            print ("Not able to convert to dictionary")
+            if upload_type == "text":
+                try:
+                    json_text = request.POST["text_upload_form"]
+                    data = json_text
+                except:
+                    data = {}
+
+            try:
+                json_data = json.loads(data)
+            except:
+                print ("Not able to convert to dictionary")
+                context = {
+                        "header": "Something Went Wrong",
+                        "message": "Not able to convert data to dictionary"
+                        }
+                return render(request, 'repo/return.html', context)
+
+            accessibility_type = request.POST['accessibility']
+            access_group_given = request.POST['group_invites']
+            access_group = re.split(', |,', access_group_given)
+
+            accessibility = {}
+            accessibility["type"] = accessibility_type
+            if (accessibility_type == "group"):
+                accessibility["group"] = access_group
+
+            historydb = HistoryDB_MongoDB()
+            try:
+                num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
+                num_added_surrogate_models = historydb.upload_surrogate_models(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
+            except:
+                print ("Not able to upload the given data")
+                context = {
+                        "header": "Something Went Wrong",
+                        "message": "Not able to upload the given data"
+                        }
+                return render(request, 'repo/return.html', context)
+
+            print ("Submitted data has been uploaded")
             context = {
-                    "header": "Something Went Wrong",
-                    "message": "Not able to convert data to dictionary"
+                    "header": "Success",
+                    "message": "Your data has been uploaded",
+                    "num_added_func_eval": num_added_func_eval,
+                    "num_added_surrogate_models": num_added_surrogate_models
                     }
+
             return render(request, 'repo/return.html', context)
-
-        accessibility_type = request.POST['accessibility']
-        access_group_given = request.POST['group_invites']
-        access_group = re.split(', |,', access_group_given)
-
-        accessibility = {}
-        accessibility["type"] = accessibility_type
-        if (accessibility_type == "group"):
-            accessibility["group"] = access_group
-
-        historydb = HistoryDB_MongoDB()
-        try:
-            num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
-            num_added_surrogate_models = historydb.upload_surrogate_models(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
-        except:
-            print ("Not able to upload the given data")
+        else:
             context = {
-                    "header": "Something Went Wrong",
-                    "message": "Not able to upload the given data"
-                    }
+                "header": "Something went wrong",
+                "message": "Failed to upload the performance data"
+            }
             return render(request, 'repo/return.html', context)
-
-        print ("Submitted data has been uploaded")
-        context = {
-                "header": "Success",
-                "message": "Your data has been uploaded",
-                "num_added_func_eval": num_added_func_eval,
-                "num_added_surrogate_models": num_added_surrogate_models
-                }
-
-        return render(request, 'repo/return.html', context)
 
 class TuningProblems(TemplateView):
 
@@ -635,90 +651,130 @@ class AddTuningProblem(TemplateView):
         context = {
                 "category_jstree": category_jstree,
                 "software_jstree": software_jstree,
+                "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
                 }
 
         return render(request, 'repo/add-tuning-problem.html', context)
 
     def post(self, request, **kwargs):
-        tuning_problem_name = request.POST['tuning_problem_name']
 
-        tuning_problem_info = {}
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
 
-        category_names = request.POST.getlist('category_name')
-        category_tags = request.POST.getlist('category_tags')
-        tuning_problem_info["category"] = []
-        for i in range(len(category_names)):
-            tuning_problem_info["category"].append({
-                "category_name": category_names[i],
-                "category_tags": re.split(', |,', category_tags[i])
-                })
-
-        tuning_problem_info["description"] = request.POST['tuning_problem_description']
-
-        task_names = request.POST.getlist('task_name')
-        task_types = request.POST.getlist('task_type')
-        task_descriptions = request.POST.getlist('task_description')
-        num_tasks = len(task_names)
-
-        tuning_problem_info["task_info"] = []
-        for i in range(num_tasks):
-            tuning_problem_info["task_info"].append({
-                "task_name": task_names[i],
-                "task_type": task_types[i],
-                "task_description": task_descriptions[i],
-                })
-
-        parameter_names = request.POST.getlist('parameter_name')
-        parameter_types = request.POST.getlist('parameter_type')
-        parameter_descriptions = request.POST.getlist('parameter_description')
-        num_parameters = len(parameter_names)
-
-        tuning_problem_info["parameter_info"] = []
-        for i in range(num_parameters):
-            tuning_problem_info["parameter_info"].append({
-                "parameter_name": parameter_names[i],
-                "parameter_type": parameter_types[i],
-                "parameter_description": parameter_descriptions[i]
-                })
-
-        output_names = request.POST.getlist('output_name')
-        output_types = request.POST.getlist('output_type')
-        output_descriptions = request.POST.getlist('output_description')
-        num_outputs = len(output_names)
-
-        tuning_problem_info["output_info"] = []
-        for i in range(num_outputs):
-            tuning_problem_info["output_info"].append({
-                "output_name": output_names[i],
-                "output_type": output_types[i],
-                "output_description": output_descriptions[i]
-                })
-
-        required_software_names = request.POST.getlist('software_name')
-        required_software_types = []
-        for i in range(len(required_software_names)):
-            required_software_types.append(request.POST['software_type'+str(i)])
-        required_software_tags = request.POST.getlist('software_tags')
-
-        tuning_problem_info["required_software_info"] = []
-        for i in range(len(required_software_names)):
-            tuning_problem_info["required_software_info"].append({
-                "software_name": required_software_names[i],
-                "software_type": required_software_types[i],
-                "software_tags": re.split(', |,', required_software_tags[i])
-                })
-
-        print ("tuning_problem_info: ", tuning_problem_info)
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
 
         user_info = {}
         user_info["user_name"] = request.user.username
         user_info["user_email"] = request.user.email
         user_info["affiliation"] = request.user.profile.affiliation
 
-        historydb = HistoryDB_MongoDB()
-        historydb.add_tuning_problem(tuning_problem_name, tuning_problem_info, user_info)
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
 
-        return redirect(reverse_lazy('repo:tuning-problems'))
+        if result['success']:
+            tuning_problem_name = request.POST['tuning_problem_name']
+
+            tuning_problem_info = {}
+
+            category_names = request.POST.getlist('category_name')
+            category_tags = request.POST.getlist('category_tags')
+            tuning_problem_info["category"] = []
+            for i in range(len(category_names)):
+                tuning_problem_info["category"].append({
+                    "category_name": category_names[i],
+                    "category_tags": re.split(', |,', category_tags[i])
+                    })
+
+            tuning_problem_info["description"] = request.POST['tuning_problem_description']
+
+            task_names = request.POST.getlist('task_name')
+            task_types = request.POST.getlist('task_type')
+            task_descriptions = request.POST.getlist('task_description')
+            num_tasks = len(task_names)
+
+            tuning_problem_info["task_info"] = []
+            for i in range(num_tasks):
+                tuning_problem_info["task_info"].append({
+                    "task_name": task_names[i],
+                    "task_type": task_types[i],
+                    "task_description": task_descriptions[i],
+                    })
+
+            parameter_names = request.POST.getlist('parameter_name')
+            parameter_types = request.POST.getlist('parameter_type')
+            parameter_descriptions = request.POST.getlist('parameter_description')
+            num_parameters = len(parameter_names)
+
+            tuning_problem_info["parameter_info"] = []
+            for i in range(num_parameters):
+                tuning_problem_info["parameter_info"].append({
+                    "parameter_name": parameter_names[i],
+                    "parameter_type": parameter_types[i],
+                    "parameter_description": parameter_descriptions[i]
+                    })
+
+            output_names = request.POST.getlist('output_name')
+            output_types = request.POST.getlist('output_type')
+            output_descriptions = request.POST.getlist('output_description')
+            num_outputs = len(output_names)
+
+            tuning_problem_info["output_info"] = []
+            for i in range(num_outputs):
+                tuning_problem_info["output_info"].append({
+                    "output_name": output_names[i],
+                    "output_type": output_types[i],
+                    "output_description": output_descriptions[i]
+                    })
+
+            constant_names = request.POST.getlist('constant_name')
+            constant_types = request.POST.getlist('constant_type')
+            constant_descriptions = request.POST.getlist('constant_description')
+            num_constants = len(constant_names)
+
+            tuning_problem_info["constant_info"] = []
+            for i in range(num_constants):
+                tuning_problem_info["constant_info"].append({
+                    "constant_name": constant_names[i],
+                    "constant_type": constant_types[i],
+                    "constant_description": constant_descriptions[i]
+                    })
+
+            required_software_names = request.POST.getlist('software_name')
+            required_software_types = []
+            for i in range(len(required_software_names)):
+                required_software_types.append(request.POST['software_type'+str(i)])
+            required_software_tags = request.POST.getlist('software_tags')
+
+            tuning_problem_info["required_software_info"] = []
+            for i in range(len(required_software_names)):
+                tuning_problem_info["required_software_info"].append({
+                    "software_name": required_software_names[i],
+                    "software_type": required_software_types[i],
+                    "software_tags": re.split(', |,', required_software_tags[i])
+                    })
+
+            print ("tuning_problem_info: ", tuning_problem_info)
+
+            historydb = HistoryDB_MongoDB()
+            historydb.add_tuning_problem(tuning_problem_name, tuning_problem_info, user_info)
+
+            return redirect(reverse_lazy('repo:tuning-problems'))
+        else:
+            context = {
+                "header": "Something went wrong",
+                "message": "Failed to add the tuning problem"
+            }
+            return render(request, 'repo/return.html', context)
 
 class AddReproducibleWorkflow(TemplateView):
 
@@ -891,61 +947,78 @@ class AddMachine(TemplateView):
         context = {
                 "system_models_jstree" : system_models_jstree,
                 "processors_jstree" : processors_jstree,
-                "interconnect_jstree" : interconnect_jstree
+                "interconnect_jstree" : interconnect_jstree,
+                "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
                 }
 
         return render(request, 'repo/add-machine.html', context)
 
     def post(self, request, **kwargs):
-        machine_name = request.POST['machine_name']
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
 
-        system_model_names = request.POST.getlist('system_model_name')
-        system_model_tags = request.POST.getlist('system_model_tags')
-        processor_model_names = request.POST.getlist('processor_model_name')
-        processor_model_tags = request.POST.getlist('processor_model_tags')
-        num_nodes = request.POST.getlist('num_nodes')
-        num_cores = request.POST.getlist('num_cores')
-        num_sockets = request.POST.getlist('num_sockets')
-        memory_size = request.POST.getlist('memory_size')
-        interconnect_names = request.POST.getlist('interconnect_name')
-        interconnect_tags = request.POST.getlist('interconnect_tags')
+        user_info = {}
+        user_info["user_name"] = request.user.username
+        user_info["user_email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
 
-        machine_info = {}
-        machine_info["system_model"] = []
-        for i in range(len(system_model_names)):
-            machine_info["system_model"].append({
-                "system_model_name": system_model_names[i],
-                "system_model_tags": re.split(', |,', system_model_tags[i])
-                })
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
 
-        machine_info["processor_model"] = []
-        for i in range(len(processor_model_names)):
-            machine_info["processor_model"].append({
-                "processor_model_name": processor_model_names[i],
-                "processor_model_tags": re.split(', |,', processor_model_tags[i]),
-                "num_nodes": num_nodes[i],
-                "num_cores": num_cores[i],
-                "num_sockets": num_sockets[i],
-                "memory_size": memory_size[i]
-                })
+        if result['success']:
+            machine_name = request.POST['machine_name']
+            system_model_names = request.POST.getlist('system_model_name')
+            system_model_tags = request.POST.getlist('system_model_tags')
+            processor_model_names = request.POST.getlist('processor_model_name')
+            processor_model_tags = request.POST.getlist('processor_model_tags')
+            num_nodes = request.POST.getlist('num_nodes')
+            num_cores = request.POST.getlist('num_cores')
+            num_sockets = request.POST.getlist('num_sockets')
+            memory_size = request.POST.getlist('memory_size')
+            interconnect_names = request.POST.getlist('interconnect_name')
+            interconnect_tags = request.POST.getlist('interconnect_tags')
 
-        machine_info["interconnect"] = []
-        for i in range(len(interconnect_names)):
-            machine_info["interconnect"].append({
-                "interconnect_name": interconnect_names[i],
-                "interconnect_tags": re.split(', |,', interconnect_tags[i])
-                })
+            machine_info = {}
+            machine_info["system_model"] = []
+            for i in range(len(system_model_names)):
+                machine_info["system_model"].append({
+                    "system_model_name": system_model_names[i],
+                    "system_model_tags": re.split(', |,', system_model_tags[i])
+                    })
 
-        user_info = {
-                "user_name": request.user.username,
-                "user_email": request.user.email,
-                "affiliation": request.user.profile.affiliation
-                }
+            machine_info["processor_model"] = []
+            for i in range(len(processor_model_names)):
+                machine_info["processor_model"].append({
+                    "processor_model_name": processor_model_names[i],
+                    "processor_model_tags": re.split(', |,', processor_model_tags[i]),
+                    "num_nodes": num_nodes[i],
+                    "num_cores": num_cores[i],
+                    "num_sockets": num_sockets[i],
+                    "memory_size": memory_size[i]
+                    })
 
-        historydb = HistoryDB_MongoDB()
-        historydb.add_machine_info(machine_name, machine_info, user_info)
+            machine_info["interconnect"] = []
+            for i in range(len(interconnect_names)):
+                machine_info["interconnect"].append({
+                    "interconnect_name": interconnect_names[i],
+                    "interconnect_tags": re.split(', |,', interconnect_tags[i])
+                    })
 
-        return redirect(reverse_lazy('repo:machines'))
+            historydb = HistoryDB_MongoDB()
+            historydb.add_machine_info(machine_name, machine_info, user_info)
+
+            return redirect(reverse_lazy('repo:machines'))
+        else:
+            context = {
+                "header": "Something went wrong",
+                "message": "Failed to upload the machine information"
+            }
+            return render(request, 'repo/return.html', context)
 
 class AnalyticalModels(TemplateView):
 
@@ -1043,6 +1116,58 @@ class AddAnalyticalModel(TemplateView):
                     model_data['model_update_code_any'] = request.POST['model_update_code_any']
                 elif update_type == "update_type_pointer_to_code":
                     model_data['model_update_pointer'] = request.POST['model_update_pointer']
+
+            task_names = request.POST.getlist('task_name')
+            task_types = request.POST.getlist('task_type')
+            task_descriptions = request.POST.getlist('task_description')
+            num_tasks = len(task_names)
+
+            model_data["task_info"] = []
+            for i in range(num_tasks):
+                model_data["task_info"].append({
+                    "task_name": task_names[i],
+                    "task_type": task_types[i],
+                    "task_description": task_descriptions[i],
+                    })
+
+            parameter_names = request.POST.getlist('parameter_name')
+            parameter_types = request.POST.getlist('parameter_type')
+            parameter_descriptions = request.POST.getlist('parameter_description')
+            num_parameters = len(parameter_names)
+
+            model_data["parameter_info"] = []
+            for i in range(num_parameters):
+                model_data["parameter_info"].append({
+                    "parameter_name": parameter_names[i],
+                    "parameter_type": parameter_types[i],
+                    "parameter_description": parameter_descriptions[i]
+                    })
+
+            output_names = request.POST.getlist('output_name')
+            output_types = request.POST.getlist('output_type')
+            output_descriptions = request.POST.getlist('output_description')
+            num_outputs = len(output_names)
+
+            model_data["output_info"] = []
+            for i in range(num_outputs):
+                model_data["output_info"].append({
+                    "output_name": output_names[i],
+                    "output_type": output_types[i],
+                    "output_description": output_descriptions[i]
+                    })
+
+            constant_names = request.POST.getlist('constant_name')
+            constant_types = request.POST.getlist('constant_type')
+            constant_descriptions = request.POST.getlist('constant_description')
+            num_constants = len(constant_names)
+
+            model_data["constant_info"] = []
+            for i in range(num_constants):
+                model_data["constant_info"].append({
+                    "constant_name": constant_names[i],
+                    "constant_type": constant_types[i],
+                    "constant_description": constant_descriptions[i]
+                    })
 
             check_update_required = request.POST['check_update_required']
             print ("check_update_required: ", check_update_required)

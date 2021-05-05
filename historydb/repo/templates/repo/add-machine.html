@@ -122,6 +122,11 @@
           <label><b>Please email us at gptune-dev@lbl.gov if you want to suggest modifications/additions to the given data list (e.g. systems/processors/interconnects)</b></label>
         </div>
 
+        <div class="d-block my-3">
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey={{ GOOGLE_RECAPTCHA_SITE_KEY }}></div>
+        </div>
+
         <div class="mb-3">
           <hr class="mb-4">
           <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>

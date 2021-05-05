@@ -211,6 +211,62 @@
         </div>
 
         <div class="mb-3">
+          <label><b>Need globally shared constant variables?</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="constants_required" name="check_constants_required" type="radio" value="constants_required" onChange="document.getElementById('global_constants_div').style.display = 'block';" required>
+            <label class="custom-control-label" for="constants_required">Yes</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="constants_not_required" name="check_constants_required" type="radio" value="constants_not_required" checked onChange="document.getElementById('global_constants_div').style.display = 'none';" required>
+            <label class="custom-control-label" for="constants_not_required">No</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="global_constants_div" style="display: none;">
+          <div class="row">
+            <div class="col">
+              <label><b>Global Constants (Optional)</b></label>
+            </div>
+            <div class="col d-block text-right">
+              <a onClick="AddInputDivField('constant_info_div', 'constant_info');">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+              </a>
+              <a onClick="RemoveInputDivField('constant_info_div', 'constant_info');">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dash-square-fill" viewBox="0 0 16 16">
+                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 7.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div id="constant_info_div" name="constant_info" style="background-color: #f1f1f1">
+            <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+              <div class="row">
+                <div class="col">
+                  <label>Name</label>
+                  <input type="text" class="form-control" name="constant_name" required>
+                </div>
+                <div class="col">
+                  <label>Type</label>
+                  <select class="custom-select d-block w-100" id="constant_type" name="constant_type">
+                    <option value="" label="Choose..."></option>
+                    <option value="integer" label="Integer"></option>
+                    <option value="float" label="Float (Real)"></option>
+                    <option value="string" label="String"></option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label>Description</label>
+                  <input type="text" class="form-control" name="constant_description">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
           <label><b>Required Software Information</b> (the list of software data is obtained from CK (https://cknowledge.io/c/soft)</label>
 
           <div id="selected_software"></div>
@@ -244,6 +300,11 @@
 
         <div class="mb-3">
           <label><b>Please email us at gptune-dev@lbl.gov if you want to suggest modifications/additions to the given data list (e.g. tuning category, software data, etc.)</b></label>
+        </div>
+
+        <div class="d-block my-3">
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey={{ GOOGLE_RECAPTCHA_SITE_KEY }}></div>
         </div>
 
         <div class="mb-3">

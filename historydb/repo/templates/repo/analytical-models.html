@@ -35,6 +35,9 @@
           <th>Model Name</th>
           <th>User</th>
           <th>Last Update</th>
+          <th>TaskSpace</th>
+          <th>TuningSpace</th>
+          <th>OutputSpace</th>
           <th>Code (Python)</th>
           <th>Code (Other)</th>
           <th>Link/Pointer to Model</th>
@@ -49,6 +52,33 @@
             <td>{{ analytical_model.model_name }}</td>
             <td>{{ analytical_model.user_info.user_name}}</td>
             <td>{{ analytical_model.update_time.tm_mon }}/{{ analytical_model.update_time.tm_mday }}/{{ analytical_model.update_time.tm_year }}</td>
+            <td>
+              {% for task_info in analytical_model.model_data.task_info %}
+                {% if forloop.last %}
+                  {{ task_info.task_name }}
+                {% else %}
+                  {{ task_info.task_name }},
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for parameter_info in analytical_model.model_data.parameter_info %}
+                {% if forloop.last %}
+                  {{ parameter_info.parameter_name }}
+                {% else %}
+                  {{ parameter_info.parameter_name }},
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for output_info in analytical_model.model_data.output_info %}
+                {% if forloop.last %}
+                  {{ output_info.output_name }}
+                {% else %}
+                  {{ output_info.output_name }},
+                {% endif %}
+              {% endfor %}
+            </td>
             {% if 'model_code_python' in analytical_model.model_data %}
               <td>
               <a data-toggle="modal" data-target="#detailPythonCode_{{ analytical_model.uid }}">
