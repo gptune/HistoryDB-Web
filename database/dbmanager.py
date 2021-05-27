@@ -332,7 +332,6 @@ class HistoryDB_MongoDB(dict):
             print ("user_email: ", user_email)
 
             if perf_data['user_info']['user_email'] == user_email:
-                print ("asdf")
                 return True
             elif perf_data['accessibility']['type'] == 'public':
                 return True
@@ -621,7 +620,7 @@ class HistoryDB_MongoDB(dict):
         for surrogate_model in surrogate_model_list:
             try:
                 surrogate_model["tuning_problem_name"] = tuning_problem_simple_name
-                func_eval = self.load_func_eval_by_uid(surrogate_model["func_eval"][0])
+                func_eval = self.load_func_eval_by_uid(surrogate_model["function_evaluations"][0])
                 machine_configuration = func_eval["machine_configuration"]
                 software_configuration = func_eval["software_configuration"]
                 user_information = surrogate_model["user_info"]
