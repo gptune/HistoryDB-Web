@@ -112,10 +112,10 @@ class Dashboard(TemplateView):
                 surrogate_model_web = surrogate_model[start_index_surrogate_model:end_index_surrogate_model]
                 for i in range(len(surrogate_model_web)):
                     surrogate_model_web[i]["id"] = start_index_surrogate_model+i
-                    surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["func_eval"])
+                    surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["function_evaluations"])
                     surrogate_model_web[i]["num_task_parameters"] = len(surrogate_model_web[i]["task_parameters"])
                     surrogate_model_web[i]["num_func_eval_per_task"] = \
-                            int(len(surrogate_model_web[i]["func_eval"])/len(surrogate_model_web[i]["task_parameters"]))
+                            int(len(surrogate_model_web[i]["function_evaluations"])/len(surrogate_model_web[i]["task_parameters"]))
             else:
                 surrogate_model_web = []
                 num_surrogate_models = 0
@@ -352,10 +352,10 @@ class UserDashboard(TemplateView):
         surrogate_model_web = surrogate_models[start_index_surrogate_model:end_index_surrogate_model]
         for i in range(len(surrogate_model_web)):
             surrogate_model_web[i]["id"] = start_index_surrogate_model+i
-            surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["func_eval"])
+            surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["function_evaluations"])
             surrogate_model_web[i]["num_task_parameters"] = len(surrogate_model_web[i]["task_parameters"])
             surrogate_model_web[i]["num_func_eval_per_task"] = \
-                    int(len(surrogate_model_web[i]["func_eval"])/len(surrogate_model_web[i]["task_parameters"]))
+                    int(len(surrogate_model_web[i]["function_evaluations"])/len(surrogate_model_web[i]["task_parameters"]))
 
         context = {
                 "func_eval_list" : func_eval_web,
