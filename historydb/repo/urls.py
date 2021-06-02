@@ -7,6 +7,7 @@ app_name = "repo"
 urlpatterns = [
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     path('user-dashboard/', views.UserDashboard.as_view(), name='user-dashboard'),
+    path('surrogate-model/', views.SurrogateModel.as_view(), name='surrogate-model'),
     path('entryaccess/', views.EntryAccess.as_view(), name='entryaccess'),
     path('entrydel/', views.EntryDel.as_view(), name='entrydel'),
     path('upload/', views.Upload.as_view(), name='upload'),

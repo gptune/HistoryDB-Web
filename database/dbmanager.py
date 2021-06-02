@@ -24,6 +24,7 @@ import sys
 from pathlib import Path
 
 import pymongo
+
 class HistoryDB_MongoDB(dict):
 
     def __init__(self, **kwargs):
@@ -635,7 +636,7 @@ class HistoryDB_MongoDB(dict):
 
         return surrogate_model_list_filtered
 
-    def load_surrogate_models_by_uid(self, surrogate_model_uid):
+    def load_surrogate_model_by_uid(self, surrogate_model_uid):
         applications_list = self.db.list_collection_names()
         for application_name in applications_list:
             application_db = self.db[application_name]
@@ -645,6 +646,21 @@ class HistoryDB_MongoDB(dict):
                     return surrogate_model
 
         return None
+
+#    def load_surrogate_model_function(self, surrogate_model_uid):
+#
+#        applications_list = self.db.list_collection_names()
+#        for application_name in applications_list:
+#            application_db = self.db[application_name]
+#            surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
+#            for surrogate_model in surrogate_model_list:
+#                if surrogate_model["uid"] == surrogate_model_uid:
+#                    gt = CreateGPTuneFromModelData(surrogate_model)
+#                    (models, model_function) = gt.LoadSurrogateModel(model_data = surrogate_model)
+#
+#                    return (model_function)
+#
+#        return None
 
     def load_surrogate_models_by_user(self, user_email):
         surrogate_model_by_user = []

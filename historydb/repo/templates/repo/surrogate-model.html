@@ -1,0 +1,191 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script type="text/javascript" src="{% static 'js/add-analytical-model.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div class="container" style="max-width: 700px">
+  <div class="py-5 text-center">
+    <h1>Play with the Performance (Surrogate) Model</h1>
+  </div>
+
+  <div class="container">
+    <div class="mb-3">
+      <div class="row">
+        <div class="col">
+          <label><b>Model information</b></label>
+        </div>
+      </div>
+
+      <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
+        <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+          <div class="mb-3">
+            <label for="hyperparameters">Model (LCM) hyperparameters</label>
+            <input type="text" class="form-control" id="hyperparameters" name="hyperparameters" value="{{ model_data.hyperparameters }}" readonly>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col">
+              <label for="log-likelihood">Number of samples</label>
+              <input type="text" class="form-control" id="num_samples" name="num_samples" value="{{ model_data.model_stats.num_samples }}" value="" readonly required>
+            </div>
+            <div class="col">
+              <label for="log-likelihood">Log-likelihood</label>
+              <input type="text" class="form-control" id="log-likelihood" name="log-likelihood" value="{{ model_data.model_stats.log_likelihood }}" value="" readonly required>
+            </div>
+            <div class="col">
+              <label for="convergence_iterations">Convergence iterations</label>
+              <input type="text" class="form-control" id="convergence_iterations" name="convergence_iterations" value="{{ model_data.model_stats.iterations }}" value="" readonly required>
+              <div class="invalid-feedback">
+                Valid last name is required.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <form method="POST" action="{% url 'repo:surrogate-model' %}" class="needs-validation" novalidate>
+        <input type="hidden" name="surrogate_model_uid" value={{ model_data.uid }}></input>
+        {% csrf_token %}
+
+        <div class="row">
+          <div class="col">
+            <label><b>Make Predictions</b></label>
+          </div>
+        </div>
+
+        <div>
+          <b>Task parameters</b>
+        </div>
+
+        {% for task_parameter in model_data.input_space %}
+
+        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
+          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+            <div class="row">
+              <div class="col">
+                <label>Name</label>
+                <input type="text" class="form-control" name="task_parameter_name" value="{{ task_parameter.name }}" readonly>
+              </div>
+              <div class="col">
+                <label>Type</label>
+                <input type="text" class="form-control" name="task_parameter_type" value="{{ task_parameter.type }}" readonly>
+              </div>
+              <div class="col">
+                <label>Lower bound</label>
+                <input type="text" class="form-control" name="lower_bound" value="{{ task_parameter.lower_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Upper bound</label>
+                <input type="text" class="form-control" name="upper_bound" value="{{ task_parameter.upper_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Input</label>
+                <input type="text" class="form-control" name="task_parameters" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+
+        <div>
+          <b>Tuning parameters</b>
+        </div>
+
+        {% for tuning_parameter in model_data.parameter_space %}
+
+        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
+          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+            <div class="row">
+              <div class="col">
+                <label>Name</label>
+                <input type="text" class="form-control" name="tuning_parameter_name" value="{{ tuning_parameter.name }}" readonly>
+              </div>
+              <div class="col">
+                <label>Type</label>
+                <input type="text" class="form-control" name="tuning_parameter_type" value="{{ tuning_parameter.type }}" readonly>
+              </div>
+              <div class="col">
+                <label>Lower bound</label>
+                <input type="text" class="form-control" name="lower_bound" value="{{ tuning_parameter.lower_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Upper bound</label>
+                <input type="text" class="form-control" name="upper_bound" value="{{ tuning_parameter.upper_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Input</label>
+                <input type="text" class="form-control" name="tuning_parameters" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+
+        <div class="col mb-3">
+          <label></label>
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Predict</button>
+        </div>
+
+        <div>
+          <b>Evaluated results</b>
+        </div>
+
+        {% for output_parameter in model_data.output_space %}
+
+        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
+          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
+            <div class="row">
+              <div class="col">
+                <label>Name</label>
+                <input type="text" class="form-control" name="output_name" value="{{ output_parameter.name }}" readonly>
+              </div>
+              <div class="col">
+                <label>Type</label>
+                <input type="text" class="form-control" name="output_type" value="{{ output_parameter.type }}" readonly>
+              </div>
+              <div class="col">
+                <label>Lower bound</label>
+                <input type="text" class="form-control" name="lower_bound" value="{{ output_parameter.lower_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Upper bound</label>
+                <input type="text" class="form-control" name="upper_bound" value="{{ output_parameter.upper_bound }}" readonly>
+              </div>
+              <div class="col">
+                <label>Output</label>
+                <input type="text" class="form-control" name="output_parameter" value="" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

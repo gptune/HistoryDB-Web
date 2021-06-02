@@ -375,6 +375,152 @@ class UserDashboard(TemplateView):
 
         return render(request, 'repo/user-dashboard.html', context)
 
+class SurrogateModel(TemplateView):
+
+    def get(self, request, **kwargs):
+        print ("======== Surrogate Model Dashboard ========")
+        surrogate_model_uid = request.GET.get("surrogate_model_uid", "")
+        print ("Surrogate Model UID: ", surrogate_model_uid)
+
+#        historydb = HistoryDB_MongoDB()
+#
+#        user_email = request.user.email
+#
+#        func_eval_list = historydb.load_func_eval_by_user(user_email = user_email)
+#        num_func_eval = len(func_eval_list)
+#        print ("num_func_eval: ", num_func_eval)
+#        num_evals_per_page = 30
+#        if (num_func_eval%num_evals_per_page) == 0:
+#            num_pages_func_eval = int(num_func_eval/num_evals_per_page)
+#        else:
+#            num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
+#        if (num_pages_func_eval == 0):
+#            num_pages_func_eval = 1
+#        current_page_func_eval = int(request.GET.get("current_page_func_eval", 0))
+#        print ("current_page_func_eval: ", current_page_func_eval)
+#        start_index = (current_page_func_eval)*num_evals_per_page
+#        end_index = (current_page_func_eval+1)*num_evals_per_page
+#        if end_index > num_func_eval:
+#            end_index = num_func_eval
+#        func_eval_web = func_eval_list[start_index:end_index]
+#        for i in range(len(func_eval_web)):
+#            func_eval_web[i]["id"] = start_index+i
+#        print (func_eval_web)
+#
+#        surrogate_models = historydb.load_surrogate_models_by_user(user_email = user_email)
+#        num_surrogate_models = len(surrogate_models)
+#        num_surrogate_model_per_page = 30
+#        if (num_surrogate_models %num_surrogate_model_per_page) == 0:
+#            num_pages_surrogate_models = num_surrogate_models/num_surrogate_model_per_page
+#        else:
+#            num_pages_surrogate_models = int(num_surrogate_models/num_surrogate_model_per_page)+1
+#        if (num_pages_surrogate_models == 0):
+#            num_pages_surrogate_models = 1
+#        current_page_surrogate_models = int(request.GET.get("current_page_surrogate_models", 0))
+#        start_index_surrogate_model = (current_page_surrogate_models)*num_surrogate_model_per_page
+#        end_index_surrogate_model = (current_page_surrogate_models+1)*num_surrogate_model_per_page
+#        if end_index_surrogate_model > num_surrogate_models:
+#            end_index_surrogate_model = num_surrogate_models
+#        surrogate_model_web = surrogate_models[start_index_surrogate_model:end_index_surrogate_model]
+#        for i in range(len(surrogate_model_web)):
+#            surrogate_model_web[i]["id"] = start_index_surrogate_model+i
+#            surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["function_evaluations"])
+#            surrogate_model_web[i]["num_task_parameters"] = len(surrogate_model_web[i]["task_parameters"])
+#            surrogate_model_web[i]["num_func_eval_per_task"] = \
+#                    int(len(surrogate_model_web[i]["function_evaluations"])/len(surrogate_model_web[i]["task_parameters"]))
+#
+#        context = {
+#                "func_eval_list" : func_eval_web,
+#                "num_func_eval" : num_func_eval,
+#                "num_pages_func_eval" : range(num_pages_func_eval),
+#                "current_page_func_eval" : current_page_func_eval,
+#                "surrogate_model_list" : surrogate_model_web,
+#                "num_surrogate_models" : num_surrogate_models,
+#                "num_pages_surrogate_models" : range(num_pages_surrogate_models),
+#                "current_page_surrogate_models" : current_page_surrogate_models,
+#                }
+
+        historydb = HistoryDB_MongoDB()
+        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
+
+        surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        print ("SURROGATE_MODEL")
+        print (surrogate_model)
+
+        context = {
+                "model_data" : surrogate_model
+                }
+
+        return render(request, 'repo/surrogate-model.html', context)
+
+    def post(self, request, **kwargs):
+        context = {}
+
+        surrogate_model_uid = request.POST["surrogate_model_uid"]
+        task_parameter_names = request.POST.getlist('task_parameter_name')
+        task_parameters = request.POST.getlist('task_parameters')
+        tuning_parameter_names = request.POST.getlist('tuning_parameter_name')
+        tuning_parameters = request.POST.getlist('tuning_parameters')
+        output_names = request.POST.getlist('output_name')
+        #output = request.POST.getlist('output')
+
+        print ("surrogate_model_uid: ", surrogate_model_uid)
+        print ("TASK parameter names: ", task_parameter_names)
+        print ("TASK parameters: ", task_parameters)
+        print ("TUNING parameter names: ", tuning_parameter_names)
+        print ("TUNING parameters: ", tuning_parameters)
+
+        point = {}
+        for i in range(len(task_parameter_names)):
+            point[task_parameter_names[i]] = task_parameters[i]
+        for i in range(len(tuning_parameter_names)):
+            point[tuning_parameter_names[i]] = tuning_parameters[i]
+
+        print ("MODEL POINT: ", point)
+
+        historydb = HistoryDB_MongoDB()
+        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
+        #model_function = historydb.load_surrogate_model_function(surrogate_model)
+        #output = model_function(point)
+
+        surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        print ("SURROGATE_MODEL")
+        print (surrogate_model)
+
+        context = {
+                "model_data" : surrogate_model,
+                #"output" : output
+                }
+
+        return render(request, 'repo/surrogate-model.html', context)
+
+class EntryAccess(TemplateView):
+    def get(self, request, **kwargs):
+        context = {}
+
+        return render(request, 'repo/user-dashboard.html', context)
+
+    def post(self, request, **kwargs):
+        entry_uid = request.POST["entry_uid"]
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
+
+        accessibility_type = request.POST['accessibility']
+        access_group_given = request.POST['group_invites']
+        print ('access group: ', access_group_given)
+        access_group = access_group_given.split(';')
+
+        accessibility = {}
+        accessibility["type"] = accessibility_type
+        if (accessibility_type == "group"):
+            accessibility["group"] = access_group
+
+        historydb = HistoryDB_MongoDB()
+        historydb.update_entry_accessibility(tuning_problem_unique_name, entry_uid, accessibility)
+
+        return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
+
 class EntryAccess(TemplateView):
     def get(self, request, **kwargs):
         context = {}
