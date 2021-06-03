@@ -26,6 +26,8 @@ import json
 import ast
 import re
 
+from gptune import *
+
 class Dashboard(TemplateView):
 
     def get(self, request, **kwargs):
@@ -459,23 +461,35 @@ class SurrogateModel(TemplateView):
 
         surrogate_model_uid = request.POST["surrogate_model_uid"]
         task_parameter_names = request.POST.getlist('task_parameter_name')
+        task_parameter_types = request.POST.getlist('task_parameter_type')
         task_parameters = request.POST.getlist('task_parameters')
         tuning_parameter_names = request.POST.getlist('tuning_parameter_name')
+        tuning_parameter_types = request.POST.getlist('tuning_parameter_type')
         tuning_parameters = request.POST.getlist('tuning_parameters')
-        output_names = request.POST.getlist('output_name')
+        #output_names = request.POST.getlist('output_name')
+        output_name = request.POST['output_name']
         #output = request.POST.getlist('output')
 
         print ("surrogate_model_uid: ", surrogate_model_uid)
         print ("TASK parameter names: ", task_parameter_names)
+        print ("TASK parameter types: ", task_parameter_types)
         print ("TASK parameters: ", task_parameters)
         print ("TUNING parameter names: ", tuning_parameter_names)
+        print ("TUNING parameter types: ", tuning_parameter_types)
         print ("TUNING parameters: ", tuning_parameters)
+        #print ("output: ", output_names)
 
         point = {}
         for i in range(len(task_parameter_names)):
-            point[task_parameter_names[i]] = task_parameters[i]
+            if task_parameter_types[i] == "int":
+                point[task_parameter_names[i]] = int(task_parameters[i])
+            elif task_parameter_types[i] == "float":
+                point[task_parameter_names[i]] = float(task_parameters[i])
         for i in range(len(tuning_parameter_names)):
-            point[tuning_parameter_names[i]] = tuning_parameters[i]
+            if tuning_parameter_types[i] == "int":
+                point[tuning_parameter_names[i]] = int(tuning_parameters[i])
+            elif tuning_parameter_types[i] == "float":
+                point[tuning_parameter_names[i]] = float(tuning_parameters[i])
 
         print ("MODEL POINT: ", point)
 
@@ -484,6 +498,28 @@ class SurrogateModel(TemplateView):
         #model_function = historydb.load_surrogate_model_function(surrogate_model)
         #output = model_function(point)
 
+        gt = CreateGPTuneFromModelData(surrogate_model)
+        print (surrogate_model)
+        print ("GPTune data: ", gt.data.P)
+
+        func_eval_list = []
+        for func_eval_uid in surrogate_model["function_evaluations"]:
+            func_eval = historydb.load_func_eval_by_uid(func_eval_uid)
+            del(func_eval["_id"])
+            func_eval_list.append(func_eval)
+        #print ("func_eval_list: ", func_eval_list)
+
+        os.system("rm -rf gptune.db")
+        os.system("mkdir -p gptune.db")
+        json_data = {}
+        json_data["func_eval"] = func_eval_list
+        with open("gptune.db/historydb.json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
+        (model, model_function) = gt.LoadSurrogateModel(model_data=surrogate_model)
+        ret = model_function(point)
+        print ("ret: ", ret)
+
         surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
 
         print ("SURROGATE_MODEL")
@@ -491,7 +527,7 @@ class SurrogateModel(TemplateView):
 
         context = {
                 "model_data" : surrogate_model,
-                #"output" : output
+                "output" : ret[output_name]
                 }
 
         return render(request, 'repo/surrogate-model.html', context)
