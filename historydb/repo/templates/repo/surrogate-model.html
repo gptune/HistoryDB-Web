@@ -35,14 +35,27 @@
         </div>
       </div>
 
-      <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
-        <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
-          <div class="mb-3">
-            <label for="hyperparameters">Model (LCM) hyperparameters</label>
-            <input type="text" class="form-control" id="hyperparameters" name="hyperparameters" value="{{ model_data.hyperparameters }}" readonly>
+      <div id="model_info_div" name="model_info" style="background-color: #f1f1f1">
+        <div class="" style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;">
+          <div class="row">
+            <div class="col">
+              <label for="tuning_problem_name">Tuning problem name</label>
+              <input type="text" class="form-control" id="tuning_problem_name" name="tuning_problem_name" value="{{ model_data.tuning_problem_name }}" readonly>
+            </div>
+            <div class="col">
+              <label for="tuning_problem_name">Tuning problem unique name</label>
+              <input type="text" class="form-control" id="tuning_problem_unique_name" name="tuning_problem_unique_name" value="{{ model_data.tuning_problem_unique_name }}" readonly>
+            </div>
           </div>
 
-          <div class="row mb-3">
+          <div class="row">
+            <div class="col">
+              <label for="hyperparameters">Model (LCM) hyperparameters</label>
+              <input type="text" class="form-control" id="hyperparameters" name="hyperparameters" value="{{ model_data.hyperparameters }}" readonly>
+            </div>
+          </div>
+
+          <div class="row">
             <div class="col">
               <label for="log-likelihood">Number of samples</label>
               <input type="text" class="form-control" id="num_samples" name="num_samples" value="{{ model_data.model_stats.num_samples }}" value="" readonly required>
@@ -64,127 +77,117 @@
     </div>
 
     <div class="mb-3">
+      <div class="row">
+        <div class="col">
+          <label><b>Make prediction</b></label>
+        </div>
+      </div>
+
       <form method="POST" action="{% url 'repo:surrogate-model' %}" class="needs-validation" novalidate>
-        <input type="hidden" name="surrogate_model_uid" value={{ model_data.uid }}></input>
+        <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
+        <input type="hidden" name="surrogate_model_uid" value={{ model_data.surrogate_model_uid }}></input>
         {% csrf_token %}
 
-        <div class="row">
-          <div class="col">
-            <label><b>Make Predictions</b></label>
-          </div>
-        </div>
-
-        <div>
-          <b>Task parameters</b>
-        </div>
-
-        {% for task_parameter in model_data.input_space %}
-
-        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
-          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
-            <div class="row">
-              <div class="col">
-                <label>Name</label>
-                <input type="text" class="form-control" name="task_parameter_name" value="{{ task_parameter.name }}" readonly>
-              </div>
-              <div class="col">
-                <label>Type</label>
-                <input type="text" class="form-control" name="task_parameter_type" value="{{ task_parameter.type }}" readonly>
-              </div>
-              <div class="col">
-                <label>Lower bound</label>
-                <input type="text" class="form-control" name="lower_bound" value="{{ task_parameter.lower_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Upper bound</label>
-                <input type="text" class="form-control" name="upper_bound" value="{{ task_parameter.upper_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Input</label>
-                <input type="text" class="form-control" name="task_parameters" value="">
-              </div>
+        <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+          <div class="row mb-3">
+            <div class="col">
+              <b>Task parameters</b>
             </div>
           </div>
-        </div>
 
-        {% endfor %}
-
-        <div>
-          <b>Tuning parameters</b>
-        </div>
-
-        {% for tuning_parameter in model_data.parameter_space %}
-
-        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
-          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
-            <div class="row">
-              <div class="col">
-                <label>Name</label>
-                <input type="text" class="form-control" name="tuning_parameter_name" value="{{ tuning_parameter.name }}" readonly>
-              </div>
-              <div class="col">
-                <label>Type</label>
-                <input type="text" class="form-control" name="tuning_parameter_type" value="{{ tuning_parameter.type }}" readonly>
-              </div>
-              <div class="col">
-                <label>Lower bound</label>
-                <input type="text" class="form-control" name="lower_bound" value="{{ tuning_parameter.lower_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Upper bound</label>
-                <input type="text" class="form-control" name="upper_bound" value="{{ tuning_parameter.upper_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Input</label>
-                <input type="text" class="form-control" name="tuning_parameters" value="">
-              </div>
+          {% for task_parameter in model_data.task_parameters %}
+          <div class="row mb-3">
+            <div class="col-2">
+              <label>Name</label>
+              <input type="text" class="form-control" name="task_parameter_name" value="{{ task_parameter.name }}" readonly>
+            </div>
+            <div class="col-2">
+              <label>Type</label>
+              <input type="text" class="form-control" name="task_parameter_type" value="{{ task_parameter.type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="task_description" value="{{ task_parameter.description }}" readonly>
+            </div>
+            <div class="col">
+              <label>Input</label>
+              <select class="custom-select d-block w-100" name="task_parameter">
+                {% for task_option in task_parameter.options %}
+                <option value="{{ task_option }}">
+                {{ task_option }}
+                </option>
+                {% endfor %}
+              </select>
             </div>
           </div>
-        </div>
+          {% endfor %}
 
-        {% endfor %}
-
-        <div class="col mb-3">
-          <label></label>
-          <button class="btn btn-primary btn-lg btn-block" type="submit">Predict</button>
-        </div>
-
-        <div>
-          <b>Evaluated results</b>
-        </div>
-
-        {% for output_parameter in model_data.output_space %}
-
-        <div id="task_info_div" name="task_info" style="background-color: #f1f1f1">
-          <div class="" style="padding-top: 5px; padding-bottom: 5px; padding-left: 20px; padding-right: 20px;">
-            <div class="row">
-              <div class="col">
-                <label>Name</label>
-                <input type="text" class="form-control" name="output_name" value="{{ output_parameter.name }}" readonly>
-              </div>
-              <div class="col">
-                <label>Type</label>
-                <input type="text" class="form-control" name="output_type" value="{{ output_parameter.type }}" readonly>
-              </div>
-              <div class="col">
-                <label>Lower bound</label>
-                <input type="text" class="form-control" name="lower_bound" value="{{ output_parameter.lower_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Upper bound</label>
-                <input type="text" class="form-control" name="upper_bound" value="{{ output_parameter.upper_bound }}" readonly>
-              </div>
-              <div class="col">
-                <label>Output</label>
-                <input type="text" class="form-control" name="output_parameter" value="{{ output }}" readonly>
-              </div>
+          <div class="row mb-3">
+            <div class="col">
+              <b>Tuning parameters</b>
             </div>
           </div>
-        </div>
 
-        {% endfor %}
+          {% for tuning_parameter in model_data.tuning_parameters %}
+          <div class="row mb-3">
+            <div class="col-2">
+              <label>Name</label>
+              <input type="text" class="form-control" name="tuning_parameter_name" value="{{ tuning_parameter.name }}" readonly>
+            </div>
+            <div class="col-2">
+              <label>Type</label>
+              <input type="text" class="form-control" name="tuning_parameter_type" value="{{ tuning_parameter.type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="tuning_parameter_description" value="{{ tuning_parameter.description }}" readonly>
+            </div>
+            <div class="col">
+              <label>Input ({{ tuning_parameter.lower_bound }}~{{ tuning_parameter.upper_bound }})</label>
+              <input type="text" class="form-control" name="tuning_parameter" value="{{ tuning_parameter.value }}">
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="row mb-3">
+            <div class="col-4">
+              <label></label>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Predict Output</button>
+            </div>
+          </div>
+
+          {% for output_parameter in model_data.output_parameters %}
+          <div class="row mb-3">
+            <div class="col-2">
+              <label>Name</label>
+              <input type="text" class="form-control" name="output_parameter_name" value="{{ output_parameter.name }}" readonly>
+            </div>
+            <div class="col-2">
+              <label>Type</label>
+              <input type="text" class="form-control" name="output_parameter_type" value="{{ output_parameter.type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="output_parameter_description" value="{{ output_parameter.description }}" readonly>
+            </div>
+            <div class="col">
+              <label>Result ({{ output_parameter.lower_bound }}~{{ output_parameter.upper_bound }})</label>
+              <input type="text" class="form-control" name="output_parameter" value="{{ output_parameter.result }}" readonly>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </form>
     </div>
+
+    <div class="mb-3">
+      <div class="row">
+        <div class="col">
+          <label><b>Sensitivity Analysis</b></label>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 

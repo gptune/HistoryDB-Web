@@ -804,6 +804,12 @@ class HistoryDB_MongoDB(dict):
 
         return tuning_problem_list
 
+    def load_tuning_problem_by_unique_name(self, tuning_problem_unique_name, **kwargs):
+
+        tuning_problem_document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})
+
+        return tuning_problem_document[0]
+
     def load_tuning_problems_per_category(self, **kwargs):
         tuning_problems_avail_per_category = {}
 

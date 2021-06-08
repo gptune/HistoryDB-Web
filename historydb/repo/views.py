@@ -381,7 +381,9 @@ class SurrogateModel(TemplateView):
 
     def get(self, request, **kwargs):
         print ("======== Surrogate Model Dashboard ========")
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         surrogate_model_uid = request.GET.get("surrogate_model_uid", "")
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
         print ("Surrogate Model UID: ", surrogate_model_uid)
 
 #        historydb = HistoryDB_MongoDB()
@@ -443,15 +445,104 @@ class SurrogateModel(TemplateView):
 #                }
 
         historydb = HistoryDB_MongoDB()
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
         surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
-
-        surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+        print ("tuning_problem: ", tuning_problem)
 
         print ("SURROGATE_MODEL")
         print (surrogate_model)
 
+        model_data = {}
+
+        model_data["surrogate_model_uid"] = surrogate_model_uid
+
+        model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+        model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+        model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+        model_data["model_stats"] = surrogate_model["model_stats"]
+        model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        model_data["task_parameters"] = []
+        for i in range(len(surrogate_model["input_space"])):
+            task_space = surrogate_model["input_space"][i]
+
+            task_parameter = {}
+            task_parameter["name"] = task_space["name"]
+            task_parameter["type"] = task_space["type"]
+            task_parameter["lower_bound"] = task_space["lower_bound"]
+            task_parameter["upper_bound"] = task_space["upper_bound"]
+            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                if task_info["task_name"] == task_parameter["name"]:
+                    task_parameter["description"] = "task_desc: " + task_info["task_description"]
+            task_parameter["options"] = []
+            for j in range(len(surrogate_model["task_parameters"])):
+                task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+            task_parameter["value"] = task_parameter["options"][0]
+
+            model_data["task_parameters"].append(task_parameter)
+
+        model_data["tuning_parameters"] = []
+        for parameter_space in surrogate_model["parameter_space"]:
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["type"] = parameter_space["type"]
+            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+
+            for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                    tuning_parameter["description"] = "tuning_desc: " + parameter_info["parameter_description"]
+            tuning_parameter["value"] = tuning_parameter["lower_bound"]
+
+            model_data["tuning_parameters"].append(tuning_parameter)
+
+        model_data["output_parameters"] = []
+        for output_space in surrogate_model["output_space"]:
+            output_parameter = {}
+            output_parameter["name"] = output_space["name"]
+            output_parameter["type"] = output_space["type"]
+            output_parameter["lower_bound"] = output_space["lower_bound"]
+            output_parameter["upper_bound"] = output_space["upper_bound"]
+
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == output_parameter["name"]:
+                    output_parameter["description"] = "output_desc: " + output_info["output_description"]
+            output_parameter["result"] = "-"
+
+            model_data["output_parameters"].append(output_parameter)
+
+#        model_data["input_space"] = surrogate_model["input_space"]
+#        #model_data["task_parameters"] = surrogate_model["task_parameters"]
+#        print ("model task parameters: ", model_data["task_parameters"])
+#        for input_parameter in model_data["input_space"]:
+#            task_parameter_name = input_parameter["name"]
+#            print (task_parameter_name)
+#            print (input_parameter)
+#            print (tuning_problem["tuning_problem_info"]["task_info"])
+#
+#            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+#                if task_info["task_name"] == task_parameter_name:
+#                    input_parameter["description"] = "task_desc: " + task_info["task_description"]
+#
+#        model_data["parameter_space"] = surrogate_model["parameter_space"]
+#        for tuning_parameter in model_data["parameter_space"]:
+#            tuning_parameter_name = tuning_parameter["name"]
+#            print (tuning_problem["tuning_problem_info"]["parameter_info"])
+#
+#            for tuning_parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+#                if tuning_parameter_info["parameter_name"] == tuning_parameter_name:
+#                    input_parameter["description"] = "parameter_desc: " + tuning_parameter_info["parameter_description"]
+#
+#        model_data["output_space"] = surrogate_model["output_space"]
+
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(model_data)
+        print ("MODEL_DATA: ", model_data)
+        #pp.pprint("MODEL_DATA: ", model_data)
+
         context = {
-                "model_data" : surrogate_model
+                "model_data" : model_data
                 }
 
         return render(request, 'repo/surrogate-model.html', context)
@@ -462,12 +553,12 @@ class SurrogateModel(TemplateView):
         surrogate_model_uid = request.POST["surrogate_model_uid"]
         task_parameter_names = request.POST.getlist('task_parameter_name')
         task_parameter_types = request.POST.getlist('task_parameter_type')
-        task_parameters = request.POST.getlist('task_parameters')
+        task_parameters = request.POST.getlist('task_parameter')
         tuning_parameter_names = request.POST.getlist('tuning_parameter_name')
         tuning_parameter_types = request.POST.getlist('tuning_parameter_type')
-        tuning_parameters = request.POST.getlist('tuning_parameters')
+        tuning_parameters = request.POST.getlist('tuning_parameter')
         #output_names = request.POST.getlist('output_name')
-        output_name = request.POST['output_name']
+        output_name = request.POST['output_parameter_name']
         #output = request.POST.getlist('output')
 
         print ("surrogate_model_uid: ", surrogate_model_uid)
@@ -520,14 +611,83 @@ class SurrogateModel(TemplateView):
         ret = model_function(point)
         print ("ret: ", ret)
 
-        surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+        #surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        #print ("SURROGATE_MODEL")
+        #print (surrogate_model)
+
+        #historydb = HistoryDB_MongoDB()
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
+        print ("tuning_problem: ", tuning_problem)
 
         print ("SURROGATE_MODEL")
         print (surrogate_model)
 
+        model_data = {}
+
+        model_data["surrogate_model_uid"] = surrogate_model_uid
+
+        model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+        model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+        model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+        model_data["model_stats"] = surrogate_model["model_stats"]
+        model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        model_data["task_parameters"] = []
+        for i in range(len(surrogate_model["input_space"])):
+            task_space = surrogate_model["input_space"][i]
+
+            task_parameter = {}
+            task_parameter["name"] = task_space["name"]
+            task_parameter["type"] = task_space["type"]
+            task_parameter["lower_bound"] = task_space["lower_bound"]
+            task_parameter["upper_bound"] = task_space["upper_bound"]
+            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                if task_info["task_name"] == task_parameter["name"]:
+                    task_parameter["description"] = "task_desc: " + task_info["task_description"]
+            task_parameter["options"] = []
+            for j in range(len(surrogate_model["task_parameters"])):
+                task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+            task_parameter["value"] = task_parameters[i]
+
+            model_data["task_parameters"].append(task_parameter)
+
+        model_data["tuning_parameters"] = []
+        for i in range(len(surrogate_model["parameter_space"])):
+            parameter_space = surrogate_model["parameter_space"][i]
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["type"] = parameter_space["type"]
+            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+
+            for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                    tuning_parameter["description"] = "tuning_desc: " + parameter_info["parameter_description"]
+            tuning_parameter["value"] = tuning_parameters[i]
+
+            model_data["tuning_parameters"].append(tuning_parameter)
+
+        model_data["output_parameters"] = []
+        for output_space in surrogate_model["output_space"]:
+            output_parameter = {}
+            output_parameter["name"] = output_space["name"]
+            output_parameter["type"] = output_space["type"]
+            output_parameter["lower_bound"] = output_space["lower_bound"]
+            output_parameter["upper_bound"] = output_space["upper_bound"]
+
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == output_parameter["name"]:
+                    output_parameter["description"] = "output_desc: " + output_info["output_description"]
+
+            output_parameter["result"] = ret[output_parameter["name"]]
+
+            model_data["output_parameters"].append(output_parameter)
+
         context = {
-                "model_data" : surrogate_model,
-                "output" : ret[output_name]
+                "model_data" : model_data
                 }
 
         return render(request, 'repo/surrogate-model.html', context)
