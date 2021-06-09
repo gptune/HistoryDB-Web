@@ -511,6 +511,17 @@ class SurrogateModel(TemplateView):
 
             model_data["output_parameters"].append(output_parameter)
 
+        sobel_analysis = {}
+        sobel_analysis["task_parameters"] = []
+        for i in range(len(surrogate_model["task_parameters"])):
+            task_parameter = {}
+            for j in range(len(surrogate_model["input_space"])):
+                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+            sobel_analysis["task_parameters"].append(task_parameter)
+        sobel_analysis["num_samples"] = 1000
+
 #        model_data["input_space"] = surrogate_model["input_space"]
 #        #model_data["task_parameters"] = surrogate_model["task_parameters"]
 #        print ("model task parameters: ", model_data["task_parameters"])
@@ -538,14 +549,18 @@ class SurrogateModel(TemplateView):
         import pprint
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(model_data)
+        pp.pprint(sobel_analysis)
         print ("MODEL_DATA: ", model_data)
         #pp.pprint("MODEL_DATA: ", model_data)
 
         context = {
-                "model_data" : model_data
+                "model_data" : model_data,
+                "sobel_analysis" : sobel_analysis
                 }
 
         return render(request, 'repo/surrogate-model.html', context)
+
+class ModelPrediction(TemplateView):
 
     def post(self, request, **kwargs):
         context = {}
@@ -686,8 +701,179 @@ class SurrogateModel(TemplateView):
 
             model_data["output_parameters"].append(output_parameter)
 
+        sobel_analysis = {}
+        sobel_analysis["task_parameters"] = []
+        for i in range(len(surrogate_model["task_parameters"])):
+            task_parameter = {}
+            for j in range(len(surrogate_model["input_space"])):
+                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+            sobel_analysis["task_parameters"].append(task_parameter)
+        sobel_analysis["num_samples"] = 1000
+
+
+
+#        sobel_analysis = {}
+#        sobel_analysis["task_parameters"] = []
+#        for i in range(len(surrogate_model["task_parameters"])):
+#            task_parameter = {}
+#            for j in range(len(surrogate_model["input_space"])):
+#                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+#                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+#                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+#            sobel_analysis["task_parameters"].append(task_parameter)
+#        sobel_analysis["num_samples"] = 1000
+#
+#        si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=surrogate_model["task_parameters"][0], num_samples=1000)
+#        print (si)
+
         context = {
-                "model_data" : model_data
+                "model_data" : model_data,
+                "sobel_analysis" : sobel_analysis
+                }
+
+        return render(request, 'repo/surrogate-model.html', context)
+
+class SobelAnalysis(TemplateView):
+
+    def post(self, request, **kwargs):
+        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
+        surrogate_model_uid = request.POST["surrogate_model_uid"]
+        sobel_analysis_num_samples = request.POST["sobel_analysis_num_samples"]
+        historydb = HistoryDB_MongoDB()
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
+        print ("tuning_problem: ", tuning_problem)
+
+        print ("sobel_analysis_num_samples: ", sobel_analysis_num_samples)
+
+        print ("SURROGATE_MODEL")
+        print (surrogate_model)
+
+        model_data = {}
+
+        model_data["surrogate_model_uid"] = surrogate_model_uid
+
+        model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+        model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+        model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+        model_data["model_stats"] = surrogate_model["model_stats"]
+        model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        model_data["task_parameters"] = []
+        for i in range(len(surrogate_model["input_space"])):
+            task_space = surrogate_model["input_space"][i]
+
+            task_parameter = {}
+            task_parameter["name"] = task_space["name"]
+            task_parameter["type"] = task_space["type"]
+            task_parameter["lower_bound"] = task_space["lower_bound"]
+            task_parameter["upper_bound"] = task_space["upper_bound"]
+            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                if task_info["task_name"] == task_parameter["name"]:
+                    task_parameter["description"] = "task_desc: " + task_info["task_description"]
+            task_parameter["options"] = []
+            for j in range(len(surrogate_model["task_parameters"])):
+                task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+            task_parameter["value"] = task_parameter["options"][0]
+
+            model_data["task_parameters"].append(task_parameter)
+
+        model_data["tuning_parameters"] = []
+        for parameter_space in surrogate_model["parameter_space"]:
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["type"] = parameter_space["type"]
+            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+
+            for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                    tuning_parameter["description"] = "tuning_desc: " + parameter_info["parameter_description"]
+            tuning_parameter["value"] = tuning_parameter["lower_bound"]
+
+            model_data["tuning_parameters"].append(tuning_parameter)
+
+        model_data["output_parameters"] = []
+        for output_space in surrogate_model["output_space"]:
+            output_parameter = {}
+            output_parameter["name"] = output_space["name"]
+            output_parameter["type"] = output_space["type"]
+            output_parameter["lower_bound"] = output_space["lower_bound"]
+            output_parameter["upper_bound"] = output_space["upper_bound"]
+
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == output_parameter["name"]:
+                    output_parameter["description"] = "output_desc: " + output_info["output_description"]
+            output_parameter["result"] = "-"
+
+            model_data["output_parameters"].append(output_parameter)
+
+        sobel_analysis = {}
+        sobel_analysis["task_parameters"] = []
+        for i in range(len(surrogate_model["task_parameters"])):
+            task_parameter = {}
+            for j in range(len(surrogate_model["input_space"])):
+                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+            sobel_analysis["task_parameters"].append(task_parameter)
+        sobel_analysis["num_samples"] = 1000
+
+        si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=surrogate_model["task_parameters"][0], num_samples=sobel_analysis_num_samples)
+
+        sobel_analysis["st_parameters"] = []
+
+        ST_array = si["ST"]
+        ST_conf_array = si["ST_conf"]
+        for i in range(len(surrogate_model["parameter_space"])):
+            parameter_space = surrogate_model["parameter_space"][i]
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["ST"] = ST_array[i]
+            tuning_parameter["ST_conf"] = ST_conf_array[i]
+
+            sobel_analysis["st_parameters"].append(tuning_parameter)
+
+        sobel_analysis["s1_parameters"] = []
+
+        S1_array = si["S1"]
+        S1_conf_array = si["S1_conf"]
+        for i in range(len(surrogate_model["parameter_space"])):
+            parameter_space = surrogate_model["parameter_space"][i]
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["S1"] = S1_array[i]
+            tuning_parameter["S1_conf"] = S1_conf_array[i]
+
+            sobel_analysis["s1_parameters"].append(tuning_parameter)
+
+        sobel_analysis["s2_parameters"] = []
+
+        S2_array = si["S2"]
+        S2_conf_array = si["S2_conf"]
+        num_parameters = len(surrogate_model["parameter_space"])
+        for i in range(num_parameters):
+            for j in range(i+1, num_parameters):
+                tuning_parameter = {}
+                tuning_parameter["name1"] = surrogate_model["parameter_space"][i]["name"]
+                tuning_parameter["name2"] = surrogate_model["parameter_space"][j]["name"]
+                tuning_parameter["S2"] = S2_array[i][j]
+                tuning_parameter["S2_conf"] = S2_conf_array[i][j]
+
+                sobel_analysis["s2_parameters"].append(tuning_parameter)
+
+        print ("####")
+        print (si)
+
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(si)
+
+        context = {
+                "model_data" : model_data,
+                "sobel_analysis" : sobel_analysis
                 }
 
         return render(request, 'repo/surrogate-model.html', context)

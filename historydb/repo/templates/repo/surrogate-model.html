@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <form method="POST" action="{% url 'repo:surrogate-model' %}" class="needs-validation" novalidate>
+      <form method="POST" action="{% url 'repo:model-prediction' %}" class="needs-validation" novalidate>
         <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
         <input type="hidden" name="surrogate_model_uid" value={{ model_data.surrogate_model_uid }}></input>
         {% csrf_token %}
@@ -186,8 +186,91 @@
           <label><b>Sensitivity Analysis</b></label>
         </div>
       </div>
-    </div>
 
+      <form method="POST" action="{% url 'repo:sobel-analysis' %}" class="needs-validation" novalidate>
+        <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
+        <input type="hidden" name="surrogate_model_uid" value={{ model_data.surrogate_model_uid }}></input>
+        {% csrf_token %}
+
+        <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+          <div class="row mb-3">
+            <div class="col">
+              <label>Input task</label>
+              <select class="custom-select d-block w-100" name="sobel_analysis_task_parameter">
+                {% for task_parameter in sobel_analysis.task_parameters %}
+                <option value="{{ task_parameter }}">
+                {{ task_parameter }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-4">
+              <label>Num samples</label>
+              <input type="text" class="form-control" name="sobel_analysis_num_samples" value="{{ sobel_analysis.num_samples }}">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-4">
+              <label></label>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Sobel Analysis</button>
+            </div>
+          </div>
+
+          {% for st_parameter in sobel_analysis.st_parameters %}
+          <div class="row mb-3">
+            <div class="col">
+              <label>Name</label>
+              <input type="text" class="form-control" name="tuning_parameter_name" value="{{ st_parameter.name }}" readonly>
+            </div>
+            <div class="col">
+              <label>ST</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_st" value="{{ st_parameter.ST }}" readonly>
+            </div>
+            <div class="col">
+              <label>ST_conf</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_st_conf" value="{{ st_parameter.ST_conf }}" readonly>
+            </div>
+          </div>
+          {% endfor %}
+
+          {% for s1_parameter in sobel_analysis.s1_parameters %}
+          <div class="row mb-3">
+            <div class="col">
+              <label>Name</label>
+              <input type="text" class="form-control" name="tuning_parameter_name" value="{{ s1_parameter.name }}" readonly>
+            </div>
+            <div class="col">
+              <label>S1</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s1" value="{{ s1_parameter.S1 }}" readonly>
+            </div>
+            <div class="col">
+              <label>S1_conf</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s1_conf" value="{{ s1_parameter.S1_conf }}" readonly>
+            </div>
+          </div>
+          {% endfor %}
+
+          {% for s2_parameter in sobel_analysis.s2_parameters %}
+          <div class="row mb-3">
+            <div class="col">
+              <label>Name</label>
+              <input type="text" class="form-control" name="tuning_parameter_name" value="{{ s2_parameter.name1 }}-{{ s2_parameter.name2 }}" readonly>
+            </div>
+            <div class="col">
+              <label>S2</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s2" value="{{ s2_parameter.S2 }}" readonly>
+            </div>
+            <div class="col">
+              <label>S2_conf</label>
+              <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s2_conf" value="{{ s2_parameter.S2_conf }}" readonly>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
