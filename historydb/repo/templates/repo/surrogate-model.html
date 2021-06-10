@@ -22,7 +22,7 @@
   });
 </script>
 
-<div class="container" style="max-width: 700px">
+<div class="container" style="max-width: 1000px">
   <div class="py-5 text-center">
     <h1>Play with the Performance (Surrogate) Model</h1>
   </div>
@@ -73,6 +73,95 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <div class="row">
+        <div class="col">
+          <label><b>Analysis</b></label>
+        </div>
+      </div>
+
+      <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+      <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+      <div class="table-responsive">
+        number of function evaluation result: {{ model_data.model_stats.num_samples }}
+        <br><br>
+
+        <table class="table table-striped table-sm sortable">
+          <thead>
+            <tr>
+              <th>#</th>
+
+              {% for key, value in model_data.function_evaluations.0.task_parameter.items %}
+              <th>{{ key }}</th>
+              {% endfor %}
+
+              {% for key, value in model_data.function_evaluations.0.tuning_parameter.items %}
+              <th>{{ key }}</th>
+              {% endfor %}
+
+              {% for key, value in model_data.function_evaluations.0.evaluation_result.items %}
+              <th>Result ({{ key }})</th>
+              {% endfor %}
+
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for func_eval in model_data.function_evaluations %}
+            {% ifequal func_eval.id model_data.best_func_eval_id %}
+            <tr style="color: blue;">
+            {% else %}
+            <tr>
+            {% endifequal %}
+              <td>{{func_eval.id}}</td>
+
+              {% for key, value in func_eval.task_parameter.items %}
+              <td>{{ value }}</td>
+              {% endfor %}
+
+              {% for key, value in func_eval.tuning_parameter.items %}
+              <td>{{ value }}</td>
+              {% endfor %}
+
+              {% for key, value in func_eval.evaluation_result.items %}
+              <td>{{ value | floatformat:2 }}</td>
+              {% endfor %}
+
+              <td>
+                <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                    <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                  </svg>
+                </a>
+              </td>
+
+              <div class="modal fade" id="detailModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <pre>{{ func_eval | pprint }}</pre>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
       </div>
     </div>
 
@@ -171,8 +260,12 @@
               <input type="text" class="form-control" name="output_parameter_description" value="{{ output_parameter.description }}" readonly>
             </div>
             <div class="col">
-              <label>Result ({{ output_parameter.lower_bound }}~{{ output_parameter.upper_bound }})</label>
-              <input type="text" class="form-control" name="output_parameter" value="{{ output_parameter.result }}" readonly>
+              <label>Predicted Result</label>
+              <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result }}" readonly>
+            </div>
+            <div class="col">
+              <label>Prediction Variance</label>
+              <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result_var }}" readonly>
             </div>
           </div>
           {% endfor %}

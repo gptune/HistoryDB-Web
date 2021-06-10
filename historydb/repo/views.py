@@ -404,6 +404,14 @@ class SurrogateModel(TemplateView):
         model_data["model_stats"] = surrogate_model["model_stats"]
         model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
 
+        model_data["function_evaluations"] = []
+        func_eval_id = 1
+        for func_eval_uid in surrogate_model["function_evaluations"]:
+            func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+            func_eval_document["id"] = func_eval_id
+            func_eval_id += 1
+            model_data["function_evaluations"].append(func_eval_document)
+
         model_data["task_parameters"] = []
         for i in range(len(surrogate_model["input_space"])):
             task_space = surrogate_model["input_space"][i]
@@ -592,6 +600,14 @@ class ModelPrediction(TemplateView):
         model_data["model_stats"] = surrogate_model["model_stats"]
         model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
 
+        model_data["function_evaluations"] = []
+        func_eval_id = 1
+        for func_eval_uid in surrogate_model["function_evaluations"]:
+            func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+            func_eval_document["id"] = func_eval_id
+            func_eval_id += 1
+            model_data["function_evaluations"].append(func_eval_document)
+
         model_data["task_parameters"] = []
         for i in range(len(surrogate_model["input_space"])):
             task_space = surrogate_model["input_space"][i]
@@ -641,6 +657,7 @@ class ModelPrediction(TemplateView):
 
             #output_parameter["result"] = ret[output_parameter["name"]]
             output_parameter["result"] = round(ret[output_parameter["name"]][0][0],3)
+            output_parameter["result_var"] = round(ret[output_parameter["name"]+"_var"][0][0],3)
 
             model_data["output_parameters"].append(output_parameter)
             #model_data["output_parameters"].append(output_parameter)
@@ -703,6 +720,14 @@ class SobolAnalysis(TemplateView):
         model_data["hyperparameters"] = surrogate_model["hyperparameters"]
         model_data["model_stats"] = surrogate_model["model_stats"]
         model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+        model_data["function_evaluations"] = []
+        func_eval_id = 1
+        for func_eval_uid in surrogate_model["function_evaluations"]:
+            func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+            func_eval_document["id"] = func_eval_id
+            func_eval_id += 1
+            model_data["function_evaluations"].append(func_eval_document)
 
         model_data["task_parameters"] = []
         for i in range(len(surrogate_model["input_space"])):
