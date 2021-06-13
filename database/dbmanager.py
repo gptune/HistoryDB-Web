@@ -637,12 +637,13 @@ class HistoryDB_MongoDB(dict):
         return surrogate_model_list_filtered
 
     def load_surrogate_model_by_uid(self, surrogate_model_uid):
-        applications_list = self.db.list_collection_names()
-        for application_name in applications_list:
-            application_db = self.db[application_name]
+        for collection_name in self.db.list_collection_names():
+            application_db = self.db[collection_name]
             surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
             for surrogate_model in surrogate_model_list:
                 if surrogate_model["uid"] == surrogate_model_uid:
+                    tuning_problem_simple_name = self.get_tuning_problem_simple_name(collection_name)
+                    surrogate_model["tuning_problem_name"] = tuning_problem_simple_name
                     return surrogate_model
 
         return None
