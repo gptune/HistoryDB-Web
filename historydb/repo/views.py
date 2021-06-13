@@ -554,6 +554,14 @@ class ModelPrediction(TemplateView):
         #model_function = historydb.load_surrogate_model_function(surrogate_model)
         #output = model_function(point)
 
+        tuning_problem_name = surrogate_model["tuning_problem_name"]
+        os.system("rm -rf .gptune")
+        os.system("mkdir -p .gptune")
+        json_data = {}
+        json_data["tuning_problem_name"] = tuning_problem_name
+        with open(".gptune/meta.json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
         gt = CreateGPTuneFromModelData(surrogate_model)
         print (surrogate_model)
         print ("GPTune data: ", gt.data.P)
@@ -564,14 +572,6 @@ class ModelPrediction(TemplateView):
             del(func_eval["_id"])
             func_eval_list.append(func_eval)
         #print ("func_eval_list: ", func_eval_list)
-
-        tuning_problem_name = surrogate_model["tuning_problem_name"]
-        os.system("rm -rf .gptune")
-        os.system("mkdir -p .gptune")
-        json_data = {}
-        json_data["tuning_problem_name"] = tuning_problem_name
-        with open(".gptune/meta.json", "w") as f_out:
-            json.dump(json_data, f_out, indent=2)
 
         os.system("rm -rf gptune.db")
         os.system("mkdir -p gptune.db")
