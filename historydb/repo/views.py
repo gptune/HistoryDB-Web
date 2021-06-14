@@ -719,6 +719,28 @@ class SobolAnalysis(TemplateView):
         print ("SURROGATE_MODEL")
         print (surrogate_model)
 
+        tuning_problem_name = surrogate_model["tuning_problem_name"]
+        os.system("rm -rf .gptune")
+        os.system("mkdir -p .gptune")
+        json_data = {}
+        json_data["tuning_problem_name"] = tuning_problem_name
+        with open(".gptune/meta.json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
+        func_eval_list = []
+        for func_eval_uid in surrogate_model["function_evaluations"]:
+            func_eval = historydb.load_func_eval_by_uid(func_eval_uid)
+            del(func_eval["_id"])
+            func_eval_list.append(func_eval)
+        #print ("func_eval_list: ", func_eval_list)
+
+        os.system("rm -rf gptune.db")
+        os.system("mkdir -p gptune.db")
+        json_data = {}
+        json_data["func_eval"] = func_eval_list
+        with open("gptune.db/"+tuning_problem_name+".json", "w") as f_out:
+            json.dump(json_data, f_out, indent=2)
+
         model_data = {}
 
         model_data["surrogate_model_uid"] = surrogate_model_uid
