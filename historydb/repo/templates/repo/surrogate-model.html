@@ -79,31 +79,103 @@
     <div class="mb-3">
       <div class="row">
         <div class="col">
-          <label><b>Analysis</b></label>
+          <label><b>Function Evaluation Results</b></label>
         </div>
       </div>
 
       <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
       <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+
+      <script src="https://unpkg.com/@popperjs/core@2"></script>
+      <script src="https://unpkg.com/tippy.js@6"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/stacktable.js/1.0.0/stacktable.js"></script>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/what-input/2.1.1/what-input.min.js"></script>
+      <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/7635/stacktable.js"></script>
+      <script src="https://unpkg.com/popper.js@1"></script>
+      <script src="https://unpkg.com/tippy.js@4"></script>
+
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/motion-ui/1.2.2/motion-ui.css" rel="stylesheet">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation-float.css" rel="stylesheet">
+      <link href="https://unpkg.com/tippy.js@4/themes/google.css" rel="stylesheet">
+
+      <script>
+        $(document).ready(function() {
+          $('body').on('mouseenter', '.tippy', function(e) {
+            tippy('body .tippy', {
+            })
+          });
+        });
+      </script>
+
       <div class="table-responsive">
-        number of function evaluation result: {{ model_data.model_stats.num_samples }}
+        Number of function evaluation result: {{ model_data.model_stats.num_samples }}
+        <br>
+        Put your mouse cursor on each parameter to see the details.
+        <br>
+        Click on each parameter to sort the table.
         <br><br>
 
         <table class="table table-striped table-sm sortable">
           <thead>
             <tr>
-              <th>#</th>
+              <th>
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Sample number</h6>
+                  </div>">
+                  <u>#</u>
+                </span>
+              </th>
 
-              {% for key, value in model_data.function_evaluations.0.task_parameter.items %}
-              <th>{{ key }}</th>
+              {% for task_parameter in model_data.task_parameters %}
+              <th style="background: #DFD">
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Task parameter</h6>
+                    <ul>
+                      <li>Name: {{ task_parameter.name }}</li>
+                      <li>Type: {{ task_parameter.type }}</li>
+                      <li>Description: {{ task_parameter.description }}</li>
+                    </ul>
+                  </div>">
+                  <u>Task Param. ({{ task_parameter.name }})</u>
+                </span>
+              </th>
               {% endfor %}
 
-              {% for key, value in model_data.function_evaluations.0.tuning_parameter.items %}
-              <th>{{ key }}</th>
+              {% for tuning_parameter in model_data.tuning_parameters %}
+              <th style="background: #FFD">
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Task parameter</h6>
+                    <ul>
+                      <li>Name: {{ tuning_parameter.name }}</li>
+                      <li>Type: {{ tuning_parameter.type }}</li>
+                      <li>Description: {{ tuning_parameter.description }}</li>
+                    </ul>
+                  </div>">
+                  <u>Tuning Param. ({{ tuning_parameter.name }})</u>
+                </span>
+              </th>
               {% endfor %}
 
-              {% for key, value in model_data.function_evaluations.0.evaluation_result.items %}
-              <th>Result ({{ key }})</th>
+              {% for output_parameter in model_data.output_parameters %}
+              <th style="background: #DDF">
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Task parameter</h6>
+                    <ul>
+                      <li>Name: {{ output_parameter.name }}</li>
+                      <li>Type: {{ output_parameter.type }}</li>
+                      <li>Description: {{ output_parameter.description }}</li>
+                    </ul>
+                  </div>">
+                  <u>Output ({{ output_parameter.name }})</u>
+                </span>
+              </th>
               {% endfor %}
 
               <th>Details</th>
@@ -119,15 +191,21 @@
               <td>{{func_eval.id}}</td>
 
               {% for key, value in func_eval.task_parameter.items %}
-              <td>{{ value }}</td>
+              <td style="background: #DFD">
+                {{ value }}
+              </td>
               {% endfor %}
 
               {% for key, value in func_eval.tuning_parameter.items %}
-              <td>{{ value }}</td>
+              <td style="background: #FFD">
+                {{ value }}
+              </td>
               {% endfor %}
 
               {% for key, value in func_eval.evaluation_result.items %}
-              <td>{{ value | floatformat:2 }}</td>
+              <td style="background: #DDF">
+                {{ value | floatformat:2 }}
+              </td>
               {% endfor %}
 
               <td>
