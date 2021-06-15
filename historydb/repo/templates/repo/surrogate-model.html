@@ -24,14 +24,14 @@
 
 <div class="container" style="max-width: 1000px">
   <div class="py-5 text-center">
-    <h1>Play with the Performance (Surrogate) Model</h1>
+    <h1>Performance (Surrogate) Model</h1>
   </div>
 
   <div class="container">
     <div class="mb-3">
       <div class="row">
         <div class="col">
-          <label><b>Model information</b></label>
+          <h4><b>Model Information</b></h4>
         </div>
       </div>
 
@@ -79,7 +79,7 @@
     <div class="mb-3">
       <div class="row">
         <div class="col">
-          <label><b>Function Evaluation Results</b></label>
+          <h4><b>List of function evaluations used to build the surrogate model.</b></h4>
         </div>
       </div>
 
@@ -111,23 +111,34 @@
       </script>
 
       <div class="table-responsive">
-        Number of function evaluation result: {{ model_data.model_stats.num_samples }}
-        <br>
-        Put your mouse cursor on each parameter to see the details.
-        <br>
-        Click on each parameter to sort the table.
-        <br><br>
+        <div class="text-left">
+          <h4>Tips</h4>
+          <ul>
+              <li><strong>Number of function evaluation result: {{ model_data.model_stats.num_samples }}</strong></li>
+              <li><strong>Put your mouse cursor on each parameter to see the details.</strong></li>
+              <li><strong>Put your mouse cursor on machine/software configuration of each function evaluation to see the detailed machine/software setting to reproduce the function evaluation result.</strong></li>
+              <li><strong>Click on each parameter to sort the table.</strong></li>
+          </ul>
+        </div>
 
         <table class="table table-striped table-sm sortable">
           <thead>
             <tr>
-              <th>
+              <th style="background: white">
                 <span class="tippy" data-tippy-content="
                   <div class='text-left'>
                     <h6>Sample number</h6>
                   </div>">
                   <u>#</u>
                 </span>
+              </th>
+
+              <th style="background: white">
+                Machine Configuration
+              </th>
+
+              <th style="background: white">
+                Software Configuration
               </th>
 
               {% for task_parameter in model_data.task_parameters %}
@@ -178,7 +189,9 @@
               </th>
               {% endfor %}
 
-              <th>Details</th>
+              <th style="background: white">
+                Details in JSON
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -188,7 +201,41 @@
             {% else %}
             <tr>
             {% endifequal %}
-              <td>{{func_eval.id}}</td>
+              <td style="background: white">
+                {{func_eval.id}}
+              </td>
+
+              <td style="background: white">
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Machine Configuration</h6>
+                    {{ func_eval.machine_configuration }}
+                  </div>">
+                  <u>
+                    {% for key in func_eval.machine_configuration %}
+                      {% ifequal key 'machine_name' %}
+                        {{ func_eval.machine_configuration.machine_name }}
+                      {% else %}
+                        {{ key }}
+                      {% endifequal %}
+                    {% endfor %}
+                  </u>
+                </span>
+              </td>
+
+              <td style="background: white">
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Software Configuration</h6>
+                    {{ func_eval.software_configuration }}
+                  </div>">
+                  <u>
+                    {% for key in func_eval.software_configuration %}
+                      {{ key }}
+                    {% endfor %}
+                  </u>
+                </span>
+              </td>
 
               {% for key, value in func_eval.task_parameter.items %}
               <td style="background: #DFD">
@@ -208,7 +255,7 @@
               </td>
               {% endfor %}
 
-              <td>
+              <td style="background: white">
                 <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                     <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
@@ -246,11 +293,11 @@
     <div class="mb-3">
       <div class="row">
         <div class="col">
-          <label><b>Make prediction</b></label>
+          <h4><b>Make prediction</b></h4>
         </div>
       </div>
 
-      <form method="POST" action="{% url 'repo:model-prediction' %}" class="needs-validation" novalidate>
+      <form method="POST" action="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{ model_data.tuning_problem_unique_name }}&surrogate_model_uid={{ model_data.surrogate_model_uid }}" class="needs-validation" novalidate>
         <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
         <input type="hidden" name="surrogate_model_uid" value={{ model_data.surrogate_model_uid }}></input>
         {% csrf_token %}
@@ -338,12 +385,12 @@
               <input type="text" class="form-control" name="output_parameter_description" value="{{ output_parameter.description }}" readonly>
             </div>
             <div class="col">
-              <label>Predicted Result</label>
+              <label>Predicted Result (Mean Value)</label>
               <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result }}" readonly>
             </div>
             <div class="col">
-              <label>Prediction Variance</label>
-              <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result_var }}" readonly>
+              <label>Standard Deviation of the GP Prediction Result</label>
+              <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result_std }}" readonly>
             </div>
           </div>
           {% endfor %}
@@ -354,7 +401,7 @@
     <div class="mb-3">
       <div class="row">
         <div class="col">
-          <label><b>Sensitivity Analysis</b></label>
+          <h4><b>Sensitivity Analysis</b></h4>
         </div>
       </div>
 
