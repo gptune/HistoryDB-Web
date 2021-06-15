@@ -367,8 +367,17 @@
               <input type="text" class="form-control" name="tuning_parameter_description" value="{{ tuning_parameter.description }}" readonly>
             </div>
             <div class="col">
+              {% ifequal tuning_parameter.type 'categorical' %}
+              <label>Categorical Input:
+                {% for category in tuning_parameter.categories %}
+                {{ category }}&nbsp;
+                {% endfor %}
+              </label>
+              <input type="text" class="form-control" name="tuning_parameter" value="{{ tuning_parameter.value }}">
+              {% else %}
               <label>Input ({{ tuning_parameter.lower_bound }}~{{ tuning_parameter.upper_bound }})</label>
               <input type="text" class="form-control" name="tuning_parameter" value="{{ tuning_parameter.value }}">
+              {% endifequal %}
             </div>
           </div>
           {% endfor %}

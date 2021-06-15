@@ -419,8 +419,11 @@ class SurrogateModel(TemplateView):
             task_parameter = {}
             task_parameter["name"] = task_space["name"]
             task_parameter["type"] = task_space["type"]
-            task_parameter["lower_bound"] = task_space["lower_bound"]
-            task_parameter["upper_bound"] = task_space["upper_bound"]
+            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                task_parameter["lower_bound"] = task_space["lower_bound"]
+                task_parameter["upper_bound"] = task_space["upper_bound"]
+            elif task_parameter["type"] == "categorical":
+                task_parameter["categories"] = task_space["categories"]
             for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
                 if task_info["task_name"] == task_parameter["name"]:
                     task_parameter["description"] = task_info["task_description"]
@@ -436,13 +439,16 @@ class SurrogateModel(TemplateView):
             tuning_parameter = {}
             tuning_parameter["name"] = parameter_space["name"]
             tuning_parameter["type"] = parameter_space["type"]
-            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-
+            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                tuning_parameter["value"] = tuning_parameter["lower_bound"]
+            elif tuning_parameter["type"] == "categorical":
+                tuning_parameter["categories"] = parameter_space["categories"]
+                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
             for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
                 if parameter_info["parameter_name"] == tuning_parameter["name"]:
                     tuning_parameter["description"] = parameter_info["parameter_description"]
-            tuning_parameter["value"] = tuning_parameter["lower_bound"]
 
             model_data["tuning_parameters"].append(tuning_parameter)
 
@@ -451,9 +457,11 @@ class SurrogateModel(TemplateView):
             output_parameter = {}
             output_parameter["name"] = output_space["name"]
             output_parameter["type"] = output_space["type"]
-            output_parameter["lower_bound"] = output_space["lower_bound"]
-            output_parameter["upper_bound"] = output_space["upper_bound"]
-
+            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                output_parameter["lower_bound"] = output_space["lower_bound"]
+                output_parameter["upper_bound"] = output_space["upper_bound"]
+            elif output_parameter["type"] == "categorical":
+                output_parameter["categories"] = output_space["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
                 if output_info["output_name"] == output_parameter["name"]:
                     output_parameter["description"] = output_info["output_description"]
@@ -552,8 +560,11 @@ class ModelPrediction(TemplateView):
             task_parameter = {}
             task_parameter["name"] = task_space["name"]
             task_parameter["type"] = task_space["type"]
-            task_parameter["lower_bound"] = task_space["lower_bound"]
-            task_parameter["upper_bound"] = task_space["upper_bound"]
+            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                task_parameter["lower_bound"] = task_space["lower_bound"]
+                task_parameter["upper_bound"] = task_space["upper_bound"]
+            elif task_parameter["type"] == "categorical":
+                task_parameter["categories"] = task_space["categories"]
             for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
                 if task_info["task_name"] == task_parameter["name"]:
                     task_parameter["description"] = task_info["task_description"]
@@ -569,13 +580,16 @@ class ModelPrediction(TemplateView):
             tuning_parameter = {}
             tuning_parameter["name"] = parameter_space["name"]
             tuning_parameter["type"] = parameter_space["type"]
-            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-
+            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                tuning_parameter["value"] = tuning_parameter["lower_bound"]
+            elif tuning_parameter["type"] == "categorical":
+                tuning_parameter["categories"] = parameter_space["categories"]
+                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
             for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
                 if parameter_info["parameter_name"] == tuning_parameter["name"]:
                     tuning_parameter["description"] = parameter_info["parameter_description"]
-            tuning_parameter["value"] = tuning_parameter["lower_bound"]
 
             model_data["tuning_parameters"].append(tuning_parameter)
 
@@ -584,9 +598,11 @@ class ModelPrediction(TemplateView):
             output_parameter = {}
             output_parameter["name"] = output_space["name"]
             output_parameter["type"] = output_space["type"]
-            output_parameter["lower_bound"] = output_space["lower_bound"]
-            output_parameter["upper_bound"] = output_space["upper_bound"]
-
+            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                output_parameter["lower_bound"] = output_space["lower_bound"]
+                output_parameter["upper_bound"] = output_space["upper_bound"]
+            elif output_parameter["type"] == "categorical":
+                output_parameter["categories"] = output_space["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
                 if output_info["output_name"] == output_parameter["name"]:
                     output_parameter["description"] = output_info["output_description"]
@@ -648,11 +664,19 @@ class ModelPrediction(TemplateView):
                 point[task_parameter_names[i]] = int(task_parameters[i])
             elif task_parameter_types[i] == "float":
                 point[task_parameter_names[i]] = float(task_parameters[i])
+            elif task_parameter_types[i] == "real":
+                point[task_parameter_names[i]] = float(task_parameters[i])
+            elif task_parameter_types[i] == "categorical":
+                point[task_parameter_names[i]] = task_parameters[i]
         for i in range(len(tuning_parameter_names)):
             if tuning_parameter_types[i] == "int":
                 point[tuning_parameter_names[i]] = int(tuning_parameters[i])
             elif tuning_parameter_types[i] == "float":
                 point[tuning_parameter_names[i]] = float(tuning_parameters[i])
+            elif tuning_parameter_types[i] == "real":
+                point[tuning_parameter_names[i]] = float(tuning_parameters[i])
+            elif tuning_parameter_types[i] == "categorical":
+                point[tuning_parameter_names[i]] = tuning_parameters[i]
 
         print ("MODEL POINT: ", point)
 
@@ -730,31 +754,36 @@ class ModelPrediction(TemplateView):
             task_parameter = {}
             task_parameter["name"] = task_space["name"]
             task_parameter["type"] = task_space["type"]
-            task_parameter["lower_bound"] = task_space["lower_bound"]
-            task_parameter["upper_bound"] = task_space["upper_bound"]
+            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                task_parameter["lower_bound"] = task_space["lower_bound"]
+                task_parameter["upper_bound"] = task_space["upper_bound"]
+            elif task_parameter["type"] == "categorical":
+                task_parameter["categories"] = task_space["categories"]
             for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
                 if task_info["task_name"] == task_parameter["name"]:
                     task_parameter["description"] = task_info["task_description"]
             task_parameter["options"] = []
             for j in range(len(surrogate_model["task_parameters"])):
                 task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
-            task_parameter["value"] = task_parameters[i]
+            task_parameter["value"] = task_parameter["options"][0]
 
             model_data["task_parameters"].append(task_parameter)
 
         model_data["tuning_parameters"] = []
-        for i in range(len(surrogate_model["parameter_space"])):
-            parameter_space = surrogate_model["parameter_space"][i]
+        for parameter_space in surrogate_model["parameter_space"]:
             tuning_parameter = {}
             tuning_parameter["name"] = parameter_space["name"]
             tuning_parameter["type"] = parameter_space["type"]
-            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-
+            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                tuning_parameter["value"] = tuning_parameter["lower_bound"]
+            elif tuning_parameter["type"] == "categorical":
+                tuning_parameter["categories"] = parameter_space["categories"]
+                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
             for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
                 if parameter_info["parameter_name"] == tuning_parameter["name"]:
                     tuning_parameter["description"] = parameter_info["parameter_description"]
-            tuning_parameter["value"] = tuning_parameters[i]
 
             model_data["tuning_parameters"].append(tuning_parameter)
 
@@ -763,12 +792,15 @@ class ModelPrediction(TemplateView):
             output_parameter = {}
             output_parameter["name"] = output_space["name"]
             output_parameter["type"] = output_space["type"]
-            output_parameter["lower_bound"] = output_space["lower_bound"]
-            output_parameter["upper_bound"] = output_space["upper_bound"]
-
+            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                output_parameter["lower_bound"] = output_space["lower_bound"]
+                output_parameter["upper_bound"] = output_space["upper_bound"]
+            elif output_parameter["type"] == "categorical":
+                output_parameter["categories"] = output_space["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
                 if output_info["output_name"] == output_parameter["name"]:
                     output_parameter["description"] = output_info["output_description"]
+            output_parameter["result"] = "-"
 
             #output_parameter["result"] = ret[output_parameter["name"]]
             output_parameter["result"] = round(ret[output_parameter["name"]][0][0],3)
@@ -851,8 +883,11 @@ class SobolAnalysis(TemplateView):
             task_parameter = {}
             task_parameter["name"] = task_space["name"]
             task_parameter["type"] = task_space["type"]
-            task_parameter["lower_bound"] = task_space["lower_bound"]
-            task_parameter["upper_bound"] = task_space["upper_bound"]
+            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                task_parameter["lower_bound"] = task_space["lower_bound"]
+                task_parameter["upper_bound"] = task_space["upper_bound"]
+            elif task_parameter["type"] == "categorical":
+                task_parameter["categories"] = task_space["categories"]
             for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
                 if task_info["task_name"] == task_parameter["name"]:
                     task_parameter["description"] = task_info["task_description"]
@@ -868,13 +903,16 @@ class SobolAnalysis(TemplateView):
             tuning_parameter = {}
             tuning_parameter["name"] = parameter_space["name"]
             tuning_parameter["type"] = parameter_space["type"]
-            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-
+            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                tuning_parameter["value"] = tuning_parameter["lower_bound"]
+            elif tuning_parameter["type"] == "categorical":
+                tuning_parameter["categories"] = parameter_space["categories"]
+                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
             for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
                 if parameter_info["parameter_name"] == tuning_parameter["name"]:
                     tuning_parameter["description"] = parameter_info["parameter_description"]
-            tuning_parameter["value"] = tuning_parameter["lower_bound"]
 
             model_data["tuning_parameters"].append(tuning_parameter)
 
@@ -883,9 +921,11 @@ class SobolAnalysis(TemplateView):
             output_parameter = {}
             output_parameter["name"] = output_space["name"]
             output_parameter["type"] = output_space["type"]
-            output_parameter["lower_bound"] = output_space["lower_bound"]
-            output_parameter["upper_bound"] = output_space["upper_bound"]
-
+            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                output_parameter["lower_bound"] = output_space["lower_bound"]
+                output_parameter["upper_bound"] = output_space["upper_bound"]
+            elif output_parameter["type"] == "categorical":
+                output_parameter["categories"] = output_space["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
                 if output_info["output_name"] == output_parameter["name"]:
                     output_parameter["description"] = output_info["output_description"]
@@ -980,11 +1020,14 @@ class SobolAnalysis(TemplateView):
             task_parameter = {}
             task_parameter["name"] = task_space["name"]
             task_parameter["type"] = task_space["type"]
-            task_parameter["lower_bound"] = task_space["lower_bound"]
-            task_parameter["upper_bound"] = task_space["upper_bound"]
+            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                task_parameter["lower_bound"] = task_space["lower_bound"]
+                task_parameter["upper_bound"] = task_space["upper_bound"]
+            elif task_parameter["type"] == "categorical":
+                task_parameter["categories"] = task_space["categories"]
             for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
                 if task_info["task_name"] == task_parameter["name"]:
-                    task_parameter["description"] = "task_desc: " + task_info["task_description"]
+                    task_parameter["description"] = task_info["task_description"]
             task_parameter["options"] = []
             for j in range(len(surrogate_model["task_parameters"])):
                 task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
@@ -997,13 +1040,16 @@ class SobolAnalysis(TemplateView):
             tuning_parameter = {}
             tuning_parameter["name"] = parameter_space["name"]
             tuning_parameter["type"] = parameter_space["type"]
-            tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-            tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-
+            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                tuning_parameter["value"] = tuning_parameter["lower_bound"]
+            elif tuning_parameter["type"] == "categorical":
+                tuning_parameter["categories"] = parameter_space["categories"]
+                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
             for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
                 if parameter_info["parameter_name"] == tuning_parameter["name"]:
-                    tuning_parameter["description"] = "tuning_desc: " + parameter_info["parameter_description"]
-            tuning_parameter["value"] = tuning_parameter["lower_bound"]
+                    tuning_parameter["description"] = parameter_info["parameter_description"]
 
             model_data["tuning_parameters"].append(tuning_parameter)
 
@@ -1012,12 +1058,14 @@ class SobolAnalysis(TemplateView):
             output_parameter = {}
             output_parameter["name"] = output_space["name"]
             output_parameter["type"] = output_space["type"]
-            output_parameter["lower_bound"] = output_space["lower_bound"]
-            output_parameter["upper_bound"] = output_space["upper_bound"]
-
+            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                output_parameter["lower_bound"] = output_space["lower_bound"]
+                output_parameter["upper_bound"] = output_space["upper_bound"]
+            elif output_parameter["type"] == "categorical":
+                output_parameter["categories"] = output_space["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
                 if output_info["output_name"] == output_parameter["name"]:
-                    output_parameter["description"] = "output_desc: " + output_info["output_description"]
+                    output_parameter["description"] = output_info["output_description"]
             output_parameter["result"] = "-"
 
             model_data["output_parameters"].append(output_parameter)
