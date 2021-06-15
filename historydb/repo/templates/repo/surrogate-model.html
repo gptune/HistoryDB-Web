@@ -134,11 +134,21 @@
               </th>
 
               <th style="background: white">
-                Machine Configuration
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Machine setting used to generate the function evaluation result.</h6>
+                  </div>">
+                  <u>Machine Configuration</u>
+                </span>
               </th>
 
               <th style="background: white">
-                Software Configuration
+                <span class="tippy" data-tippy-content="
+                  <div class='text-left'>
+                    <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                  </div>">
+                  <u>Software Configuration</u>
+                </span>
               </th>
 
               {% for task_parameter in model_data.task_parameters %}
@@ -405,15 +415,33 @@
         </div>
       </div>
 
-      <form method="POST" action="{% url 'repo:sobol-analysis' %}" class="needs-validation" novalidate>
+      <form method="POST" action="{% url 'repo:sobol-analysis' %}?tuning_problem_unique_name={{ model_data.tuning_problem_unique_name }}&surrogate_model_uid={{ model_data.surrogate_model_uid }}" class="needs-validation" novalidate>
         <input type="hidden" name="tuning_problem_unique_name" value={{ model_data.tuning_problem_unique_name }}></input>
         <input type="hidden" name="surrogate_model_uid" value={{ model_data.surrogate_model_uid }}></input>
         {% csrf_token %}
 
         <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+          <h4> What is Sensitivity Analysis?</h4>
+          <div class="mb-3">
+            [Quote from <a href="https://salib.readthedocs.io/en/latest/basics.html">SALib</a>] According to <a href="https://en.wikipedia.org/wiki/Sensitivity_analysis">Wikipedia</a>, sensitivity analysis is "the study of how the uncertainty in the output of a mathematical model or system (numerical or otherwise) can be apportioned to different sources of uncertainty in its inputs." The sensitivity of each input is often represented by a numeric value, called the sensitivity index. Sensitivity indices come in several forms:
+            <ul>
+              <li>First-order (main-effect) indices: measures the contribution to the output variance by a single model input alone.</li>
+              <li>Second-order indices: measures the contribution to the output variance caused by the interaction of two model inputs.</li>
+              <li>Total-order index: measures the contribution to the output variance caused by a model input, including both its first-order effects (the input varying alone) and all higher-order interactions.</li>
+            </ul>
+          </div>
+
+          <h4>Sensitivity Analysis in GPTune</h4>
+          <div class="mb-3">
+            Currently, GPTune offers a sensitivity analysis tool based on <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378475400002706">the Sobol method</a>. The Sobol method is a global sensitivity analysis providing an assessment of parameter sensitivity. 
+            The Sobol analysis requires (1) samples drawn from the function directly, (2) evaluating the model using the generated sample inputs and saving the model output, and (3) conducting a variance-based mathematical analysis to compute the sensitivity indices.
+            In the GPTune interface, we provide a functionality of the Sobol sensitivity analysis based on samples drawn from the fitted GP surrogate model (we use the <a href="https://www.sciencedirect.com/science/article/abs/pii/S0010465502002801">Saltelli</a> sampling method).
+            For the sampling and Sobol analysis, we use the implementation of <a href="https://salib.readthedocs.io/en/latest/">SALib.</a>
+          </div>
+
           <div class="row mb-3">
             <div class="col">
-              <label>Input task</label>
+              <h4>Input task</h4>
               <select class="custom-select d-block w-100" name="sobol_analysis_task_parameter">
                 {% for task_parameter in sobol_analysis.task_parameters %}
                 <option value="{{ task_parameter }}">
@@ -423,31 +451,36 @@
               </select>
             </div>
             <div class="col-4">
-              <label>Num samples</label>
+              <h4>Num samples</h4>
               <input type="text" class="form-control" name="sobol_analysis_num_samples" value="{{ sobol_analysis.num_samples }}">
             </div>
           </div>
 
           <div class="row mb-3">
-            <div class="col">
-              <label></label>
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Sobol Analysis</button>
-            </div>
-            <div class="col">
-              <a href="https://en.wikipedia.org/wiki/Variance-based_sensitivity_analysis">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-question-square" viewBox="0 0 16 16">
-                  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-                  <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                </svg>
-              </a>
-            </div>
+            <label></label>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Run Sobol Analysis</button>
           </div>
 
+          <h4>How to Read the Computed Values</h4>
+          <div>
+            Outputs from SALib include the first-order index, the total index, and the second-order indicies, described above.
+            The SALib returns Si which is a Python dict with the keys "S1", "S2", "ST", "S1_conf", "S2_conf", and "ST_conf".
+            A first-order index S1 is the contribution to the output variance of the main (linear) effect of an input attribute Xi, therefore it measures the effect of varying Xi alone, but averaged over variations in other input parameters.
+            A total effect index ST represents the total contribution (including interactions) of a parameter Xi to the response variance; it is obtained by summing all first-order and higher-order effects involving the parameter Xi.
+            The _conf keys store the corresponding confidence intervals, typically with a confidence level of 95%.
+            We print the individual values from Si as shown below.
+            It is standardised by the total variance to provide a fractional contribution, its mathematical details can be found in <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378475400002706">[Sobol 2001]</a> and <a href="https://www.sciencedirect.com/science/article/abs/pii/S0010465509003087">[Saltelli 2010]</a>.
+            For the details of the underlying GPTune algorithm and programmable interface, please refer to our <a href="http://127.0.0.1:8000/documentation/gptune-user-guide/">users guide</a> (to be updated shortly).
+
+          </div>
+
+          {% if sobol_analysis.s1_parameters %}
           <div class="row mb-3">
             <div class="col">
               <b>First-order indices.</b>
             </div>
           </div>
+          {% endif %}
 
           {% for s1_parameter in sobol_analysis.s1_parameters %}
           <div class="row mb-3">
@@ -466,11 +499,13 @@
           </div>
           {% endfor %}
 
+          {% if sobol_analysis.st_parameters %}
           <div class="row mb-3">
             <div class="col">
               <b>Total-effect index.</b>
             </div>
           </div>
+          {% endif %}
 
           {% for st_parameter in sobol_analysis.st_parameters %}
           <div class="row mb-3">
@@ -489,11 +524,13 @@
           </div>
           {% endfor %}
 
+          {% if sobol_analysis.s2_parameters %}
           <div class="row mb-3">
             <div class="col">
               <b>Second-order indices.</b>
             </div>
           </div>
+          {% endif %}
 
           {% for s2_parameter in sobol_analysis.s2_parameters %}
           <div class="row mb-3">
