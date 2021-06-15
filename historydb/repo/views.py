@@ -772,7 +772,7 @@ class ModelPrediction(TemplateView):
 
             #output_parameter["result"] = ret[output_parameter["name"]]
             output_parameter["result"] = round(ret[output_parameter["name"]][0][0],3)
-            output_parameter["result_std"] = round(ret[output_parameter["name"]+"_std"][0][0],3)
+            output_parameter["result_std"] = round(math.sqrt(ret[output_parameter["name"]+"_var"][0][0]),3)
 
             model_data["output_parameters"].append(output_parameter)
             #model_data["output_parameters"].append(output_parameter)
