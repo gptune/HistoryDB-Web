@@ -43,10 +43,12 @@ $ brew tap mongodb/brew
 $ brew install mongodb-community@4.0
 ```
 
-- create your own Django secret key
+- setup necessary information for our web features (1. Django secret key, 2. Admin email, 3. Google recaptcha (a robot checker))
 ```
-$ python create_new_key.py
+$ python web-reset.py
 ```
+A Django secret key is required to run the webapp. You can comment out lines 8-31 for simple testing (runs the webapp with no admin email/robot checker)
+
 - set SQLite DB for the Django application
 ```
 cd historydb
