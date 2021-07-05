@@ -65,6 +65,20 @@ $ python web-reset.py
 ```
 A Django secret key is required to run the webapp. You can comment out lines 8-31 for simple testing (runs the webapp with no admin email/robot checker)
 
+## Set environment
+
+- Set location for database files
+```
+$ export HISTORYDB_STORAGE="Path to the database directory in HistoryDB-Web"
+$ mkdir -p $HISTORYDB_STORAGE/sqlite_data
+$ export HISTORYDB_SQLITE_DATA=$HISTORYDB_STORAGE/sqlite_data
+$ mkdir -p $HISTORYDB_STORAGE/mongodb_data
+$ export HISTORYDB_MONGODB_DATA=$HISTORYDB_STORAGE/mongodb_data
+$ export HISTORYDB_JSON_DATA=$HISTORYDB_STORAGE
+```
+
+## Basic Django setting
+
 - set SQLite DB for the Django application
 ```
 cd historydb
@@ -75,17 +89,6 @@ $ python manage.py migrate
 ```
 cd historydb
 $ python manage.py createsuperuser
-```
-
-## Set environment
-
-- Set location for database files
-```
-$ export HISTORYDB_STORAGE "dbfiledirectory"
-$ mkdir -p $HISTORYDB_STORAGE/sqlite_data
-$ export HISTORYDB_SQLITE_DATA = $HISTORYDB_STORAGE/sqlite_data
-$ mkdir -p $HISTORYDB_STORAGE/mongodb_data
-$ export HISTORYDB_MONGODB_DATA = $HISTORYDB_STORAGE/mongodb_data
 ```
 
 ## Run (testing/debugging mode)
