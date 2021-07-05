@@ -23,6 +23,22 @@ python -m pip install pymongo
 ```
 python -m pip install django-widget-tweaks
 ```
+- django-docs
+```
+python -m pip install django-docs
+```
+- sphinx
+```
+python -m pip install sphinx
+```
+-- recommonmark
+```
+python -m pip install recommonmark
+```
+-- sphinx_rtd_theme
+```
+python -m pip install sphinx_rtd_theme
+```
 
 - NOTE: please make sure your PYTHONPATH indicates Django, markdown, pymongo, djang-widget-tweaks modules.
 
