@@ -1086,6 +1086,7 @@ class SobolAnalysis(TemplateView):
         sobol_analysis_task_parameter_arr = [sobol_analysis_task_parameter[key] for key in sobol_analysis_task_parameter.keys()]
         print ("SOBEL_ANALYSIS_TASK_PARAMETER_ARR: ", sobol_analysis_task_parameter_arr)
 
+        from gptune import SensitivityAnalysis
         si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=sobol_analysis_task_parameter_arr, num_samples=sobol_analysis_num_samples)
 
         sobol_analysis["s1_parameters"] = []
@@ -1116,18 +1117,19 @@ class SobolAnalysis(TemplateView):
 
         sobol_analysis["s2_parameters"] = []
 
-        S2_array = si["S2"]
-        S2_conf_array = si["S2_conf"]
-        num_parameters = len(surrogate_model["parameter_space"])
-        for i in range(num_parameters):
-            for j in range(i+1, num_parameters):
-                tuning_parameter = {}
-                tuning_parameter["name1"] = surrogate_model["parameter_space"][i]["name"]
-                tuning_parameter["name2"] = surrogate_model["parameter_space"][j]["name"]
-                tuning_parameter["S2"] = round(S2_array[i][j],3)
-                tuning_parameter["S2_conf"] = round(S2_conf_array[i][j],3)
+        if "S2" in si:
+            S2_array = si["S2"]
+            S2_conf_array = si["S2_conf"]
+            num_parameters = len(surrogate_model["parameter_space"])
+            for i in range(num_parameters):
+                for j in range(i+1, num_parameters):
+                    tuning_parameter = {}
+                    tuning_parameter["name1"] = surrogate_model["parameter_space"][i]["name"]
+                    tuning_parameter["name2"] = surrogate_model["parameter_space"][j]["name"]
+                    tuning_parameter["S2"] = round(S2_array[i][j],3)
+                    tuning_parameter["S2_conf"] = round(S2_conf_array[i][j],3)
 
-                sobol_analysis["s2_parameters"].append(tuning_parameter)
+                    sobol_analysis["s2_parameters"].append(tuning_parameter)
 
         #import pprint
         #pp = pprint.PrettyPrinter(indent=4)
