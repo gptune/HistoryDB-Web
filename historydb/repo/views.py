@@ -18,15 +18,12 @@ from django.contrib import auth
 from dbmanager import HistoryDB_MongoDB
 
 from django.conf import settings
-#from django.contrib import messages
 
 import requests
 import os
 import json
 import ast
 import re
-
-#from gptune import *
 
 class Dashboard(TemplateView):
 
@@ -66,30 +63,8 @@ class Dashboard(TemplateView):
                         user_configurations_list = user_configurations_list,
                         user_email = user_email)
                 num_func_eval = len(func_eval_list)
-                print ("num_func_eval: ", num_func_eval)
-                num_evals_per_page = 15
-                if (num_func_eval%num_evals_per_page) == 0:
-                    num_pages_func_eval = int(num_func_eval/num_evals_per_page)
-                else:
-                    num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
-                print ("num_pages_func_eval: ", num_pages_func_eval)
-                if (num_pages_func_eval == 0):
-                    num_pages_func_eval = 1
-                current_page_func_eval = int(request.GET.get("current_page_func_eval", 0))
-                print ("current_page_func_eval: ", current_page_func_eval)
-                start_index = (current_page_func_eval)*num_evals_per_page
-                end_index = (current_page_func_eval+1)*num_evals_per_page
-                if end_index > num_func_eval:
-                    end_index = num_func_eval
-                func_eval_web = func_eval_list[start_index:end_index]
-                for i in range(len(func_eval_web)):
-                    func_eval_web[i]["id"] = start_index+i
-                print (func_eval_web)
             else:
-                func_eval_web = []
                 num_func_eval = 0
-                num_pages_func_eval = 0
-                current_page_func_eval = 0
 
             if "surrogate_model" in search_options:
                 surrogate_model = historydb.load_surrogate_models_filtered(
@@ -99,30 +74,14 @@ class Dashboard(TemplateView):
                         user_configurations_list = user_configurations_list,
                         user_email = user_email)
                 num_surrogate_models = len(surrogate_model)
-                num_surrogate_model_per_page = 15
-                if (num_surrogate_models %num_surrogate_model_per_page) == 0:
-                    num_pages_surrogate_models = int(num_surrogate_models/num_surrogate_model_per_page)
-                else:
-                    num_pages_surrogate_models = int(num_surrogate_models/num_surrogate_model_per_page)+1
-                if (num_pages_surrogate_models == 0):
-                    num_pages_surrogate_models = 1
-                current_page_surrogate_models = int(request.GET.get("current_page_surrogate_models", 0))
-                start_index_surrogate_model = (current_page_surrogate_models)*num_surrogate_model_per_page
-                end_index_surrogate_model = (current_page_surrogate_models+1)*num_surrogate_model_per_page
-                if end_index_surrogate_model > num_surrogate_models:
-                    end_index_surrogate_model = num_surrogate_models
-                surrogate_model_web = surrogate_model[start_index_surrogate_model:end_index_surrogate_model]
-                for i in range(len(surrogate_model_web)):
-                    surrogate_model_web[i]["id"] = start_index_surrogate_model+i
-                    surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["function_evaluations"])
-                    surrogate_model_web[i]["num_task_parameters"] = len(surrogate_model_web[i]["task_parameters"])
-                    surrogate_model_web[i]["num_func_eval_per_task"] = \
-                            int(len(surrogate_model_web[i]["function_evaluations"])/len(surrogate_model_web[i]["task_parameters"]))
+                for i in range(num_surrogate_models):
+                    surrogate_model[i]["id"] = i
+                    surrogate_model[i]["num_func_eval"] = len(surrogate_model[i]["function_evaluations"])
+                    surrogate_model[i]["num_task_parameters"] = len(surrogate_model[i]["task_parameters"])
+                    surrogate_model[i]["num_func_eval_per_task"] = \
+                            int(len(surrogate_model[i]["function_evaluations"])/len(surrogate_model[i]["task_parameters"]))
             else:
-                surrogate_model_web = []
                 num_surrogate_models = 0
-                num_pages_surrogate_models = 0
-                current_page_surrogate_models = 0
 
             context = {
                     "tuning_problems_avail" : tuning_problems_avail,
@@ -130,14 +89,10 @@ class Dashboard(TemplateView):
                     "software_configurations_avail" : software_configurations_avail,
                     "user_configurations_avail" : user_configurations_avail,
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
-                    "func_eval_list" : func_eval_web,
+                    "func_eval_list" : func_eval_list,
                     "num_func_eval" : num_func_eval,
-                    "num_pages_func_eval" : range(num_pages_func_eval),
-                    "current_page_func_eval" : current_page_func_eval,
-                    "surrogate_model_list" : surrogate_model_web,
+                    "surrogate_model_list" : surrogate_model,
                     "num_surrogate_models" : num_surrogate_models,
-                    "num_pages_surrogate_models" : range(num_pages_surrogate_models),
-                    "current_page_surrogate_models" : current_page_surrogate_models,
                     "machine_configurations_list" : json.dumps(machine_configurations_list),
                     "software_configurations_list" : json.dumps(software_configurations_list),
                     "user_configurations_list" : json.dumps(user_configurations_list),
@@ -147,17 +102,11 @@ class Dashboard(TemplateView):
             return render(request, 'repo/dashboard.html', context)
 
         else:
-            historydb = HistoryDB_MongoDB()
-
-            func_eval_web = []
+            func_eval_list = []
             num_func_eval = 0
-            num_pages_func_eval = 0
-            current_page_func_eval = 0
 
-            surrogate_model_web = []
+            surrogate_model = []
             num_surrogate_models = 0
-            num_pages_surrogate_models = 0
-            current_page_surrogate_models = 0
 
             context = {
                     "tuning_problems_avail" : tuning_problems_avail,
@@ -165,14 +114,10 @@ class Dashboard(TemplateView):
                     "software_configurations_avail" : software_configurations_avail,
                     "user_configurations_avail" : user_configurations_avail,
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
-                    "func_eval_list" : func_eval_web,
+                    "func_eval_list" : func_eval_list,
                     "num_func_eval" : num_func_eval,
-                    "num_pages_func_eval" : range(num_pages_func_eval),
-                    "current_page_func_eval" : current_page_func_eval,
-                    "surrogate_model_list" : surrogate_model_web,
+                    "surrogate_model_list" : surrogate_model,
                     "num_surrogate_models" : num_surrogate_models,
-                    "num_pages_surrogate_models" : range(num_pages_surrogate_models),
-                    "current_page_surrogate_models" : current_page_surrogate_models,
                     "machine_configurations_list" : json.dumps(machine_configurations_avail),
                     "software_configurations_list" : json.dumps(software_configurations_avail),
                     "user_configurations_list" : json.dumps(user_configurations_avail),
@@ -228,27 +173,11 @@ class Dashboard(TemplateView):
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
-            num_evals_per_page = 15
-            if (num_func_eval%num_evals_per_page) == 0:
-                num_pages_func_eval = int(num_func_eval/num_evals_per_page)
-            else:
-                num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
-            if (num_pages_func_eval == 0):
-                num_pages_func_eval = 1
-            current_page_func_eval = 0
-            start_index = (current_page_func_eval)*num_evals_per_page
-            end_index = (current_page_func_eval+1)*num_evals_per_page
-            if end_index > num_func_eval:
-                end_index = num_func_eval
-            func_eval_web = func_eval_list[start_index:end_index]
-
-            for i in range(len(func_eval_web)):
-                func_eval_web[i]["id"] = start_index+i
+            for i in range(num_func_eval):
+                func_eval_list[i]["id"] = i
         else:
-            func_eval_web = []
+            func_eval_list = []
             num_func_eval = 0
-            num_pages_func_eval = 0
-            current_page_func_eval = 0
 
         if "surrogate_model" in search_options:
             surrogate_model = historydb.load_surrogate_models_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
@@ -257,33 +186,15 @@ class Dashboard(TemplateView):
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_surrogate_models = len(surrogate_model)
-            num_surrogate_model_per_page = 15
-            if (num_surrogate_models %num_surrogate_model_per_page) == 0:
-                num_pages_surrogate_models = int(num_surrogate_models/num_surrogate_model_per_page)
-            else:
-                num_pages_surrogate_models = int(num_surrogate_models/num_surrogate_model_per_page)+1
-            if (num_pages_surrogate_models == 0):
-                num_pages_surrogate_models = 1
-            current_page_surrogate_models = 0
-            start_index_surrogate_model = (current_page_surrogate_models)*num_surrogate_model_per_page
-            end_index_surrogate_model = (current_page_surrogate_models+1)*num_surrogate_model_per_page
-            if end_index_surrogate_model > num_surrogate_models:
-                end_index_surrogate_model = num_surrogate_models
-            surrogate_model_web = surrogate_model[start_index_surrogate_model:end_index_surrogate_model]
-            for i in range(len(surrogate_model_web)):
-                surrogate_model_web[i]["id"] = start_index_surrogate_model+i
-                surrogate_model_web[i]["num_func_eval"] = len(surrogate_model_web[i]["function_evaluations"])
-                surrogate_model_web[i]["num_task_parameters"] = len(surrogate_model_web[i]["task_parameters"])
-                surrogate_model_web[i]["num_func_eval_per_task"] = \
-                        int(len(surrogate_model_web[i]["function_evaluations"])/len(surrogate_model_web[i]["task_parameters"]))
+            for i in range(num_surrogate_models):
+                surrogate_model[i]["id"] = i
+                surrogate_model[i]["num_func_eval"] = len(surrogate_model[i]["function_evaluations"])
+                surrogate_model[i]["num_task_parameters"] = len(surrogate_model[i]["task_parameters"])
+                surrogate_model[i]["num_func_eval_per_task"] = \
+                        int(len(surrogate_model[i]["function_evaluations"])/len(surrogate_model[i]["task_parameters"]))
         else:
-            surrogate_model_web = []
+            surrogate_model = []
             num_surrogate_models = 0
-            num_pages_surrogate_models = 0
-            current_page_surrogate_models = 0
-
-
-        print ("func_eval_list: ", func_eval_web)
 
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
@@ -291,14 +202,10 @@ class Dashboard(TemplateView):
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,
                 "user_configurations_avail" : user_configurations_avail,
-                "func_eval_list" : func_eval_web,
+                "func_eval_list" : func_eval_list,
                 "num_func_eval" : num_func_eval,
-                "num_pages_func_eval" : range(num_pages_func_eval),
-                "current_page_func_eval" : current_page_func_eval,
-                "surrogate_model_list" : surrogate_model_web,
+                "surrogate_model_list" : surrogate_model,
                 "num_surrogate_models" : num_surrogate_models,
-                "num_pages_surrogate_models" : range(num_pages_surrogate_models),
-                "current_page_surrogate_models" : current_page_surrogate_models,
                 "machine_configurations_list" : json.dumps(machine_configurations_list),
                 "software_configurations_list" : json.dumps(software_configurations_list),
                 "user_configurations_list" : json.dumps(user_configurations_list),

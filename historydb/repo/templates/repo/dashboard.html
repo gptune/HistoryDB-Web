@@ -66,10 +66,10 @@
 
 {% ifnotequal num_func_eval 0 %}
 <div class="container">
-  <br><br>
-  <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Function Evaluation Data</h2>
+    <h2 class="h2">Function Evaluation Data (Sortable Table)</h2>
+
+    <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
         <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_surrogate_models={{current_page_surrogate_models}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
@@ -78,42 +78,161 @@
       </div>
     </div>
   </div>
-  <div class="table-responsive">
-    number of function evaluation result: {{ num_func_eval }}
-    <br><br>
 
-    <table class="table table-striped table-sm">
+  <style type="text/css">
+    .table_outer { height: 100em; overflow: auto; }
+  </style>
+
+  <div class="table-responsive table_outer">
+    <div class="text-left">
+      <ul>
+          <li><strong>Number of function evaluation result: {{ num_func_eval }}</strong></li>
+      </ul>
+    </div>
+
+    <table class="table table-striped table-sm sortable">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Tuning Problem</th>
-          <th>Task Parameter</th>
-          <th>Tuning Parameter</th>
-          <th>Evaluated Result</th>
-          <th>Owner</th>
-          <th>Date</th>
-          <th>Details</th>
+          <th style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Sample number</h6>
+              </div>">
+              <u>#</u>
+            </span>
+          </th>
+
+          <th style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Machine setting used to generate the function evaluation result.</h6>
+              </div>">
+              <u>Machine Configuration</u>
+            </span>
+          </th>
+
+          <th style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+              </div>">
+              <u>Software Configuration</u>
+            </span>
+          </th>
+
+          {% for key,value in func_eval_list.0.task_parameter.items %}
+          <th style="background: #DFD">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                </ul>
+              </div>">
+              <u>Task Param. ({{ key }})</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          {% for key,value in func_eval_list.0.tuning_parameter.items %}
+          <th style="background: #FFD">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                </ul>
+              </div>">
+              <u>Tuning Param. ({{ key }})</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          {% for key,value in func_eval_list.0.evaluation_result.items %}
+          <th style="background: #DDF">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                </ul>
+              </div>">
+              <u>Output ({{ key }})</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          <th style="background: white">
+            Details in JSON
+          </th>
         </tr>
       </thead>
       <tbody>
         {% for func_eval in func_eval_list %}
-          <tr>
-            <td>{{ func_eval.id }}</td>
-            <td>{{ func_eval.tuning_problem_name }}</td>
-            <td>{{ func_eval.task_parameter }}</td>
-            <td>{{ func_eval.tuning_parameter }}</td>
-            <td>{{ func_eval.evaluation_result }}</td>
-            <td>{{ func_eval.user_info.user_name }}</td>
-            <td>{{ func_eval.time.tm_mon }}/{{ func_eval.time.tm_mday }}/{{ func_eval.time.tm_year }}</td>
-            <td>
-              <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
-                  <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                </svg>
-              </a>
-            </td>
-          </tr>
+        {% ifequal func_eval.id func_eval.best_func_eval_id %}
+        <tr style="color: blue;">
+        {% else %}
+        <tr>
+        {% endifequal %}
+          <td style="background: white">
+            {{func_eval.id}}
+          </td>
+
+          <td style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Machine Configuration</h6>
+                {{ func_eval.machine_configuration }}
+              </div>">
+              <u>
+                {% for key in func_eval.machine_configuration %}
+                  {% ifequal key 'machine_name' %}
+                    {{ func_eval.machine_configuration.machine_name }}
+                  {% else %}
+                    {{ key }}
+                  {% endifequal %}
+                {% endfor %}
+              </u>
+            </span>
+          </td>
+
+          <td style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Software Configuration</h6>
+                {{ func_eval.software_configuration }}
+              </div>">
+              <u>
+                {% for key in func_eval.software_configuration %}
+                  {{ key }}
+                {% endfor %}
+              </u>
+            </span>
+          </td>
+
+          {% for key, value in func_eval.task_parameter.items %}
+          <td style="background: #DFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.tuning_parameter.items %}
+          <td style="background: #FFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.evaluation_result.items %}
+          <td style="background: #DDF">
+            {{ value | floatformat:2 }}
+          </td>
+          {% endfor %}
+
+          <td style="background: white">
+            <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+              </svg>
+            </a>
+          </td>
 
           <div class="modal fade" id="detailModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -133,24 +252,9 @@
               </div>
             </div>
           </div>
-
+        </tr>
         {% endfor %}
       </tbody>
-    </table>
-    <table>
-      <tr>
-        Pages:
-        <td>
-        {% for page_num_func_eval in num_pages_func_eval %}
-        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_surrogate_models={{current_page_surrogate_models}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-          {% ifequal page_num_func_eval current_page_func_eval %}
-          [<b>{{ page_num_func_eval }}</b>]
-          {% else %}
-          [{{ page_num_func_eval }}]
-          {% endifequal %}
-        {% endfor %}
-        </td>
-      </tr>
     </table>
   </div>
 </div>
