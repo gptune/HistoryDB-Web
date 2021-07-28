@@ -600,6 +600,7 @@ class ModelPrediction(TemplateView):
         with open(".gptune/meta.json", "w") as f_out:
             json.dump(json_data, f_out, indent=2)
 
+        from gptune import CreateGPTuneFromModelData
         gt = CreateGPTuneFromModelData(surrogate_model)
         print (surrogate_model)
         print ("GPTune data: ", gt.data.P)
@@ -711,6 +712,7 @@ class ModelPrediction(TemplateView):
 
             #output_parameter["result"] = ret[output_parameter["name"]]
             output_parameter["result"] = round(ret[output_parameter["name"]][0][0],3)
+            import math
             output_parameter["result_std"] = round(math.sqrt(ret[output_parameter["name"]+"_var"][0][0]),3)
 
             model_data["output_parameters"].append(output_parameter)
