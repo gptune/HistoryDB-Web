@@ -35,10 +35,12 @@ class Dashboard(TemplateView):
         tuning_problems_avail = historydb.load_all_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
+        outputs_avail = historydb.get_outputs_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
 
         print ("machine_configurations_avail: ", machine_configurations_avail)
         print ("software_configurations_avail: ", software_configurations_avail)
+        print ("outputs_avail: ", outputs_avail)
         print ("user_configurations_avail: ", user_configurations_avail)
 
         user_email = ""
@@ -87,6 +89,7 @@ class Dashboard(TemplateView):
                     "tuning_problems_avail" : tuning_problems_avail,
                     "machine_configurations_avail" : machine_configurations_avail,
                     "software_configurations_avail" : software_configurations_avail,
+                    "outputs_avail" : outputs_avail,
                     "user_configurations_avail" : user_configurations_avail,
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "func_eval_list" : func_eval_list,
@@ -112,6 +115,7 @@ class Dashboard(TemplateView):
                     "tuning_problems_avail" : tuning_problems_avail,
                     "machine_configurations_avail" : machine_configurations_avail,
                     "software_configurations_avail" : software_configurations_avail,
+                    "outputs_avail" : outputs_avail,
                     "user_configurations_avail" : user_configurations_avail,
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "func_eval_list" : func_eval_list,

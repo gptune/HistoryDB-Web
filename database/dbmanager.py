@@ -232,6 +232,30 @@ class HistoryDB_MongoDB(dict):
 
         return software_configurations_avail
 
+    def get_outputs_avail(self, **kwargs):
+        outputs_avail = {}
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            collection_name = tuning_problem["unique_name"]
+
+            outputs_avail[collection_name] = []
+            outputs = tuning_problem["tuning_problem_info"]["output_info"]
+            for output in outputs:
+                outputs_avail[collection_name].append(output["output_name"])
+            #tuning_problem_info = tuning_problem["tuning_problem_info"]["output_info"][:]["output_name"]
+
+            #func_eval_list = self.db[collection_name].find({"document_type":{"$eq":"func_eval"}})
+            #for func_eval in func_eval_list:
+            #    try:
+            #        software_configuration = func_eval["software_configuration"]
+            #        if software_configuration not in software_configurations_avail[collection_name]:
+            #            software_configurations_avail[collection_name].append(software_configuration)
+            #    except:
+            #        print ("not able to load software configuration of func_eval: ", func_eval["uid"])
+            #        continue
+
+        return outputs_avail #software_configurations_avail
+
     def get_user_configurations_avail(self, **kwargs):
         user_configurations_avail = {}
 

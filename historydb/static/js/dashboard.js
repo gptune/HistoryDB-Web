@@ -1,6 +1,6 @@
 // Author: Younghyun Cho <younghyun@berkeley.edu>
 
-function UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, user_configurations_avail) {
+function UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, outputs_avail, user_configurations_avail) {
     var tuning_problem_unique_name = document.getElementById('tuning_problem_id').options[document.getElementById('tuning_problem_id').selectedIndex].value;
 
     document.getElementById('select_configurations').innerHTML = "<b>Select available tuning configurations (click each option to see the details)</b>";
@@ -85,6 +85,30 @@ function UpdateConfigurationsList(machine_configurations_avail, software_configu
         x.appendChild(x2);
 
         software_configurations_div.appendChild(x);
+    }
+
+    var outputs_configurations_div = document.getElementById("outputs_configurations");
+    outputs_configurations_div.innerHTML = "Output objectives";
+    for (i=0; i<outputs_avail[tuning_problem_unique_name].length; i++) {
+        var x = document.createElement('div');
+        x.classList.add('panel_group');
+        x.classList.add('custom-control');
+        x.classList.add('custom-checkbox');
+        x.innerHTML = "";
+        var x1 = document.createElement("input");
+        x1.type = 'checkbox';
+        x1.classList.add('custom-control-input');
+        x1.setAttribute("value", outputs_avail[tuning_problem_unique_name][i]);
+        x1.setAttribute("name", "output_options");
+        x1.setAttribute("id", 'output_option'+i);
+        x1.setAttribute('checked', true);
+        x.appendChild(x1);
+        var label1 = document.createElement("label");
+        label1.classList.add('custom-control-label');
+        label1.innerHTML = outputs_avail[tuning_problem_unique_name][i];
+        label1.htmlFor = x1.id;
+        x.appendChild(label1);
+        outputs_configurations_div.appendChild(x);
     }
 
     var user_configurations_div = document.getElementById("user_configurations");
