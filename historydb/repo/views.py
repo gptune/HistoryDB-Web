@@ -28,7 +28,6 @@ import re
 class Dashboard(TemplateView):
 
     def get(self, request, **kwargs):
-        print ("======== Dashboard GET ========")
 
         historydb = HistoryDB_MongoDB()
 
@@ -38,142 +37,49 @@ class Dashboard(TemplateView):
         outputs_avail = historydb.get_outputs_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
 
+        user_email = request.user.email if request.user.is_authenticated else ""
+
+        print ("======== Dashboard GET ========")
         print ("machine_configurations_avail: ", machine_configurations_avail)
         print ("software_configurations_avail: ", software_configurations_avail)
         print ("outputs_avail: ", outputs_avail)
         print ("user_configurations_avail: ", user_configurations_avail)
+        print ("user_email: ", user_email)
 
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
+        context = {
+                "tuning_problems_avail" : tuning_problems_avail,
+                "machine_configurations_avail" : machine_configurations_avail,
+                "software_configurations_avail" : software_configurations_avail,
+                "outputs_avail" : outputs_avail,
+                "user_configurations_avail" : user_configurations_avail
+                }
 
-        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
-
-        if tuning_problem_unique_name != "":
-            machine_configurations_list = ast.literal_eval(request.GET.get("machine_configurations_list", ""))
-            software_configurations_list = ast.literal_eval(request.GET.get("software_configurations_list", ""))
-            user_configurations_list = ast.literal_eval(request.GET.get("user_configurations_list", ""))
-
-            historydb = HistoryDB_MongoDB()
-
-            search_options = ast.literal_eval(request.GET.get("search_options", ""))
-
-            if "func_eval" in search_options:
-                func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
-                        machine_configurations_list = machine_configurations_list,
-                        software_configurations_list = software_configurations_list,
-                        user_configurations_list = user_configurations_list,
-                        user_email = user_email)
-                num_func_eval = len(func_eval_list)
-            else:
-                num_func_eval = 0
-
-            if "surrogate_model" in search_options:
-                surrogate_model = historydb.load_surrogate_models_filtered(
-                        tuning_problem_unique_name = tuning_problem_unique_name,
-                        machine_configurations_list = machine_configurations_list,
-                        software_configurations_list = software_configurations_list,
-                        user_configurations_list = user_configurations_list,
-                        user_email = user_email)
-                num_surrogate_models = len(surrogate_model)
-                for i in range(num_surrogate_models):
-                    surrogate_model[i]["id"] = i
-                    surrogate_model[i]["num_func_eval"] = len(surrogate_model[i]["function_evaluations"])
-                    surrogate_model[i]["num_task_parameters"] = len(surrogate_model[i]["task_parameters"])
-                    surrogate_model[i]["num_func_eval_per_task"] = \
-                            int(len(surrogate_model[i]["function_evaluations"])/len(surrogate_model[i]["task_parameters"]))
-            else:
-                num_surrogate_models = 0
-
-            context = {
-                    "tuning_problems_avail" : tuning_problems_avail,
-                    "machine_configurations_avail" : machine_configurations_avail,
-                    "software_configurations_avail" : software_configurations_avail,
-                    "outputs_avail" : outputs_avail,
-                    "user_configurations_avail" : user_configurations_avail,
-                    "tuning_problem_unique_name" : tuning_problem_unique_name,
-                    "func_eval_list" : func_eval_list,
-                    "num_func_eval" : num_func_eval,
-                    "surrogate_model_list" : surrogate_model,
-                    "num_surrogate_models" : num_surrogate_models,
-                    "machine_configurations_list" : json.dumps(machine_configurations_list),
-                    "software_configurations_list" : json.dumps(software_configurations_list),
-                    "user_configurations_list" : json.dumps(user_configurations_list),
-                    "search_options" : json.dumps(search_options)
-                    }
-
-            return render(request, 'repo/dashboard.html', context)
-
-        else:
-            func_eval_list = []
-            num_func_eval = 0
-
-            surrogate_model = []
-            num_surrogate_models = 0
-
-            context = {
-                    "tuning_problems_avail" : tuning_problems_avail,
-                    "machine_configurations_avail" : machine_configurations_avail,
-                    "software_configurations_avail" : software_configurations_avail,
-                    "outputs_avail" : outputs_avail,
-                    "user_configurations_avail" : user_configurations_avail,
-                    "tuning_problem_unique_name" : tuning_problem_unique_name,
-                    "func_eval_list" : func_eval_list,
-                    "num_func_eval" : num_func_eval,
-                    "surrogate_model_list" : surrogate_model,
-                    "num_surrogate_models" : num_surrogate_models,
-                    "machine_configurations_list" : json.dumps(machine_configurations_avail),
-                    "software_configurations_list" : json.dumps(software_configurations_avail),
-                    "user_configurations_list" : json.dumps(user_configurations_avail),
-                    "search_options" : json.dumps({})
-                    }
-
-            return render(request, 'repo/dashboard.html', context)
+        return render(request, 'repo/dashboard.html', context)
 
     def post(self, request, **kwargs):
+
         historydb = HistoryDB_MongoDB()
 
         tuning_problems_avail = historydb.load_all_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
+        outputs_avail = historydb.get_outputs_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
 
         tuning_problem_unique_name = request.POST["tuning_problem"]
-        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
-
-        machine_configurations_list = []
-        post_values = request.POST.getlist('machine_configurations_list')
-        for i in range(len(post_values)):
-            machine_configurations_list.append(json.loads(post_values[i]))
-        print ("machine_configurations_list")
-        print (machine_configurations_list)
-
-        software_configurations_list = []
-        post_values = request.POST.getlist('software_configurations_list')
-        for i in range(len(post_values)):
-            software_configurations_list.append(json.loads(post_values[i]))
-        print ("software_configurations_list")
-        print (software_configurations_list)
-
-        user_configurations_list = []
-        post_values = request.POST.getlist('user_configurations_list')
-        for i in range(len(post_values)):
-            user_configurations_list.append(json.loads(post_values[i]))
-        print ("user_configurations_list")
-        print (user_configurations_list)
-
+        machine_configurations_list = [ json.loads(val) for val in request.POST.getlist("machine_configurations_list") ]
+        software_configurations_list = [ json.loads(val) for val in request.POST.getlist("software_configurations_list") ]
+        output_options = request.POST.getlist("output_options")
+        user_configurations_list = [ json.loads(val) for val in request.POST.getlist("user_configurations_list") ]
         search_options = request.POST.getlist("search_options")
-        print ("search_options")
-        print (search_options)
 
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
+        user_email = request.user.email if request.user.is_authenticated else ""
 
         if "func_eval" in search_options:
             func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                     machine_configurations_list = machine_configurations_list,
                     software_configurations_list = software_configurations_list,
+                    output_options = output_options,
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
@@ -200,11 +106,24 @@ class Dashboard(TemplateView):
             surrogate_model = []
             num_surrogate_models = 0
 
+        print ("machine_configurations_avail: ", machine_configurations_avail)
+        print ("software_configurations_avail: ", software_configurations_avail)
+        print ("outputs_avail: ", outputs_avail)
+        print ("user_configurations_avail: ", user_configurations_avail)
+
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("machine_configurations_list: ", machine_configurations_list)
+        print ("software_configurations_list: ", software_configurations_list)
+        print ("user_configurations_list: ", user_configurations_list)
+        print ("output_options: ", output_options)
+        print ("search_options: ", search_options)
+
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,
+                "outputs_avail" : outputs_avail,
                 "user_configurations_avail" : user_configurations_avail,
                 "func_eval_list" : func_eval_list,
                 "num_func_eval" : num_func_eval,
@@ -1126,11 +1045,9 @@ class Export(TemplateView):
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
         software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        output_options = json.loads(request.GET.get("output_options", "[]"))
         user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
-
+        user_email = request.user.email if request.user.is_authenticated else ""
         search_options = json.loads(request.GET.get("search_options", "[]"))
 
         #print ("machine_configurations_list: ", machine_configurations_list)
@@ -1145,8 +1062,10 @@ class Export(TemplateView):
             perf_data.extend(historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                 machine_configurations_list = machine_configurations_list,
                 software_configurations_list = software_configurations_list,
+                output_options = output_options,
                 user_configurations_list = user_configurations_list,
                 user_email = user_email))
+
         if "surrogate_model" in search_options:
             perf_data.extend(historydb.load_surrogate_models_filtered(
                 tuning_problem_unique_name = tuning_problem_unique_name,

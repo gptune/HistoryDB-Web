@@ -385,6 +385,7 @@ class HistoryDB_MongoDB(dict):
             tuning_problem_unique_name,
             machine_configurations_list,
             software_configurations_list,
+            output_options,
             user_configurations_list,
             user_email,
             **kwargs):
@@ -402,8 +403,12 @@ class HistoryDB_MongoDB(dict):
                 software_configuration = func_eval["software_configuration"]
                 user_information = func_eval["user_info"]
 
+                print ("output_options: ", output_options)
+                print ("evaluation_result_keys: ", func_eval["evaluation_result"].keys)
+
                 if (machine_configuration in machine_configurations_list) and\
                    (software_configuration in software_configurations_list) and\
+                   (output_options in list(func_eval["evaluation_result"].keys)) and\
                    (user_information in user_configurations_list):
                     if self.check_perf_data_accessibility(func_eval, user_email):
                         func_eval_filtered.append(func_eval)
