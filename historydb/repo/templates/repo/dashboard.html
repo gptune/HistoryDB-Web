@@ -9,12 +9,6 @@
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
 
 <script>
-  $(document).ready( function () {
-    $('#function_evaluations').DataTable();
-  });
-</script>
-
-<script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
   });
@@ -35,7 +29,8 @@
           var user_configurations_avail = {{ user_configurations_avail | safe | escape }};
         </script>
 
-        <select class="custom-select d-block w-100" name="tuning_problem" id="tuning_problem_id" onChange="UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, outputs_avail, user_configurations_avail);">
+        <br>
+        <select class="custom-select d-block w-100" style="height:50px" name="tuning_problem" id="tuning_problem_id" onChange="UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, outputs_avail, user_configurations_avail);">
           <option value="" label="Choose..." selected></option>
           {% if tuning_problems_avail %}
           {% for tuning_problem in tuning_problems_avail %}
@@ -74,23 +69,30 @@
   </form>
 </div>
 
+{% ifnotequal func_eval_list|length 0 %}
+
 <div class="container-fluid">
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Export Data</h2>
+    <h2 class="h2">Download</h2>
   </div>
 
   <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group mr-2">
       <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+        <button type="button" style="width: 250px; height: 50px; color: black" class="btn btn-sm btn-outline-secondary"><h4>Export JSON</h4></button>
+      </a>
+    </div>
+
+    <div class="btn-group mr-2">
+      <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+        <button type="button" style="width: 250px; height: 50px; color: black" class="btn btn-sm btn-outline-secondary"><h4>Export CSV (TODO)</h4></button>
       </a>
     </div>
   </div>
 </div>
 
-{% ifnotequal num_func_eval 0 %}
 <div class="container-fluid">
   <br><br>
   <hr>
@@ -185,11 +187,6 @@
       </thead>
       <tbody>
         {% for func_eval in func_eval_list %}
-        {% ifequal func_eval.id func_eval.best_func_eval_id %}
-        <tr style="color: blue;">
-        {% else %}
-        <tr>
-        {% endifequal %}
           <td style="background: white">
             {{func_eval.id}}
           </td>
@@ -281,20 +278,66 @@
 {% else %}
 {% endifnotequal %}
 
-{% ifnotequal num_surrogate_models 0 %}
+{% ifnotequal num_surrogate_models|length 0 %}
+<script type="text/javascript">
+    var output_options = {{ output_options | safe | escape }};
+    function RunModel() {
+        var surrogate_model_uids= new Array();
+
+        for (i=0; i<output_options.length; i++) {
+            var x = output_options[i];
+            var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
+
+            surrogate_model_uids.push(uid);
+        }
+
+        alert(output_options);
+        alert(surrogate_model_uids);
+
+        window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    }
+
+    //$('#button').click( function () {
+    //    //alert( $('#surrogate_model_table_id_{{key}}').DataTable().rows('.selected').data().length +' row(s) selected' );
+    //    //alert( $('#surrogate_model_table_id_{{key}}').DataTable().rows('.selected').data()[0][9]);
+    //    //<a href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uid={{surrogate_model.uid}}">
+    //    var surrogate_model_uids = []
+    //    window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uid={{surrogate_model.uid}}";
+    //        //"https://tutorialdeep.com/knowhow/get-current-page-url-jquery/";
+    //} );
+</script>
+
 <div class="container-fluid">
   <br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
     <h2 class="h2">Surrogate Models</h2>
   </div>
+  <div>
+    <h4>Selected model(s) to run</h4>
+    <div id="selected_models">
+    </div>
+    <button id="button" onClick="RunModel()">Run surrogate model</button>
+  </div>
 
   {% for key,surrogate_model_list_per_objective in surrogate_model_list.items %}
 
   <script type="text/javascript">
-    $(document).ready( function () {
-      $("#surrogate_model_table_id_{{key}}").DataTable();
-    });
+    $(document).ready(function() {
+        $('#surrogate_model_table_id_{{key}}').DataTable( {
+            columnDefs: [ {
+                orderable: false,
+                className: 'select-checkbox',
+                targets:   0
+            } ],
+            select: {
+                style:    'os',
+                selector: 'td:first-child'
+            },
+            order: [[ 1, 'asc' ]]
+        } );
+    } );
+
   </script>
 
   <div class="table-responsive table-outer">
@@ -304,20 +347,22 @@
     <table id="surrogate_model_table_id_{{key}}" class="table table-striped table-bordered">
       <thead>
         <tr>
+          <th>Run</th>
           <th>#</th>
-          <th>Tuning Problem</th>
+          <th>Tuning problem</th>
           <th>Task parameter</th>
           <th>Objective</th>
           <th>Num samples</th>
           <th>Owner</th>
           <th>Date</th>
           <th>JSON</th>
-          <th>Play</th>
+          <th style="display:none;"></th>
         </tr>
       </thead>
       <tbody>
           {% for surrogate_model in surrogate_model_list_per_objective %}
           <tr>
+            <td></td>
             <td>{{ surrogate_model.id }}</td>
             <td>{{ surrogate_model.tuning_problem_name }}</td>
             <td>{{ surrogate_model.task_parameters }}</td>
@@ -333,13 +378,7 @@
                 </svg>
               </a>
             </td>
-            <td>
-              <a href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uid={{surrogate_model.uid}}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wrench" viewBox="0 0 16 16">
-                  <path d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364L.102 2.223zm13.37 9.019.528.026.287.445.445.287.026.529L15 13l-.242.471-.026.529-.445.287-.287.445-.529.026L13 15l-.471-.242-.529-.026-.287-.445-.445-.287-.026-.529L11 13l.242-.471.026-.529.445-.287.287-.445.529-.026L13 11l.471.242z"/>
-                </svg>
-              </a>
-            </td>
+            <td style="display:none;">{{ surrogate_model.uid }}</td>
           </tr>
 
           <div class="modal fade" id="detailModalLong_{{ surrogate_model.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
