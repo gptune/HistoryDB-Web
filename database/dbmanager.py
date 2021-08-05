@@ -404,11 +404,11 @@ class HistoryDB_MongoDB(dict):
                 user_information = func_eval["user_info"]
 
                 print ("output_options: ", output_options)
-                print ("evaluation_result_keys: ", func_eval["evaluation_result"].keys)
+                print ("evaluation_result_keys: ", list(func_eval["evaluation_result"].keys()))
 
                 if (machine_configuration in machine_configurations_list) and\
                    (software_configuration in software_configurations_list) and\
-                   (output_options in list(func_eval["evaluation_result"].keys)) and\
+                   all(elem in list(func_eval["evaluation_result"].keys()) for elem in output_options) and\
                    (user_information in user_configurations_list):
                     if self.check_perf_data_accessibility(func_eval, user_email):
                         func_eval_filtered.append(func_eval)
@@ -637,10 +637,13 @@ class HistoryDB_MongoDB(dict):
             tuning_problem_unique_name,
             machine_configurations_list,
             software_configurations_list,
+            output_options,
             user_configurations_list,
             user_email,
             **kwargs):
-        surrogate_model_list_filtered = []
+        surrogate_model_list_filtered = {}
+        for output_option in output_options:
+            surrogate_model_list_filtered[output_option] = []
 
         application_db = self.db[tuning_problem_unique_name]
         surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
@@ -659,7 +662,7 @@ class HistoryDB_MongoDB(dict):
                    (software_configuration in software_configurations_list) and\
                    (user_information in user_configurations_list):
                     if self.check_perf_data_accessibility(surrogate_model, user_email):
-                        surrogate_model_list_filtered.append(surrogate_model)
+                        surrogate_model_list_filtered[surrogate_model["objective"]["name"]].append(surrogate_model)
             except:
                 continue
 

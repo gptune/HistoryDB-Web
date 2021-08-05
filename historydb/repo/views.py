@@ -90,21 +90,33 @@ class Dashboard(TemplateView):
             num_func_eval = 0
 
         if "surrogate_model" in search_options:
-            surrogate_model = historydb.load_surrogate_models_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+            surrogate_model_list = historydb.load_surrogate_models_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                     machine_configurations_list = machine_configurations_list,
                     software_configurations_list = software_configurations_list,
+                    output_options = output_options,
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
-            num_surrogate_models = len(surrogate_model)
-            for i in range(num_surrogate_models):
-                surrogate_model[i]["id"] = i
-                surrogate_model[i]["num_func_eval"] = len(surrogate_model[i]["function_evaluations"])
-                surrogate_model[i]["num_task_parameters"] = len(surrogate_model[i]["task_parameters"])
-                surrogate_model[i]["num_func_eval_per_task"] = \
-                        int(len(surrogate_model[i]["function_evaluations"])/len(surrogate_model[i]["task_parameters"]))
+            num_surrogate_models = {}
+            for output_option in output_options:
+                num_surrogate_models[output_option] = len(surrogate_model_list[output_option])
+
+            for output_option in output_options:
+                i = 0
+                for surrogate_model in surrogate_model_list[output_option]:
+                    surrogate_model["id"] = i
+                    i += 1
+                    surrogate_model["num_func_eval"] = len(surrogate_model["function_evaluations"])
+                    surrogate_model["num_task_parameters"] = len(surrogate_model["task_parameters"])
+                    surrogate_model["num_func_eval_per_task"] = \
+                            int(len(surrogate_model["function_evaluations"])/len(surrogate_model["task_parameters"]))
         else:
-            surrogate_model = []
-            num_surrogate_models = 0
+            surrogate_model_list = {}
+            for output_option in output_options:
+                surrogate_model_list[output_option] = []
+
+            num_surrogate_models = {}
+            for output_option in output_options:
+                num_surrogate_models[output_option] = 0
 
         print ("machine_configurations_avail: ", machine_configurations_avail)
         print ("software_configurations_avail: ", software_configurations_avail)
@@ -118,6 +130,8 @@ class Dashboard(TemplateView):
         print ("output_options: ", output_options)
         print ("search_options: ", search_options)
 
+        print ("num_surrogate_models: ", num_surrogate_models)
+
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
                 "tuning_problems_avail" : tuning_problems_avail,
@@ -127,10 +141,11 @@ class Dashboard(TemplateView):
                 "user_configurations_avail" : user_configurations_avail,
                 "func_eval_list" : func_eval_list,
                 "num_func_eval" : num_func_eval,
-                "surrogate_model_list" : surrogate_model,
+                "surrogate_model_list" : surrogate_model_list,
                 "num_surrogate_models" : num_surrogate_models,
                 "machine_configurations_list" : json.dumps(machine_configurations_list),
                 "software_configurations_list" : json.dumps(software_configurations_list),
+                "output_options" : json.dumps(output_options),
                 "user_configurations_list" : json.dumps(user_configurations_list),
                 "search_options" : json.dumps(search_options)
                 }
@@ -1037,7 +1052,7 @@ class EntryDel(TemplateView):
         historydb = HistoryDB_MongoDB()
         historydb.delete_perf_data_by_uid(tuning_problem_unique_name, entry_uid)
 
-        return redirect(reverse_lazy('repo:user-dashboard')) #, kwargs={'username': user.username}))
+        return redirect(reverse_lazy('repo:user-dashboard'))
 
 class Export(TemplateView):
 
@@ -1049,10 +1064,6 @@ class Export(TemplateView):
         user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
         user_email = request.user.email if request.user.is_authenticated else ""
         search_options = json.loads(request.GET.get("search_options", "[]"))
-
-        #print ("machine_configurations_list: ", machine_configurations_list)
-        #print ("software_configurations_list: ", software_configurations_list)
-        #print ("user_configurations_list: ", user_configurations_list)
 
         historydb = HistoryDB_MongoDB()
 
@@ -1067,12 +1078,16 @@ class Export(TemplateView):
                 user_email = user_email))
 
         if "surrogate_model" in search_options:
-            perf_data.extend(historydb.load_surrogate_models_filtered(
+            surrogate_models = historydb.load_surrogate_models_filtered(
                 tuning_problem_unique_name = tuning_problem_unique_name,
                 machine_configurations_list = machine_configurations_list,
                 software_configurations_list = software_configurations_list,
+                output_options = output_options,
                 user_configurations_list = user_configurations_list,
-                user_email = user_email))
+                user_email = user_email)
+
+            for objective_name in surrogate_models:
+                perf_data.extend(surrogate_models[objective_name])
 
         context = { "perf_data" : perf_data, }
 

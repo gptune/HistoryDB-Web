@@ -26,9 +26,8 @@
   <form method="POST">
     {% csrf_token %}
     <div class="well">
-      <h2 style="margin-top: 0">Search Filter</h2>
+      <h2 style="margin-top: 0">Tuning Problem</h2>
       <div class="mb-3">
-        <b>Tuning Problem</b><br>
         <script>
           var machine_configurations_avail = {{ machine_configurations_avail | safe | escape }};
           var software_configurations_avail = {{ software_configurations_avail | safe | escape }};
@@ -75,20 +74,28 @@
   </form>
 </div>
 
+<div class="container-fluid">
+  <br><br>
+  <hr>
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h2 class="h2">Export Data</h2>
+  </div>
+
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group mr-2">
+      <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
+      </a>
+    </div>
+  </div>
+</div>
+
 {% ifnotequal num_func_eval 0 %}
 <div class="container-fluid">
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
     <h2 class="h2">Function Evaluations</h2>
-
-    <div class="btn-toolbar mb-2 mb-md-0">
-      <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_surrogate_models={{current_page_surrogate_models}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
-        </a>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -276,31 +283,25 @@
 
 {% ifnotequal num_surrogate_models 0 %}
 <div class="container-fluid">
-  <br><br>
+  <br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
     <h2 class="h2">Surrogate Models</h2>
-    <div class="btn-toolbar mb-2 mb-md-0">
-      <div class="btn-group mr-2">
-        <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{page_num_func_eval}}&current_page_surrogate_models={{current_page_surrogate_models}}&machine_configurations_avail={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-        <button type="button" class="btn btn-sm btn-outline-secondary">Export JSON</button>
-        </a>
-      </div>
-    </div>
   </div>
 
-  <script>
+  {% for key,surrogate_model_list_per_objective in surrogate_model_list.items %}
+
+  <script type="text/javascript">
     $(document).ready( function () {
-      $('#surrogate_model_table').DataTable();
+      $("#surrogate_model_table_id_{{key}}").DataTable();
     });
   </script>
 
   <div class="table-responsive table-outer">
-    <div class="text-left mb-3">
-      Number of function evaluation result: {{ num_func_eval }}
-    </div>
+    <br>
+    <h2 class="h4">Objective {{key}} (number of models: {{surrogate_model_list_per_objective|length}})</h4>
 
-    <table id="surrogate_model_table" class="table table-striped table-bordered">
+    <table id="surrogate_model_table_id_{{key}}" class="table table-striped table-bordered">
       <thead>
         <tr>
           <th>#</th>
@@ -315,7 +316,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for surrogate_model in surrogate_model_list %}
+          {% for surrogate_model in surrogate_model_list_per_objective %}
           <tr>
             <td>{{ surrogate_model.id }}</td>
             <td>{{ surrogate_model.tuning_problem_name }}</td>
@@ -363,25 +364,9 @@
         {% endfor %}
       </tbody>
     </table>
-    <table>
-      <tr>
-        Pages:
-        <td>
-        {% for page_num_surrogate_models in num_pages_surrogate_models %}
-        <a href="{% url 'repo:dashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&current_page_func_eval={{current_page_func_eval}}&current_page_surrogate_models={{page_num_surrogate_models}}&machine_configurations={{machine_configurations_avail}}&software_configurations_avail={{software_configurations_avail}}&user_configurations_avail={{user_configurations_avail}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-          {% ifequal page_num_surrogate_models current_page_surrogate_models %}
-          [<b>{{ page_num_surrogate_models }}</b>]
-          {% else %}
-          [{{ page_num_surrogate_models }}]
-          {% endifequal %}
-        {% endfor %}
-        </td>
-      </tr>
-    </table>
   </div>
+  {% endfor %}
 </div>
-
-
 
 </div>
 
