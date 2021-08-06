@@ -6,6 +6,7 @@
 {% load static %}
 {% block content %}
 
+<script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
 
 <script>
@@ -311,7 +312,7 @@
   <br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Surrogate Models</h2>
+    <h2 class="h2">Performance Models (GP Surrogates)</h2>
   </div>
   <div>
     <h4>Selected model(s) to run</h4>

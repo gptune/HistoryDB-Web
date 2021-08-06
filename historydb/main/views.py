@@ -1,14 +1,10 @@
 from django.shortcuts import render
-
-# Create your views here.
-def index(request):
-    return render(request, 'main/index.html')
-
 from django.views.generic import TemplateView
 from dbmanager import HistoryDB_MongoDB
 import json
 
 class Index(TemplateView):
+
     def get(self, request, **kwargs):
         print ("======== Examples GET ========")
 
@@ -35,15 +31,15 @@ class Index(TemplateView):
         tuning_problems_avail = historydb.load_all_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
+        outputs_avail = historydb.get_outputs_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
 
         machine_configurations_list = machine_configurations_avail[tuning_problem_unique_name]
         software_configurations_list = software_configurations_avail[tuning_problem_unique_name]
+        output_options = outputs_avail[tuning_problem_unique_name]
         user_configurations_list = user_configurations_avail[tuning_problem_unique_name]
 
-        user_email = ""
-        if request.user.is_authenticated:
-            user_email = request.user.email
+        user_email = request.user.email if request.user.is_authenticated else ""
 
         search_options = ['func_eval']
 
@@ -51,82 +47,73 @@ class Index(TemplateView):
             func_eval_list = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                     machine_configurations_list = machine_configurations_list,
                     software_configurations_list = software_configurations_list,
+                    output_options = output_options,
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
             num_func_eval = len(func_eval_list)
-            num_evals_per_page = 15
-            if (num_func_eval%num_evals_per_page) == 0:
-                num_pages_func_eval = num_func_eval/num_evals_per_page
-            else:
-                num_pages_func_eval = int(num_func_eval/num_evals_per_page)+1
-            if (num_pages_func_eval == 0):
-                num_pages_func_eval = 1
-            current_page_func_eval = 0
-            start_index = (current_page_func_eval)*num_evals_per_page
-            end_index = (current_page_func_eval+1)*num_evals_per_page
-            if end_index > num_func_eval:
-                end_index = num_func_eval
-            func_eval_web = func_eval_list[start_index:end_index]
-
-            for i in range(len(func_eval_web)):
-                func_eval_web[i]["id"] = start_index+i
+            for i in range(num_func_eval):
+                func_eval_list[i]["id"] = i
         else:
-            func_eval_web = []
+            func_eval_list = []
             num_func_eval = 0
-            num_pages_func_eval = 0
-            current_page_func_eval = 0
 
-        if "model_data" in search_options:
-            model_data = historydb.load_model_data_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+        if "surrogate_model" in search_options:
+            surrogate_model_list = historydb.load_surrogate_models_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                     machine_configurations_list = machine_configurations_list,
                     software_configurations_list = software_configurations_list,
+                    output_options = output_options,
                     user_configurations_list = user_configurations_list,
                     user_email = user_email)
-            num_model_data = len(model_data)
-            num_model_data_per_page = 15
-            if (num_model_data %num_model_data_per_page) == 0:
-                num_pages_model_data = num_model_data/num_model_data_per_page
-            else:
-                num_pages_model_data = int(num_model_data/num_model_data_per_page)+1
-            if (num_pages_model_data == 0):
-                num_pages_model_data = 1
-            current_page_model_data = 0
-            start_index_model_data = (current_page_model_data)*num_model_data_per_page
-            end_index_model_data = (current_page_model_data+1)*num_model_data_per_page
-            if end_index_model_data > num_model_data:
-                end_index_model_data = num_model_data
-            model_data_web = model_data[start_index_model_data:end_index_model_data]
-            for i in range(len(model_data_web)):
-                model_data_web[i]["id"] = start_index_model_data+i
-                model_data_web[i]["num_func_eval"] = len(model_data_web[i]["func_eval"])
-                model_data_web[i]["num_task_parameters"] = len(model_data_web[i]["task_parameters"])
-                model_data_web[i]["num_func_eval_per_task"] = \
-                        int(len(model_data_web[i]["func_eval"])/len(model_data_web[i]["task_parameters"]))
+            num_surrogate_models = {}
+            for output_option in output_options:
+                num_surrogate_models[output_option] = len(surrogate_model_list[output_option])
+
+            for output_option in output_options:
+                i = 0
+                for surrogate_model in surrogate_model_list[output_option]:
+                    surrogate_model["id"] = i
+                    i += 1
+                    surrogate_model["num_func_eval"] = len(surrogate_model["function_evaluations"])
+                    surrogate_model["num_task_parameters"] = len(surrogate_model["task_parameters"])
+                    surrogate_model["num_func_eval_per_task"] = \
+                            int(len(surrogate_model["function_evaluations"])/len(surrogate_model["task_parameters"]))
         else:
-            model_data_web = []
-            num_model_data = 0
-            num_pages_model_data = 0
-            current_page_model_data = 0
+            surrogate_model_list = {}
+            for output_option in output_options:
+                surrogate_model_list[output_option] = []
 
+            num_surrogate_models = {}
+            for output_option in output_options:
+                num_surrogate_models[output_option] = 0
 
-        print ("func_eval_list: ", func_eval_web)
+        print ("machine_configurations_avail: ", machine_configurations_avail)
+        print ("software_configurations_avail: ", software_configurations_avail)
+        print ("outputs_avail: ", outputs_avail)
+        print ("user_configurations_avail: ", user_configurations_avail)
+
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("machine_configurations_list: ", machine_configurations_list)
+        print ("software_configurations_list: ", software_configurations_list)
+        print ("user_configurations_list: ", user_configurations_list)
+        print ("output_options: ", output_options)
+        print ("search_options: ", search_options)
+
+        print ("num_surrogate_models: ", num_surrogate_models)
 
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,
+                "outputs_avail" : outputs_avail,
                 "user_configurations_avail" : user_configurations_avail,
-                "func_eval_list" : func_eval_web,
+                "func_eval_list" : func_eval_list,
                 "num_func_eval" : num_func_eval,
-                "num_pages_func_eval" : range(num_pages_func_eval),
-                "current_page_func_eval" : current_page_func_eval,
-                "model_data_list" : model_data_web,
-                "num_model_data" : num_model_data,
-                "num_pages_model_data" : range(num_pages_model_data),
-                "current_page_model_data" : current_page_model_data,
+                "surrogate_model_list" : surrogate_model_list,
+                "num_surrogate_models" : num_surrogate_models,
                 "machine_configurations_list" : json.dumps(machine_configurations_list),
                 "software_configurations_list" : json.dumps(software_configurations_list),
+                "output_options" : json.dumps(output_options),
                 "user_configurations_list" : json.dumps(user_configurations_list),
                 "search_options" : json.dumps(search_options)
                 }
