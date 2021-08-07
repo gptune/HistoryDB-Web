@@ -67,6 +67,8 @@ class Dashboard(TemplateView):
         user_configurations_avail = historydb.get_user_configurations_avail()
 
         tuning_problem_unique_name = request.POST["tuning_problem"]
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
+
         machine_configurations_list = [ json.loads(val) for val in request.POST.getlist("machine_configurations_list") ]
         software_configurations_list = [ json.loads(val) for val in request.POST.getlist("software_configurations_list") ]
         output_options = request.POST.getlist("output_options")
@@ -124,6 +126,7 @@ class Dashboard(TemplateView):
         print ("user_configurations_avail: ", user_configurations_avail)
 
         print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("tuning_problem_info: ", tuning_problem_info)
         print ("machine_configurations_list: ", machine_configurations_list)
         print ("software_configurations_list: ", software_configurations_list)
         print ("user_configurations_list: ", user_configurations_list)
@@ -134,6 +137,7 @@ class Dashboard(TemplateView):
 
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "tuning_problem_info" : tuning_problem_info,
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,

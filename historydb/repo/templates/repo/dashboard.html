@@ -9,6 +9,22 @@
 <script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
 
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/what-input/2.1.1/what-input.min.js"></script>
+<script src="https://unpkg.com/popper.js@1"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/tippy.js@4"></script>
+
+<script>
+  $(document).ready(function() {
+    $('body').on('mouseenter', '.tippy', function(e) {
+      tippy('body .tippy', {
+      })
+    });
+  });
+</script>
+
 <script>
   $(document).ready(function () {
     $('#nav-item-repo').addClass('active');
@@ -98,7 +114,7 @@
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Function Evaluations</h2>
+    <h2 class="h2">Performance Data (Function Evaluations by GPTune)</h2>
   </div>
 
   <script>
@@ -125,6 +141,10 @@
           </th>
 
           <th>
+            App
+          </th>
+
+          <th>
             <span class="tippy" data-tippy-content="
               <div class='text-left'>
                 <h6>Machine setting used to generate the function evaluation result.</h6>
@@ -142,41 +162,50 @@
             </span>
           </th>
 
-          {% for key,value in func_eval_list.0.task_parameter.items %}
+          {% for task_parameter in tuning_problem_info.tuning_problem_info.task_info %}
+            <th>
+              <span class="tippy" data-tippy-content="
+                <div class='text-left'>
+                  <h6>Task parameter</h6>
+                  <ul>
+                    <li>Name: {{ task_parameter.task_name }}</li>
+                    <li>Type: {{ task_parameter.task_type }}</li>
+                    <li>Description: {{ task_parameter.task_description }}</li>
+                  </ul>
+                </div>">
+                <u>{{ task_parameter.task_name }}</u>
+              </span>
+            </th>
+          {% endfor %}
+
+          {% for tuning_parameter in tuning_problem_info.tuning_problem_info.parameter_info %}
           <th>
             <span class="tippy" data-tippy-content="
               <div class='text-left'>
-                <h6>Task parameter</h6>
+                <h6>Tuning parameter</h6>
                 <ul>
+                  <li>Name: {{ tuning_parameter.parameter_name }}</li>
+                  <li>Type: {{ tuning_parameter.parameter_type }}</li>
+                  <li>Description: {{ tuning_parameter.parameter_description }}</li>
                 </ul>
               </div>">
-              <u>{{ key }}</u>
+              <u>{{ tuning_parameter.parameter_name }}</u>
             </span>
           </th>
           {% endfor %}
 
-          {% for key,value in func_eval_list.0.tuning_parameter.items %}
+          {% for output in tuning_problem_info.tuning_problem_info.output_info %}
           <th>
             <span class="tippy" data-tippy-content="
               <div class='text-left'>
                 <h6>Task parameter</h6>
                 <ul>
+                  <li>Name: {{ output.output_name }}</li>
+                  <li>Type: {{ output.output_type }}</li>
+                  <li>Description: {{ output.output_description }}</li>
                 </ul>
               </div>">
-              <u>{{ key }}</u>
-            </span>
-          </th>
-          {% endfor %}
-
-          {% for key,value in func_eval_list.0.evaluation_result.items %}
-          <th>
-            <span class="tippy" data-tippy-content="
-              <div class='text-left'>
-                <h6>Task parameter</h6>
-                <ul>
-                </ul>
-              </div>">
-              <u>{{ key }}</u>
+              <u>{{ output.output_name }}</u>
             </span>
           </th>
           {% endfor %}
@@ -188,8 +217,13 @@
       </thead>
       <tbody>
         {% for func_eval in func_eval_list %}
+        <tr>
           <td style="background: white">
             {{func_eval.id}}
+          </td>
+
+          <td style="background: white">
+            {{ tuning_problem_info.tuning_problem_name }}
           </td>
 
           <td style="background: white">
@@ -281,31 +315,19 @@
 
 {% ifnotequal num_surrogate_models|length 0 %}
 <script type="text/javascript">
-    var output_options = {{ output_options | safe | escape }};
-    function RunModel() {
-        var surrogate_model_uids= new Array();
+  var output_options = {{ output_options | safe | escape }};
+  function RunModel() {
+    var surrogate_model_uids= new Array();
 
-        for (i=0; i<output_options.length; i++) {
-            var x = output_options[i];
-            var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
+    for (i=0; i<output_options.length; i++) {
+      var x = output_options[i];
+      var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
 
-            surrogate_model_uids.push(uid);
-        }
-
-        alert(output_options);
-        alert(surrogate_model_uids);
-
-        window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+      surrogate_model_uids.push(uid);
     }
 
-    //$('#button').click( function () {
-    //    //alert( $('#surrogate_model_table_id_{{key}}').DataTable().rows('.selected').data().length +' row(s) selected' );
-    //    //alert( $('#surrogate_model_table_id_{{key}}').DataTable().rows('.selected').data()[0][9]);
-    //    //<a href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uid={{surrogate_model.uid}}">
-    //    var surrogate_model_uids = []
-    //    window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uid={{surrogate_model.uid}}";
-    //        //"https://tutorialdeep.com/knowhow/get-current-page-url-jquery/";
-    //} );
+    window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+  }
 </script>
 
 <div class="container-fluid">

@@ -190,8 +190,6 @@ class HistoryDB_MongoDB(dict):
                 # probably there is no document for application_info
                 continue
 
-        return applications_avail_per_library
-
     def get_machine_configurations_avail(self, **kwargs):
         machine_configurations_avail = {}
 
@@ -369,6 +367,10 @@ class HistoryDB_MongoDB(dict):
     def get_tuning_problem_simple_name(self, tuning_problem_unique_name):
         document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
         return document["tuning_problem_name"]
+
+    def get_tuning_problem_info(self, tuning_problem_unique_name):
+        document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+        return document #["tuning_problem_info"]
 
     def load_func_eval_filtered(self,
             tuning_problem_unique_name,
