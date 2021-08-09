@@ -1368,11 +1368,12 @@ class AddTuningProblem(TemplateView):
 
             tuning_problem_info["constant_info"] = []
             for i in range(num_constants):
-                tuning_problem_info["constant_info"].append({
-                    "constant_name": constant_names[i],
-                    "constant_type": constant_types[i],
-                    "constant_description": constant_descriptions[i]
-                    })
+                if constant_names[i] != "":
+                    tuning_problem_info["constant_info"].append({
+                        "constant_name": constant_names[i],
+                        "constant_type": constant_types[i],
+                        "constant_description": constant_descriptions[i]
+                        })
 
             required_software_names = request.POST.getlist('software_name')
             required_software_types = []
@@ -1788,11 +1789,12 @@ class AddAnalyticalModel(TemplateView):
 
             model_data["constant_info"] = []
             for i in range(num_constants):
-                model_data["constant_info"].append({
-                    "constant_name": constant_names[i],
-                    "constant_type": constant_types[i],
-                    "constant_description": constant_descriptions[i]
-                    })
+                if constant_names[i] != "":
+                    model_data["constant_info"].append({
+                        "constant_name": constant_names[i],
+                        "constant_type": constant_types[i],
+                        "constant_description": constant_descriptions[i]
+                        })
 
             check_update_required = request.POST['check_update_required']
             print ("check_update_required: ", check_update_required)

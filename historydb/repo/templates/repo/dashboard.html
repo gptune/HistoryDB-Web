@@ -163,19 +163,37 @@
           </th>
 
           {% for task_parameter in tuning_problem_info.tuning_problem_info.task_info %}
-            <th>
-              <span class="tippy" data-tippy-content="
-                <div class='text-left'>
-                  <h6>Task parameter</h6>
-                  <ul>
-                    <li>Name: {{ task_parameter.task_name }}</li>
-                    <li>Type: {{ task_parameter.task_type }}</li>
-                    <li>Description: {{ task_parameter.task_description }}</li>
-                  </ul>
-                </div>">
-                <u>{{ task_parameter.task_name }}</u>
-              </span>
-            </th>
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                  <li>Name: {{ task_parameter.task_name }}</li>
+                  <li>Type: {{ task_parameter.task_type }}</li>
+                  <li>Description: {{ task_parameter.task_description }}</li>
+                </ul>
+              </div>">
+              <u>{{ task_parameter.task_name }}</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          {% for constant_variable in tuning_problem_info.tuning_problem_info.constant_info %}
+          {% ifnotequal constant_variable.constant_name '' %}
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                  <li>Name: {{ constant_variable.constant_name }}</li>
+                  <li>Type: {{ constant_variable.constant_type }}</li>
+                  <li>Description: {{ constant_variable.constant_description }}</li>
+                </ul>
+              </div>">
+              <u>{{ constant_variable.constant_name }}</u>
+            </span>
+          </th>
+          {% endifnotequal %}
           {% endfor %}
 
           {% for tuning_parameter in tuning_problem_info.tuning_problem_info.parameter_info %}
@@ -235,9 +253,17 @@
               <u>
                 {% for key in func_eval.machine_configuration %}
                   {% ifequal key 'machine_name' %}
-                    {{ func_eval.machine_configuration.machine_name }}
+                    {% if not forloop.last %}
+                      {{ func_eval.machine_configuration.machine_name }},
+                    {% else %}
+                      {{ func_eval.machine_configuration.machine_name }}
+                    {% endif %}
                   {% else %}
-                    {{ key }}
+                    {% if not forloop.last %}
+                      {{ key }},
+                    {% else %}
+                      {{ key }}
+                    {% endif %}
                   {% endifequal %}
                 {% endfor %}
               </u>
@@ -252,13 +278,23 @@
               </div>">
               <u>
                 {% for key in func_eval.software_configuration %}
-                  {{ key }}
+                  {% if not forloop.last %}
+                    {{ key }},
+                  {% else %}
+                    {{ key }}
+                  {% endif %}
                 {% endfor %}
               </u>
             </span>
           </td>
 
           {% for key, value in func_eval.task_parameter.items %}
+          <td style="background: #DFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.constants %}
           <td style="background: #DFD">
             {{ value }}
           </td>
