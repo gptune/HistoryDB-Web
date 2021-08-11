@@ -1,0 +1,489 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<link ref="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/what-input/2.1.1/what-input.min.js"></script>
+<script src="https://unpkg.com/popper.js@1"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/tippy.js@4"></script>
+
+<script>
+  $(document).ready(function() {
+    $('body').on('mouseenter', '.tippy', function(e) {
+      tippy('body .tippy', {
+      })
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+</script>
+
+<div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;">
+
+<div class="container-fluid pt-3">
+  <div class="py-5 text-center">
+    <h1 style="margin-top: 0">Performance Model (GP Surrogates (LCM))</h1>
+  </div>
+</div>
+
+<!-- ####################### -->
+
+{% ifnotequal model_data|length 0 %}
+
+<div class="container-fluid">
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#surrogate_model_table').DataTable();
+    });
+  </script>
+
+  <div class="table-responsive table-outer">
+    <br>
+    <hr>
+    <h4>Selected model(s) to run</h4>
+
+    <table id="surrogate_model_table" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Objective</th>
+          <th>Tuning problem</th>
+          <th>Model hyperparameters</th>
+          <th>Num samples</th>
+          <th>Log-likelihood</th>
+          <th>Convergence iterations</th>
+          <th>JSON</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for key,model_data_per_objective in model_data.items %}
+        <tr>
+          <td>{{ model_data_per_objective.objective.name }}</td>
+          <td>{{ model_data_per_objective.tuning_problem_name }}</td>
+          <td>
+            {% for hyperparameter in model_data_per_objective.hyperparameters %}
+              {% if not forloop.last %}
+                {{ hyperparameter | floatformat:2 }},
+              {% else %}
+                {{ hyperparameter | floatformat:2 }}
+              {% endif %}
+            {% endfor %}
+          </td>
+          <td>{{ model_data_per_objective.model_stats.num_samples }}</td>
+          <td>{{ model_data_per_objective.model_stats.log_likelihood | floatformat:2 }}</td>
+          <td>{{ model_data_per_objective.model_stats.iterations }}</td>
+          <td>
+            <a data-toggle="modal" data-target="#detailModalLong_{{ model_data_per_objective.uid }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+              </svg>
+            </a>
+          </td>
+        </tr>
+
+        <div class="modal fade" id="detailModalLong_{{ model_data_per_objective.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <pre>{{ model_data_per_objective | pprint }}</pre>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="container-fluid">
+
+  <br>
+  <hr>
+  <h4>Make prediction</h4>
+
+  <form method="POST" action="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{ tuning_problem_unique_name }}&surrogate_model_uids={{ surrogate_model_uids }}" class="needs-validation" novalidate>
+    {% csrf_token %}
+
+    <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+      <div class="row mb-3">
+        <div class="col">
+          <b>Task parameters</b>
+        </div>
+      </div>
+
+      {% for key,model_data_per_objective in model_data.items %}
+        {% if forloop.first %}
+          {% for task_parameter in model_data_per_objective.task_parameters %}
+          <div class="row mb-3">
+            <div class="col-2">
+              <label>Name</label>
+              <input type="text" class="form-control" name="task_parameter_name" value="{{ task_parameter.name }}" readonly>
+            </div>
+            <div class="col-2">
+              <label>Type</label>
+              <input type="text" class="form-control" name="task_parameter_type" value="{{ task_parameter.type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="task_description" value="{{ task_parameter.description }}" readonly>
+            </div>
+            <div class="col">
+              <label>Input</label>
+              <select class="custom-select d-block w-100" name="task_parameter">
+                {% for task_option in task_parameter.options %}
+                <option value="{{ task_option }}">
+                {{ task_option }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="row mb-3">
+            <div class="col">
+              <b>Tuning parameters</b>
+            </div>
+          </div>
+
+          {% for tuning_parameter in model_data_per_objective.tuning_parameters %}
+          <div class="row mb-3">
+            <div class="col-2">
+              <label>Name</label>
+              <input type="text" class="form-control" name="tuning_parameter_name" value="{{ tuning_parameter.name }}" readonly>
+            </div>
+            <div class="col-2">
+              <label>Type</label>
+              <input type="text" class="form-control" name="tuning_parameter_type" value="{{ tuning_parameter.type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="tuning_parameter_description" value="{{ tuning_parameter.description }}" readonly>
+            </div>
+            <div class="col">
+              {% ifequal tuning_parameter.type 'categorical' %}
+              <label>Categorical Input:
+                {% for category in tuning_parameter.categories %}
+                {{ category }}&nbsp;
+                {% endfor %}
+              </label>
+              <input type="text" class="form-control" name="tuning_parameter" value="{{ tuning_parameter.value }}">
+              {% else %}
+              <label>Input ({{ tuning_parameter.lower_bound }}~{{ tuning_parameter.upper_bound }})</label>
+              <input type="text" class="form-control" name="tuning_parameter" value="{{ tuning_parameter.value }}">
+              {% endifequal %}
+            </div>
+          </div>
+          {% endfor %}
+
+          <div class="row mb-3">
+            <div class="col-4">
+              <label></label>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Predict Output</button>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {% for key,model_data_per_objective in model_data.items %}
+        <div class="row mb-3">
+          <div class="col-2">
+            <label>Name</label>
+            <input type="text" class="form-control" name="output_parameter_name" value="{{ model_data_per_objective.model_output.name }}" readonly>
+          </div>
+          <div class="col-2">
+            <label>Type</label>
+            <input type="text" class="form-control" name="output_parameter_type" value="{{ model_data_per_objective.model_output.type }}" readonly>
+          </div>
+          <div class="col">
+            <label>Description</label>
+            <input type="text" class="form-control" name="output_parameter_description" value="{{ model_data_per_objective.model_output.description }}" readonly>
+          </div>
+          <div class="col">
+            <label>Predicted Result (Mean Value)</label>
+            <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ model_data_per_objective.model_output.result }}" readonly>
+          </div>
+          <div class="col">
+            <label>Standard Deviation of the GP Prediction Result</label>
+            <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ model_data_per_objective.model_output.result_std }}" readonly>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </form>
+</div>
+
+
+
+<div class="container-fluid">
+
+  <div class="table-responsive table-outer">
+    <br>
+    <hr>
+    <h4>Function evaluations used to build the model</h4>
+
+    {% for key,model_data_per_objective in model_data.items %}
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('#function_evaluations_table_{{key}}').DataTable();
+      });
+    </script>
+
+    <table id="function_evaluations_table_{{key}}" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Sample number</h6>
+              </div>">
+              <u>#</u>
+            </span>
+          </th>
+
+          <th>
+            App
+          </th>
+
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Machine setting used to generate the function evaluation result.</h6>
+              </div>">
+              <u>Machine</u>
+            </span>
+          </th>
+
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+              </div>">
+              <u>Software</u>
+            </span>
+          </th>
+
+          {% for task_parameter in model_data_per_objective.task_parameters %}
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                  <li>Name: {{ task_parameter.name }}</li>
+                  <li>Type: {{ task_parameter.type }}</li>
+                  <li>Description: {{ task_parameter.description }}</li>
+                </ul>
+              </div>">
+              <u>{{ task_parameter.name }}</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          {% for constant_variable in model_data_per_objective.constants %}
+          {% ifnotequal constant_variable.constant_name '' %}
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                  <li>Name: {{ constant_variable.name }}</li>
+                  <li>Type: {{ constant_variable.type }}</li>
+                  <li>Description: {{ constant_variable.description }}</li>
+                </ul>
+              </div>">
+              <u>{{ constant_variable.name }}</u>
+            </span>
+          </th>
+          {% endifnotequal %}
+          {% endfor %}
+
+          {% for tuning_parameter in model_data_per_objective.tuning_parameters %}
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Tuning parameter</h6>
+                <ul>
+                  <li>Name: {{ tuning_parameter.name }}</li>
+                  <li>Type: {{ tuning_parameter.type }}</li>
+                  <li>Description: {{ tuning_parameter.description }}</li>
+                </ul>
+              </div>">
+              <u>{{ tuning_parameter.name }}</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          {% for output in model_data_per_objective.output_parameters %}
+          <th>
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Task parameter</h6>
+                <ul>
+                  <li>Name: {{ output.name }}</li>
+                  <li>Type: {{ output.type }}</li>
+                  <li>Description: {{ output.description }}</li>
+                </ul>
+              </div>">
+              <u>{{ output.name }}</u>
+            </span>
+          </th>
+          {% endfor %}
+
+          <th>
+            JSON
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for func_eval in model_data_per_objective.function_evaluations %}
+        <tr>
+          <td style="background: white">
+            {{func_eval.id}}
+          </td>
+
+          <td style="background: white">
+            {{ model_data_per_objective.tuning_problem_name }}
+          </td>
+
+          <td style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Machine Configuration</h6>
+                {{ func_eval.machine_configuration }}
+              </div>">
+              <u>
+                {% for key in func_eval.machine_configuration %}
+                  {% ifequal key 'machine_name' %}
+                    {% if not forloop.last %}
+                      {{ func_eval.machine_configuration.machine_name }},
+                    {% else %}
+                      {{ func_eval.machine_configuration.machine_name }}
+                    {% endif %}
+                  {% else %}
+                    {% if not forloop.last %}
+                      {{ key }},
+                    {% else %}
+                      {{ key }}
+                    {% endif %}
+                  {% endifequal %}
+                {% endfor %}
+              </u>
+            </span>
+          </td>
+
+          <td style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Software Configuration</h6>
+                {{ func_eval.software_configuration }}
+              </div>">
+              <u>
+                {% for key in func_eval.software_configuration %}
+                  {% if not forloop.last %}
+                    {{ key }},
+                  {% else %}
+                    {{ key }}
+                  {% endif %}
+                {% endfor %}
+              </u>
+            </span>
+          </td>
+
+          {% for key, value in func_eval.task_parameter.items %}
+          <td style="background: #DFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.constants %}
+          <td style="background: #DFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.tuning_parameter.items %}
+          <td style="background: #FFD">
+            {{ value }}
+          </td>
+          {% endfor %}
+
+          {% for key, value in func_eval.evaluation_result.items %}
+          <td style="background: #DDF">
+            {{ value | floatformat:2 }}
+          </td>
+          {% endfor %}
+
+          <td style="background: white">
+            <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
+                <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+              </svg>
+            </a>
+          </td>
+
+          <div class="modal fade" id="detailModalLong_{{ func_eval.uid }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="detailModalLongTitle">Details of the Function Evaluation Data</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <pre>{{ func_eval | pprint }}</pre>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+
+{% else %}
+{% endifnotequal %}
+
+</div>
+
+{% endblock %}

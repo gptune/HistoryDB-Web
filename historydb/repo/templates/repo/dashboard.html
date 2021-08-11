@@ -373,7 +373,7 @@
       surrogate_model_uids.push(uid);
     }
 
-    window.location.href="{% url 'repo:surrogate-model' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    window.location.href="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
   }
 </script>
 
@@ -384,10 +384,11 @@
     <h2 class="h2">Performance Models (GP Surrogates)</h2>
   </div>
   <div>
-    <h4>Selected model(s) to run</h4>
+    <h4>Run selected surrogate model(s)</h4>
     <div id="selected_models">
     </div>
-    <button id="button" onClick="RunModel()">Run surrogate model</button>
+    <button id="button" onClick="RunModel()">Make prediction</button>
+    <button id="button" onClick="RunModel()">Make prediction</button>
   </div>
 
   {% for key,surrogate_model_list_per_objective in surrogate_model_list.items %}
