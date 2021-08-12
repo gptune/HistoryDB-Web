@@ -363,7 +363,7 @@
 {% ifnotequal num_surrogate_models|length 0 %}
 <script type="text/javascript">
   var output_options = {{ output_options | safe | escape }};
-  function RunModel() {
+  function ModelPrediction() {
     var surrogate_model_uids= new Array();
 
     for (i=0; i<output_options.length; i++) {
@@ -374,6 +374,19 @@
     }
 
     window.location.href="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+  }
+
+  function SensitivityAnalysis() {
+    var surrogate_model_uids= new Array();
+
+    for (i=0; i<output_options.length; i++) {
+      var x = output_options[i];
+      var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
+
+      surrogate_model_uids.push(uid);
+    }
+
+    window.location.href="{% url 'repo:sadashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
   }
 </script>
 
@@ -387,8 +400,8 @@
     <h4>Run selected surrogate model(s)</h4>
     <div id="selected_models">
     </div>
-    <button id="button" onClick="RunModel()">Make prediction</button>
-    <button id="button" onClick="RunModel()">Make prediction</button>
+    <button id="button" onClick="ModelPrediction()">Make prediction</button>
+    <button id="button" onClick="SensitivityAnalysis()">Sensitivity analysis</button>
   </div>
 
   {% for key,surrogate_model_list_per_objective in surrogate_model_list.items %}
@@ -418,7 +431,7 @@
     <table id="surrogate_model_table_id_{{key}}" class="table table-striped table-bordered">
       <thead>
         <tr>
-          <th>Run</th>
+          <th>Select</th>
           <th>#</th>
           <th>Tuning problem</th>
           <th>Task parameter</th>
