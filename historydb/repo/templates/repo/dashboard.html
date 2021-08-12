@@ -100,23 +100,19 @@
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Download</h2>
-  </div>
-
-  <div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group mr-2">
-      <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-        <button type="button" style="width: 260px; height: 80px; color: black" class="btn btn-sm btn-outline-secondary"><h4>Export JSON (GPTune-Compatible)</h4></button>
-      </a>
-    </div>
-  </div>
-</div>
-
-<div class="container-fluid">
-  <br><br>
-  <hr>
-  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
     <h2 class="h2">Performance Data (Function Evaluations by GPTune)</h2>
+  </div>
+
+  <div class="text-left mb-3">
+  </div>
+
+  <div>
+    <b>Number of function evaluation result: {{ num_func_eval }}</b>
+    <br>
+    <br>
+    <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+    <button id="button">Export to JSON (GPTune-Compatible)</button>
+    </a>
   </div>
 
   <script>
@@ -132,11 +128,8 @@
 
   <div class="table-responsive table_outer">
     <div class="text-left mb-3">
-      Number of function evaluation result: {{ num_func_eval }}
-    </div>
-
-    <div class="text-left mb-3">
-      <b>Export</b>
+      <br>
+      <b>Export to other format</b>
     </div>
 
     <table id="function_evaluations" class="table table-striped table-bordered">
@@ -240,6 +233,10 @@
           {% endfor %}
 
           <th>
+            Owner
+          </th>
+
+          <th>
             JSON
           </th>
         </tr>
@@ -324,6 +321,19 @@
           {% endfor %}
 
           <td style="background: white">
+            <span class="tippy" data-tippy-content="
+              <div class='text-left'>
+                <h6>Owner information</h6>
+                <ul>
+                  <li>Username: {{ func_eval.user_info.user_name }}</li>
+                  <li>Useremail: {{ func_eval.user_info.user_email }}</li>
+                </ul>
+              </div>">
+              <u>{{ func_eval.user_info.user_name }}</u>
+            </span>
+          </td>
+
+          <td style="background: white">
             <a data-toggle="modal" data-target="#detailModalLong_{{ func_eval.uid }}">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16">
                 <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
@@ -361,19 +371,27 @@
 {% endifnotequal %}
 
 {% ifnotequal num_surrogate_models|length 0 %}
+
 <script type="text/javascript">
   var output_options = {{ output_options | safe | escape }};
+
   function ModelPrediction() {
     var surrogate_model_uids= new Array();
 
     for (i=0; i<output_options.length; i++) {
       var x = output_options[i];
-      var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
 
-      surrogate_model_uids.push(uid);
+      if ($('#surrogate_model_table_id_'+x).DataTable().rows('.selected').indexes().length != 0) {
+        var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][10];
+        surrogate_model_uids.push(uid);
+      }
     }
 
-    window.location.href="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    if (surrogate_model_uids.length == 0) {
+      alert("No model is selected. Select performance model(s) to run.");
+    } else {
+      window.location.href="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    }
   }
 
   function SensitivityAnalysis() {
@@ -381,12 +399,18 @@
 
     for (i=0; i<output_options.length; i++) {
       var x = output_options[i];
-      var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][9];
 
-      surrogate_model_uids.push(uid);
+      if ($('#surrogate_model_table_id_'+x).DataTable().rows('.selected').indexes().length != 0) {
+        var uid = $('#surrogate_model_table_id_'+x).DataTable().rows('.selected').data()[0][10];
+        surrogate_model_uids.push(uid);
+      }
     }
 
-    window.location.href="{% url 'repo:sadashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    if (surrogate_model_uids.length == 0) {
+      alert("No model is selected. Select performance model(s) to run.");
+    } else {
+      window.location.href="{% url 'repo:sadashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&surrogate_model_uids="+surrogate_model_uids.join(",");
+    }
   }
 </script>
 
@@ -436,6 +460,7 @@
           <th>Tuning problem</th>
           <th>Task parameter</th>
           <th>Objective</th>
+          <th>Modeler</th>
           <th>Num samples</th>
           <th>Owner</th>
           <th>Date</th>
@@ -451,6 +476,7 @@
             <td>{{ surrogate_model.tuning_problem_name }}</td>
             <td>{{ surrogate_model.task_parameters }}</td>
             <td>{{ surrogate_model.objective.name }}</td>
+            <td>{{ surrogate_model.modeler }}</td>
             <td>{{ surrogate_model.num_func_eval_per_task }}</td>
             <td>{{ surrogate_model.user_info.user_name }}</td>
             <td>{{ surrogate_model.time.tm_mon }}/{{ surrogate_model.time.tm_mday }}/{{ surrogate_model.time.tm_year }}</td>
