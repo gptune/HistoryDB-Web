@@ -60,7 +60,7 @@ def signup(request):
                             "Please use this code to verify this email and confirm your registration.\n" + \
                             "Code: " + activation_code + "\n\n" + \
                             "Best Regards,\nGPTune-Dev"
-                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=[], reply_to=['gptune-dev@lbl.gov'])
+                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@lbl.gov'], reply_to=['gptune-dev@lbl.gov'])
                     email.send()
                 except:
                     print ("Something went wrong with email sending")
