@@ -9,6 +9,7 @@ urlpatterns = [
     path('user-dashboard/', views.UserDashboard.as_view(), name='user-dashboard'),
     path('surrogate-model/', views.SurrogateModel.as_view(), name='surrogate-model'),
     path('model-prediction/', views.ModelPrediction.as_view(), name='model-prediction'),
+    path('sadashboard/', views.SADashboard.as_view(), name='sadashboard'),
     path('sobol-analysis/', views.SobolAnalysis.as_view(), name='sobol-analysis'),
     path('entryaccess/', views.EntryAccess.as_view(), name='entryaccess'),
     path('entrydel/', views.EntryDel.as_view(), name='entrydel'),

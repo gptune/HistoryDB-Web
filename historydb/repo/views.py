@@ -229,18 +229,18 @@ class UserDashboard(TemplateView):
 class SurrogateModel(TemplateView):
 
     def get(self, request, **kwargs):
-        print ("======== Surrogate Model Dashboard ========")
+
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         surrogate_model_uids = request.GET.get("surrogate_model_uids", "").split(",")
-        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
-        print ("Surrogate Model UIDs: ", surrogate_model_uids)
-
         historydb = HistoryDB_MongoDB()
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
         surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
         num_surrogate_models = len(surrogate_models)
-        print ("tuning_problem: ", tuning_problem)
 
+        print ("======== Surrogate Model Dashboard ========")
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("tuning_problem: ", tuning_problem)
+        print ("Surrogate Model UIDs: ", surrogate_model_uids)
         print ("SURROGATE_MODEL")
         print (surrogate_models)
 
@@ -352,124 +352,134 @@ class SurrogateModel(TemplateView):
 class ModelPrediction(TemplateView):
 
     def get(self, request, **kwargs):
-        print ("======== Surrogate Model Dashboard ========")
-        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
-        surrogate_model_uid = request.GET.get("surrogate_model_uid", "")
-        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
-        print ("Surrogate Model UID: ", surrogate_model_uid)
 
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        surrogate_model_uids = request.GET.get("surrogate_model_uids", "").split(",")
         historydb = HistoryDB_MongoDB()
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
-        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
+        surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
+        num_surrogate_models = len(surrogate_models)
+
+        print ("======== Surrogate Model Dashboard ========")
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
         print ("tuning_problem: ", tuning_problem)
-
+        print ("Surrogate Model UIDs: ", surrogate_model_uids)
         print ("SURROGATE_MODEL")
-        print (surrogate_model)
+        print (surrogate_models)
 
-        model_data = {}
+        model_data_list = {}
 
-        model_data["surrogate_model_uid"] = surrogate_model_uid
+        for surrogate_model in surrogate_models:
+            model_data = {}
 
-        model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
-        model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
-        model_data["hyperparameters"] = surrogate_model["hyperparameters"]
-        model_data["model_stats"] = surrogate_model["model_stats"]
-        model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+            model_data["surrogate_model_uid"] = surrogate_model["uid"]
 
-        model_data["function_evaluations"] = []
-        func_eval_id = 1
-        for func_eval_uid in surrogate_model["function_evaluations"]:
-            func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
-            func_eval_document["id"] = func_eval_id
-            func_eval_id += 1
-            model_data["function_evaluations"].append(func_eval_document)
+            model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+            model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+            model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+            model_data["model_stats"] = surrogate_model["model_stats"]
+            model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
 
-        model_data["task_parameters"] = []
-        for i in range(len(surrogate_model["input_space"])):
-            task_space = surrogate_model["input_space"][i]
+            model_data["function_evaluations"] = []
+            func_eval_id = 1
+            for func_eval_uid in surrogate_model["function_evaluations"]:
+                func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+                func_eval_document["id"] = func_eval_id
+                func_eval_id += 1
+                model_data["function_evaluations"].append(func_eval_document)
 
-            task_parameter = {}
-            task_parameter["name"] = task_space["name"]
-            task_parameter["type"] = task_space["type"]
-            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
-                task_parameter["lower_bound"] = task_space["lower_bound"]
-                task_parameter["upper_bound"] = task_space["upper_bound"]
-            elif task_parameter["type"] == "categorical":
-                task_parameter["categories"] = task_space["categories"]
-            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
-                if task_info["task_name"] == task_parameter["name"]:
-                    task_parameter["description"] = task_info["task_description"]
-            task_parameter["options"] = []
-            for j in range(len(surrogate_model["task_parameters"])):
-                task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
-            task_parameter["value"] = task_parameter["options"][0]
+            model_data["task_parameters"] = []
+            for i in range(len(surrogate_model["input_space"])):
+                task_space = surrogate_model["input_space"][i]
 
-            model_data["task_parameters"].append(task_parameter)
+                task_parameter = {}
+                task_parameter["name"] = task_space["name"]
+                task_parameter["type"] = task_space["type"]
+                if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                    task_parameter["lower_bound"] = task_space["lower_bound"]
+                    task_parameter["upper_bound"] = task_space["upper_bound"]
+                elif task_parameter["type"] == "categorical":
+                    task_parameter["categories"] = task_space["categories"]
+                for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                    if task_info["task_name"] == task_parameter["name"]:
+                        task_parameter["description"] = task_info["task_description"]
+                task_parameter["options"] = []
+                for j in range(len(surrogate_model["task_parameters"])):
+                    task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+                task_parameter["value"] = task_parameter["options"][0]
 
-        model_data["tuning_parameters"] = []
-        for parameter_space in surrogate_model["parameter_space"]:
-            tuning_parameter = {}
-            tuning_parameter["name"] = parameter_space["name"]
-            tuning_parameter["type"] = parameter_space["type"]
-            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
-                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-                tuning_parameter["value"] = tuning_parameter["lower_bound"]
-            elif tuning_parameter["type"] == "categorical":
-                tuning_parameter["categories"] = parameter_space["categories"]
-                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
-            for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
-                if parameter_info["parameter_name"] == tuning_parameter["name"]:
-                    tuning_parameter["description"] = parameter_info["parameter_description"]
+                model_data["task_parameters"].append(task_parameter)
 
-            model_data["tuning_parameters"].append(tuning_parameter)
+            model_data["tuning_parameters"] = []
+            for parameter_space in surrogate_model["parameter_space"]:
+                tuning_parameter = {}
+                tuning_parameter["name"] = parameter_space["name"]
+                tuning_parameter["type"] = parameter_space["type"]
+                if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                    tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                    tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                    tuning_parameter["value"] = tuning_parameter["lower_bound"]
+                elif tuning_parameter["type"] == "categorical":
+                    tuning_parameter["categories"] = parameter_space["categories"]
+                    tuning_parameter["value"] = str(tuning_parameter["categories"][0])
+                for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                    if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                        tuning_parameter["description"] = parameter_info["parameter_description"]
 
-        model_data["output_parameters"] = []
-        for output_space in surrogate_model["output_space"]:
-            output_parameter = {}
-            output_parameter["name"] = output_space["name"]
-            output_parameter["type"] = output_space["type"]
-            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
-                output_parameter["lower_bound"] = output_space["lower_bound"]
-                output_parameter["upper_bound"] = output_space["upper_bound"]
-            elif output_parameter["type"] == "categorical":
-                output_parameter["categories"] = output_space["categories"]
+                model_data["tuning_parameters"].append(tuning_parameter)
+
+            model_output = {}
+            model_output["name"] = surrogate_model["objective"]["name"]
+            model_output["type"] = surrogate_model["objective"]["type"]
+            if model_output["type"] == "int" or model_output["type"] == "real":
+                model_output["lower_bound"] = surrogate_model["objective"]["lower_bound"]
+                model_output["upper_bound"] = surrogate_model["objective"]["upper_bound"]
+            elif model_output["type"] == "categorical":
+                model_output["categories"] = surrogate_model["objective"]["categories"]
             for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
-                if output_info["output_name"] == output_parameter["name"]:
-                    output_parameter["description"] = output_info["output_description"]
-            output_parameter["result"] = "-"
+                if output_info["output_name"] == model_output["name"]:
+                    model_output["description"] = output_info["output_description"]
+            model_output["result"] = "-"
+            model_data["model_output"] = model_output
 
-            model_data["output_parameters"].append(output_parameter)
+            model_data["output_parameters"] = []
+            for output_space in surrogate_model["output_space"]:
+                output_parameter = {}
+                output_parameter["name"] = output_space["name"]
+                output_parameter["type"] = output_space["type"]
+                if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                    output_parameter["lower_bound"] = output_space["lower_bound"]
+                    output_parameter["upper_bound"] = output_space["upper_bound"]
+                elif output_parameter["type"] == "categorical":
+                    output_parameter["categories"] = output_space["categories"]
+                for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                    if output_info["output_name"] == output_parameter["name"]:
+                        output_parameter["description"] = output_info["output_description"]
+                model_data["output_parameters"].append(output_parameter)
 
-        sobol_analysis = {}
-        sobol_analysis["task_parameters"] = []
-        for i in range(len(surrogate_model["task_parameters"])):
-            task_parameter = {}
-            for j in range(len(surrogate_model["input_space"])):
-                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
-                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
-                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
-            sobol_analysis["task_parameters"].append(task_parameter)
-        sobol_analysis["num_samples"] = 1000
+            model_data["objective"] = surrogate_model["objective"]
 
-        import pprint
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(model_data)
-        pp.pprint(sobol_analysis)
-        print ("MODEL_DATA: ", model_data)
-        #pp.pprint("MODEL_DATA: ", model_data)
+            model_data_list[model_data["objective"]["name"]] = model_data
 
         context = {
-                "model_data" : model_data,
-                "sobol_analysis" : sobol_analysis
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "surrogate_model_uids" : surrogate_model_uids,
+                "model_data" : model_data_list
                 }
 
-        return render(request, 'repo/surrogate-model.html', context)
+        return render(request, 'repo/model-prediction.html', context)
 
     def post(self, request, **kwargs):
         context = {}
 
-        surrogate_model_uid = request.POST["surrogate_model_uid"]
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name")
+        surrogate_model_uids = request.GET.get('surrogate_model_uids')
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("Surrogate Model UIDs: ", surrogate_model_uids)
+
+        historydb = HistoryDB_MongoDB()
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+
         task_parameter_names = request.POST.getlist('task_parameter_name')
         task_parameter_types = request.POST.getlist('task_parameter_type')
         task_parameters = request.POST.getlist('task_parameter')
@@ -480,7 +490,7 @@ class ModelPrediction(TemplateView):
         output_name = request.POST['output_parameter_name']
         #output = request.POST.getlist('output')
 
-        print ("surrogate_model_uid: ", surrogate_model_uid)
+        print ("surrogate_model_uids: ", surrogate_model_uids)
         print ("TASK parameter names: ", task_parameter_names)
         print ("TASK parameter types: ", task_parameter_types)
         print ("TASK parameters: ", task_parameters)
@@ -511,10 +521,408 @@ class ModelPrediction(TemplateView):
 
         print ("MODEL POINT: ", point)
 
+        surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
+
+        model_data_list = {}
+
+        for surrogate_model in surrogate_models:
+            tuning_problem_name = surrogate_model["tuning_problem_name"]
+            os.system("rm -rf .gptune")
+            os.system("mkdir -p .gptune")
+            json_data = {}
+            json_data["tuning_problem_name"] = tuning_problem_name
+            with open(".gptune/meta.json", "w") as f_out:
+                json.dump(json_data, f_out, indent=2)
+
+            from gptune import CreateGPTuneFromModelData
+            gt = CreateGPTuneFromModelData(surrogate_model)
+            print (surrogate_model)
+            print ("GPTune data: ", gt.data.P)
+
+            func_eval_list = []
+            for func_eval_uid in surrogate_model["function_evaluations"]:
+                func_eval = historydb.load_func_eval_by_uid(func_eval_uid)
+                del(func_eval["_id"])
+                func_eval_list.append(func_eval)
+            #print ("func_eval_list: ", func_eval_list)
+
+            os.system("rm -rf gptune.db")
+            os.system("mkdir -p gptune.db")
+            json_data = {}
+            json_data["func_eval"] = func_eval_list
+            with open("gptune.db/"+tuning_problem_name+".json", "w") as f_out:
+                json.dump(json_data, f_out, indent=2)
+
+            (model, model_function) = gt.LoadSurrogateModel(model_data=surrogate_model)
+            ret = model_function(point)
+            print ("ret: ", ret)
+
+            print ("SURROGATE_MODEL")
+            print (surrogate_model)
+
+            model_data = {}
+
+            #model_data["surrogate_model_uid"] = surrogate_model["uid"]
+
+            model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+            model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+            model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+            model_data["model_stats"] = surrogate_model["model_stats"]
+            model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+            model_data["function_evaluations"] = []
+            func_eval_id = 1
+            for func_eval_uid in surrogate_model["function_evaluations"]:
+                func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+                func_eval_document["id"] = func_eval_id
+                func_eval_id += 1
+                model_data["function_evaluations"].append(func_eval_document)
+
+            model_data["task_parameters"] = []
+            for i in range(len(surrogate_model["input_space"])):
+                task_space = surrogate_model["input_space"][i]
+
+                task_parameter = {}
+                task_parameter["name"] = task_space["name"]
+                task_parameter["type"] = task_space["type"]
+                if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                    task_parameter["lower_bound"] = task_space["lower_bound"]
+                    task_parameter["upper_bound"] = task_space["upper_bound"]
+                elif task_parameter["type"] == "categorical":
+                    task_parameter["categories"] = task_space["categories"]
+                for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                    if task_info["task_name"] == task_parameter["name"]:
+                        task_parameter["description"] = task_info["task_description"]
+                task_parameter["options"] = []
+                for j in range(len(surrogate_model["task_parameters"])):
+                    task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+                task_parameter["value"] = task_parameter["options"][0]
+
+                model_data["task_parameters"].append(task_parameter)
+
+            model_data["tuning_parameters"] = []
+            for parameter_space in surrogate_model["parameter_space"]:
+                tuning_parameter = {}
+                tuning_parameter["name"] = parameter_space["name"]
+                tuning_parameter["type"] = parameter_space["type"]
+                if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                    tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                    tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                    tuning_parameter["value"] = tuning_parameter["lower_bound"]
+                elif tuning_parameter["type"] == "categorical":
+                    tuning_parameter["categories"] = parameter_space["categories"]
+                    tuning_parameter["value"] = str(tuning_parameter["categories"][0])
+                for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                    if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                        tuning_parameter["description"] = parameter_info["parameter_description"]
+
+                model_data["tuning_parameters"].append(tuning_parameter)
+
+            model_output = {}
+            model_output["name"] = surrogate_model["objective"]["name"]
+            model_output["type"] = surrogate_model["objective"]["type"]
+            if model_output["type"] == "int" or model_output["type"] == "real":
+                model_output["lower_bound"] = surrogate_model["objective"]["lower_bound"]
+                model_output["upper_bound"] = surrogate_model["objective"]["upper_bound"]
+            elif model_output["type"] == "categorical":
+                model_output["categories"] = surrogate_model["objective"]["categories"]
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == model_output["name"]:
+                    model_output["description"] = output_info["output_description"]
+            model_output["result"] = round(ret[model_output["name"]][0][0],3)
+            import math
+            model_output["result_std"] = round(math.sqrt(ret[model_output["name"]+"_var"][0][0]),3)
+            model_data["model_output"] = model_output
+
+            model_data["output_parameters"] = []
+            for output_space in surrogate_model["output_space"]:
+                output_parameter = {}
+                output_parameter["name"] = output_space["name"]
+                output_parameter["type"] = output_space["type"]
+                if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                    output_parameter["lower_bound"] = output_space["lower_bound"]
+                    output_parameter["upper_bound"] = output_space["upper_bound"]
+                elif output_parameter["type"] == "categorical":
+                    output_parameter["categories"] = output_space["categories"]
+                for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                    if output_info["output_name"] == output_parameter["name"]:
+                        output_parameter["description"] = output_info["output_description"]
+                model_data["output_parameters"].append(output_parameter)
+
+            model_data["objective"] = surrogate_model["objective"]
+
+            model_data_list[model_data["objective"]["name"]] = model_data
+
+        print ("MODEL_DATA: ", model_data_list)
+
+        context = {
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "surrogate_model_uids" : surrogate_model_uids,
+                "model_data" : model_data_list,
+                }
+
+        return render(request, 'repo/model-prediction.html', context)
+
+class SADashboard(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        surrogate_model_uids = request.GET.get("surrogate_model_uids", "").split(",")
         historydb = HistoryDB_MongoDB()
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
+        num_surrogate_models = len(surrogate_models)
+
+        print ("======== Surrogate Model Dashboard ========")
+        print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("tuning_problem: ", tuning_problem)
+        print ("Surrogate Model UIDs: ", surrogate_model_uids)
+        print ("SURROGATE_MODEL")
+        print (surrogate_models)
+
+        model_data_list = {}
+
+        for surrogate_model in surrogate_models:
+            model_data = {}
+
+            model_data["surrogate_model_uid"] = surrogate_model["uid"]
+
+            model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+            model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+            model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+            model_data["model_stats"] = surrogate_model["model_stats"]
+            model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+            model_data["function_evaluations"] = []
+            func_eval_id = 1
+            for func_eval_uid in surrogate_model["function_evaluations"]:
+                func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+                func_eval_document["id"] = func_eval_id
+                func_eval_id += 1
+                model_data["function_evaluations"].append(func_eval_document)
+
+            model_data["task_parameters"] = []
+            for i in range(len(surrogate_model["input_space"])):
+                task_space = surrogate_model["input_space"][i]
+
+                task_parameter = {}
+                task_parameter["name"] = task_space["name"]
+                task_parameter["type"] = task_space["type"]
+                if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                    task_parameter["lower_bound"] = task_space["lower_bound"]
+                    task_parameter["upper_bound"] = task_space["upper_bound"]
+                elif task_parameter["type"] == "categorical":
+                    task_parameter["categories"] = task_space["categories"]
+                for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                    if task_info["task_name"] == task_parameter["name"]:
+                        task_parameter["description"] = task_info["task_description"]
+                task_parameter["options"] = []
+                for j in range(len(surrogate_model["task_parameters"])):
+                    task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+                task_parameter["value"] = task_parameter["options"][0]
+
+                model_data["task_parameters"].append(task_parameter)
+
+            model_data["tuning_parameters"] = []
+            for parameter_space in surrogate_model["parameter_space"]:
+                tuning_parameter = {}
+                tuning_parameter["name"] = parameter_space["name"]
+                tuning_parameter["type"] = parameter_space["type"]
+                if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                    tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                    tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                    tuning_parameter["value"] = tuning_parameter["lower_bound"]
+                elif tuning_parameter["type"] == "categorical":
+                    tuning_parameter["categories"] = parameter_space["categories"]
+                    tuning_parameter["value"] = str(tuning_parameter["categories"][0])
+                for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                    if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                        tuning_parameter["description"] = parameter_info["parameter_description"]
+
+                model_data["tuning_parameters"].append(tuning_parameter)
+
+            model_output = {}
+            model_output["name"] = surrogate_model["objective"]["name"]
+            model_output["type"] = surrogate_model["objective"]["type"]
+            if model_output["type"] == "int" or model_output["type"] == "real":
+                model_output["lower_bound"] = surrogate_model["objective"]["lower_bound"]
+                model_output["upper_bound"] = surrogate_model["objective"]["upper_bound"]
+            elif model_output["type"] == "categorical":
+                model_output["categories"] = surrogate_model["objective"]["categories"]
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == model_output["name"]:
+                    model_output["description"] = output_info["output_description"]
+            model_output["result"] = "-"
+            model_data["model_output"] = model_output
+
+            model_data["output_parameters"] = []
+            for output_space in surrogate_model["output_space"]:
+                output_parameter = {}
+                output_parameter["name"] = output_space["name"]
+                output_parameter["type"] = output_space["type"]
+                if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                    output_parameter["lower_bound"] = output_space["lower_bound"]
+                    output_parameter["upper_bound"] = output_space["upper_bound"]
+                elif output_parameter["type"] == "categorical":
+                    output_parameter["categories"] = output_space["categories"]
+                for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                    if output_info["output_name"] == output_parameter["name"]:
+                        output_parameter["description"] = output_info["output_description"]
+                model_data["output_parameters"].append(output_parameter)
+
+            model_data["objective"] = surrogate_model["objective"]
+
+            model_data_list[model_data["objective"]["name"]] = model_data
+
+            sobol_analysis = {}
+            sobol_analysis["task_parameters"] = []
+            for i in range(len(surrogate_model["task_parameters"])):
+                task_parameter = {}
+                for j in range(len(surrogate_model["input_space"])):
+                    #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+                    #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+                    task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+                sobol_analysis["task_parameters"].append(task_parameter)
+            sobol_analysis["num_samples"] = 1000
+
+            model_data_list[model_data["objective"]["name"]]["sobol_analysis"] = sobol_analysis
+
+        context = {
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "surrogate_model_uids" : surrogate_model_uids,
+                "model_data" : model_data_list
+                }
+
+        return render(request, 'repo/sadashboard.html', context)
+
+    def post(self, request, **kwargs):
+
+        historydb = HistoryDB_MongoDB()
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name")
+        surrogate_model_uids = request.GET.get('surrogate_model_uids')
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
+
+        model_data_list = {}
+
+        for surrogate_model in surrogate_models:
+            model_data = {}
+
+            model_data["surrogate_model_uid"] = surrogate_model["uid"]
+
+            model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
+            model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
+            model_data["hyperparameters"] = surrogate_model["hyperparameters"]
+            model_data["model_stats"] = surrogate_model["model_stats"]
+            model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
+
+            model_data["function_evaluations"] = []
+            func_eval_id = 1
+            for func_eval_uid in surrogate_model["function_evaluations"]:
+                func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
+                func_eval_document["id"] = func_eval_id
+                func_eval_id += 1
+                model_data["function_evaluations"].append(func_eval_document)
+
+            model_data["task_parameters"] = []
+            for i in range(len(surrogate_model["input_space"])):
+                task_space = surrogate_model["input_space"][i]
+
+                task_parameter = {}
+                task_parameter["name"] = task_space["name"]
+                task_parameter["type"] = task_space["type"]
+                if task_parameter["type"] == "int" or task_parameter["type"] == "real":
+                    task_parameter["lower_bound"] = task_space["lower_bound"]
+                    task_parameter["upper_bound"] = task_space["upper_bound"]
+                elif task_parameter["type"] == "categorical":
+                    task_parameter["categories"] = task_space["categories"]
+                for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
+                    if task_info["task_name"] == task_parameter["name"]:
+                        task_parameter["description"] = task_info["task_description"]
+                task_parameter["options"] = []
+                for j in range(len(surrogate_model["task_parameters"])):
+                    task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
+                task_parameter["value"] = task_parameter["options"][0]
+
+                model_data["task_parameters"].append(task_parameter)
+
+            model_data["tuning_parameters"] = []
+            for parameter_space in surrogate_model["parameter_space"]:
+                tuning_parameter = {}
+                tuning_parameter["name"] = parameter_space["name"]
+                tuning_parameter["type"] = parameter_space["type"]
+                if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
+                    tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
+                    tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
+                    tuning_parameter["value"] = tuning_parameter["lower_bound"]
+                elif tuning_parameter["type"] == "categorical":
+                    tuning_parameter["categories"] = parameter_space["categories"]
+                    tuning_parameter["value"] = str(tuning_parameter["categories"][0])
+                for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
+                    if parameter_info["parameter_name"] == tuning_parameter["name"]:
+                        tuning_parameter["description"] = parameter_info["parameter_description"]
+
+                model_data["tuning_parameters"].append(tuning_parameter)
+
+            model_output = {}
+            model_output["name"] = surrogate_model["objective"]["name"]
+            model_output["type"] = surrogate_model["objective"]["type"]
+            if model_output["type"] == "int" or model_output["type"] == "real":
+                model_output["lower_bound"] = surrogate_model["objective"]["lower_bound"]
+                model_output["upper_bound"] = surrogate_model["objective"]["upper_bound"]
+            elif model_output["type"] == "categorical":
+                model_output["categories"] = surrogate_model["objective"]["categories"]
+            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                if output_info["output_name"] == model_output["name"]:
+                    model_output["description"] = output_info["output_description"]
+            model_output["result"] = "-"
+            model_data["model_output"] = model_output
+
+            model_data["output_parameters"] = []
+            for output_space in surrogate_model["output_space"]:
+                output_parameter = {}
+                output_parameter["name"] = output_space["name"]
+                output_parameter["type"] = output_space["type"]
+                if output_parameter["type"] == "int" or output_parameter["type"] == "real":
+                    output_parameter["lower_bound"] = output_space["lower_bound"]
+                    output_parameter["upper_bound"] = output_space["upper_bound"]
+                elif output_parameter["type"] == "categorical":
+                    output_parameter["categories"] = output_space["categories"]
+                for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
+                    if output_info["output_name"] == output_parameter["name"]:
+                        output_parameter["description"] = output_info["output_description"]
+                model_data["output_parameters"].append(output_parameter)
+
+            model_data["objective"] = surrogate_model["objective"]
+
+            model_data_list[model_data["objective"]["name"]] = model_data
+
+            sobol_analysis = {}
+            sobol_analysis["task_parameters"] = []
+            for i in range(len(surrogate_model["task_parameters"])):
+                task_parameter = {}
+                for j in range(len(surrogate_model["input_space"])):
+                    #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
+                    #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
+                    task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
+                sobol_analysis["task_parameters"].append(task_parameter)
+            sobol_analysis["num_samples"] = 1000
+
+            model_data_list[model_data["objective"]["name"]]["sobol_analysis"] = sobol_analysis
+
+        sobol_analysis = {}
+        surrogate_model_uid = request.POST["surrogate_model_uid"]
+        sobol_analysis_task_parameter = request.POST["sobol_analysis_task_parameter"]
+        sobol_analysis_num_samples = int(request.POST["sobol_analysis_num_samples"])
         surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
-        #model_function = historydb.load_surrogate_model_function(surrogate_model)
-        #output = model_function(point)
+        print ("tuning_problem: ", tuning_problem)
+        print ("sobol_analysis_task_parameter: ", sobol_analysis_task_parameter)
+        print ("sobol_analysis_num_samples: ", sobol_analysis_num_samples)
+
+        print ("SURROGATE_MODEL")
+        print (surrogate_model)
 
         tuning_problem_name = surrogate_model["tuning_problem_name"]
         os.system("rm -rf .gptune")
@@ -523,11 +931,6 @@ class ModelPrediction(TemplateView):
         json_data["tuning_problem_name"] = tuning_problem_name
         with open(".gptune/meta.json", "w") as f_out:
             json.dump(json_data, f_out, indent=2)
-
-        from gptune import CreateGPTuneFromModelData
-        gt = CreateGPTuneFromModelData(surrogate_model)
-        print (surrogate_model)
-        print ("GPTune data: ", gt.data.P)
 
         func_eval_list = []
         for func_eval_uid in surrogate_model["function_evaluations"]:
@@ -543,105 +946,6 @@ class ModelPrediction(TemplateView):
         with open("gptune.db/"+tuning_problem_name+".json", "w") as f_out:
             json.dump(json_data, f_out, indent=2)
 
-        (model, model_function) = gt.LoadSurrogateModel(model_data=surrogate_model)
-        ret = model_function(point)
-        print ("ret: ", ret)
-
-        #surrogate_model["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
-
-        #print ("SURROGATE_MODEL")
-        #print (surrogate_model)
-
-        #historydb = HistoryDB_MongoDB()
-        tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
-        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
-        surrogate_model = historydb.load_surrogate_model_by_uid(surrogate_model_uid)
-        print ("tuning_problem: ", tuning_problem)
-
-        print ("SURROGATE_MODEL")
-        print (surrogate_model)
-
-        model_data = {}
-
-        model_data["surrogate_model_uid"] = surrogate_model_uid
-
-        model_data["tuning_problem_name"] = tuning_problem["tuning_problem_name"]
-        model_data["tuning_problem_unique_name"] = tuning_problem["unique_name"]
-        model_data["hyperparameters"] = surrogate_model["hyperparameters"]
-        model_data["model_stats"] = surrogate_model["model_stats"]
-        model_data["model_stats"]["num_samples"] = len(surrogate_model["function_evaluations"])
-
-        model_data["function_evaluations"] = []
-        func_eval_id = 1
-        for func_eval_uid in surrogate_model["function_evaluations"]:
-            func_eval_document = historydb.load_func_eval_by_uid(func_eval_uid)
-            func_eval_document["id"] = func_eval_id
-            func_eval_id += 1
-            model_data["function_evaluations"].append(func_eval_document)
-
-        model_data["task_parameters"] = []
-        for i in range(len(surrogate_model["input_space"])):
-            task_space = surrogate_model["input_space"][i]
-
-            task_parameter = {}
-            task_parameter["name"] = task_space["name"]
-            task_parameter["type"] = task_space["type"]
-            if task_parameter["type"] == "int" or task_parameter["type"] == "real":
-                task_parameter["lower_bound"] = task_space["lower_bound"]
-                task_parameter["upper_bound"] = task_space["upper_bound"]
-            elif task_parameter["type"] == "categorical":
-                task_parameter["categories"] = task_space["categories"]
-            for task_info in tuning_problem["tuning_problem_info"]["task_info"]:
-                if task_info["task_name"] == task_parameter["name"]:
-                    task_parameter["description"] = task_info["task_description"]
-            task_parameter["options"] = []
-            for j in range(len(surrogate_model["task_parameters"])):
-                task_parameter["options"].append(surrogate_model["task_parameters"][j][i])
-            task_parameter["value"] = task_parameter["options"][0]
-
-            model_data["task_parameters"].append(task_parameter)
-
-        model_data["tuning_parameters"] = []
-        for parameter_space in surrogate_model["parameter_space"]:
-            tuning_parameter = {}
-            tuning_parameter["name"] = parameter_space["name"]
-            tuning_parameter["type"] = parameter_space["type"]
-            if tuning_parameter["type"] == "int" or tuning_parameter["type"] == "real":
-                tuning_parameter["lower_bound"] = parameter_space["lower_bound"]
-                tuning_parameter["upper_bound"] = parameter_space["upper_bound"]
-                tuning_parameter["value"] = tuning_parameter["lower_bound"]
-            elif tuning_parameter["type"] == "categorical":
-                tuning_parameter["categories"] = parameter_space["categories"]
-                tuning_parameter["value"] = str(tuning_parameter["categories"][0])
-            for parameter_info in tuning_problem["tuning_problem_info"]["parameter_info"]:
-                if parameter_info["parameter_name"] == tuning_parameter["name"]:
-                    tuning_parameter["description"] = parameter_info["parameter_description"]
-
-            model_data["tuning_parameters"].append(tuning_parameter)
-
-        model_data["output_parameters"] = []
-        for output_space in surrogate_model["output_space"]:
-            output_parameter = {}
-            output_parameter["name"] = output_space["name"]
-            output_parameter["type"] = output_space["type"]
-            if output_parameter["type"] == "int" or output_parameter["type"] == "real":
-                output_parameter["lower_bound"] = output_space["lower_bound"]
-                output_parameter["upper_bound"] = output_space["upper_bound"]
-            elif output_parameter["type"] == "categorical":
-                output_parameter["categories"] = output_space["categories"]
-            for output_info in tuning_problem["tuning_problem_info"]["output_info"]:
-                if output_info["output_name"] == output_parameter["name"]:
-                    output_parameter["description"] = output_info["output_description"]
-            output_parameter["result"] = "-"
-
-            #output_parameter["result"] = ret[output_parameter["name"]]
-            output_parameter["result"] = round(ret[output_parameter["name"]][0][0],3)
-            import math
-            output_parameter["result_std"] = round(math.sqrt(ret[output_parameter["name"]+"_var"][0][0]),3)
-
-            model_data["output_parameters"].append(output_parameter)
-            #model_data["output_parameters"].append(output_parameter)
-
         sobol_analysis = {}
         sobol_analysis["task_parameters"] = []
         for i in range(len(surrogate_model["task_parameters"])):
@@ -653,26 +957,68 @@ class ModelPrediction(TemplateView):
             sobol_analysis["task_parameters"].append(task_parameter)
         sobol_analysis["num_samples"] = 1000
 
-#        sobol_analysis = {}
-#        sobol_analysis["task_parameters"] = []
-#        for i in range(len(surrogate_model["task_parameters"])):
-#            task_parameter = {}
-#            for j in range(len(surrogate_model["input_space"])):
-#                #task_parameter["name"] = surrogate_model["input_space"][j]["name"]
-#                #task_parameter["value"] = surrogate_model["task_parameters"][i][j]
-#                task_parameter[surrogate_model["input_space"][j]["name"]] = surrogate_model["task_parameters"][i][j]
-#            sobol_analysis["task_parameters"].append(task_parameter)
-#        sobol_analysis["num_samples"] = 1000
-#
-#        si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=surrogate_model["task_parameters"][0], num_samples=1000)
-#        print (si)
+        sobol_analysis_task_parameter = ast.literal_eval(request.POST["sobol_analysis_task_parameter"])
+        print ("SOBEL_ANALYSIS_TASK_PARAMETER: ", sobol_analysis_task_parameter)
+        sobol_analysis_task_parameter_arr = [sobol_analysis_task_parameter[key] for key in sobol_analysis_task_parameter.keys()]
+        print ("SOBEL_ANALYSIS_TASK_PARAMETER_ARR: ", sobol_analysis_task_parameter_arr)
+
+        from gptune import SensitivityAnalysis
+        si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=sobol_analysis_task_parameter_arr, num_samples=sobol_analysis_num_samples)
+
+        sobol_analysis["s1_parameters"] = []
+
+        S1_array = si["S1"]
+        S1_conf_array = si["S1_conf"]
+        for i in range(len(surrogate_model["parameter_space"])):
+            parameter_space = surrogate_model["parameter_space"][i]
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["S1"] = round(S1_array[i],3)
+            tuning_parameter["S1_conf"] = round(S1_conf_array[i],3)
+
+            sobol_analysis["s1_parameters"].append(tuning_parameter)
+
+        sobol_analysis["st_parameters"] = []
+
+        ST_array = si["ST"]
+        ST_conf_array = si["ST_conf"]
+        for i in range(len(surrogate_model["parameter_space"])):
+            parameter_space = surrogate_model["parameter_space"][i]
+            tuning_parameter = {}
+            tuning_parameter["name"] = parameter_space["name"]
+            tuning_parameter["ST"] = round(ST_array[i],3)
+            tuning_parameter["ST_conf"] = round(ST_conf_array[i],3)
+
+            sobol_analysis["st_parameters"].append(tuning_parameter)
+
+        sobol_analysis["s2_parameters"] = []
+
+        if "S2" in si:
+            S2_array = si["S2"]
+            S2_conf_array = si["S2_conf"]
+            num_parameters = len(surrogate_model["parameter_space"])
+            for i in range(num_parameters):
+                for j in range(i+1, num_parameters):
+                    tuning_parameter = {}
+                    tuning_parameter["name1"] = surrogate_model["parameter_space"][i]["name"]
+                    tuning_parameter["name2"] = surrogate_model["parameter_space"][j]["name"]
+                    tuning_parameter["S2"] = round(S2_array[i][j],3)
+                    tuning_parameter["S2_conf"] = round(S2_conf_array[i][j],3)
+
+                    sobol_analysis["s2_parameters"].append(tuning_parameter)
+
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(si)
 
         context = {
-                "model_data" : model_data,
+                "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "surrogate_model_uids" : surrogate_model_uids,
+                "model_data" : model_data_list,
                 "sobol_analysis" : sobol_analysis
                 }
 
-        return render(request, 'repo/surrogate-model.html', context)
+        return render(request, 'repo/sadashboard.html', context)
 
 class SobolAnalysis(TemplateView):
 
