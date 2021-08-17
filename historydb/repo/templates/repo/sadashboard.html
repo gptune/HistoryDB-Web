@@ -358,7 +358,7 @@
           <th>
             <span class="tippy" data-tippy-content="
               <div class='text-left'>
-                <h6>Task parameter</h6>
+                <h6>Constant variables</h6>
                 <ul>
                   <li>Name: {{ constant_variable.name }}</li>
                   <li>Type: {{ constant_variable.type }}</li>
@@ -469,7 +469,7 @@
           </td>
           {% endfor %}
 
-          {% for key, value in func_eval.constants %}
+          {% for key, value in func_eval.constants.items %}
           <td style="background: #DFD">
             {{ value }}
           </td>
