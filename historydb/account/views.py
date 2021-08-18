@@ -200,6 +200,80 @@ class ProfileDashboard(TemplateView):
 
         return render(request, 'account/profile.html', context)
 
+class AccessTokens(TemplateView):
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            historydb = HistoryDB_MongoDB()
+            access_token_list = historydb.load_access_tokens(request.user.username)
+            id_ = 0
+            for token_info in access_token_list:
+                token_info["id"] = id_
+                id_ += 1
+            context = { "access_tokens" : access_token_list }
+            return render(request, 'account/access-tokens.html', context)
+
+class AddAccessToken(TemplateView):
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            context = {
+                    "user_name" : request.user.username,
+                    "user_email" : request.user.email,
+                    "user_affiliation" : request.user.profile.affiliation
+                    }
+
+            return render(request, 'account/add-access-token.html', context)
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            user_name_appear = request.POST['user_name_appear']
+            user_email_appear = request.POST['user_email_appear']
+            user_affiliation_appear = request.POST['user_affiliation_appear']
+
+            user_name = request.user.username if user_name_appear == "yes" else "anonymous"
+            user_email = request.user.email if user_email_appear == "yes" else "anonymous"
+            user_affiliation = request.user.profile.affiliation if user_affiliation_appear == "yes" else "anonymous"
+            accessibility = "public" # TODO: allow private, registered, group options
+
+            # 20-digit access token
+            # TODO: check if the token already exists in the database
+            import random
+            random.seed()
+            access_token = ""
+            for i in range(20):
+                access_token += random.choice('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+            print ("access token: ", access_token)
+
+            historydb = HistoryDB_MongoDB()
+            user_info_real = {
+                "user_name" : request.user.username,
+                "user_email" : request.user.email,
+                "user_affiliation" : request.user.profile.affiliation
+            }
+            user_info_appear = {
+                "user_name" : user_name,
+                "user_email" : user_email,
+                "user_affiliation" : user_affiliation
+            }
+            historydb.add_access_token(access_token, user_info_real, user_info_appear, accessibility)
+
+            context = {
+                    "user_name" : user_name,
+                    "user_email" : user_email,
+                    "user_affiliation" : user_affiliation,
+                    "access_token" : access_token,
+                    "accessibility" : accessibility
+                    }
+
+            return render(request, 'account/add-access-token-return.html', context)
+
 class UserGroups(TemplateView):
 
     def get(self, request, **kwargs):

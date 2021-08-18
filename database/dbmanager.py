@@ -108,6 +108,30 @@ class HistoryDB_MongoDB(dict):
         except:
             return -1
 
+    def load_access_tokens(self, user_name):
+
+        access_token_documents = []
+        token_db = self.db["access_tokens_"+user_name]
+
+        for document in token_db.find():
+            access_token_documents.append(document)
+
+        return access_token_documents
+
+    def add_access_token(self, access_token, user_info_real, user_info_appear, accessibility):
+        token_db = self.db["access_tokens_"+user_info_real["user_name"]]
+        try:
+            if token_db.count_documents({"access_token":{"$eq":access_token}}) == 0:
+                token_db.insert_one({
+                        "access_token" : access_token,
+                        "user_info_real" : user_info_real,
+                        "user_info_appear" : user_info_appear,
+                        "accessibility" : accessibility
+                    })
+            return 0
+        except:
+            return -1
+
     def load_application_info(self, application_name, **kwargs):
         collection = self.db[application_name]
         application_info = collection.find({"document_type":{"$eq":"application_info"}})[0]

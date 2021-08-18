@@ -1,0 +1,76 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-account').addClass('active');
+  });
+</script>
+
+<div class="container" style="max-width: 560px">
+  <div class="py-5 text-center">
+    <h1>Add an Access Token</h1>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="{% url 'account:add-access-token' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div id="add-form" style="display:block;">
+
+        <div class="mb-3">
+          <h4>Control what others see about your information when you upload data.</h4>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Username</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_name_appear_yes" name="user_name_appear" type="radio" value="yes" checked required>
+            <label class="custom-control-label" for="user_name_appear_yes">Agree to show my username ({{ user_name }})</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_name_anonymous" name="user_name_appear" type="radio" value="no" required>
+            <label class="custom-control-label" for="user_name_anonymous">I want to be anonymous</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Email address</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_email_appear_yes" name="user_email_appear" type="radio" value="yes" checked required>
+            <label class="custom-control-label" for="user_email_appear_yes">Agree to show my username ({{ user_email }})</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_email_anonymous" name="user_email_appear" type="radio" value="no" required>
+            <label class="custom-control-label" for="user_email_anonymous">I want to be anonymous</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>User affiliation</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_affiliation_appear_yes" name="user_affiliation_appear" type="radio" value="yes" checked required>
+            <label class="custom-control-label" for="user_affiliation_appear_yes">Agree to show my username ({{ user_affiliation }})</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="user_affiliation_anonymous" name="user_affiliation_appear" type="radio" value="no" required>
+            <label class="custom-control-label" for="user_affiliation_anonymous">I want to be anonymous</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Generate Token</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
