@@ -354,7 +354,7 @@
           {% endfor %}
 
           {% for constant_variable in model_data_per_objective.constants %}
-          {% ifnotequal constant_variable.constant_name '' %}
+          {% ifnotequal constant_variable.name '' %}
           <th>
             <span class="tippy" data-tippy-content="
               <div class='text-left'>

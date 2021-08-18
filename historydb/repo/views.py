@@ -357,6 +357,7 @@ class ModelPrediction(TemplateView):
         surrogate_model_uids = request.GET.get("surrogate_model_uids", "").split(",")
         historydb = HistoryDB_MongoDB()
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
         surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
         num_surrogate_models = len(surrogate_models)
 
@@ -457,6 +458,13 @@ class ModelPrediction(TemplateView):
                         output_parameter["description"] = output_info["output_description"]
                 model_data["output_parameters"].append(output_parameter)
 
+            model_data["constants"] = []
+            for constant_variable in tuning_problem_info["tuning_problem_info"]["constant_info"]:
+                model_data["constants"].append({
+                            "name": constant_variable["constant_name"],
+                            "type": constant_variable["constant_type"],
+                            "description": constant_variable["constant_description"]})
+
             model_data["objective"] = surrogate_model["objective"]
 
             model_data_list[model_data["objective"]["name"]] = model_data
@@ -479,6 +487,7 @@ class ModelPrediction(TemplateView):
 
         historydb = HistoryDB_MongoDB()
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
 
         task_parameter_names = request.POST.getlist('task_parameter_name')
         task_parameter_types = request.POST.getlist('task_parameter_type')
@@ -649,6 +658,13 @@ class ModelPrediction(TemplateView):
                         output_parameter["description"] = output_info["output_description"]
                 model_data["output_parameters"].append(output_parameter)
 
+            model_data["constants"] = []
+            for constant_variable in tuning_problem_info["tuning_problem_info"]["constant_info"]:
+                model_data["constants"].append({
+                            "name": constant_variable["constant_name"],
+                            "type": constant_variable["constant_type"],
+                            "description": constant_variable["constant_description"]})
+
             model_data["objective"] = surrogate_model["objective"]
 
             model_data_list[model_data["objective"]["name"]] = model_data
@@ -671,6 +687,7 @@ class SADashboard(TemplateView):
         surrogate_model_uids = request.GET.get("surrogate_model_uids", "").split(",")
         historydb = HistoryDB_MongoDB()
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
         surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
         num_surrogate_models = len(surrogate_models)
 
@@ -771,6 +788,13 @@ class SADashboard(TemplateView):
                         output_parameter["description"] = output_info["output_description"]
                 model_data["output_parameters"].append(output_parameter)
 
+            model_data["constants"] = []
+            for constant_variable in tuning_problem_info["tuning_problem_info"]["constant_info"]:
+                model_data["constants"].append({
+                            "name": constant_variable["constant_name"],
+                            "type": constant_variable["constant_type"],
+                            "description": constant_variable["constant_description"]})
+
             model_data["objective"] = surrogate_model["objective"]
 
             model_data_list[model_data["objective"]["name"]] = model_data
@@ -803,6 +827,7 @@ class SADashboard(TemplateView):
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name")
         surrogate_model_uids = request.GET.get('surrogate_model_uids')
         tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
         surrogate_models = historydb.load_surrogate_models_by_uids(surrogate_model_uids)
 
         model_data_list = {}
@@ -894,6 +919,13 @@ class SADashboard(TemplateView):
                     if output_info["output_name"] == output_parameter["name"]:
                         output_parameter["description"] = output_info["output_description"]
                 model_data["output_parameters"].append(output_parameter)
+
+            model_data["constants"] = []
+            for constant_variable in tuning_problem_info["tuning_problem_info"]["constant_info"]:
+                model_data["constants"].append({
+                            "name": constant_variable["constant_name"],
+                            "type": constant_variable["constant_type"],
+                            "description": constant_variable["constant_description"]})
 
             model_data["objective"] = surrogate_model["objective"]
 
