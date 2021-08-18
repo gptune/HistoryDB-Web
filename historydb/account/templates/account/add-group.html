@@ -13,7 +13,7 @@
 
 <script>
   $(document).ready(function () {
-    $('#nav-item-repo').addClass('active');
+    $('#nav-item-account').addClass('active');
   });
 
   function UpdateUploadOptionFile() {
@@ -87,7 +87,7 @@
   </div>
 
   <div class="container">
-    <form method="POST" action="{% url 'repo:add-group' %}" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'account:add-group' %}" enctype="multipart/form-data">
       {% csrf_token %}
 
       <div id="add-form" style="display:block;">

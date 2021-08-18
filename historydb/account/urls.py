@@ -9,9 +9,10 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('profile/', views.ProfileDashboard.as_view(), name='profile'),
-    path('group/', views.GroupDashboard.as_view(), name='group'),
-    path('addgroup/', views.AddGroupDashboard.as_view(), name='addgroup'),
-    path('updategroup/', views.UpdateGroupDashboard.as_view(), name='updategroup'),
+    path('user-groups/', views.UserGroups.as_view(), name='user-groups'),
+    path('add-group/', views.AddGroup.as_view(), name='add-group'),
+    path('update-roles/', views.UpdateRoles.as_view(), name='update-roles'),
+    path('invite-member/', views.InviteMember.as_view(), name='invite-member'),
     path('data/', views.DataDashboard.as_view(), name='data'),
     path('<str:username>/activate/', views.activate, name='activate'),
 ]

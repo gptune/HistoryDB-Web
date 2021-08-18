@@ -11,6 +11,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib import messages
 
+from dbmanager import HistoryDB_MongoDB
+
 import requests
 import json
 
@@ -198,117 +200,158 @@ class ProfileDashboard(TemplateView):
 
         return render(request, 'account/profile.html', context)
 
-class GroupDashboard(TemplateView):
-    def post(self, request, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(reverse_lazy('account:login'))
-
-        return render(request, 'account/group.html')
+class UserGroups(TemplateView):
 
     def get(self, request, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
+        else:
+            historydb = HistoryDB_MongoDB()
+            user_groups = historydb.load_user_collaboration_groups(request.user.email)
+            for i in range(len(user_groups)):
+                user_groups[i]['no'] = i+1
+                for member in user_groups[i]['members']:
+                    if member['email'] == request.user.email:
+                        user_groups[i]['my_role'] = member['role']
+                        break
+            print ("USER GROUPS")
+            print (user_groups)
+            context = { "user_groups" : user_groups }
+            return render(request, 'account/user-groups.html', context)
 
-        if not request.user.profile.is_certified:
-            context = {
-                    "header": "Please Wait!",
-                    "message": "You don't have permission to upload (Please wait for our approval)"
-                    }
-            return render(request, 'repo/return.html', context)
-
-        collaboration_groups_str = request.user.profile.collaboration_groups
-        print (collaboration_groups_str)
-        context = {
-                "collaboration_groups": json.loads(collaboration_groups_str)
-                }
-
-        return render(request, 'account/group.html', context)
-
-class AddGroupDashboard(TemplateView):
-    def post(self, request, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect(reverse_lazy('account:login'))
-
-        print ("group_name: ", request.POST['group_name'])
-        print ("group_invites: ", request.POST.getlist('group_invites'))
-        print ("group_description: ", request.POST['group_description'])
-
-        group_name = request.POST['group_name']
-        group_invites = request.POST.getlist('group_invites')
-        group_description = request.POST['group_description']
-
-        import random
-        activation_code = ""
-        for i in range(6):
-            activation_code += random.choice('1234567890')
-
-        try:
-            #from django.contrib.sites.shortcuts import get_current_site
-            #current_site = get_current_site(request)
-
-            for invite in group_invites:
-                print (invite)
-                if (invite != ''):
-                    message = 'Greetings from GPTune-Dev!\n'
-                    message += 'You are now invited to a collaboration group in GPTune History Database.\n'
-                    message += 'Inviter: ' + request.user.username + '\n'
-                    message += 'Inviter Email: ' + request.user.email + '\n'
-                    message += 'Collaboration Group: ' + group_name + '\n'
-                    message += 'Group Description: ' + group_description + '\n'
-                    message += 'Please use this code to confirm.\n'
-                    message += 'Code: ' + activation_code
-
-                    email = EmailMessage('Invitation to GPTune Collaboration Group!', message, to=[invite])
-                    email.send()
-        except:
-            print ("Something went wrong with email sending")
-
-        return render(request, 'account/group.html')
+class AddGroup(TemplateView):
 
     def get(self, request, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
-
-        if not request.user.profile.is_certified:
+        else:
+            historydb = HistoryDB_MongoDB()
             context = {
-                    "header": "Please Wait!",
-                    "message": "You don't have permission to upload (Please wait for our approval)"
+                    "user_email" : request.user.email
                     }
-            return render(request, 'repo/return.html', context)
+            return render(request, 'account/add-group.html', context)
 
-        collaboration_groups_str = request.user.profile.collaboration_groups
-        print (collaboration_groups_str)
-        context = {
-                "collaboration_groups": json.loads(collaboration_groups_str)
-                }
-
-        return render(request, 'account/group.html', context)
-
-class UpdateGroupDashboard(TemplateView):
     def post(self, request, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
+        else:
+            group_name = request.POST['group_name']
 
-        return render(request, 'account/group.html')
+            invites_emails = request.POST.getlist('invites_emails')
+            invites_roles = request.POST.getlist('invites_roles')
 
-    def get(self, request, **kwargs):
+            print ("invites_emails: ", invites_emails)
+            print ("invites_roles: ", invites_roles)
+
+            group_details = {}
+            group_details['group_name'] = group_name
+            group_details['submitter'] = {
+                    'user_name': request.user.username,
+                    'user_email': request.user.email
+                    }
+            group_members = []
+            for i in range(len(invites_emails)):
+                group_members.append({"email":invites_emails[i], "role":invites_roles[i]})
+            group_details['members'] = group_members
+
+            import uuid
+            group_details["uid"] = str(uuid.uuid1())
+
+            historydb = HistoryDB_MongoDB()
+            ret = historydb.add_collaboration_group(group_details)
+            if ret == 0:
+                context = {
+                        "header": "Adding a collaboration group",
+                        "message": "Your collaboration group has been added successfully."
+                        }
+                return render(request, 'account/add-group-return.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Adding a collaboration group",
+                        "message": "Failed: The same group number already exists"
+                        }
+                return render(request, 'account/add-group-return.html', context)
+
+class UpdateRoles(TemplateView):
+
+    def post(self, request, **kwargs):
         if not request.user.is_authenticated:
             return redirect(reverse_lazy('account:login'))
+        else:
+            group_uid = request.POST['group_uid']
+            invites_emails = request.POST.getlist('invites_emails')
+            invites_roles = request.POST.getlist('invites_roles')
 
-        if not request.user.profile.is_certified:
-            context = {
-                    "header": "Please Wait!",
-                    "message": "You don't have permission to upload (Please wait for our approval)"
-                    }
-            return render(request, 'repo/return.html', context)
+            print ("group_uid: ", group_uid)
+            print ("invites_emails: ", invites_emails)
+            print ("invites_roles: ", invites_roles)
 
-        collaboration_groups_str = request.user.profile.collaboration_groups
-        print (collaboration_groups_str)
-        context = {
-                "collaboration_groups": json.loads(collaboration_groups_str)
-                }
+            group_members = []
+            for i in range(len(invites_emails)):
+                group_members.append({"email":invites_emails[i], "role":invites_roles[i]})
 
-        return render(request, 'account/group.html', context)
+            historydb = HistoryDB_MongoDB()
+            ret = historydb.update_group_members(group_uid, group_members)
+            if ret == 0:
+                user_groups = historydb.load_user_collaboration_groups(request.user.email)
+                for i in range(len(user_groups)):
+                    user_groups[i]['no'] = i+1
+                    for member in user_groups[i]['members']:
+                        if member['email'] == request.user.email:
+                            user_groups[i]['my_role'] = member['role']
+                            break
+                print ("USER GROUPS")
+                print (user_groups)
+                context = { "user_groups" : user_groups }
+                return render(request, 'accunt/user-groups.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Updating group members",
+                        "message": "Updating group members was unsuccessful."
+                        }
+                return render(request, 'account/add-group-return.html', context)
+            else:
+                context = {
+                        "header": "Updating group members",
+                        "message": "Updating group members was unsuccessful."
+                        }
+                return render(request, 'account/add-group-return.html', context)
+
+class InviteMember(TemplateView):
+
+    def post(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+        else:
+            group_uid = request.POST['group_uid']
+            invite_email = request.POST['invite_email']
+            invite_role = request.POST['invite_role']
+
+            print ("group_uid: ", group_uid)
+            print ("invite_email: ", invite_email)
+            print ("invite_role: ", invite_role)
+
+            historydb = HistoryDB_MongoDB()
+
+            ret = historydb.add_group_member(group_uid, invite_email, invite_role)
+            if ret == 0:
+                user_groups = historydb.load_user_collaboration_groups(request.user.email)
+                for i in range(len(user_groups)):
+                    user_groups[i]['no'] = i+1
+                    for member in user_groups[i]['members']:
+                        if member['email'] == request.user.email:
+                            user_groups[i]['my_role'] = member['role']
+                            break
+                print ("USER GROUPS")
+                print (user_groups)
+                context = { "user_groups" : user_groups }
+                return render(request, 'account/user-groups.html', context)
+            elif ret == -1:
+                context = {
+                        "header": "Adding a group member",
+                        "message": "Additing a group member was unsuccessful."
+                        }
+                return render(request, 'account/add-group-return.html', context)
 
 class DataDashboard(TemplateView):
     def post(self, request, **kwargs):

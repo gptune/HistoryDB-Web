@@ -65,7 +65,7 @@ class HistoryDB_MongoDB(dict):
     def load_user_collaboration_groups(self, user_email, **kwargs):
         user_groups = []
 
-        groups_db = self.db["group"]
+        groups_db = self.db["collaboration_groups"]
         groups_list = groups_db.find()
 
         for group_data in groups_list:
@@ -81,7 +81,7 @@ class HistoryDB_MongoDB(dict):
         return user_groups
 
     def add_collaboration_group(self, group_details, **kwargs):
-        groups_db = self.db["group"]
+        groups_db = self.db["collaboration_groups"]
         if groups_db.count_documents({"group_name":{"$eq":group_details['group_name']}}) == 0:
             groups_db.insert_one(group_details)
             return 0
@@ -89,7 +89,7 @@ class HistoryDB_MongoDB(dict):
             return -1
 
     def add_group_member(self, group_uid, invite_email, invite_role):
-        groups_db = self.db["group"]
+        groups_db = self.db["collaboration_groups"]
         try:
             group_data = groups_db.find({"uid":{"$eq":group_uid}})[0]
             group_members = group_data["members"]
@@ -100,7 +100,7 @@ class HistoryDB_MongoDB(dict):
             return -1
 
     def update_group_members(self, group_uid, group_members):
-        groups_db = self.db["group"]
+        groups_db = self.db["collaboration_groups"]
         try:
             group_data = groups_db.find({"uid":{"$eq":group_uid}})[0]
             groups_db.update_one({"uid":group_uid}, {"$set":{"members":group_members}})

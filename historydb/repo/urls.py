@@ -27,10 +27,6 @@ urlpatterns = [
     path('add-machine/', views.AddMachine.as_view(), name='add-machine'),
     path('analytical-models/', views.AnalyticalModels.as_view(), name='analytical-models'),
     path('add-analytical-model/', views.AddAnalyticalModel.as_view(), name='add-analytical-model'),
-    path('user-groups/', views.UserGroups.as_view(), name='user-groups'),
-    path('add-group/', views.AddGroup.as_view(), name='add-group'),
-    path('update-roles/', views.UpdateRoles.as_view(), name='update-roles'),
-    path('invite-member/', views.InviteMember.as_view(), name='invite-member'),
     path('export/', views.Export.as_view(), name='export'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]
