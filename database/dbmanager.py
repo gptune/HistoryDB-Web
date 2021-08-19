@@ -500,6 +500,35 @@ class HistoryDB_MongoDB(dict):
 
         return func_eval_list
 
+    def store_func_eval_with_token(self,
+            access_token,
+            tuning_problem_name,
+            function_evaluation,
+            **kwargs):
+
+        # TODO: fill in this info based on the access token
+        function_evaluation["tuning_problem_name"] = tuning_problem_name
+        function_evaluation["access_token"] = access_token
+        function_evaluation["user_info"] = {
+            "user_name": "anonymous",
+            "user_email": "anonymous",
+            "affiliation": "anonymous"
+        }
+        function_evaluation["document_type"] = "func_eval"
+        function_evaluation["accessibility"] = {"type":"public"}
+        function_evaluation["how_submitted"] = "direct_upload_with_token"
+
+        for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
+            tuning_problem_unique_name = tuning_problem_document["unique_name"]
+
+            application_db = self.db[tuning_problem_unique_name]
+            # TODO: more check routines
+            if (application_db.count_documents({"uid": { "$eq": function_evaluation["uid"]}}) == 0):
+                print ("tuning_problem_unique_name: ", tuning_problem_unique_name, " insert one: ", function_evaluation)
+                application_db.insert_one(function_evaluation)
+
+        return 0
+
     def upload_application_info(self, user_info, application_info):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
