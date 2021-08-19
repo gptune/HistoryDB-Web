@@ -1457,44 +1457,46 @@ class Export(TemplateView):
 
         return render(request, 'repo/export.html', context)
 
-class DirectDownload(TemplateView):
+from django.views.decorators.csrf import csrf_exempt
 
-    def get(self, request, **kwargs):
-        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
-        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
-        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
-        output_options = json.loads(request.GET.get("output_options", "[]"))
-        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
-        user_email = request.user.email if request.user.is_authenticated else ""
-        search_options = json.loads(request.GET.get("search_options", "[]"))
+@csrf_exempt
+def direct_download(request):
+
+    if request.method == "POST":
+
+        access_token = request.POST.get("access_token", "")
+        print ("access_token: ", access_token)
+
+        tuning_problem_name = request.POST.get("tuning_problem_name", "")
+        loadable_machine_configurations = json.loads(request.POST.get("loadable_machine_configurations", "{}"))
+        loadable_software_configurations = json.loads(request.POST.get("loadable_software_configurations", "{}"))
+        loadable_user_configurations = json.loads(request.POST.get("loadable_user_configurations", "{}"))
+        loadable_output_configurations = json.loads(request.POST.get("loadable_output_configurations", "{}"))
 
         historydb = HistoryDB_MongoDB()
 
-        perf_data = []
-
-        if "func_eval" in search_options:
-            perf_data.extend(historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
-                machine_configurations_list = machine_configurations_list,
-                software_configurations_list = software_configurations_list,
-                output_options = output_options,
-                user_configurations_list = user_configurations_list,
-                user_email = user_email))
-
-        #if "surrogate_model" in search_options:
-        #    surrogate_models = historydb.load_surrogate_models_filtered(
-        #        tuning_problem_unique_name = tuning_problem_unique_name,
-        #        machine_configurations_list = machine_configurations_list,
-        #        software_configurations_list = software_configurations_list,
-        #        output_options = output_options,
-        #        user_configurations_list = user_configurations_list,
-        #        user_email = user_email)
-
-        #    for objective_name in surrogate_models:
-        #        perf_data.extend(surrogate_models[objective_name])
+        perf_data = historydb.load_func_eval_with_token(
+                access_token = access_token,
+                tuning_problem_name = tuning_problem_name,
+                loadable_machine_configurations = loadable_machine_configurations,
+                loadable_software_configurations = loadable_software_configurations,
+                loadable_user_configurations = loadable_user_configurations,
+                loadable_output_configurations = loadable_output_configurations)
 
         response_data = {}
         response_data['result'] = 'success'
-        response_data['perf_data'] = str(perf_data)
+        response_data['perf_data'] = perf_data
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def direct_upload(request):
+
+    if request.method == "POST":
+
+        response_data = {}
+        response_data['result'] = 'success'
+        response_data['perf_data'] = [] #perf_data
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 

@@ -28,6 +28,7 @@ urlpatterns = [
     path('analytical-models/', views.AnalyticalModels.as_view(), name='analytical-models'),
     path('add-analytical-model/', views.AddAnalyticalModel.as_view(), name='add-analytical-model'),
     path('export/', views.Export.as_view(), name='export'),
-    path('direct-download/', views.DirectDownload.as_view(), name='direct-download'),
+    path('direct-download/', views.direct_download, name='direct-download'),
+    path('direct-upload/', views.direct_upload, name='direct-upload'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]

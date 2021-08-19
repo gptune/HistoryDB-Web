@@ -476,6 +476,30 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
+    def load_func_eval_with_token(self,
+            access_token,
+            tuning_problem_name,
+            loadable_machine_configurations,
+            loadable_software_configurations,
+            loadable_user_configurations,
+            loadable_output_configurations,
+            **kwargs):
+
+        func_eval_list = []
+
+        for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
+            tuning_problem_unique_name = tuning_problem_document["unique_name"]
+
+            application_db = self.db[tuning_problem_unique_name]
+
+            for func_eval in application_db.find({"document_type":{"$eq":"func_eval"}}):
+                func_eval.pop("_id")
+                func_eval.pop("accessibility")
+                func_eval.pop("document_type")
+                func_eval_list.append(func_eval)
+
+        return func_eval_list
+
     def upload_application_info(self, user_info, application_info):
         print ("Upload function evaluation data")
         collist = self.db.list_collection_names()
