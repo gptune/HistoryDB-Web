@@ -1457,6 +1457,47 @@ class Export(TemplateView):
 
         return render(request, 'repo/export.html', context)
 
+class DirectDownload(TemplateView):
+
+    def get(self, request, **kwargs):
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
+        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        output_options = json.loads(request.GET.get("output_options", "[]"))
+        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search_options = json.loads(request.GET.get("search_options", "[]"))
+
+        historydb = HistoryDB_MongoDB()
+
+        perf_data = []
+
+        if "func_eval" in search_options:
+            perf_data.extend(historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                output_options = output_options,
+                user_configurations_list = user_configurations_list,
+                user_email = user_email))
+
+        #if "surrogate_model" in search_options:
+        #    surrogate_models = historydb.load_surrogate_models_filtered(
+        #        tuning_problem_unique_name = tuning_problem_unique_name,
+        #        machine_configurations_list = machine_configurations_list,
+        #        software_configurations_list = software_configurations_list,
+        #        output_options = output_options,
+        #        user_configurations_list = user_configurations_list,
+        #        user_email = user_email)
+
+        #    for objective_name in surrogate_models:
+        #        perf_data.extend(surrogate_models[objective_name])
+
+        response_data = {}
+        response_data['result'] = 'success'
+        response_data['perf_data'] = str(perf_data)
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
 class Upload(TemplateView):
 
     def get(self, request, **kwargs):
