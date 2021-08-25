@@ -1497,20 +1497,25 @@ def direct_upload(request):
         access_token = request.POST.get("access_token", "")
         print ("access_token: ", access_token)
 
-        tuning_problem_name = request.POST.get("tuning_problem_name", "")
-        print ("tuning_problem_name: ", tuning_problem_name)
+        if access_token != "":
+            tuning_problem_name = request.POST.get("tuning_problem_name", "")
+            print ("tuning_problem_name: ", tuning_problem_name)
 
-        function_evaluation_document = json.loads(request.POST.get("function_evaluation_document", "{}"))
-        print ("function_evaluation_document: ", function_evaluation_document)
+            function_evaluation_document = json.loads(request.POST.get("function_evaluation_document", "{}"))
+            print ("function_evaluation_document: ", function_evaluation_document)
 
-        historydb = HistoryDB_MongoDB()
-        ret = historydb.store_func_eval_with_token(
-                access_token = access_token,
-                tuning_problem_name = tuning_problem_name,
-                function_evaluation = function_evaluation_document)
+            historydb = HistoryDB_MongoDB()
+            ret = historydb.store_func_eval_with_token(
+                    access_token = access_token,
+                    tuning_problem_name = tuning_problem_name,
+                    function_evaluation = function_evaluation_document)
 
-        response_data = {}
-        response_data['result'] = 'success'
+            response_data = {}
+            response_data["result"] = "success"
+        else:
+            response_data = {}
+            response_data["result"] = "failed"
+            response_data["message"] = "no access token is provided"
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
