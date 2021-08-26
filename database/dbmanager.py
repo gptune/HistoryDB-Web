@@ -111,21 +111,22 @@ class HistoryDB_MongoDB(dict):
     def load_access_tokens(self, user_name):
 
         access_token_documents = []
-        token_db = self.db["access_tokens_"+user_name]
+        token_db = self.db["access_tokens_db"]
 
-        for document in token_db.find():
+        for document in token_db.find({"user_info_real.user_name":{"$eq":user_name}}):
             access_token_documents.append(document)
 
         return access_token_documents
 
-    def add_access_token(self, access_token, user_info_real, user_info_appear, accessibility):
-        token_db = self.db["access_tokens_"+user_info_real["user_name"]]
+    def add_access_token(self, access_token, user_info_real, user_info_display, accessibility):
+        #token_db = self.db["access_tokens_"+user_info_real["user_name"]]
+        token_db = self.db["access_tokens_db"]
         try:
             if token_db.count_documents({"access_token":{"$eq":access_token}}) == 0:
                 token_db.insert_one({
                         "access_token" : access_token,
                         "user_info_real" : user_info_real,
-                        "user_info_appear" : user_info_appear,
+                        "user_info_display" : user_info_display,
                         "accessibility" : accessibility
                     })
             return 0
@@ -500,6 +501,12 @@ class HistoryDB_MongoDB(dict):
 
         return func_eval_list
 
+    def load_user_info_by_access_token(self, access_token):
+        access_token_info_list = []
+        for access_token_info in self.db["access_tokens_db"].find({"access_token":{"$eq":access_token}}):
+            access_token_info_list.append(access_token_info)
+        return access_token_info_list[0]
+
     def store_func_eval_with_token(self,
             access_token,
             tuning_problem_name,
@@ -508,14 +515,14 @@ class HistoryDB_MongoDB(dict):
 
         # TODO: fill in this info based on the access token
         function_evaluation["tuning_problem_name"] = tuning_problem_name
-        function_evaluation["access_token"] = access_token
-        function_evaluation["user_info"] = {
-            "user_name": "anonymous",
-            "user_email": "anonymous",
-            "affiliation": "anonymous"
-        }
+        #function_evaluation["access_token"] = access_token
+
+        access_token_info = self.load_user_info_by_access_token(access_token)
+
+        function_evaluation["user_info"] = access_token_info["user_info_real"]
+        function_evaluation["user_info_display"] = access_token_info["user_info_display"]
         function_evaluation["document_type"] = "func_eval"
-        function_evaluation["accessibility"] = {"type":"public"}
+        function_evaluation["accessibility"] = access_token_info["accessibility"]
         function_evaluation["how_submitted"] = "direct_upload_with_token"
 
         for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):

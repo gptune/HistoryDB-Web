@@ -257,12 +257,12 @@ class AddAccessToken(TemplateView):
                 "user_email" : request.user.email,
                 "user_affiliation" : request.user.profile.affiliation
             }
-            user_info_appear = {
+            user_info_display = {
                 "user_name" : user_name,
                 "user_email" : user_email,
                 "user_affiliation" : user_affiliation
             }
-            historydb.add_access_token(access_token, user_info_real, user_info_appear, accessibility)
+            historydb.add_access_token(access_token, user_info_real, user_info_display, accessibility)
 
             context = {
                     "user_name" : user_name,
