@@ -240,7 +240,7 @@ class AddAccessToken(TemplateView):
             user_name = request.user.username if user_name_appear == "yes" else "anonymous"
             user_email = request.user.email if user_email_appear == "yes" else "anonymous"
             user_affiliation = request.user.profile.affiliation if user_affiliation_appear == "yes" else "anonymous"
-            accessibility = "public" # TODO: allow private, registered, group options
+            accessibility = {"type": "public"} # TODO: allow private, registered, group options
 
             # 20-digit access token
             # TODO: check if the token already exists in the database
