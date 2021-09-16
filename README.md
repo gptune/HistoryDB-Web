@@ -39,6 +39,14 @@ python -m pip install recommonmark
 ```
 python -m pip install sphinx_rtd_theme
 ```
+-- pycryptodome
+```
+pip install pycryptodome
+```
+or
+```
+python -m pip install pycryptodome
+```
 
 - NOTE: please make sure your PYTHONPATH indicates Django, markdown, pymongo, djang-widget-tweaks modules.
 

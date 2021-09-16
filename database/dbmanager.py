@@ -133,6 +133,22 @@ class HistoryDB_MongoDB(dict):
         except:
             return -1
 
+    def add_access_token_rsa(self, public_key, user_info_real, user_info_display, accessibility):
+        access_token = public_key
+        #token_db = self.db["access_tokens_"+user_info_real["user_name"]]
+        token_db = self.db["access_tokens_db"]
+        try:
+            if token_db.count_documents({"access_token":{"$eq":access_token}}) == 0:
+                token_db.insert_one({
+                        "access_token" : access_token,
+                        "user_info_real" : user_info_real,
+                        "user_info_display" : user_info_display,
+                        "accessibility" : accessibility
+                    })
+            return 0
+        except:
+            return -1
+
     def load_application_info(self, application_name, **kwargs):
         collection = self.db[application_name]
         application_info = collection.find({"document_type":{"$eq":"application_info"}})[0]

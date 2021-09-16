@@ -236,43 +236,81 @@ class AddAccessToken(TemplateView):
             user_name_appear = request.POST['user_name_appear']
             user_email_appear = request.POST['user_email_appear']
             user_affiliation_appear = request.POST['user_affiliation_appear']
+            token_option = request.POST['token_option']
 
             user_name = request.user.username if user_name_appear == "yes" else "anonymous"
             user_email = request.user.email if user_email_appear == "yes" else "anonymous"
             user_affiliation = request.user.profile.affiliation if user_affiliation_appear == "yes" else "anonymous"
             accessibility = {"type": "public"} # TODO: allow private, registered, group options
 
-            # 20-digit access token
-            # TODO: check if the token already exists in the database
-            import random
-            random.seed()
-            access_token = ""
-            for i in range(20):
-                access_token += random.choice('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
-            print ("access token: ", access_token)
+            if token_option == "rsa_key":
+                from Cryptodome.PublicKey import RSA
 
-            historydb = HistoryDB_MongoDB()
-            user_info_real = {
-                "user_name" : request.user.username,
-                "user_email" : request.user.email,
-                "user_affiliation" : request.user.profile.affiliation
-            }
-            user_info_display = {
-                "user_name" : user_name,
-                "user_email" : user_email,
-                "user_affiliation" : user_affiliation
-            }
-            historydb.add_access_token(access_token, user_info_real, user_info_display, accessibility)
+                key = RSA.generate(1024)
+                print ("STR: ", str(key.export_key()))
+                private_key = str(key.export_key())
+                private_key = private_key.replace("b'-----BEGIN RSA PRIVATE KEY-----\\n","").replace("\\n-----END RSA PRIVATE KEY-----'", "")
+                public_key = str(key.publickey().export_key())
+                public_key = public_key.replace("b'-----BEGIN PUBLIC KEY-----\\n","").replace("\\n-----END PUBLIC KEY-----'","")
+                print ("private_key: ", private_key)
+                print ("public_key: ", public_key)
 
-            context = {
+                historydb = HistoryDB_MongoDB()
+                user_info_real = {
+                    "user_name" : request.user.username,
+                    "user_email" : request.user.email,
+                    "user_affiliation" : request.user.profile.affiliation
+                }
+                user_info_display = {
                     "user_name" : user_name,
                     "user_email" : user_email,
-                    "user_affiliation" : user_affiliation,
-                    "access_token" : access_token,
-                    "accessibility" : accessibility
-                    }
+                    "user_affiliation" : user_affiliation
+                }
+                historydb.add_access_token_rsa(public_key, user_info_real, user_info_display, accessibility)
 
-            return render(request, 'account/add-access-token-return.html', context)
+                context = {
+                        "user_name" : user_name,
+                        "user_email" : user_email,
+                        "user_affiliation" : user_affiliation,
+                        "private_key" : private_key,
+                        "public_key" : public_key,
+                        "accessibility" : accessibility
+                        }
+
+                return render(request, 'account/add-rsa-access-token-return.html', context)
+
+            elif token_option == "plain_key":
+                # 20-digit access token
+                # TODO: check if the token already exists in the database
+                import random
+                random.seed()
+                access_token = ""
+                for i in range(20):
+                    access_token += random.choice('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+                print ("access token: ", access_token)
+
+                historydb = HistoryDB_MongoDB()
+                user_info_real = {
+                    "user_name" : request.user.username,
+                    "user_email" : request.user.email,
+                    "user_affiliation" : request.user.profile.affiliation
+                }
+                user_info_display = {
+                    "user_name" : user_name,
+                    "user_email" : user_email,
+                    "user_affiliation" : user_affiliation
+                }
+                historydb.add_access_token(access_token, user_info_real, user_info_display, accessibility)
+
+                context = {
+                        "user_name" : user_name,
+                        "user_email" : user_email,
+                        "user_affiliation" : user_affiliation,
+                        "access_token" : access_token,
+                        "accessibility" : accessibility
+                        }
+
+                return render(request, 'account/add-access-token-return.html', context)
 
 class UserGroups(TemplateView):
 

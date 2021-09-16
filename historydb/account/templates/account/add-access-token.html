@@ -64,6 +64,20 @@
         </div>
 
         <div class="mb-3">
+          <label><b>Access token generation option</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="token_option_rsa" name="token_option" type="radio" value="rsa_key" checked required>
+            <label class="custom-control-label" for="token_option_rsa">I will generate an RSA key (1024 bit) (Your private key is not stored in the repository)</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="token_option_plain" name="token_option" type="radio" value="plain_key" required>
+            <label class="custom-control-label" for="token_option_plain">I am good with a plain access code (20 characters)</label>
+          </div>
+        </div>
+
+
+
+        <div class="mb-3">
           <hr class="mb-4">
           <button class="btn btn-primary btn-lg btn-block" type="submit">Generate Token</button>
         </div>
