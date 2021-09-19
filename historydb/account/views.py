@@ -244,14 +244,18 @@ class AddAccessToken(TemplateView):
             accessibility = {"type": "public"} # TODO: allow private, registered, group options
 
             if token_option == "rsa_key":
-                from Cryptodome.PublicKey import RSA
+                import sys
+                if sys.version_info < (3,9):
+                    from Cryptodome.PublicKey import RSA
+                else:
+                    from Crypto.PublicKey import RSA
 
                 key = RSA.generate(1024)
                 print ("STR: ", str(key.export_key()))
                 private_key = str(key.export_key())
-                private_key = private_key.replace("b'-----BEGIN RSA PRIVATE KEY-----\\n","").replace("\\n-----END RSA PRIVATE KEY-----'", "")
+                private_key = private_key.replace("b'-----BEGIN RSA PRIVATE KEY-----\\n","").replace("\\n-----END RSA PRIVATE KEY-----'", "").replace("\n", "\\n")
                 public_key = str(key.publickey().export_key())
-                public_key = public_key.replace("b'-----BEGIN PUBLIC KEY-----\\n","").replace("\\n-----END PUBLIC KEY-----'","")
+                public_key = public_key.replace("b'-----BEGIN PUBLIC KEY-----\\n","").replace("\\n-----END PUBLIC KEY-----'","").replace("\n","\\n")
                 print ("private_key: ", private_key)
                 print ("public_key: ", public_key)
 
