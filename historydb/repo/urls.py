@@ -30,5 +30,6 @@ urlpatterns = [
     path('export/', views.Export.as_view(), name='export'),
     path('direct-download/', views.direct_download, name='direct-download'),
     path('direct-upload/', views.direct_upload, name='direct-upload'),
+    path('api-test/', views.api_test, name='api-test'),
     path('archive/<str:perf_data_uid>/', views.query, name='query'),
 ]
