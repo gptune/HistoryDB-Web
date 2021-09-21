@@ -518,6 +518,26 @@ class HistoryDB_MongoDB(dict):
         return func_eval_list
 
     def load_user_info_by_access_token(self, access_token):
+        try:
+            import sys
+            if sys.version_info < (3,9):
+                from Cryptodome.PublicKey import RSA
+            else:
+                from Crypto.PublicKey import RSA
+            rsa_key_input = "-----BEGIN RSA PRIVATE KEY-----\n"
+            rsa_key_input += access_token.replace("\\n","\n")
+            rsa_key_input += "\n-----END RSA PRIVATE KEY-----"
+            rsa_key_input = str(rsa_key_input)
+            key = RSA.import_key(rsa_key_input)
+            private_key = key.export_key()
+            public_key = str(key.publickey().export_key())
+            public_key = public_key.replace("b'-----BEGIN PUBLIC KEY-----\\n","").replace("\\n-----END PUBLIC KEY-----'","").replace("\n","\\n")
+            #print ("rsa_key_input: ", rsa_key_input)
+            #print ("public_key: ", public_key)
+            access_token = public_key
+        except:
+            print ("This may not be an RSA key")
+
         access_token_info_list = []
         for access_token_info in self.db["access_tokens_db"].find({"access_token":{"$eq":access_token}}):
             access_token_info_list.append(access_token_info)

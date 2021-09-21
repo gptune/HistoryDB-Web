@@ -1464,8 +1464,13 @@ def direct_download(request):
 
     if request.method == "POST":
 
-        access_token = request.POST.get("access_token", "")
-        print ("access_token: ", access_token)
+        if "X-Api-Key" not in request.headers:
+            response_data = {}
+            response_data["result"] = "failed"
+            return HttpResponse(json.dumps(response_data), status=404)
+
+        api_key = request.headers["X-Api-Key"]
+        print ("api_key: ", api_key)
 
         tuning_problem_name = request.POST.get("tuning_problem_name", "")
         loadable_machine_configurations = json.loads(request.POST.get("loadable_machine_configurations", "{}"))
@@ -1476,7 +1481,39 @@ def direct_download(request):
         historydb = HistoryDB_MongoDB()
 
         perf_data = historydb.load_func_eval_with_token(
-                access_token = access_token,
+                access_token = api_key,
+                tuning_problem_name = tuning_problem_name,
+                loadable_machine_configurations = loadable_machine_configurations,
+                loadable_software_configurations = loadable_software_configurations,
+                loadable_user_configurations = loadable_user_configurations,
+                loadable_output_configurations = loadable_output_configurations)
+
+        response_data = {}
+        response_data['result'] = 'success'
+        response_data['perf_data'] = perf_data
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+    elif request.method == "GET":
+
+        if "X-Api-Key" not in request.headers:
+            response_data = {}
+            response_data["result"] = "failed"
+            return HttpResponse(json.dumps(response_data), status=404)
+
+        api_key = request.headers["X-Api-Key"]
+        print ("api_key: ", api_key)
+
+        tuning_problem_name = request.GET.get("tuning_problem_name", "")
+        loadable_machine_configurations = json.loads(request.GET.get("loadable_machine_configurations", "{}"))
+        loadable_software_configurations = json.loads(request.GET.get("loadable_software_configurations", "{}"))
+        loadable_user_configurations = json.loads(request.GET.get("loadable_user_configurations", "{}"))
+        loadable_output_configurations = json.loads(request.GET.get("loadable_output_configurations", "{}"))
+
+        historydb = HistoryDB_MongoDB()
+
+        perf_data = historydb.load_func_eval_with_token(
+                access_token = api_key,
                 tuning_problem_name = tuning_problem_name,
                 loadable_machine_configurations = loadable_machine_configurations,
                 loadable_software_configurations = loadable_software_configurations,
@@ -1494,10 +1531,15 @@ def direct_upload(request):
 
     if request.method == "POST":
 
-        access_token = request.POST.get("access_token", "")
-        print ("access_token: ", access_token)
+        if "X-Api-Key" not in request.headers:
+            response_data = {}
+            response_data["result"] = "failed"
+            return HttpResponse(json.dumps(response_data), status=404)
 
-        if access_token != "":
+        api_key = request.headers["X-Api-Key"]
+        print ("api_key: ", api_key)
+
+        if api_key != "":
             tuning_problem_name = request.POST.get("tuning_problem_name", "")
             print ("tuning_problem_name: ", tuning_problem_name)
 
@@ -1506,7 +1548,7 @@ def direct_upload(request):
 
             historydb = HistoryDB_MongoDB()
             ret = historydb.store_func_eval_with_token(
-                    access_token = access_token,
+                    access_token = api_key,
                     tuning_problem_name = tuning_problem_name,
                     function_evaluation = function_evaluation_document)
 
@@ -1516,6 +1558,45 @@ def direct_upload(request):
             response_data = {}
             response_data["result"] = "failed"
             response_data["message"] = "no access token is provided"
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def api_test(request):
+
+    if request.method == "POST":
+
+        if "X-Api-Key" not in request.headers:
+            response_data = {}
+            response_data["result"] = "failed"
+            return HttpResponse(json.dumps(response_data), status=404)
+
+        api_key = request.headers["X-Api-Key"]
+        print (api_key)
+
+        print (request.headers)
+        print (request.POST)
+
+        response_data = {}
+        response_data['result'] = 'success'
+
+        return HttpResponse(json.dumps(response_data))
+
+    elif request.method == "GET":
+
+        if "X-Api-Key" not in request.headers:
+            response_data = {}
+            response_data["result"] = "failed"
+            return HttpResponse(json.dumps(response_data), status=404)
+
+        api_key = request.headers["X-Api-Key"]
+        print (api_key)
+
+        print (request.headers)
+        print (request.GET)
+
+        response_data = {}
+        response_data['result'] = 'success'
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
