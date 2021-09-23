@@ -237,6 +237,7 @@ class AddAccessToken(TemplateView):
             user_email_appear = request.POST['user_email_appear']
             user_affiliation_appear = request.POST['user_affiliation_appear']
             token_option = request.POST['token_option']
+            expiration = request.POST['expiration']
 
             user_name = request.user.username if user_name_appear == "yes" else "anonymous"
             user_email = request.user.email if user_email_appear == "yes" else "anonymous"
@@ -270,7 +271,7 @@ class AddAccessToken(TemplateView):
                     "user_email" : user_email,
                     "user_affiliation" : user_affiliation
                 }
-                historydb.add_access_token_rsa(public_key, user_info_real, user_info_display, accessibility)
+                historydb.add_access_token_rsa(public_key, user_info_real, user_info_display, accessibility, expiration)
 
                 context = {
                         "user_name" : user_name,
@@ -304,7 +305,7 @@ class AddAccessToken(TemplateView):
                     "user_email" : user_email,
                     "user_affiliation" : user_affiliation
                 }
-                historydb.add_access_token(access_token, user_info_real, user_info_display, accessibility)
+                historydb.add_access_token(access_token, user_info_real, user_info_display, accessibility, expiration)
 
                 context = {
                         "user_name" : user_name,

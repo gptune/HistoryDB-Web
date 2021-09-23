@@ -76,6 +76,26 @@
         </div>
 
         <div class="mb-3">
+          <label><b>Expiration</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="7days" name="expiration" type="radio" value="7days" required>
+            <label class="custom-control-label" for="7days">7 days</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="30days" name="expiration" type="radio" value="30days" checked required>
+            <label class="custom-control-label" for="30days">30 days</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="60days" name="expiration" type="radio" value="60days" required>
+            <label class="custom-control-label" for="60days">60 days</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="90days" name="expiration" type="radio" value="90days" required>
+            <label class="custom-control-label" for="90days">90 days</label>
+          </div>
+        </div>
+
+        <div class="mb-3">
           <hr class="mb-4">
           <button class="btn btn-primary btn-lg btn-block" type="submit">Generate Token</button>
         </div>

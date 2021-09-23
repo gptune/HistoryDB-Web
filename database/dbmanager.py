@@ -118,16 +118,52 @@ class HistoryDB_MongoDB(dict):
 
         return access_token_documents
 
-    def add_access_token(self, access_token, user_info_real, user_info_display, accessibility):
+    def add_access_token(self, access_token, user_info_real, user_info_display, accessibility, expiration):
         #token_db = self.db["access_tokens_"+user_info_real["user_name"]]
         token_db = self.db["access_tokens_db"]
         try:
             if token_db.count_documents({"access_token":{"$eq":access_token}}) == 0:
+                import datetime
+                creation_time = datetime.datetime.now()
+                if expiration == "7days":
+                    expiration_time = creation_time+datetime.timedelta(days=7)
+                elif expiration == "30days":
+                    expiration_time = creation_time+datetime.timedelta(days=30)
+                elif expiration == "60days":
+                    expiration_time = creation_time+datetime.timedelta(days=60)
+                elif expiration == "90days":
+                    expiration_time = creation_time+datetime.timedelta(days=90)
+
+                creation_time = creation_time.timetuple()
+                expiration_time = expiration_time.timetuple()
+
                 token_db.insert_one({
                         "access_token" : access_token,
                         "user_info_real" : user_info_real,
                         "user_info_display" : user_info_display,
-                        "accessibility" : accessibility
+                        "accessibility" : accessibility,
+                        "creation_time" : {
+                            "tm_year":creation_time.tm_year,
+                            "tm_mon":creation_time.tm_mon,
+                            "tm_mday":creation_time.tm_mday,
+                            "tm_hour":creation_time.tm_hour,
+                            "tm_min":creation_time.tm_min,
+                            "tm_sec":creation_time.tm_sec,
+                            "tm_wday":creation_time.tm_wday,
+                            "tm_yday":creation_time.tm_yday,
+                            "tm_isdst":creation_time.tm_isdst
+                        },
+                        "expiration_time" : {
+                            "tm_year":expiration_time.tm_year,
+                            "tm_mon":expiration_time.tm_mon,
+                            "tm_mday":expiration_time.tm_mday,
+                            "tm_hour":expiration_time.tm_hour,
+                            "tm_min":expiration_time.tm_min,
+                            "tm_sec":expiration_time.tm_sec,
+                            "tm_wday":expiration_time.tm_wday,
+                            "tm_yday":expiration_time.tm_yday,
+                            "tm_isdst":expiration_time.tm_isdst
+                        }
                     })
             return 0
         except:
@@ -139,11 +175,47 @@ class HistoryDB_MongoDB(dict):
         token_db = self.db["access_tokens_db"]
         try:
             if token_db.count_documents({"access_token":{"$eq":access_token}}) == 0:
+                import datetime
+                creation_time = datetime.datetime.now()
+                if expiration == "7days":
+                    expiration_time = creation_time+datetime.timedelta(days=7)
+                elif expiration == "30days":
+                    expiration_time = creation_time+datetime.timedelta(days=30)
+                elif expiration == "60days":
+                    expiration_time = creation_time+datetime.timedelta(days=60)
+                elif expiration == "90days":
+                    expiration_time = creation_time+datetime.timedelta(days=90)
+
+                creation_time = creation_time.timetuple()
+                expiration_time = expiration_time.timetuple()
+
                 token_db.insert_one({
                         "access_token" : access_token,
                         "user_info_real" : user_info_real,
                         "user_info_display" : user_info_display,
-                        "accessibility" : accessibility
+                        "accessibility" : accessibility,
+                        "creation_time" : {
+                            "tm_year":creation_time.tm_year,
+                            "tm_mon":creation_time.tm_mon,
+                            "tm_mday":creation_time.tm_mday,
+                            "tm_hour":creation_time.tm_hour,
+                            "tm_min":creation_time.tm_min,
+                            "tm_sec":creation_time.tm_sec,
+                            "tm_wday":creation_time.tm_wday,
+                            "tm_yday":creation_time.tm_yday,
+                            "tm_isdst":creation_time.tm_isdst
+                        },
+                        "expiration_time" : {
+                            "tm_year":expiration_time.tm_year,
+                            "tm_mon":expiration_time.tm_mon,
+                            "tm_mday":expiration_time.tm_mday,
+                            "tm_hour":expiration_time.tm_hour,
+                            "tm_min":expiration_time.tm_min,
+                            "tm_sec":expiration_time.tm_sec,
+                            "tm_wday":expiration_time.tm_wday,
+                            "tm_yday":expiration_time.tm_yday,
+                            "tm_isdst":expiration_time.tm_isdst
+                        }
                     })
             return 0
         except:
