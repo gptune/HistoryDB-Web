@@ -39,7 +39,7 @@ def gptune_user_guide(request):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
 
-def gptune_tutorial_ecp2021(request):
+def gptune_tutorial_slides_ecp2021(request):
     fs = FileSystemStorage()
 
     with fs.open('GPTune_Tutorial.pdf') as pdf:

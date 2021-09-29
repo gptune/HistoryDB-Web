@@ -132,8 +132,8 @@ def acknowledgement(request):
 def membership(request):
     return render(request, 'main/membership.html')
 
-def ecp2021(request):
-    return render(request, 'main/ecp2021.html')
+def gptune_tutorial_ecp2021(request):
+    return render(request, 'main/gptune-tutorial-ecp2021.html')
 
 def release(request):
     return render(request, 'main/release.html')

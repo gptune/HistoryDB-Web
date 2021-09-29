@@ -13,7 +13,7 @@ urlpatterns = [
     path('publications', views.publications, name='publications'),
     path('acknowledgement', views.acknowledgement, name='acknowledgement'),
     path('membership', views.membership, name='membership'),
-    path('ecp2021', views.ecp2021, name='ecp2021'),
+    path('gptune-tutorial-ecp2021', views.gptune_tutorial_ecp2021, name='gptune-tutorial-ecp2021'),
     path('release', views.release, name='release'),
     path('base', views.base, name='base'),
 ]
