@@ -55,6 +55,14 @@ def gptune_hands_on(request):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
 
+def gptune_crowd_tuning(request):
+    fs = FileSystemStorage()
+
+    with fs.open('Crowd_tuning_with_GPTune.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+
 from django.shortcuts import redirect
 def historydb_user_guide(request):
     return redirect('https://gptune-history-database.readthedocs.io/en/latest/')
