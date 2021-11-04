@@ -119,6 +119,56 @@
         <br>
       </form>
     </div>
+
+    <div class="col-lg-4">
+      <img src="{% static 'images/PLASMA.png' %}" width=360>
+      <p>PLASMA is a software package for solving problems in dense linear algebra using OpenMP. PLASMA provides implementations of state-of-the-art algorithms using cutting-edge task scheduling techniques. PLASMA currently offers a collection of routines for solving linear systems of equations, least squares problems, eigenvalue problems, and singular value problems.</p>
+      <form method="POST">
+        <label><b>Tuning Problem</b></label>
+        {% csrf_token %}
+        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
+          <option value="" label="Choose..." selected></option>
+          {% if tuning_problems_avail_per_category %}
+          {% for tuning_problem in tuning_problems_avail_per_category.PLASMA %}
+          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
+          </li>
+          {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+
+    <div class="col-lg-4">
+      <img src="{% static 'images/SLATE.png' %}" width=320>
+      <p>The objective of the Software for Linear Algebra Targeting Exascale (SLATE) project is to provide fundamental dense linear algebra capabilities to the US Department of Energy and to the high-performance computing (HPC) community at large. To this end, SLATE provides basic dense matrix operations (e.g., matrix multiplication, rank-k update, triangular solve), norms, linear systems solvers, least square solvers, and singular value and eigenvalue solvers.</p>
+      <form method="POST">
+        <label><b>Tuning Problem</b></label>
+        {% csrf_token %}
+        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
+          <option value="" label="Choose..." selected></option>
+          {% if tuning_problems_avail_per_category %}
+          {% for tuning_problem in tuning_problems_avail_per_category.SLATE %}
+          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
+          </li>
+          {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
   </div>
 
 </div>
