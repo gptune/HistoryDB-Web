@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from dbmanager import HistoryDB_MongoDB
+from django.contrib.auth import get_user_model
 import json
 
 class Index(TemplateView):
@@ -17,8 +18,16 @@ class Index(TemplateView):
         if request.user.is_authenticated:
             user_email = request.user.email
 
+        User = get_user_model()
+        user_count = len(User.objects.all())
+
         context = {
                 "tuning_problems_avail_per_category": tuning_problems_avail_per_category,
+                "stats": {
+                        "num_tuning_problems": historydb.get_num_tuning_problems(),
+                        "num_function_evaluations": historydb.get_num_function_evaulations(),
+                        "num_users": user_count
+                    }
                 }
 
         return render(request, 'main/index.html', context)

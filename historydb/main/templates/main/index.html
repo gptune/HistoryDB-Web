@@ -14,23 +14,63 @@
   });
 </script>
 
-<div id="myCarousel" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#777"/></svg>
-      <div class="container">
-        <div class="carousel-caption">
-          <h1>Harness the Power of Crowdtuning</h1>
+<div style="background-color: lightgrey">
+  <br><br>
+  <div class="container px-4 py-5" style="text-align: center">
+    <h1>Harness the Power of Crowdtuning</h1>
 
-          <p>The GPTune autotuner allows users to save and re-use performance tuning data, so everyone can benefit from (expensive) runs of widely used high-performance computing codes.
-          Please Sign Up For Free to access more data and use all the nice features of the history database!
-          <p>
-          <a class="btn btn-lg btn-primary" href="{% url 'repo:dashboard' %}" role="button">Go To Dashboard</a>&nbsp;&nbsp;
-          <a class="btn btn-lg btn-primary" href="{% url 'account:signup' %}" style="background-color:orange;border-color:orange;color:white;" role="button">Sign Up For Free</a>&nbsp;&nbsp;
-          <a class="btn btn-lg btn-primary" href="https://github.com/gptune/GPTune/issues" style="background-color:MediumSeaGreen;border-color:MediumSeaGreen;color:white;" role="button">Issue Report / Get Help</a>
-          </p>
+    <p>The GPTune autotuner allows users to save and re-use performance tuning data, so everyone can benefit from (expensive) runs of widely used high-performance computing codes.
+    Please Sign Up For Free to access more data and use all the nice features of the history database!
+    <p>
+    <a class="btn btn-lg btn-primary" href="{% url 'repo:dashboard' %}" role="button">Go To Dashboard</a>&nbsp;&nbsp;
+    <a class="btn btn-lg btn-primary" href="{% url 'account:signup' %}" style="background-color:orange;border-color:orange;color:white;" role="button">Sign Up For Free</a>&nbsp;&nbsp;
+    <a class="btn btn-lg btn-primary" href="https://github.com/gptune/GPTune/issues" style="background-color:MediumSeaGreen;border-color:MediumSeaGreen;color:white;" role="button">Issue Report / Get Help</a>
+    </p>
+  </div>
+  <br><br>
+</div>
+
+<div class="container">
+  <div class="container px-4 py-5">
+    <div class="row justify-content-center">
+      <h1>History Database Statistics</h1>
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card bg-light mb-3" style="max-width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title">Number of tuning problems</h5>
+          </div>
+          <div class="card-body">
+            <h2><p class="card-text"> {{ stats.num_tuning_problems }} problems</p></h2>
+          </div>
         </div>
       </div>
+
+      <div class="col-lg-4">
+        <div class="card bg-light mb-3" style="max-width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title">Number of function evaluations</h5>
+          </div>
+          <div class="card-body">
+            <h2><p class="card-text"> {{ stats.num_function_evaluations }} function evaluations</p></h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card bg-light mb-3" style="max-width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title">Number of users</h5>
+          </div>
+          <div class="card-body">
+            <h2><p class="card-text"> {{ stats.num_users }} users</p></h2>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

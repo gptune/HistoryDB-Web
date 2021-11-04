@@ -62,6 +62,17 @@ class HistoryDB_MongoDB(dict):
 
         return surrogate_model_list
 
+    def get_num_tuning_problems(self):
+        return self.db["tuning_problem_db"].count_documents({})
+
+    def get_num_function_evaulations(self):
+        num_function_evaluations = 0
+        applications_list = self.db.list_collection_names()
+        for application_name in applications_list:
+            application_db = self.db[application_name]
+            num_function_evaluations += application_db.count_documents({"document_type":{"$eq":"func_eval"}})
+        return num_function_evaluations
+
     def load_user_collaboration_groups(self, user_email, **kwargs):
         user_groups = []
 
