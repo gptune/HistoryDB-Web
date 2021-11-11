@@ -5,6 +5,7 @@
                 "BLAS",
                 "LAPACK",
                 "ScaLAPACK",
+                "SLATE",
                 "PLASMA",
                 "MAGMA",
                 "STRUMPACK"
@@ -49,6 +50,7 @@
             "Graphs Application": [
             ]
         },
+        "Randomized Numerical Linear Algebra": {},
         "ML Library": {},
         "ML Application": {},
         "Server Application": {},
