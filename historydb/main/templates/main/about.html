@@ -27,12 +27,12 @@
       <li><b>Multitask and transfer learning:</b> GPTune adopts transfer learning through classical single-output and multiple-output Gaussian process surrogate models, along with novel surrogate models, and incorporates various performance models. It also supports multiple-objective tuning over certain applications.   </li>
       <li><b>Single and multi-objective tuning:</b> GPTune also supports single and multi-objective tuning with several different methodologies. For multi-objective tuning, users can set output constraints.</li>
       <li><b>Unified Python interface:</b> GPTune leverages a unified Python interface to support different tuners across different applications from high-performance mathematical libraries to production-level scientific simulations.</li>
-      <li><b>Historical database:</b> GPTune supports an autotuning database called a history database which allows users to save and re-use their performance data to reduce the cost of the expensive black-box objective function.</li>
+      <li><b>History database:</b> GPTune supports an autotuning database called a history database which allows users to save and re-use performance data to reduce the cost of the expensive black-box objective function.</li>
   </ul>
   </p>
 
   <br><br>
-  <h1>GPTune History Database</h1>
+  <h1>History Database</h1>
   <br>
   <p class="lead">
   The success of autotuning usually depends on collecting sufficient performance data samples to build an accurate surrogate performance model or to explore the search space.
@@ -46,6 +46,13 @@
       <li><b>Transfer learning:</b> Users can download historical performance data and use the trained knowledge to tune a similar but different tuning problem.</li>
       <li><b>Crowd-tuning:</b> Multiple users at different sites can work on tuning the same (expensive) tuning problem.</li>
   </ul>
+
+  </p>
+  <p class="lead">
+
+  The history database is a part of the GPTune project.
+  Performance data in the history database is compatible with GPTune, and the database interfaces are incorporated into GPTune.
+  The database feature can also be used by other autotuners (this is a future work).
 
   <br><br>
   </p>
