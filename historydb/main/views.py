@@ -33,7 +33,10 @@ class Index(TemplateView):
         return render(request, 'main/index.html', context)
 
     def post(self, request, **kwargs):
+
         historydb = HistoryDB_MongoDB()
+
+        tuning_problems_avail = historydb.load_all_tuning_problems()
 
         tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
         if tuning_problem_unique_name == "":
@@ -42,11 +45,12 @@ class Index(TemplateView):
                 "message": "Please choose a tuning problem to search"
             }
             return render(request, 'main/error.html', context)
-        tuning_problems_avail = historydb.load_all_tuning_problems()
+
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
         outputs_avail = historydb.get_outputs_avail()
         user_configurations_avail = historydb.get_user_configurations_avail()
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
 
         machine_configurations_list = machine_configurations_avail[tuning_problem_unique_name]
         software_configurations_list = software_configurations_avail[tuning_problem_unique_name]
@@ -106,6 +110,7 @@ class Index(TemplateView):
         print ("user_configurations_avail: ", user_configurations_avail)
 
         print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+        print ("tuning_problem_info: ", tuning_problem_info)
         print ("machine_configurations_list: ", machine_configurations_list)
         print ("software_configurations_list: ", software_configurations_list)
         print ("user_configurations_list: ", user_configurations_list)
@@ -116,6 +121,7 @@ class Index(TemplateView):
 
         context = {
                 "tuning_problem_unique_name" : tuning_problem_unique_name,
+                "tuning_problem_info" : tuning_problem_info,
                 "tuning_problems_avail" : tuning_problems_avail,
                 "machine_configurations_avail" : machine_configurations_avail,
                 "software_configurations_avail" : software_configurations_avail,
