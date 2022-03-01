@@ -576,16 +576,90 @@ class HistoryDB_MongoDB(dict):
 
         return None
 
+    def check_problem_space(self,
+            func_eval,
+            problem_space,
+            **kwargs):
+
+        if "parameter_space" in problem_space:
+            for parameter_space in problem_space["parameter_space"]:
+                parameter_name = parameter_space["name"]
+                if parameter_name not in func_eval["tuning_parameter"]:
+                    return False
+
+                parameter_type = parameter_space["type"]
+                if parameter_type == "integer" or parameter_type == "real":
+                    param_value = func_eval["tuning_parameter"][parameter_name]
+                    if param_value < parameter_space["lower_bound"] or\
+                       param_value > parameter_space["upper_bound"]:
+                        return False
+                elif parameter_type == "categorical":
+                    param_value = func_eval["tuning_parameter"][parameter_name]
+                    if param_value not in parameter_space["categories"]:
+                        return False
+
+        if "input_space" in problem_space:
+            for input_space in problem_space["input_space"]:
+                parameter_name = input_space["name"]
+                if parameter_name not in func_eval["task_parameter"]:
+                    return False
+
+                parameter_type = input_space["type"]
+                if parameter_type == "integer" or parameter_type == "real":
+                    param_value = func_eval["task_parameter"][parameter_name]
+                    if param_value < input_space["lower_bound"] or\
+                       param_value > input_space["upper_bound"]:
+                        return False
+                elif parameter_type == "categorical":
+                    param_value = func_eval["task_parameter"][parameter_name]
+                    if param_value not in input_space["categories"]:
+                        return False
+
+        if "constants" in problem_space:
+            constants_checked = False
+            for constants in problem_space["constants"]:
+                var_match = True
+                for constant_name in constants:
+                    if constant_name not in func_eval["constants"]:
+                        var_match = False
+                    if constants[constant_name] != func_eval["constants"][constant_name]:
+                        var_match = False
+                if var_match == True:
+                    constants_checked = True
+        if constants_checked == False:
+            return False
+
+        if "output_space" in problem_space:
+            for output_space in problem_space["output_space"]:
+                parameter_name = output_space["name"]
+                if parameter_name not in func_eval["evaluation_result"]:
+                    return False
+
+                parameter_type = output_space["type"]
+                if parameter_type == "integer" or parameter_type == "real":
+                    param_value = func_eval["evaluation_result"][parameter_name]
+                    if param_value < output_space["lower_bound"] or\
+                       param_value > output_space["upper_bound"]:
+                        return False
+                elif parameter_type == "categorical":
+                    param_value = func_eval["evaluation_result"][parameter_name]
+                    if param_value not in output_space["categories"]:
+                        return False
+
+        return True
+
     def load_func_eval_with_token(self,
             access_token,
             tuning_problem_name,
-            loadable_machine_configurations,
-            loadable_software_configurations,
-            loadable_user_configurations,
-            loadable_output_configurations,
+            problem_space,
             **kwargs):
 
         func_eval_list = []
+
+        parameter_space = None
+        input_space = None
+        constants = None
+        output_space = None
 
         for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
             tuning_problem_unique_name = tuning_problem_document["unique_name"]
@@ -596,7 +670,9 @@ class HistoryDB_MongoDB(dict):
                 func_eval.pop("_id")
                 func_eval.pop("accessibility")
                 func_eval.pop("document_type")
-                func_eval_list.append(func_eval)
+
+                if (self.check_problem_space(func_eval, problem_space)):
+                    func_eval_list.append(func_eval)
 
         return func_eval_list
 

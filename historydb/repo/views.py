@@ -1473,20 +1473,14 @@ def direct_download(request):
         print ("api_key: ", api_key)
 
         tuning_problem_name = request.POST.get("tuning_problem_name", "")
-        loadable_machine_configurations = json.loads(request.POST.get("loadable_machine_configurations", "{}"))
-        loadable_software_configurations = json.loads(request.POST.get("loadable_software_configurations", "{}"))
-        loadable_user_configurations = json.loads(request.POST.get("loadable_user_configurations", "{}"))
-        loadable_output_configurations = json.loads(request.POST.get("loadable_output_configurations", "{}"))
+        problem_space = request.POST.get("problem_space", "{}")
 
         historydb = HistoryDB_MongoDB()
 
         perf_data = historydb.load_func_eval_with_token(
                 access_token = api_key,
                 tuning_problem_name = tuning_problem_name,
-                loadable_machine_configurations = loadable_machine_configurations,
-                loadable_software_configurations = loadable_software_configurations,
-                loadable_user_configurations = loadable_user_configurations,
-                loadable_output_configurations = loadable_output_configurations)
+                problem_space = json.loads(problem_space))
 
         response_data = {}
         response_data['result'] = 'success'
@@ -1505,20 +1499,14 @@ def direct_download(request):
         print ("api_key: ", api_key)
 
         tuning_problem_name = request.GET.get("tuning_problem_name", "")
-        loadable_machine_configurations = json.loads(request.GET.get("loadable_machine_configurations", "{}"))
-        loadable_software_configurations = json.loads(request.GET.get("loadable_software_configurations", "{}"))
-        loadable_user_configurations = json.loads(request.GET.get("loadable_user_configurations", "{}"))
-        loadable_output_configurations = json.loads(request.GET.get("loadable_output_configurations", "{}"))
+        problem_space = request.GET.get("problem_space", "{}")
 
         historydb = HistoryDB_MongoDB()
 
         perf_data = historydb.load_func_eval_with_token(
                 access_token = api_key,
                 tuning_problem_name = tuning_problem_name,
-                loadable_machine_configurations = loadable_machine_configurations,
-                loadable_software_configurations = loadable_software_configurations,
-                loadable_user_configurations = loadable_user_configurations,
-                loadable_output_configurations = loadable_output_configurations)
+                problem_space = json.loads(problem_space))
 
         response_data = {}
         response_data['result'] = 'success'
