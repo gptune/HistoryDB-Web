@@ -326,6 +326,13 @@ class HistoryDB_MongoDB(dict):
             for func_eval in func_eval_list:
                 try:
                     machine_configuration = func_eval["machine_configuration"]
+                    for key in machine_configuration:
+                        try:
+                            if "node_list" in machine_configuration[key]:
+                                machine_configuration[key].pop("node_list")
+                        except:
+                            pass
+
                     if machine_configuration not in machine_configurations_avail[collection_name]:
                         machine_configurations_avail[collection_name].append(machine_configuration)
                 except:
@@ -515,6 +522,12 @@ class HistoryDB_MongoDB(dict):
             try:
                 func_eval["tuning_problem_name"] = tuning_problem_simple_name
                 machine_configuration = func_eval["machine_configuration"]
+                for key in machine_configuration:
+                    try:
+                        if "node_list" in machine_configuration[key]:
+                            machine_configuration[key].pop("node_list")
+                    except:
+                        pass
                 software_configuration = func_eval["software_configuration"]
                 user_information = func_eval["user_info"]
 
