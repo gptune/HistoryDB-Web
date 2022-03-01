@@ -1,0 +1,21 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2>{{ header }}</h2>
+    </div>
+    <div>
+        <p class="lead">
+        {{ message }}
+        </p>
+    </div>
+
+{% endblock %}
+

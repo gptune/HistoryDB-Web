@@ -36,7 +36,12 @@ class Index(TemplateView):
         historydb = HistoryDB_MongoDB()
 
         tuning_problem_unique_name = request.POST["tuning_problem_unique_name"]
-
+        if tuning_problem_unique_name == "":
+            context = {
+                "header": "Something went wrong",
+                "message": "Please choose a tuning problem to search"
+            }
+            return render(request, 'main/error.html', context)
         tuning_problems_avail = historydb.load_all_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()

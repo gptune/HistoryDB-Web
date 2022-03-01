@@ -67,6 +67,12 @@ class Dashboard(TemplateView):
         user_configurations_avail = historydb.get_user_configurations_avail()
 
         tuning_problem_unique_name = request.POST["tuning_problem"]
+        if tuning_problem_unique_name == "":
+            context = {
+                "header": "Something went wrong",
+                "message": "Please choose a tuning problem to search"
+            }
+            return render(request, 'main/error.html', context)
         tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
 
         machine_configurations_list = [ json.loads(val) for val in request.POST.getlist("machine_configurations_list") ]
