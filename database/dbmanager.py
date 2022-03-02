@@ -22,6 +22,7 @@ import os.path
 import uuid
 import sys
 from pathlib import Path
+import copy
 
 import pymongo
 
@@ -521,7 +522,7 @@ class HistoryDB_MongoDB(dict):
         for func_eval in func_eval_list:
             try:
                 func_eval["tuning_problem_name"] = tuning_problem_simple_name
-                machine_configuration = func_eval["machine_configuration"]
+                machine_configuration = copy.deepcopy(func_eval["machine_configuration"])
                 for key in machine_configuration:
                     try:
                         if "node_list" in machine_configuration[key]:
