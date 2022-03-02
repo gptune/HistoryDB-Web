@@ -472,8 +472,8 @@ class HistoryDB_MongoDB(dict):
             perf_data,
             user_email):
         if "accessibility" in perf_data:
-            print (perf_data)
-            print ("user_email: ", user_email)
+            #print (perf_data)
+            #print ("user_email: ", user_email)
 
             if perf_data['user_info']['user_email'] == user_email:
                 return True
@@ -532,8 +532,8 @@ class HistoryDB_MongoDB(dict):
                 software_configuration = func_eval["software_configuration"]
                 user_information = func_eval["user_info"]
 
-                print ("output_options: ", output_options)
-                print ("evaluation_result_keys: ", list(func_eval["evaluation_result"].keys()))
+                #print ("output_options: ", output_options)
+                #print ("evaluation_result_keys: ", list(func_eval["evaluation_result"].keys()))
 
                 if (machine_configuration in machine_configurations_list) and\
                    (software_configuration in software_configurations_list) and\
