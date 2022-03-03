@@ -640,8 +640,8 @@ class HistoryDB_MongoDB(dict):
                         var_match = False
                 if var_match == True:
                     constants_checked = True
-        if constants_checked == False:
-            return False
+            if constants_checked == False:
+                return False
 
         if "output_space" in problem_space:
             for output_space in problem_space["output_space"]:
