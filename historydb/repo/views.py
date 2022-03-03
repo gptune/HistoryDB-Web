@@ -1643,14 +1643,14 @@ def direct_upload(request):
             tuning_problem_name = request.POST.get("tuning_problem_name", "")
             print ("tuning_problem_name: ", tuning_problem_name)
 
-            function_evaluation_document = json.loads(request.POST.get("function_evaluation_document", "{}"))
-            print ("function_evaluation_document: ", function_evaluation_document)
+            function_evaluation = json.loads(request.POST.get("function_evaluation", "{}"))
+            print ("function_evaluation: ", function_evaluation)
 
             historydb = HistoryDB_MongoDB()
             ret = historydb.store_func_eval_with_token(
                     access_token = api_key,
                     tuning_problem_name = tuning_problem_name,
-                    function_evaluation = function_evaluation_document)
+                    function_evaluation = function_evaluation)
 
             response_data = {}
             response_data["result"] = "success"
