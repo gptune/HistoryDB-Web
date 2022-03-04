@@ -137,10 +137,10 @@
             <div class="col">
               {% ifequal tuning_parameter.parameter_type 'categorical' %}
               <label>Categories for modeling</label>
-              <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.tuning_parameter_range_suggestion }}">
+              <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.categories_observed }}">
               {% else %}
               <label>Range for modeling</label>
-              <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.tuning_parameter_range_suggestion }}">
+              <input type="text" class="form-control" name="tuning_parameter_range" value="({{ tuning_parameter.lower_bound_observed }}, {{ tuning_parameter.upper_bound_observed }})">
               {% endifequal %}
             </div>
           </div>

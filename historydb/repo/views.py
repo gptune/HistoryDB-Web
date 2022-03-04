@@ -369,6 +369,7 @@ class ModelPrediction(TemplateView):
 
             tuning_problem_loaded = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
             tuning_problem = copy.deepcopy(tuning_problem_loaded)
+            tuning_problem_info = tuning_problem["tuning_problem_info"]
 
             print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
             print ("tuning_problem: ", tuning_problem)
@@ -392,6 +393,32 @@ class ModelPrediction(TemplateView):
             num_func_eval = len(func_eval_list)
             for i in range(num_func_eval):
                 func_eval_list[i]["id"] = i
+
+                for parameter_info in tuning_problem_info["parameter_info"]:
+                    parameter_name = parameter_info["parameter_name"]
+                    parameter_type = parameter_info["parameter_type"]
+
+                    if parameter_type == "integer" or parameter_type == "real":
+                        value = func_eval_list[i]["tuning_parameter"][parameter_name]
+                        if "lower_bound_observed" not in parameter_info:
+                            parameter_info["lower_bound_observed"] = value
+                        else:
+                            if value < parameter_info["lower_bound_observed"]:
+                                parameter_info["lower_bound_observed"] = value
+                        if "upper_bound_observed" not in parameter_info:
+                            parameter_info["upper_bound_observed"] = value
+                        else:
+                            if value > parameter_info["upper_bound_observed"]:
+                                parameter_info["upper_bound_observed"] = value
+                    elif parameter_type == "categorical":
+                        category = func_eval_list[i]["tuning_parameter"][parameter_name]
+                        if "categories_observed" not in parameter_info:
+                            parameter_info["categories_observed"] = [category]
+                        else:
+                            if category not in parameter_info["categories_observed"]:
+                                parameter_info["categories_observed"].append(category)
+                    else:
+                        pass
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
@@ -751,6 +778,7 @@ class SADashboard(TemplateView):
 
             tuning_problem_loaded = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
             tuning_problem = copy.deepcopy(tuning_problem_loaded)
+            tuning_problem_info = tuning_problem["tuning_problem_info"]
 
             print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
             print ("tuning_problem: ", tuning_problem)
@@ -774,6 +802,32 @@ class SADashboard(TemplateView):
             num_func_eval = len(func_eval_list)
             for i in range(num_func_eval):
                 func_eval_list[i]["id"] = i
+
+                for parameter_info in tuning_problem_info["parameter_info"]:
+                    parameter_name = parameter_info["parameter_name"]
+                    parameter_type = parameter_info["parameter_type"]
+
+                    if parameter_type == "integer" or parameter_type == "real":
+                        value = func_eval_list[i]["tuning_parameter"][parameter_name]
+                        if "lower_bound_observed" not in parameter_info:
+                            parameter_info["lower_bound_observed"] = value
+                        else:
+                            if value < parameter_info["lower_bound_observed"]:
+                                parameter_info["lower_bound_observed"] = value
+                        if "upper_bound_observed" not in parameter_info:
+                            parameter_info["upper_bound_observed"] = value
+                        else:
+                            if value > parameter_info["upper_bound_observed"]:
+                                parameter_info["upper_bound_observed"] = value
+                    elif parameter_type == "categorical":
+                        category = func_eval_list[i]["tuning_parameter"][parameter_name]
+                        if "categories_observed" not in parameter_info:
+                            parameter_info["categories_observed"] = [category]
+                        else:
+                            if category not in parameter_info["categories_observed"]:
+                                parameter_info["categories_observed"].append(category)
+                    else:
+                        pass
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
