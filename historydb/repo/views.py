@@ -565,13 +565,13 @@ class ModelPrediction(TemplateView):
 
     def post(self, request, **kwargs):
 
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         surrogate_model_uids = request.GET.get("surrogate_model_uids", "")
 
         if surrogate_model_uids == "":
-            if not request.user.is_authenticated:
-                return redirect(reverse_lazy('account:login'))
-
             tuning_problem = request.GET.get("tuning_problem", "{}")
             modeler = request.POST["modeler"]
             tuning_parameter_range = request.POST.getlist("tuning_parameter_range")
