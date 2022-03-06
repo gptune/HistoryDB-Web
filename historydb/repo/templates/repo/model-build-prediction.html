@@ -52,64 +52,10 @@
   <hr>
   <h4>Make prediction</h4>
 
-  <form method="POST" action="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{ tuning_problem_unique_name }}&surrogate_model_uids={{ surrogate_model_uids }}" class="needs-validation" novalidate>
+  <form method="POST" action="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&tuning_problem={{tuning_problem}}" class="needs-validation" novalidate>
     {% csrf_token %}
 
     <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
-      <div class="row mb-3">
-        <div class="col">
-          <b>Task parameters</b>
-        </div>
-      </div>
-
-      {% for task_parameter in tuning_problem.tuning_problem_info.task_info %}
-      <div class="row mb-3">
-        <div class="col">
-          <label>Name</label>
-          <input type="text" class="form-control" name="task_parameter_name" value="{{ task_parameter.task_name }}" readonly>
-        </div>
-        <div class="col">
-          <label>Type</label>
-          <input type="text" class="form-control" name="task_parameter_type" value="{{ task_parameter.task_type }}" readonly>
-        </div>
-        <div class="col">
-          <label>Description</label>
-          <input type="text" class="form-control" name="task_description" value="{{ task_parameter.task_description }}" readonly>
-        </div>
-        <div class="col">
-        </div>
-        <div class="col">
-        </div>
-      </div>
-      {% endfor %}
-
-      <div class="row mb-3">
-        <div class="col">
-          <b>Constant variables</b>
-        </div>
-      </div>
-
-      {% for constant in tuning_problem.tuning_problem_info.constant_info %}
-      <div class="row mb-3">
-        <div class="col">
-          <label>Name</label>
-          <input type="text" class="form-control" name="constant_name" value="{{ constant.constant_name }}" readonly>
-        </div>
-        <div class="col">
-          <label>Type</label>
-          <input type="text" class="form-control" name="constant_type" value="{{ constant.constant_type }}" readonly>
-        </div>
-        <div class="col">
-          <label>Description</label>
-          <input type="text" class="form-control" name="constant_description" value="{{ constant.constant_description }}" readonly>
-        </div>
-        <div class="col">
-        </div>
-        <div class="col">
-        </div>
-      </div>
-      {% endfor %}
-
       <div class="row mb-3">
         <div class="col">
           <b>Choose the input task (task parameter and constant variables)</b>
@@ -135,29 +81,25 @@
       {% for tuning_parameter in tuning_problem.tuning_problem_info.parameter_info %}
       <div class="row mb-3">
         <div class="col">
-          <label>Name</label>
+          <label>Parameter (type: {{ tuning_parameter.parameter_type }})</label>
           <input type="text" class="form-control" name="tuning_parameter_name" value="{{ tuning_parameter.parameter_name }}" readonly>
-        </div>
-        <div class="col">
-          <label>Type</label>
-          <input type="text" class="form-control" name="tuning_parameter_type" value="{{ tuning_parameter.parameter_type }}" readonly>
-        </div>
-        <div class="col">
-          <label>Description</label>
-          <input type="text" class="form-control" name="tuning_parameter_description" value="{{ tuning_parameter.parameter_description }}" readonly>
         </div>
         <div class="col">
           {% ifequal tuning_parameter.parameter_type 'categorical' %}
           <label>Categories for modeling</label>
-          <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.categories_observed }}">
+          <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.categories }}">
           {% else %}
           <label>Range for modeling</label>
-          <input type="text" class="form-control" name="tuning_parameter_range" value="({{ tuning_parameter.lower_bound_observed }}, {{ tuning_parameter.upper_bound_observed }})">
+          <input type="text" class="form-control" name="tuning_parameter_range" value="[{{ tuning_parameter.lower_bound }}, {{ tuning_parameter.upper_bound }}]">
           {% endifequal %}
         </div>
         <div class="col">
           <label>Input</label>
-          <input type="text" class="form-control" name="tuning_parameter_given" value="">
+          {% ifequal tuning_parameter.parameter_type 'categorical' %}
+          <input type="text" class="form-control" name="tuning_parameter_given" value="'{{ tuning_parameter.given_value }}'">
+          {% else %}
+          <input type="text" class="form-control" name="tuning_parameter_given" value="{{ tuning_parameter.given_value }}">
+          {% endifequal %}
         </div>
       </div>
       {% endfor %}
@@ -172,7 +114,6 @@
         <div class="col">
           <select class="custom-select d-block w-100" name="modeler" id="modeler_id">
             <option value="Model_GPy_LCM" label="GPy's LCM" selected></option>
-            <option value="Model_LCM" label="GPTune's LCM"></option>
           </select>
         </div>
       </div>
@@ -189,24 +130,16 @@
       {% for output_parameter in tuning_problem.tuning_problem_info.output_info %}
       <div class="row mb-3">
         <div class="col">
-          <label>Name</label>
+          <label>Objective</label>
           <input type="text" class="form-control" name="output_parameter_name" value="{{ output_parameter.output_name }}" readonly>
         </div>
         <div class="col">
-          <label>Type</label>
-          <input type="text" class="form-control" name="output_parameter_type" value="{{ output_parameter.output_type }}" readonly>
-        </div>
-        <div class="col">
-          <label>Description</label>
-          <input type="text" class="form-control" name="output_parameter_description" value="{{ output_parameter.output_description }}" readonly>
-        </div>
-        <div class="col">
           <label>Predicted Result (Mean Value)</label>
-          <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result }}" readonly>
+          <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result | floatformat:2 }}" readonly>
         </div>
         <div class="col">
           <label>Standard Deviation of the GP Prediction Result</label>
-          <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result_std }}" readonly>
+          <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result_std | floatformat:2 }}" readonly>
         </div>
       </div>
       {% endfor %}

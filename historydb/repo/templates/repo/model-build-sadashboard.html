@@ -94,7 +94,7 @@
       <h4>Run Surrogate-based Sobol Analysis</h4>
       <br>
 
-      <form method="POST" action="{% url 'repo:sadashboard' %}?tuning_problem_unique_name={{ tuning_problem_unique_name }}&surrogate_model_uids={{ surrogate_model_uids }}" class="needs-validation" novalidate>
+      <form method="POST" action="{% url 'repo:sadashboard' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&tuning_problem={{tuning_problem}}" class="needs-validation" novalidate>
         {% csrf_token %}
 
         <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
@@ -137,10 +137,10 @@
             <div class="col">
               {% ifequal tuning_parameter.parameter_type 'categorical' %}
               <label>Categories for modeling</label>
-              <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.categories_observed }}">
+              <input type="text" class="form-control" name="tuning_parameter_range" value="{{ tuning_parameter.categories }}">
               {% else %}
               <label>Range for modeling</label>
-              <input type="text" class="form-control" name="tuning_parameter_range" value="({{ tuning_parameter.lower_bound_observed }}, {{ tuning_parameter.upper_bound_observed }})">
+              <input type="text" class="form-control" name="tuning_parameter_range" value="[{{ tuning_parameter.lower_bound }}, {{ tuning_parameter.upper_bound }}]">
               {% endifequal %}
             </div>
           </div>
@@ -156,8 +156,19 @@
             <div class="col">
               <select class="custom-select d-block w-100" name="modeler" id="modeler_id">
                 <option value="Model_GPy_LCM" label="GPy's LCM" selected></option>
-                <option value="Model_LCM" label="GPTune's LCM"></option>
               </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-4">
+              <b>Number of samples to generate to run an analysis (max=10000)</b>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col">
+              <input type="text" class="form-control" name="num_samples" value="1000">
             </div>
           </div>
 
@@ -167,12 +178,62 @@
             {% for output_parameter in tuning_problem.tuning_problem_info.output_info %}
             <div class="col-4">
               <label></label>
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Run Sobol Analysis for Objective {{ key }}</button>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Run Sobol Analysis for Objective '{{ output_parameter.output_name }}'</button>
             </div>
             {% endfor %}
           </div>
         </div>
       </form>
+
+      {% if sobol_analysis.s1_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <b>First-order indices.</b>
+        </div>
+      </div>
+      {% endif %}
+
+      {% for s1_parameter in sobol_analysis.s1_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <label>Name</label>
+          <input type="text" class="form-control" name="tuning_parameter_name" value="{{ s1_parameter.name }}" readonly>
+        </div>
+        <div class="col">
+          <label>S1</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s1" value="{{ s1_parameter.S1 | floatformat:3 }}" readonly>
+        </div>
+        <div class="col">
+          <label>S1_conf</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s1_conf" value="{{ s1_parameter.S1_conf | floatformat:3 }}" readonly>
+        </div>
+      </div>
+      {% endfor %}
+
+      {% if sobol_analysis.st_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <b>Total-effect index.</b>
+        </div>
+      </div>
+      {% endif %}
+
+      {% for st_parameter in sobol_analysis.st_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <label>Name</label>
+          <input type="text" class="form-control" name="tuning_parameter_name" value="{{ st_parameter.name }}" readonly>
+        </div>
+        <div class="col">
+          <label>ST</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_st" value="{{ st_parameter.ST | floatformat:3 }}" readonly>
+        </div>
+        <div class="col">
+          <label>ST_conf</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_st_conf" value="{{ st_parameter.ST_conf | floatformat:3 }}" readonly>
+        </div>
+      </div>
+      {% endfor %}
   </div>
 </div>
 
