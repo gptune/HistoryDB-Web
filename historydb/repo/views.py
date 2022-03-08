@@ -672,8 +672,8 @@ class ModelPrediction(TemplateView):
                         "name": task_name,
                         "type": task_type,
                         "transformer": "normalize",
-                        "lower_bound": [task_value],
-                        "upper_bound": [task_value]
+                        "lower_bound": task_value,
+                        "upper_bound": task_value+1
                     }
                     problem_space["input_space"].append(problem)
                 elif task_type == "categorical":
@@ -1292,8 +1292,8 @@ class SADashboard(TemplateView):
                         "name": task_name,
                         "type": task_type,
                         "transformer": "normalize",
-                        "lower_bound": [task_value],
-                        "upper_bound": [task_value]
+                        "lower_bound": task_value,
+                        "upper_bound": task_value+1
                     }
                     problem_space["input_space"].append(problem)
                 elif task_type == "categorical":
