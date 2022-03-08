@@ -48,6 +48,9 @@
             "Unstructured Grid Application": [
             ],
             "Graphs Application": [
+            ],
+            "Fusion Simulation": [
+                "NIMROD"
             ]
         },
         "Randomized Numerical Linear Algebra": {},
