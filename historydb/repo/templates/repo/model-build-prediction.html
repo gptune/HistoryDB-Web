@@ -134,6 +134,15 @@
           <input type="text" class="form-control" name="output_parameter_name" value="{{ output_parameter.output_name }}" readonly>
         </div>
         <div class="col">
+          {% ifequal output_parameter.output_type 'categorical' %}
+          <label>Categories for modeling</label>
+          <input type="text" class="form-control" name="output_parameter_range" value="{{ output_parameter.categories }}">
+          {% else %}
+          <label>Range for modeling</label>
+          <input type="text" class="form-control" name="output_parameter_range" value="[{{ output_parameter.lower_bound }}, {{ output_parameter.upper_bound }}]">
+          {% endifequal %}
+        </div>
+        <div class="col">
           <label>Predicted Result (Mean Value)</label>
           <input type="text" style="color: blue;" class="form-control" name="output_parameter" value="{{ output_parameter.result | floatformat:2 }}" readonly>
         </div>

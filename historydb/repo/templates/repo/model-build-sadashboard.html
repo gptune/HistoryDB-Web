@@ -147,6 +147,40 @@
           {% endfor %}
 
           <div class="row mb-3">
+            <div class="col">
+              <b>Objective range to analyze (tip: for example, you may not want to analyze too low-high runtimes which may be caused by some faulty executions)</b>
+            </div>
+          </div>
+
+          {% for output in tuning_problem.tuning_problem_info.output_info %}
+          <div class="row mb-3">
+            <div class="col">
+              <label>Name</label>
+              <input type="text" class="form-control" name="output_name" value="{{ output.output_name }}" readonly>
+            </div>
+            <div class="col">
+              <label>Type</label>
+              <input type="text" class="form-control" name="output_type" value="{{ output.output_type }}" readonly>
+            </div>
+            <div class="col">
+              <label>Description</label>
+              <input type="text" class="form-control" name="output_description" value="{{ output.output_description }}" readonly>
+            </div>
+            <div class="col">
+              {% ifequal output.output_type 'categorical' %}
+              <label>Categories for modeling</label>
+              <input type="text" class="form-control" name="output_range" value="{{ output.categories }}">
+              {% else %}
+              <label>Range for modeling</label>
+              <input type="text" class="form-control" name="output_range" value="[{{ output.lower_bound }}, {{ output.upper_bound }}]">
+              {% endifequal %}
+            </div>
+          </div>
+          {% endfor %}
+
+
+
+          <div class="row mb-3">
             <div class="col-4">
               <b>Choose modeler</b>
             </div>

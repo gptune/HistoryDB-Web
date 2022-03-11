@@ -418,6 +418,45 @@ class ModelPrediction(TemplateView):
                     else:
                         pass
 
+                for output_info in tuning_problem_info["output_info"]:
+                    output_name = output_info["output_name"]
+                    output_type = output_info["output_type"]
+
+                    if output_type == "integer":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = value
+                        else:
+                            if value < output_info["lower_bound"]:
+                                output_info["lower_bound"] = value
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = value
+                        else:
+                            if value > output_info["upper_bound"]:
+                                output_info["upper_bound"] = value
+                    if output_type == "real":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = round(value-0.005,2)
+                        else:
+                            if round(value-0.005, 2) < output_info["lower_bound"]:
+                                output_info["lower_bound"] = round(value-0.005, 2)
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = round(value+0.005, 2)
+                        else:
+                            if round(value+0.005, 2) > output_info["upper_bound"]:
+                                output_info["upper_bound"] = round(value+0.005, 2)
+
+                    elif output_type == "categorical":
+                        category = func_eval_list[i]["evaluation_result"][output_name]
+                        if "categories" not in output_info:
+                            output_info["categories"] = [category]
+                        else:
+                            if category not in output_info["categories"]:
+                                output_info["categories"].append(category)
+                    else:
+                        pass
+
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
                 input_task.update(func_eval_list[i]["constants"])
@@ -576,6 +615,7 @@ class ModelPrediction(TemplateView):
             modeler = request.POST["modeler"]
             tuning_parameter_range = request.POST.getlist("tuning_parameter_range")
             tuning_parameter_given = request.POST.getlist("tuning_parameter_given")
+            output_parameter_range = request.POST.getlist("output_parameter_range")
 
             historydb = HistoryDB_MongoDB()
 
@@ -626,6 +666,45 @@ class ModelPrediction(TemplateView):
                         else:
                             if category not in parameter_info["categories"]:
                                 parameter_info["categories"].append(category)
+                    else:
+                        pass
+
+                for output_info in tuning_problem_info["output_info"]:
+                    output_name = output_info["output_name"]
+                    output_type = output_info["output_type"]
+
+                    if output_type == "integer":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = value
+                        else:
+                            if value < output_info["lower_bound"]:
+                                output_info["lower_bound"] = value
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = value
+                        else:
+                            if value > output_info["upper_bound"]:
+                                output_info["upper_bound"] = value
+                    if output_type == "real":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = round(value-0.005,2)
+                        else:
+                            if round(value-0.005, 2) < output_info["lower_bound"]:
+                                output_info["lower_bound"] = round(value-0.005, 2)
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = round(value+0.005, 2)
+                        else:
+                            if round(value+0.005, 2) > output_info["upper_bound"]:
+                                output_info["upper_bound"] = round(value+0.005, 2)
+
+                    elif output_type == "categorical":
+                        category = func_eval_list[i]["evaluation_result"][output_name]
+                        if "categories" not in output_info:
+                            output_info["categories"] = [category]
+                        else:
+                            if category not in output_info["categories"]:
+                                output_info["categories"].append(category)
                     else:
                         pass
 
@@ -721,7 +800,9 @@ class ModelPrediction(TemplateView):
                     }
                     problem_space["parameter_space"].append(problem)
 
-            for output_info in tuning_problem_info["output_info"]:
+            #for output_info in tuning_problem_info["output_info"]:
+            for i in range(len(tuning_problem_info["output_info"])):
+                output_info = tuning_problem_info["output_info"][i]
                 output_name = output_info["output_name"]
                 output_type = output_info["output_type"]
                 if output_type == "real":
@@ -735,6 +816,22 @@ class ModelPrediction(TemplateView):
                     problem_space["output_space"].append(problem)
                 else:
                     print ("not supported output space type")
+
+                output_parameter_range = ast.literal_eval(output_parameter_range[i])
+                func_eval_list_filtered = []
+                #copy.deepcopy(func_eval_list)
+                for func_eval in func_eval_list:
+                    if output_type == "integer" or output_type == "real":
+                        if func_eval["evaluation_result"][output_name] >= output_parameter_range[0] and\
+                           func_eval["evaluation_result"][output_name] <= output_parameter_range[-1]:
+                            func_eval_list_filtered.append(func_eval)
+                        #else:
+                        #    print ("filtered: ", func_eval)
+                    elif output_type == "categorical":
+                        if func_eval["evaluation_result"][output_name] in output_parameter_range:
+                            func_eval_list_filtered.append(func_eval)
+                        #else:
+                        #    print ("filtered: ", func_eval)
 
                 import gptune
                 ret = gptune.PredictOutput(problem_space=problem_space,
@@ -1021,6 +1118,45 @@ class SADashboard(TemplateView):
                     else:
                         pass
 
+                for output_info in tuning_problem_info["output_info"]:
+                    output_name = output_info["output_name"]
+                    output_type = output_info["output_type"]
+
+                    if output_type == "integer":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = value
+                        else:
+                            if value < output_info["lower_bound"]:
+                                output_info["lower_bound"] = value
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = value
+                        else:
+                            if value > output_info["upper_bound"]:
+                                output_info["upper_bound"] = value
+                    if output_type == "real":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = round(value-0.005,2)
+                        else:
+                            if round(value-0.005, 2) < output_info["lower_bound"]:
+                                output_info["lower_bound"] = round(value-0.005, 2)
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = round(value+0.005, 2)
+                        else:
+                            if round(value+0.005, 2) > output_info["upper_bound"]:
+                                output_info["upper_bound"] = round(value+0.005, 2)
+
+                    elif output_type == "categorical":
+                        category = func_eval_list[i]["evaluation_result"][output_name]
+                        if "categories" not in output_info:
+                            output_info["categories"] = [category]
+                        else:
+                            if category not in output_info["categories"]:
+                                output_info["categories"].append(category)
+                    else:
+                        pass
+
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
                 input_task.update(func_eval_list[i]["constants"])
@@ -1195,6 +1331,7 @@ class SADashboard(TemplateView):
             modeler = request.POST["modeler"]
             tuning_parameter_range = request.POST.getlist("tuning_parameter_range")
             tuning_parameter_given = request.POST.getlist("tuning_parameter_given")
+            output_range = request.POST.getlist("output_range")
             num_samples = int(request.POST["num_samples"])
 
             historydb = HistoryDB_MongoDB()
@@ -1246,6 +1383,45 @@ class SADashboard(TemplateView):
                         else:
                             if category not in parameter_info["categories"]:
                                 parameter_info["categories"].append(category)
+                    else:
+                        pass
+
+                for output_info in tuning_problem_info["output_info"]:
+                    output_name = output_info["output_name"]
+                    output_type = output_info["output_type"]
+
+                    if output_type == "integer":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = value
+                        else:
+                            if value < output_info["lower_bound"]:
+                                output_info["lower_bound"] = value
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = value
+                        else:
+                            if value > output_info["upper_bound"]:
+                                output_info["upper_bound"] = value
+                    if output_type == "real":
+                        value = func_eval_list[i]["evaluation_result"][output_name]
+                        if "lower_bound" not in output_info:
+                            output_info["lower_bound"] = round(value,2)
+                        else:
+                            if round(value, 2) < output_info["lower_bound"]:
+                                output_info["lower_bound"] = round(value, 2)
+                        if "upper_bound" not in output_info:
+                            output_info["upper_bound"] = round(value+0.005, 2)
+                        else:
+                            if round(value+0.005, 2) > output_info["upper_bound"]:
+                                output_info["upper_bound"] = round(value+0.005, 2)
+
+                    elif output_type == "categorical":
+                        category = func_eval_list[i]["evaluation_result"][output_name]
+                        if "categories" not in output_info:
+                            output_info["categories"] = [category]
+                        else:
+                            if category not in output_info["categories"]:
+                                output_info["categories"].append(category)
                     else:
                         pass
 
@@ -1338,7 +1514,9 @@ class SADashboard(TemplateView):
                     }
                     problem_space["parameter_space"].append(problem)
 
-            for output_info in tuning_problem_info["output_info"]:
+            for i in range(len(tuning_problem_info["output_info"])):
+                output_info = tuning_problem_info["output_info"][i]
+
                 output_name = output_info["output_name"]
                 output_type = output_info["output_type"]
                 if output_type == "real":
@@ -1353,13 +1531,29 @@ class SADashboard(TemplateView):
                 else:
                     print ("not supported output space type")
 
+                output_range = ast.literal_eval(output_range[i])
+                func_eval_list_filtered = []
+                #copy.deepcopy(func_eval_list)
+                for func_eval in func_eval_list:
+                    if output_type == "integer" or output_type == "real":
+                        if func_eval["evaluation_result"][output_name] >= output_range[0] and\
+                           func_eval["evaluation_result"][output_name] <= output_range[-1]:
+                            func_eval_list_filtered.append(func_eval)
+                        #else:
+                        #    print ("filtered: ", func_eval)
+                    elif output_type == "categorical":
+                        if func_eval["evaluation_result"][output_name] in output_range:
+                            func_eval_list_filtered.append(func_eval)
+                        #else:
+                        #    print ("filtered: ", func_eval)
+
                 import gptune
                 print ("problem_space: ", problem_space)
                 print ("num_samples: ", num_samples, " type: ", type(num_samples))
                 ret = gptune.SensitivityAnalysis(problem_space=problem_space,
                         modeler=modeler,
                         input_task=Igiven,
-                        function_evaluations=func_eval_list,
+                        function_evaluations=func_eval_list_filtered,
                         num_samples=num_samples)
                 print("ret: ", ret)
                 #output_info["result"] = ret[output_name][0][0] #parameter_given
