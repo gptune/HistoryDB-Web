@@ -805,17 +805,23 @@ class ModelPrediction(TemplateView):
                 output_info = tuning_problem_info["output_info"][i]
                 output_name = output_info["output_name"]
                 output_type = output_info["output_type"]
-                if output_type == "real":
+                if output_type == "integer" opr output_type == "real":
                     problem = {
                         "name": output_name,
                         "type": output_type,
                         "transformer": "normalize",
-                        "lower_bound": float("-Inf"),
-                        "upper_bound": float("Inf")
+                        "lower_bound": output_info["lower_bound"],
+                        "upper_bound": output_info["upper_bound"]
                     }
                     problem_space["output_space"].append(problem)
                 else:
-                    print ("not supported output space type")
+                    problem = {
+                        "name": output_name,
+                        "type": output_type,
+                        "transformer": "onehot",
+                        "categories": output_info["categories"]
+                    }
+                    problem_space["output_space"].append(problem)
 
                 output_parameter_range = ast.literal_eval(output_parameter_range[i])
                 func_eval_list_filtered = []
@@ -1519,17 +1525,24 @@ class SADashboard(TemplateView):
 
                 output_name = output_info["output_name"]
                 output_type = output_info["output_type"]
-                if output_type == "real":
+
+                if output_type == "integer" opr output_type == "real":
                     problem = {
                         "name": output_name,
                         "type": output_type,
                         "transformer": "normalize",
-                        "lower_bound": float("-Inf"),
-                        "upper_bound": float("Inf")
+                        "lower_bound": output_info["lower_bound"],
+                        "upper_bound": output_info["upper_bound"]
                     }
                     problem_space["output_space"].append(problem)
                 else:
-                    print ("not supported output space type")
+                    problem = {
+                        "name": output_name,
+                        "type": output_type,
+                        "transformer": "onehot",
+                        "categories": output_info["categories"]
+                    }
+                    problem_space["output_space"].append(problem)
 
                 output_range = ast.literal_eval(output_range[i])
                 func_eval_list_filtered = []
