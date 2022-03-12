@@ -1576,6 +1576,21 @@ class SADashboard(TemplateView):
                         "ST_conf": ret["ST_conf"][param_name]
                     }
                     sobol_analysis["st_parameters"].append(st)
+                sobol_analysis["s2_parameters"] = []
+                if "S2" in ret:
+                    S2_dict = ret["S2"]
+                    S2_conf_array = ret["S2_conf"]
+                    num_parameters = len(tuning_problem_info["parameter_info"])
+                    for i in range(num_parameters):
+                        for j in range(i+1, num_parameters):
+                            tuning_parameter = {}
+                            name1 = tuning_problem_info["parameter_info"][i]["parameter_name"]
+                            name2 = tuning_problem_info["parameter_info"][j]["parameter_name"]
+                            tuning_parameter["name1"] = name1
+                            tuning_parameter["name2"] = name2
+                            tuning_parameter["S2"] = round(S2_dict[name1][name2],3)
+                            tuning_parameter["S2_conf"] = round(S2_conf_array[name1][name2],3)
+                            sobol_analysis["s2_parameters"].append(tuning_parameter)
 
                 print ("sobol analysis: ", sobol_analysis)
 

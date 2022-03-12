@@ -268,6 +268,31 @@
         </div>
       </div>
       {% endfor %}
+
+      {% if sobol_analysis.s2_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <b>Second-order indices.</b>
+        </div>
+      </div>
+      {% endif %}
+
+      {% for s2_parameter in sobol_analysis.s2_parameters %}
+      <div class="row mb-3">
+        <div class="col">
+          <label>Name</label>
+          <input type="text" class="form-control" name="tuning_parameter_name" value="{{ s2_parameter.name1 }}-{{ s2_parameter.name2 }}" readonly>
+        </div>
+        <div class="col">
+          <label>S2</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s2" value="{{ s2_parameter.S2 }}" readonly>
+        </div>
+        <div class="col">
+          <label>S2_conf</label>
+          <input type="text" style="color: blue;" class="form-control" name="tuning_parameter_s2_conf" value="{{ s2_parameter.S2_conf }}" readonly>
+        </div>
+      </div>
+      {% endfor %}
   </div>
 </div>
 
