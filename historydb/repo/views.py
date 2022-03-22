@@ -2300,13 +2300,15 @@ def direct_download(request):
 
         tuning_problem_name = request.GET.get("tuning_problem_name", "")
         problem_space = request.GET.get("problem_space", "{}")
+        configuration_space = request.POST.get("configuration_space", "{}")
 
         historydb = HistoryDB_MongoDB()
 
         perf_data = historydb.load_func_eval_with_token(
                 access_token = api_key,
                 tuning_problem_name = tuning_problem_name,
-                problem_space = json.loads(problem_space))
+                problem_space = json.loads(problem_space),
+                configuration_space = json.loads(configuration_space))
 
         response_data = {}
         response_data['result'] = 'success'
