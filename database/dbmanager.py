@@ -666,29 +666,66 @@ class HistoryDB_MongoDB(dict):
             access_token,
             tuning_problem_name,
             problem_space,
+            configuration_space,
             **kwargs):
 
-        func_eval_list = []
+        if configuration_space == {}: # if not provided
+            func_eval_list = []
 
-        parameter_space = None
-        input_space = None
-        constants = None
-        output_space = None
+            for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
+                tuning_problem_unique_name = tuning_problem_document["unique_name"]
 
-        for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
-            tuning_problem_unique_name = tuning_problem_document["unique_name"]
+                application_db = self.db[tuning_problem_unique_name]
 
-            application_db = self.db[tuning_problem_unique_name]
+                for func_eval in application_db.find({"document_type":{"$eq":"func_eval"}}):
+                    func_eval.pop("_id")
+                    func_eval.pop("accessibility")
+                    func_eval.pop("document_type")
 
-            for func_eval in application_db.find({"document_type":{"$eq":"func_eval"}}):
-                func_eval.pop("_id")
-                func_eval.pop("accessibility")
-                func_eval.pop("document_type")
+                    if (self.check_problem_space(func_eval, problem_space)):
+                        func_eval_list.append(func_eval)
 
-                if (self.check_problem_space(func_eval, problem_space)):
+            return func_eval_list
+        else:
+            machine_configurations_list = configuration_space["machine_configurations"]
+            software_configurations_list = configuration_space["software_configurations"]
+            user_configurations_list = configuration_space["user_configurations"]
+
+            func_eval_list = []
+
+            for tuning_problem_document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
+                tuning_problem_unique_name = tuning_problem_document["unique_name"]
+
+                application_db = self.db[tuning_problem_unique_name]
+
+                for func_eval in application_db.find({"document_type":{"$eq":"func_eval"}}):
+                    func_eval.pop("_id")
+                    func_eval.pop("accessibility")
+                    func_eval.pop("document_type")
+
+                    if (self.check_problem_space(func_eval, problem_space)) == False:
+                        continue
+                    if "machine_configurations" in configuration_space:
+                        machine_configuration = copy.deepcopy(func_eval["machine_configuration"])
+                        for key in machine_configuration:
+                            try:
+                                if "node_list" in machine_configuration[key]:
+                                    machine_configuration[key].pop("node_list")
+                            except:
+                                pass
+                        if machine_configuration not in configuration_space["machine_configuration"]:
+                            continue
+                    if "software_configurations" in configuration_space:
+                        if func_eval["software_configuration"] not in configuration_space["software_configurations"]:
+                            continue
+                    if "user_configurations" in configuration_space:
+                        user_information = func_eval["user_info"]
+                        if user_information not in configuration_space["user_configurations"]:
+                            continue
+
                     func_eval_list.append(func_eval)
 
-        return func_eval_list
+            return func_eval_list
 
     def load_user_info_by_access_token(self, access_token):
         try:

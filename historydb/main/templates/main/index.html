@@ -209,8 +209,39 @@
         <br>
       </form>
     </div>
-  </div>
 
+    <div class="col-lg-4">
+      <h2>NIMROD</h2>
+      <p>NIMROD solves the extended magnetohydrodynamic equations using:
+
+      Spectral finite element discretization in two dimensions,
+      Finite Fourier series in the third dimension,
+      Semi-implicit and implicit temporal discretization for the range of temporal scales found in fusion experiments,
+      Simulation particles for kinetic effects from a minority species of energetic ions,
+      and
+      Integro-differential methods for kinetic effects from free-streaming.</p>
+      <form method="POST">
+        <label><b>Tuning Problem</b></label>
+        {% csrf_token %}
+        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
+          <option value="" label="Choose..." selected></option>
+          {% if tuning_problems_avail_per_category %}
+          {% for tuning_problem in tuning_problems_avail_per_category.NIMROD %}
+          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
+          </li>
+          {% endfor %}
+          {% else %}
+          {% endif %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-secondary">
+          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
+        </button>
+        <br>
+        <br>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
