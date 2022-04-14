@@ -35,7 +35,7 @@ def signup(request):
                         username = request.POST["username"],
                         email = request.POST["email"],
                         password = request.POST["password1"],
-                        is_active = False)
+                        is_active = True)
 
                 user.first_name = request.POST["firstname"]
                 user.last_name = request.POST["lastname"]
@@ -52,24 +52,29 @@ def signup(request):
                 print ("user activation code: ", activation_code)
                 user.profile.activation_code = activation_code
 
-                try:
-                    from django.contrib.sites.shortcuts import get_current_site
-                    current_site = get_current_site(request)
+                #try:
+                #    from django.contrib.sites.shortcuts import get_current_site
+                #    current_site = get_current_site(request)
 
-                    email_subject = "Thanks for Joining GPTune History Database!"
-                    email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
-                            "You are receiving this message because someone is trying to register in the GPTune history database.\n" + \
-                            "Please use this code to verify this email and confirm your registration.\n" + \
-                            "Code: " + activation_code + "\n\n" + \
-                            "Best Regards,\nGPTune-Dev"
-                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@lbl.gov'], reply_to=['gptune-dev@lbl.gov'])
-                    email.send()
-                except:
-                    print ("Something went wrong with email sending")
+                #    email_subject = "Thanks for Joining GPTune History Database!"
+                #    email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
+                #            "You are receiving this message because someone is trying to register in the GPTune history database.\n" + \
+                #            "Please use this code to verify this email and confirm your registration.\n" + \
+                #            "Code: " + activation_code + "\n\n" + \
+                #            "Best Regards,\nGPTune-Dev"
+                #    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@lbl.gov'], reply_to=['gptune-dev@lbl.gov'])
+                #    email.send()
+                #except:
+                #    print ("Something went wrong with email sending")
 
                 user.save()
 
-                return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
+                context = {
+                    "header": "Registeration Completed",
+                    "message": "Your registration is completed, but please wait for our approval to use our history database!"
+                    }
+                return render(request, 'account/return.html', context)
+                #return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
             else:
                 print ("Invalid reCAPTCHA.")
                 return render(request, 'account/signup.html')
