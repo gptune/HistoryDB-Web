@@ -71,7 +71,7 @@ def signup(request):
 
                 context = {
                     "header": "Registeration Completed",
-                    "message": "Your registration is completed, but please wait for our approval to use our history database!"
+                    "message": "Your registration is completed, but you still need our approval to use all the features of our history database. Please send an email to the administrator (gptune-dev@lbl.gov) for approval (please use the email address you used for signing-up)."
                     }
                 return render(request, 'account/return.html', context)
                 #return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
