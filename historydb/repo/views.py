@@ -459,7 +459,8 @@ class ModelPrediction(TemplateView):
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
-                input_task.update(func_eval_list[i]["constants"])
+                if "constants" in func_eval_list[i]:
+                    input_task.update(func_eval_list[i]["constants"])
 
                 if input_task not in input_task_avail:
                     input_task_avail.append(input_task)
@@ -710,7 +711,8 @@ class ModelPrediction(TemplateView):
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
-                input_task.update(func_eval_list[i]["constants"])
+                if "constants" in func_eval_list[i]:
+                    input_task.update(func_eval_list[i]["constants"])
 
                 if input_task not in input_task_avail:
                     input_task_avail.append(input_task)
@@ -1165,7 +1167,8 @@ class SADashboard(TemplateView):
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
-                input_task.update(func_eval_list[i]["constants"])
+                if "constants" in func_eval_list[i]:
+                    input_task.update(func_eval_list[i]["constants"])
 
                 if input_task not in input_task_avail:
                     input_task_avail.append(input_task)
@@ -1433,7 +1436,8 @@ class SADashboard(TemplateView):
 
                 input_task = {}
                 input_task.update(func_eval_list[i]["task_parameter"])
-                input_task.update(func_eval_list[i]["constants"])
+                if "constants" in func_eval_list[i]:
+                    input_task.update(func_eval_list[i]["constants"])
 
                 if input_task not in input_task_avail:
                     input_task_avail.append(input_task)
