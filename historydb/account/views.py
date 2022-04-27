@@ -59,6 +59,7 @@ def signup(request):
                     email_subject = "Thank You for Joining GPTune History Database!"
                     email_message = "Hello " + user.first_name + " " + user.last_name + ",\n\n" + \
                             "You are receiving this email because someone is trying to register in GPTune history database (https://gptune.lbl.gov).\n" + \
+                            "User name: " + user.username + "\n\n" + \
                             "Please use this code to verify this email and confirm your registration.\n" + \
                             "Code: " + activation_code + "\n\n" + \
                             "Best Regards,\nGPTune-Dev"
@@ -71,7 +72,7 @@ def signup(request):
 
                 context = {
                     "header": "Registeration Completed",
-                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you need an explicit request for an approval, please send an email to the administrator (gptune-dev@lbl.gov) (please use the email address you used for signing-up)."
+                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you have not received a notification after 48 hours and need approval, please send an email to the administrator (gptune-dev@lbl.gov) (please use the email address you used for signing-up)."
                     }
                 return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
                 #return render(request, 'account/return.html', context)
