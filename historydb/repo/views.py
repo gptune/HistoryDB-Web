@@ -2337,7 +2337,7 @@ def direct_upload(request):
             tuning_problem_name = request.POST.get("tuning_problem_name", "")
             print ("tuning_problem_name: ", tuning_problem_name)
 
-            function_evaluation = json.loads(request.POST.get("function_evaluation", "{}"))
+            function_evaluation = json.loads(request.POST.get("function_evaluation_document", "{}"))
             print ("function_evaluation: ", function_evaluation)
 
             historydb = HistoryDB_MongoDB()
