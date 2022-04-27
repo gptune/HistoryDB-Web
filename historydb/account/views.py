@@ -130,8 +130,9 @@ def activate(request, username):
 
             context = {
                     "header": "Registeration Completed",
-                    "message": "Your registration is completed, but please wait for our approval to use our history database!"
+                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you need an explicit request for an approval, please send an email to the administrator (gptune-dev@lbl.gov) (please use the email address you used for signing-up)."
                     }
+
             return render(request, 'account/return.html', context)
             #return redirect(reverse_lazy('main:index'))
         else:
