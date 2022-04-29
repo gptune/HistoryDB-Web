@@ -155,8 +155,8 @@ def membership(request):
 def gptune_tutorial_ecp2021(request):
     return render(request, 'main/ecp2021.html')
 
-def ecp2021(request):
-    return render(request, 'main/ecp2021.html')
+def gptune_tutorial_ecp2022(request):
+    return render(request, 'main/ecp2022.html')
 
 def release(request):
     return render(request, 'main/release.html')

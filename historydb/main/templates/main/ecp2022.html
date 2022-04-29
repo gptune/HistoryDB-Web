@@ -1,0 +1,44 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-about').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <br><br>
+
+  <h1>GPTune Tutorial Materials - ECP Annual Meeting 2022</h1>
+  <p class="lead">
+    <ul>
+      <h3>
+        <li>
+          <a href="">Presentation Slides</a>
+        </li>
+        <li>
+          <a href="">Instruction for Hands-on Exercises</a>
+        </li>
+        <li>
+          <a href="">Link to Survey</a>
+        </li>
+        <li>
+          <a href="{% url 'documentation:gptune-user-guide' %}">Users Guide</a>
+        </li>
+        <li>
+          <a href="https://github.com/gptune/GPTune">Github</a>
+        </li>
+      </h3>
+    </ul>
+  </p>
+
+</div>
+
+{% endblock %}
