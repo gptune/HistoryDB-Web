@@ -63,7 +63,8 @@ def signup(request):
                             "Please use this code to verify this email and confirm your registration.\n" + \
                             "Code: " + activation_code + "\n\n" + \
                             "Best Regards,\nGPTune-Dev"
-                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=['gptune-dev@lbl.gov'], reply_to=['gptune-dev@lbl.gov'])
+                    #email = EmailMessage(email_subject, email_message, to=[request.POST["email"]], bcc=[''], reply_to=[''])
+                    email = EmailMessage(email_subject, email_message, to=[request.POST["email"]])
                     email.send()
                 except:
                     print ("Something went wrong with email sending")
@@ -71,8 +72,8 @@ def signup(request):
                 user.save()
 
                 context = {
-                    "header": "Registeration Completed",
-                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you have not received a notification after 48 hours and need approval, please send an email to the administrator (gptune-dev@lbl.gov) (please use the email address you used for signing-up)."
+                    "header": "Registration Completed",
+                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you have not received a notification after 48 hours and need approval, please send an email to the administrator (gptune.historydb.manager@gmail.com) (please use the email address you used for signing-up)."
                     }
                 return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
                 #return render(request, 'account/return.html', context)
