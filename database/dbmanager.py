@@ -1201,6 +1201,7 @@ class HistoryDB_MongoDB(dict):
         tuning_problem_list = []
 
         for tuning_problem in self.db["tuning_problem_db"].find():
+            tuning_problem["tuning_problem_type"] = "regular"
             tuning_problem_list.append(tuning_problem)
 
         return tuning_problem_list
@@ -1209,6 +1210,7 @@ class HistoryDB_MongoDB(dict):
         tuning_problem_list = []
 
         for tuning_problem in self.db["flexible_tuning_problem_db"].find():
+            tuning_problem["tuning_problem_type"] = "flexible"
             tuning_problem_list.append(tuning_problem)
 
         return tuning_problem_list

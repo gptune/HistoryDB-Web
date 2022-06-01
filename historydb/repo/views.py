@@ -33,6 +33,7 @@ class Dashboard(TemplateView):
         historydb = HistoryDB_MongoDB()
 
         tuning_problems_avail = historydb.load_all_tuning_problems()
+        tuning_problems_avail = tuning_problems_avail + historydb.load_all_flexible_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
         outputs_avail = historydb.get_outputs_avail()
