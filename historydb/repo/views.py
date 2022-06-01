@@ -2524,8 +2524,8 @@ class TuningProblems(TemplateView):
     def get(self, request, **kwargs):
 
         historydb = HistoryDB_MongoDB()
-        tuning_problem_list_ = historydb.load_all_tuning_problems()
 
+        tuning_problem_list_ = historydb.load_all_tuning_problems()
         tuning_problem_list = [{} for i in range(len(tuning_problem_list_))]
         for i in range(len(tuning_problem_list_)):
             tuning_problem_list[i]["id"] = i
@@ -2536,9 +2536,21 @@ class TuningProblems(TemplateView):
             tuning_problem_list[i]["user_name"] = tuning_problem_list_[i]["user_info"]["user_name"]
             tuning_problem_list[i]["update_time"] = tuning_problem_list_[i]["update_time"]
 
+        flexible_tuning_problem_list_ = historydb.load_all_flexible_tuning_problems()
+        flexible_tuning_problem_list = [{} for i in range(len(flexible_tuning_problem_list_))]
+        for i in range(len(flexible_tuning_problem_list_)):
+            flexible_tuning_problem_list[i]["id"] = i
+            flexible_tuning_problem_list[i]["uid"] = flexible_tuning_problem_list_[i]["uid"]
+            flexible_tuning_problem_list[i]["tuning_problem_info"] = flexible_tuning_problem_list_[i]["tuning_problem_info"]
+            flexible_tuning_problem_list[i]["tuning_problem_name"] = flexible_tuning_problem_list_[i]["tuning_problem_name"]
+            flexible_tuning_problem_list[i]["unique_name"] = flexible_tuning_problem_list_[i]["unique_name"]
+            flexible_tuning_problem_list[i]["user_name"] = flexible_tuning_problem_list_[i]["user_info"]["user_name"]
+            flexible_tuning_problem_list[i]["update_time"] = flexible_tuning_problem_list_[i]["update_time"]
+
         context = {
-                "tuning_problem_list" : tuning_problem_list
-                }
+            "tuning_problem_list" : tuning_problem_list,
+            "flexible_tuning_problem_list" : flexible_tuning_problem_list
+        }
 
         return render(request, 'repo/tuning-problems.html', context)
 
@@ -2708,6 +2720,123 @@ class AddTuningProblem(TemplateView):
 
             historydb = HistoryDB_MongoDB()
             historydb.add_tuning_problem(tuning_problem_name, tuning_problem_info, user_info)
+
+            return redirect(reverse_lazy('repo:tuning-problems'))
+        else:
+            context = {
+                "header": "Something went wrong",
+                "message": "Failed to add the tuning problem"
+            }
+            return render(request, 'repo/return.html', context)
+
+class AddTuningProblemFlexible(TemplateView):
+
+    def get(self, request, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        historydb = HistoryDB_MongoDB()
+
+        def get_data_from_file(filename, keyword):
+            with open(filename, "r") as f_in:
+                data = json.load(f_in)
+                return data[keyword]
+
+        def convert_to_jstree_json(tree_json):
+            jstree_json = {}
+            node_array = []
+
+            def walk(parent, node):
+                for key, value in node.items():
+                    if isinstance(value, dict):
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        walk(key, value)
+                    elif isinstance(value, list):
+                        node_array.append({"id": key, "parent": parent, "text": key})
+                        for item in value:
+                            node_array.append({"id": item, "parent": key, "text": item, "icon": "jstree-file"})
+
+            walk("#", tree_json)
+
+            jstree_json["core"] = {"data": node_array}
+
+            return jstree_json
+
+        category_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "category_tree"))
+        software_jstree = convert_to_jstree_json(get_data_from_file(os.environ["HISTORYDB_JSON_DATA"]+"/software_data.json", "software_tree"))
+
+        context = {
+                "category_jstree": category_jstree,
+                "software_jstree": software_jstree,
+                "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
+                }
+
+        return render(request, 'repo/add-tuning-problem-flexible.html', context)
+
+    def post(self, request, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        if not request.user.profile.is_certified:
+            context = {
+                    "header": "Please Wait!",
+                    "message": "You have no permission to upload (Please wait for our approval)"
+                    }
+            return render(request, 'repo/return.html', context)
+
+        user_info = {}
+        user_info["user_name"] = request.user.username
+        user_info["user_email"] = request.user.email
+        user_info["affiliation"] = request.user.profile.affiliation
+
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+
+        if result['success']:
+            tuning_problem_name = request.POST['tuning_problem_name']
+
+            tuning_problem_info = {}
+
+            category_names = request.POST.getlist('category_name')
+            category_tags = request.POST.getlist('category_tags')
+            tuning_problem_info["category"] = []
+            for i in range(len(category_names)):
+                tuning_problem_info["category"].append({
+                    "category_name": category_names[i],
+                    "category_tags": re.split(', |,', category_tags[i])
+                    })
+
+            tuning_problem_info["description"] = request.POST['tuning_problem_description']
+
+            tuning_problem_info["task_info"] = "flexible"
+            tuning_problem_info["parameter_info"] = "flexible"
+            tuning_problem_info["output_info"] = "flexible"
+            tuning_problem_info["constant_info"] = "flexible"
+
+            required_software_names = request.POST.getlist('software_name')
+            required_software_types = []
+            for i in range(len(required_software_names)):
+                required_software_types.append(request.POST['software_type'+str(i)])
+            required_software_tags = request.POST.getlist('software_tags')
+
+            tuning_problem_info["required_software_info"] = []
+            for i in range(len(required_software_names)):
+                tuning_problem_info["required_software_info"].append({
+                    "software_name": required_software_names[i],
+                    "software_type": required_software_types[i],
+                    "software_tags": re.split(', |,', required_software_tags[i])
+                    })
+
+            print ("tuning_problem_info: ", tuning_problem_info)
+
+            historydb = HistoryDB_MongoDB()
+            historydb.add_tuning_problem_flexible(tuning_problem_name, tuning_problem_info, user_info)
 
             return redirect(reverse_lazy('repo:tuning-problems'))
         else:

@@ -18,18 +18,19 @@
   </div>
 
   <div class="row mb-3 text-center">
-    <div class="col">
+    <div class="col-15">
       <div class="card mb-4 shadow-sm">
         <div class="card-header">
-          <h4 class="my-0 fw-normal">Tuning Problem</h4>
+          <h4 class="my-0 fw-normal">Regular Tuning Problem</h4>
         </div>
         <div class="card-body">
-          <h2>Providing Information about the Tuning Problem</h2>
+          <h2>Define the tuning problem with a common tuning template</h2>
           <ul class="list-unstyled mt-3 mb-4">
             <li>Name of the tuning problem</li>
             <li>Task space</li>
             <li>Parameter space</li>
             <li>Output space</li>
+            <li>Required meta information</li>
           </ul>
           <a href="{% url 'repo:add-tuning-problem' %}">
             <button type="button" class="w-100 btn btn-lg btn-primary">Add</button>
@@ -37,26 +38,24 @@
         </div>
       </div>
     </div>
-    <div class="col">
+
+    <div class="col-15">
       <div class="card mb-4 shadow-sm">
         <div class="card-header">
-          <h4 class="my-0 fw-normal">Reproducible Workflow</h4>
+          <h4 class="my-0 fw-normal">Flexible Tuning Problem</h4>
         </div>
         <div class="card-body">
-          <h2>Providing Information to Reproduce Your Tuning Workflow</h2>
+          <h2>Define the tuning problem with minimal information</h2>
           <ul class="list-unstyled mt-3 mb-4">
-            <li>Compile Command</li>
-            <li>Run Command</li>
+            <li>Require the name of the tuning problem and minimal meta information. When uploading performance data (JSON), it does not check tuning space or other meta information.</li>
           </ul>
-          <a href="{% url 'repo:add-reproducible-workflow' %}">
+          <a href="{% url 'repo:add-tuning-problem-flexible' %}">
             <button type="button" class="w-100 btn btn-lg btn-primary">Add</button>
           </a>
         </div>
       </div>
     </div>
   </div>
-
-
 </div>
 
 {% endblock %}

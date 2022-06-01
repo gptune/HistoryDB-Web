@@ -17,6 +17,7 @@ urlpatterns = [
     path('tuning-problems/', views.TuningProblems.as_view(), name='tuning-problems'),
     path('add-tuning-problem-select/', views.AddTuningProblemSelect.as_view(), name='add-tuning-problem-select'),
     path('add-tuning-problem/', views.AddTuningProblem.as_view(), name='add-tuning-problem'),
+    path('add-tuning-problem-flexible/', views.AddTuningProblemFlexible.as_view(), name='add-tuning-problem-flexible'),
     path('add-reproducible-workflow/', views.AddReproducibleWorkflow.as_view(), name='add-reproducible-workflow'),
     path('add-tuning-category/', views.AddTuningCategory.as_view(), name='add-tuning-category'),
     path('applications/', views.Applications.as_view(), name='applications'),

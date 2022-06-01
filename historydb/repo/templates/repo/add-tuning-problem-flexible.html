@@ -1,0 +1,132 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+<script type="text/javascript" src="{% static 'js/add-tuning-problem.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#nav-item-repo').addClass('active');
+  });
+
+  function AddInputDivField(input_div_id, input_div_name) {
+    var input_div = document.getElementById(input_div_id);
+
+    var num_inputs = document.getElementsByName(input_div_name).length+1;
+
+    clone = input_div.cloneNode(true);
+    clone.id = input_div_id + '_' + num_inputs;
+    inputs = clone.getElementsByTagName('input');
+    for (var z=0; z<inputs.length; z++)
+      inputs[z].value = "";
+    input_div.parentNode.appendChild(clone);
+  }
+
+  function RemoveInputDivField(input_div_id, input_div_name) {
+    var num_inputs = document.getElementsByName(input_div_name).length;
+    document.getElementById(input_div_id+'_'+num_inputs).remove();
+  }
+</script>
+
+<div class="container" style="max-width: 700px">
+  <div class="py-5 text-center">
+    <h1>Add a Tuning Problem</h1>
+  </div>
+
+  <div class="container">
+    <form method="POST" action="{% url 'repo:add-tuning-problem-flexible' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div id="add-form" style="display:block;">
+
+        <div class="mb-3">
+          <label><b>Tuning Problem</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px; padding-left: 20px; padding-right: 20px">
+              <label for="tuning_problem_name">Tuning Problem Name</label>
+              <input type="text" class="form-control" id="tuning_problem_name" name="tuning_problem_name" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Choose Category/Categories (optional)</b></label>
+
+          <div id="selected_category"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="category_tree"></div>
+          </div>
+
+          <script>
+            var category_jstree = {{ category_jstree | safe | escape }};
+            $('#category_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedCategory(this, data.selected);
+                }
+              })
+              .jstree(category_jstree);
+          </script>
+
+          <div id="category_info"></div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Dependent Software Information (optional)</b> (the list of software data is obtained from CK (https://cknowledge.io/c/soft)</label>
+
+          <div id="selected_software"></div>
+
+          <div class="rounded container mb-3" style="border: 2px solid; padding: 20px; max-width: 700px; max-height: 320px; resize: vertical; overflow: auto;">
+            <div id="software_tree"></div>
+          </div>
+
+          <script>
+            var software_jstree = {{ software_jstree | safe | escape }};
+            $('#software_tree')
+              .on("changed.jstree", function (e, data) {
+                if(data.selected.length) {
+                  //alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+                  UpdateSelectedSoftware(this, data.selected);
+                }
+              })
+              .jstree(software_jstree);
+          </script>
+
+          <div id="software_info"></div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>More information</b></label>
+          <div style="background-color: #f1f1f1; padding: 10px; padding-left: 20px; padding-right: 20px;">
+              <label for="tuning_problem_description">Please describe little bit about the tuning problem</label>
+              <textarea class="form-control" id="tuning_problem_description" name="tuning_problem_description" rows="5"></textarea>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label><b>Please email us at gptune-dev@lbl.gov if you want to suggest modifications/additions to the given data list (e.g. tuning category, software data, etc.)</b></label>
+        </div>
+
+        <div class="d-block my-3">
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <div class="g-recaptcha" data-sitekey={{ GOOGLE_RECAPTCHA_SITE_KEY }}></div>
+        </div>
+
+        <div class="mb-3">
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Submit</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
