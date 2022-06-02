@@ -33,7 +33,6 @@ class Dashboard(TemplateView):
         historydb = HistoryDB_MongoDB()
 
         tuning_problems_avail = historydb.load_all_tuning_problems()
-        tuning_problems_avail = tuning_problems_avail + historydb.load_all_flexible_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
         outputs_avail = historydb.get_outputs_avail()
@@ -63,7 +62,6 @@ class Dashboard(TemplateView):
         historydb = HistoryDB_MongoDB()
 
         tuning_problems_avail = historydb.load_all_tuning_problems()
-        tuning_problems_avail = tuning_problems_avail + historydb.load_all_flexible_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
         outputs_avail = historydb.get_outputs_avail()
@@ -2459,8 +2457,15 @@ class Upload(TemplateView):
         result = r.json()
 
         if result['success']:
+            print ("upload")
+            historydb = HistoryDB_MongoDB()
             tuning_problem_unique_name = request.POST["tuning_problem"]
+            tuning_problem_type = historydb.get_tuning_problem_type(tuning_problem_unique_name)
+            print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
+            machine_check_option = request.POST["machine_check_option"]
+            print ("machine_check_option: ", machine_check_option)
             machine_unique_name = request.POST["machine"]
+            print ("machine_unique_name: ", machine_unique_name)
 
             json_data = {}
 
@@ -2499,7 +2504,7 @@ class Upload(TemplateView):
 
             historydb = HistoryDB_MongoDB()
             try:
-                num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
+                num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type=tuning_problem_type)
                 num_added_surrogate_models = historydb.upload_surrogate_models(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
             except:
                 print ("Not able to upload the given data")
@@ -2531,7 +2536,7 @@ class TuningProblems(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        tuning_problem_list_ = historydb.load_all_tuning_problems()
+        tuning_problem_list_ = historydb.load_all_regular_tuning_problems()
         tuning_problem_list = [{} for i in range(len(tuning_problem_list_))]
         for i in range(len(tuning_problem_list_)):
             tuning_problem_list[i]["id"] = i

@@ -946,7 +946,7 @@ class HistoryDB_MongoDB(dict):
             print ("processor (" + str(processor_list) + ") information is not given")
             return False
 
-    def upload_func_eval(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility):
+    def upload_func_eval(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type="regular"):
         collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
         if not collection_name in collist:
@@ -960,20 +960,32 @@ class HistoryDB_MongoDB(dict):
                 func_eval["document_type"] = "func_eval"
                 func_eval["user_info"] = user_info
                 func_eval["accessibility"] = accessibility
-                if (self.check_tuning_problem_matching(tuning_problem_unique_name, func_eval)):
-                    if (self.check_software_information_matching(tuning_problem_unique_name, func_eval)):
-                        if (self.check_machine_information_matching(machine_unique_name, func_eval)):
-                            if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
-                                collection.insert_one(func_eval)
-                                num_added_func_eval += 1
-                            else:
-                                print ("func_eval: " + func_eval["uid"] + " already exist")
+
+                if (tuning_problem_type == "flexible"):
+                    if "uid" in func_eval:
+                        if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                            collection.insert_one(func_eval)
+                            num_added_func_eval += 1
                         else:
-                            print ("func_eval: " + func_eval["uid"] + " does not match the machine information")
+                            print ("func_eval: " + func_eval["uid"] + " already exist")
                     else:
-                        print ("func_eval: " + func_eval["uid"] + " does not match the software information")
+                        collection.insert_one(func_eval)
+                        num_added_func_eval += 1
                 else:
-                    print ("func_eval: " + func_eval["uid"] + " does not match the tuning problem")
+                    if (self.check_tuning_problem_matching(tuning_problem_unique_name, func_eval)):
+                        if (self.check_software_information_matching(tuning_problem_unique_name, func_eval)):
+                            if (self.check_machine_information_matching(machine_unique_name, func_eval)):
+                                if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
+                                    collection.insert_one(func_eval)
+                                    num_added_func_eval += 1
+                                else:
+                                    print ("func_eval: " + func_eval["uid"] + " already exist")
+                            else:
+                                print ("func_eval: " + func_eval["uid"] + " does not match the machine information")
+                        else:
+                            print ("func_eval: " + func_eval["uid"] + " does not match the software information")
+                    else:
+                        print ("func_eval: " + func_eval["uid"] + " does not match the tuning problem")
 
         return num_added_func_eval
 
@@ -1222,6 +1234,19 @@ class HistoryDB_MongoDB(dict):
         return None
 
     def load_all_tuning_problems(self, **kwargs):
+        tuning_problem_list = []
+
+        for tuning_problem in self.db["tuning_problem_db"].find():
+            tuning_problem["tuning_problem_type"] = "regular"
+            tuning_problem_list.append(tuning_problem)
+
+        for tuning_problem in self.db["flexible_tuning_problem_db"].find():
+            tuning_problem["tuning_problem_type"] = "flexible"
+            tuning_problem_list.append(tuning_problem)
+
+        return tuning_problem_list
+
+    def load_all_regular_tuning_problems(self, **kwargs):
         tuning_problem_list = []
 
         for tuning_problem in self.db["tuning_problem_db"].find():

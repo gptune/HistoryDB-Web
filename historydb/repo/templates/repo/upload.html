@@ -16,6 +16,14 @@
     $('#nav-item-repo').addClass('active');
   });
 
+  function UpdateMachineOption() {
+    if (document.getElementById("machine_information_check_div").style.display == 'block') {
+      document.getElementById("machine_information_check_div").style.display = 'none'
+    } else {
+      document.getElementById("machine_information_check_div").style.display = 'block'
+    }
+  }
+
   function UpdateUploadOptionFile() {
     document.getElementById("file_upload_form_div").style.display = 'block';
     document.getElementById("text_upload_form_div").style.display = 'none';
@@ -71,6 +79,7 @@
             {% if tuning_problems_avail %}
             {% for tuning_problem in tuning_problems_avail %}
             <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }}
+            (tuning problem type: {{ tuning_problem.tuning_problem_type }})
             (defined by: {{ tuning_problem.user_info.user_name }})
             (update date: {{ tuning_problem.update_time.tm_mon }}/{{ tuning_problem.update_time.tm_mday }}/{{ tuning_problem.update_time.tm_year }})
             </option>
@@ -86,7 +95,19 @@
           </div>
         </div>
 
-        <div class="mb-3">
+        <div class="d-block my-3">
+          <label><b>How to check the machine information?</b></label>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="machine_check" name="machine_check_option" type="radio" value="machine_check" checked  onChange="UpdateMachineOption();" checked required>
+            <label class="custom-control-label" for="machine_check">Choose the machine information from DB records</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" id="machine_nocheck" name="machine_check_option" type="radio" value="machine_nocheck" onChange="UpdateMachineOption();" required>
+            <label class="custom-control-label" for="machine_nocheck">Do not check machine information</label>
+          </div>
+        </div>
+
+        <div class="mb-3" id="machine_information_check_div" style="display: block;">
           <label for="machineVal"><b>Machine</b></label>
           <select class="custom-select d-block w-100" name="machine" id="machineVal">
             <option value="" label="Choose..." selected></option>
@@ -112,7 +133,7 @@
         <div class="d-block my-3">
           <label><b>Upload type</b></label>
           <div class="custom-control custom-radio">
-            <input class="custom-control-input" id="file_upload" name="upload_type" type="radio" value="file_upload" checked  onChange="UpdateUploadOptionFile();" required>
+            <input class="custom-control-input" id="file_upload" name="upload_type" type="radio" value="file_upload" checked  onChange="UpdateUploadOptionFile();" checked required>
             <label class="custom-control-label" for="file_upload">JSON file</label>
           </div>
           <div class="custom-control custom-radio">
