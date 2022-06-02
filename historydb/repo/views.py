@@ -77,6 +77,7 @@ class Dashboard(TemplateView):
 
         tuning_problem_type = historydb.get_tuning_problem_type(tuning_problem_unique_name)
         tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name, tuning_problem_type)
+        print ("tuning_problem_info: ", tuning_problem_info)
 
         machine_configurations_list = [ json.loads(val) for val in request.POST.getlist("machine_configurations_list") ]
         software_configurations_list = [ json.loads(val) for val in request.POST.getlist("software_configurations_list") ]
@@ -100,6 +101,8 @@ class Dashboard(TemplateView):
         else:
             func_eval_list = []
             num_func_eval = 0
+
+        print ("FUNC_EVAL_LIST: ", func_eval_list)
 
         if "surrogate_model" in search_options:
             surrogate_model_list = historydb.load_surrogate_models_filtered(tuning_problem_unique_name = tuning_problem_unique_name,

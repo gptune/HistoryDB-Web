@@ -95,6 +95,12 @@
   </form>
 </div>
 
+{% ifequal tuning_problem.tuning_problem_type 'flexible' %}
+asdf
+{% else %}
+
+{% endifequal %}
+
 {% ifnotequal func_eval_list|length 0 %}
 
 <div class="container-fluid">
@@ -247,71 +253,79 @@
             </span>
           </th>
 
-          {% for task_parameter in tuning_problem_info.tuning_problem_info.task_info %}
-          <th>
-            <span class="tippy" data-tippy-content="
-              <div class='text-left'>
-                <h6>Task parameter</h6>
-                <ul>
-                  <li>Name: {{ task_parameter.task_name }}</li>
-                  <li>Type: {{ task_parameter.task_type }}</li>
-                  <li>Description: {{ task_parameter.task_description }}</li>
-                </ul>
-              </div>">
-              <u>{{ task_parameter.task_name }}</u>
-            </span>
-          </th>
-          {% endfor %}
-
-          {% for constant_variable in tuning_problem_info.tuning_problem_info.constant_info %}
-          {% ifnotequal constant_variable.constant_name '' %}
-          <th>
-            <span class="tippy" data-tippy-content="
-              <div class='text-left'>
-                <h6>Constant variables</h6>
-                <ul>
-                  <li>Name: {{ constant_variable.constant_name }}</li>
-                  <li>Type: {{ constant_variable.constant_type }}</li>
-                  <li>Description: {{ constant_variable.constant_description }}</li>
-                </ul>
-              </div>">
-              <u>{{ constant_variable.constant_name }}</u>
-            </span>
-          </th>
+          {% ifnotequal tuning_problem_info.tuning_problem_info.task_info 'flexible' %}
+            {% for task_parameter in tuning_problem_info.tuning_problem_info.task_info %}
+            <th>
+              <span class="tippy" data-tippy-content="
+                <div class='text-left'>
+                  <h6>Task parameter</h6>
+                  <ul>
+                    <li>Name: {{ task_parameter.task_name }}</li>
+                    <li>Type: {{ task_parameter.task_type }}</li>
+                    <li>Description: {{ task_parameter.task_description }}</li>
+                  </ul>
+                </div>">
+                <u>{{ task_parameter.task_name }}</u>
+              </span>
+            </th>
+            {% endfor %}
           {% endifnotequal %}
-          {% endfor %}
 
-          {% for tuning_parameter in tuning_problem_info.tuning_problem_info.parameter_info %}
-          <th>
-            <span class="tippy" data-tippy-content="
-              <div class='text-left'>
-                <h6>Tuning parameter</h6>
-                <ul>
-                  <li>Name: {{ tuning_parameter.parameter_name }}</li>
-                  <li>Type: {{ tuning_parameter.parameter_type }}</li>
-                  <li>Description: {{ tuning_parameter.parameter_description }}</li>
-                </ul>
-              </div>">
-              <u>{{ tuning_parameter.parameter_name }}</u>
-            </span>
-          </th>
-          {% endfor %}
+          {% ifnotequal tuning_problem_info.tuning_problem_info.constant_info 'flexible' %}
+            {% for constant_variable in tuning_problem_info.tuning_problem_info.constant_info %}
+            {% ifnotequal constant_variable.constant_name '' %}
+            <th>
+              <span class="tippy" data-tippy-content="
+                <div class='text-left'>
+                  <h6>Constant variables</h6>
+                  <ul>
+                    <li>Name: {{ constant_variable.constant_name }}</li>
+                    <li>Type: {{ constant_variable.constant_type }}</li>
+                    <li>Description: {{ constant_variable.constant_description }}</li>
+                  </ul>
+                </div>">
+                <u>{{ constant_variable.constant_name }}</u>
+              </span>
+            </th>
+            {% endifnotequal %}
+            {% endfor %}
+          {% endifnotequal %}
 
-          {% for output in tuning_problem_info.tuning_problem_info.output_info %}
-          <th>
-            <span class="tippy" data-tippy-content="
-              <div class='text-left'>
-                <h6>Task parameter</h6>
-                <ul>
-                  <li>Name: {{ output.output_name }}</li>
-                  <li>Type: {{ output.output_type }}</li>
-                  <li>Description: {{ output.output_description }}</li>
-                </ul>
-              </div>">
-              <u>{{ output.output_name }}</u>
-            </span>
-          </th>
-          {% endfor %}
+          {% ifnotequal tuning_problem_info.tuning_problem_info.parameter_info 'flexible' %}
+            {% for tuning_parameter in tuning_problem_info.tuning_problem_info.parameter_info %}
+            <th>
+              <span class="tippy" data-tippy-content="
+                <div class='text-left'>
+                  <h6>Tuning parameter</h6>
+                  <ul>
+                    <li>Name: {{ tuning_parameter.parameter_name }}</li>
+                    <li>Type: {{ tuning_parameter.parameter_type }}</li>
+                    <li>Description: {{ tuning_parameter.parameter_description }}</li>
+                  </ul>
+                </div>">
+                <u>{{ tuning_parameter.parameter_name }}</u>
+              </span>
+            </th>
+            {% endfor %}
+          {% endifnotequal %}
+
+          {% ifnotequal tuning_problem_info.tuning_problem_info.output_info 'flexible' %}
+            {% for output in tuning_problem_info.tuning_problem_info.output_info %}
+            <th>
+              <span class="tippy" data-tippy-content="
+                <div class='text-left'>
+                  <h6>Task parameter</h6>
+                  <ul>
+                    <li>Name: {{ output.output_name }}</li>
+                    <li>Type: {{ output.output_type }}</li>
+                    <li>Description: {{ output.output_description }}</li>
+                  </ul>
+                </div>">
+                <u>{{ output.output_name }}</u>
+              </span>
+            </th>
+            {% endfor %}
+          {% endifnotequal %}
 
           <th>
             Owner

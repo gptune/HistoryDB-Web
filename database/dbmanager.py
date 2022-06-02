@@ -540,6 +540,9 @@ class HistoryDB_MongoDB(dict):
         application_db = self.db[tuning_problem_unique_name]
         func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
 
+        if tuning_problem_type == "flexible":
+            return list(func_eval_list)
+
         tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name, tuning_problem_type)
 
         for func_eval in func_eval_list:
