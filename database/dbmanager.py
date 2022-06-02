@@ -496,12 +496,34 @@ class HistoryDB_MongoDB(dict):
 
         return False
 
-    def get_tuning_problem_simple_name(self, tuning_problem_unique_name):
-        document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+    def get_tuning_problem_type(self, tuning_problem_unique_name):
+        document = list(self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}}))
+        print ("document: ", len(document))
+        if len(document) > 0:
+            return "regular"
+        else:
+            document = list(self.db["flexible_tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}}))
+            if len(document) > 0:
+                return "flexible"
+            else:
+                return "unknown"
+
+    def get_tuning_problem_simple_name(self, tuning_problem_unique_name, tuning_problem_type="regular"):
+        if tuning_problem_type == "regular":
+            document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+        elif tuning_problem_type == "flexible":
+            document = self.db["flexible_tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+        else:
+            return None
         return document["tuning_problem_name"]
 
-    def get_tuning_problem_info(self, tuning_problem_unique_name):
-        document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+    def get_tuning_problem_info(self, tuning_problem_unique_name, tuning_problem_type="regular"):
+        if tuning_problem_type == "regular":
+            document = self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+        elif tuning_problem_type == "flexible":
+            document = self.db["flexible_tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}})[0]
+        else:
+            return None
         return document #["tuning_problem_info"]
 
     def load_func_eval_filtered(self,
@@ -511,13 +533,14 @@ class HistoryDB_MongoDB(dict):
             output_options,
             user_configurations_list,
             user_email,
+            tuning_problem_type="regular",
             **kwargs):
         func_eval_filtered = []
 
         application_db = self.db[tuning_problem_unique_name]
         func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
 
-        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name)
+        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name, tuning_problem_type)
 
         for func_eval in func_eval_list:
             try:
@@ -961,6 +984,7 @@ class HistoryDB_MongoDB(dict):
             output_options,
             user_configurations_list,
             user_email,
+            tuning_problem_type="regular",
             **kwargs):
         surrogate_model_list_filtered = {}
         for output_option in output_options:
@@ -969,7 +993,7 @@ class HistoryDB_MongoDB(dict):
         application_db = self.db[tuning_problem_unique_name]
         surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
 
-        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name)
+        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name, tuning_problem_type)
 
         for surrogate_model in surrogate_model_list:
             try:

@@ -63,6 +63,7 @@ class Dashboard(TemplateView):
         historydb = HistoryDB_MongoDB()
 
         tuning_problems_avail = historydb.load_all_tuning_problems()
+        tuning_problems_avail = tuning_problems_avail + historydb.load_all_flexible_tuning_problems()
         machine_configurations_avail = historydb.get_machine_configurations_avail()
         software_configurations_avail = historydb.get_software_configurations_avail()
         outputs_avail = historydb.get_outputs_avail()
@@ -75,7 +76,9 @@ class Dashboard(TemplateView):
                 "message": "Please choose a tuning problem to search"
             }
             return render(request, 'main/error.html', context)
-        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name)
+
+        tuning_problem_type = historydb.get_tuning_problem_type(tuning_problem_unique_name)
+        tuning_problem_info = historydb.get_tuning_problem_info(tuning_problem_unique_name, tuning_problem_type)
 
         machine_configurations_list = [ json.loads(val) for val in request.POST.getlist("machine_configurations_list") ]
         software_configurations_list = [ json.loads(val) for val in request.POST.getlist("software_configurations_list") ]
@@ -91,7 +94,8 @@ class Dashboard(TemplateView):
                     software_configurations_list = software_configurations_list,
                     output_options = output_options,
                     user_configurations_list = user_configurations_list,
-                    user_email = user_email)
+                    user_email = user_email,
+                    tuning_problem_type = tuning_problem_type)
             num_func_eval = len(func_eval_list)
             for i in range(num_func_eval):
                 func_eval_list[i]["id"] = i
@@ -105,7 +109,8 @@ class Dashboard(TemplateView):
                     software_configurations_list = software_configurations_list,
                     output_options = output_options,
                     user_configurations_list = user_configurations_list,
-                    user_email = user_email)
+                    user_email = user_email,
+                    tuning_problem_type = tuning_problem_type)
             num_surrogate_models = {}
             for output_option in output_options:
                 num_surrogate_models[output_option] = len(surrogate_model_list[output_option])
