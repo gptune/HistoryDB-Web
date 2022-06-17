@@ -7,9 +7,9 @@ The web framework is based on Django and uses Bootstrap for pretty webpages.
 
 - Python (version >= 3.7)
 
-- Django installed
+- Django installed (tested on version 3.2.4)
 ```
-python -m pip install django
+python -m pip install django==3.2.4
 ```
 - markdown installed
 ```
