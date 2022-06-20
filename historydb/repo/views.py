@@ -1073,6 +1073,40 @@ class ModelPrediction(TemplateView):
 
             return render(request, 'repo/model-prediction.html', context)
 
+class AnalysisDashing(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
+        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        output_options = json.loads(request.GET.get("output_options", "[]"))
+        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search_options = json.loads(request.GET.get("search_options", "[]"))
+
+        historydb = HistoryDB_MongoDB()
+
+        function_evaluations = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                output_options = output_options,
+                user_configurations_list = user_configurations_list,
+                user_email = user_email)
+
+        context = { "function_evaluations" : function_evaluations, }
+
+        return render(request, 'repo/analysis-dashing.html', context)
+
+    def post(self, request, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        # placeholder
+
+        return render(request, 'repo/analysis-dashing.html', context)
+
 class SADashboard(TemplateView):
 
     def get(self, request, **kwargs):

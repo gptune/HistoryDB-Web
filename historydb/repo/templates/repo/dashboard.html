@@ -130,6 +130,14 @@ asdf
         </a>
     </div>
     <div>
+        <h4>Low-level performance analysis</h4>
+        <div id="selected_models">
+        </div>
+        <a href="{% url 'repo:analysis-dashing' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+        <button id="button">Performance counter-based analysis with Dashing</button>
+        </a>
+    </div>
+    <div>
         <h4>Export data</h4>
         <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
         <button id="button">JSON (GPTune-compatible)</button>
