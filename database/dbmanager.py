@@ -949,7 +949,7 @@ class HistoryDB_MongoDB(dict):
             print ("processor (" + str(processor_list) + ") information is not given")
             return False
 
-    def upload_func_eval(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type="regular"):
+    def upload_func_eval(self, tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type="regular", machine_check=False):
         collection_name = tuning_problem_unique_name
         collist = self.db.list_collection_names()
         if not collection_name in collist:
@@ -977,7 +977,7 @@ class HistoryDB_MongoDB(dict):
                 else:
                     if (self.check_tuning_problem_matching(tuning_problem_unique_name, func_eval)):
                         if (self.check_software_information_matching(tuning_problem_unique_name, func_eval)):
-                            if (self.check_machine_information_matching(machine_unique_name, func_eval)):
+                            if machine_check == False or self.check_machine_information_matching(machine_unique_name, func_eval):
                                 if (collection.count_documents({"uid": { "$eq": func_eval["uid"]}}) == 0):
                                     collection.insert_one(func_eval)
                                     num_added_func_eval += 1

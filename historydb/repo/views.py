@@ -2467,6 +2467,10 @@ class Upload(TemplateView):
             print ("tuning_problem_unique_name: ", tuning_problem_unique_name)
             machine_check_option = request.POST["machine_check_option"]
             print ("machine_check_option: ", machine_check_option)
+            if machine_check_option == "machine_nocheck":
+                machine_check = False
+            else:
+                machine_check = True
             machine_unique_name = request.POST["machine"]
             print ("machine_unique_name: ", machine_unique_name)
 
@@ -2507,7 +2511,7 @@ class Upload(TemplateView):
 
             historydb = HistoryDB_MongoDB()
             try:
-                num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type=tuning_problem_type)
+                num_added_func_eval = historydb.upload_func_eval(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility, tuning_problem_type=tuning_problem_type, machine_check=machine_check)
                 num_added_surrogate_models = historydb.upload_surrogate_models(tuning_problem_unique_name, machine_unique_name, json_data, user_info, accessibility)
             except:
                 print ("Not able to upload the given data")
