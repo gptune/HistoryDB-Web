@@ -1,11 +1,15 @@
 <!doctype html>
 
 {% extends 'main/base.html' %}
-{% load static %}
+<!-- {% load static %} -->
 {% block content %}
 
-<p>
-<pre>{{ function_evaluations | pprint }}</pre>
-</p>
+    <p>
+    <pre>{{ function_evaluations | pprint }}</pre>
+    </p>
+
+    <!-- {% autoescape off %}
+        {{ chart }}
+    {% endautoescape %} -->
 
 {% endblock %}

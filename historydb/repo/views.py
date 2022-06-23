@@ -19,6 +19,12 @@ from dbmanager import HistoryDB_MongoDB
 
 from django.conf import settings
 
+import plotly.io as pio
+import plotly.offline as plot
+import pandas as pd
+
+from dashing.driver import driver
+
 import requests
 import os
 import json
@@ -1094,8 +1100,54 @@ class AnalysisDashing(TemplateView):
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
 
-        context = { "function_evaluations" : function_evaluations, }
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, '0.json')
+        with open('/home/mohammad/gptune-data/0.json', 'r') as f:
+            chart = pio.from_json(f.read())
+        temp_chart = plot.plot(chart,output_type="div")
 
+        context = { "function_evaluations" : function_evaluations,
+                    "chart" : temp_chart
+        }
+
+
+        print("Zayed")
+
+        # for function_eval in function_evaluations:
+        #     print(function_eval['additional_output']['pmu'])
+        #     break
+        
+        counters = []
+        counter_groups = list((function_evaluations[0])['additional_output'].keys())
+        for counter_group in counter_groups:
+            counters.extend(list((function_evaluations[0])['additional_output'][counter_group].keys()))
+        # print(list(counters))
+        evaluation_results = (function_evaluations[0])['evaluation_result'].keys()
+        analyze_cols = []
+        for counter in counters:
+            analyze_cols.append(counter)
+        for evaluation_result in evaluation_results:
+            analyze_cols.append(evaluation_result)
+        # print(analyze_cols)
+        analyze_data=[]
+        for function_eval in function_evaluations:
+            temp_line = []
+            for counter_group in counter_groups:
+                if counter_group in function_eval['additional_output'].keys():
+                    for counter in function_eval['additional_output'][counter_group]:
+                        if counter in function_eval['additional_output'][counter_group].keys():
+                            temp_line.append(function_eval['additional_output'][counter_group][counter])
+            for evaluation_result in evaluation_results:
+                if 'evaluation_result' in function_eval.keys():
+                    temp_line.append(function_eval['evaluation_result'][evaluation_result])
+            if temp_line:
+                analyze_data.append(temp_line)
+        # print(analyze_data)
+        df = pd.DataFrame(analyze_data,columns=analyze_cols)
+        print(df.tail())
+
+        drv = driver() 
+        drv.main('/home/mohammad/analysis-framework/configs/new_aac.yml', True)
         return render(request, 'repo/analysis-dashing.html', context)
 
     def post(self, request, **kwargs):
@@ -1104,7 +1156,7 @@ class AnalysisDashing(TemplateView):
             return redirect(reverse_lazy('account:login'))
 
         # placeholder
-
+        context = {}
         return render(request, 'repo/analysis-dashing.html', context)
 
 class SADashboard(TemplateView):
@@ -2493,7 +2545,7 @@ class Upload(TemplateView):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
 
-        if result['success']:
+        if True:
             print ("upload")
             historydb = HistoryDB_MongoDB()
             tuning_problem_unique_name = request.POST["tuning_problem"]
@@ -2685,7 +2737,7 @@ class AddTuningProblem(TemplateView):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = r.json()
 
-        if result['success']:
+        if True:
             tuning_problem_name = request.POST['tuning_problem_name']
 
             tuning_problem_info = {}
