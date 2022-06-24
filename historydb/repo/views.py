@@ -20,10 +20,11 @@ from dbmanager import HistoryDB_MongoDB
 from django.conf import settings
 
 import plotly.io as pio
-import plotly.offline as plot
+from plotly.offline import plot
 import pandas as pd
 
 from dashing.driver import driver
+from viz.dashboard import dashboard_init
 
 import requests
 import os
@@ -1100,18 +1101,13 @@ class AnalysisDashing(TemplateView):
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
 
-        dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, '0.json')
-        with open('/home/mohammad/gptune-data/0.json', 'r') as f:
-            chart = pio.from_json(f.read())
-        temp_chart = plot.plot(chart,output_type="div")
+        # dirname = os.path.dirname(__file__)
+        # filename = os.path.join(dirname, '0.json')
+        # with open('/home/mohammad/gptune-data/0.json', 'r') as f:
+        #     chart = pio.from_json(f.read())
+        # temp_chart = plot.plot(chart,output_type="div")
 
-        context = { "function_evaluations" : function_evaluations,
-                    "chart" : temp_chart
-        }
-
-
-        print("Zayed")
+        # print("Zayed")
 
         # for function_eval in function_evaluations:
         #     print(function_eval['additional_output']['pmu'])
@@ -1121,14 +1117,13 @@ class AnalysisDashing(TemplateView):
         counter_groups = list((function_evaluations[0])['additional_output'].keys())
         for counter_group in counter_groups:
             counters.extend(list((function_evaluations[0])['additional_output'][counter_group].keys()))
-        # print(list(counters))
-        evaluation_results = (function_evaluations[0])['evaluation_result'].keys()
+        evaluation_results = list((function_evaluations[0])['evaluation_result'].keys())
         analyze_cols = []
         for counter in counters:
             analyze_cols.append(counter)
         for evaluation_result in evaluation_results:
             analyze_cols.append(evaluation_result)
-        # print(analyze_cols)
+
         analyze_data=[]
         for function_eval in function_evaluations:
             temp_line = []
@@ -1142,12 +1137,93 @@ class AnalysisDashing(TemplateView):
                     temp_line.append(function_eval['evaluation_result'][evaluation_result])
             if temp_line:
                 analyze_data.append(temp_line)
-        # print(analyze_data)
         df = pd.DataFrame(analyze_data,columns=analyze_cols)
-        print(df.tail())
 
-        drv = driver() 
-        drv.main('/home/mohammad/analysis-framework/configs/new_aac.yml', True)
+        with open('temp.csv', 'w') as txtfile:
+            s = ','
+            s += tuning_problem_unique_name
+            s += '\n'
+            txtfile.write(s)
+            for feat in analyze_cols:
+                row = feat
+                row += ",\""
+                temp_list = [str(val) for val in df[feat]]
+                s = ','.join(temp_list)
+                row += s + "\""
+                row += '\n'
+                txtfile.write(row)
+
+        # writing architecture files
+        with open('resources/gptune/event_map.txt', 'w') as txtfile:
+            for counter_group in counter_groups:
+                if counter_group in function_eval['additional_output'].keys():
+                    for counter in function_eval['additional_output'][counter_group]:
+                        if counter in function_eval['additional_output'][counter_group].keys():
+                            txtfile.write(counter + "=>" + counter_group + '\n')
+        
+        with open('resources/gptune/native_all_filtered.txt', 'w') as txtfile:
+            for counter in counters:
+                txtfile.write(counter + '\n')
+
+        with open('resources/gptune/architecture_groups.txt', 'w') as txtfile:
+            s = 'UNDEFINED,0'
+            txtfile.write(s + '\n')
+            for counter_group in counter_groups:
+                txtfile.write(counter_group + ",0" + '\n')
+
+        # writing the config file
+        with open('configs/gptune_tuning_problem_test.yml', 'w') as txtfile:
+            s = 'tuning_problem:'
+            txtfile.write(s + '\n')
+            s = '  data: ' + 'temp.csv'
+            txtfile.write(s + '\n')
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - modules.resource_score.compute_rsm_task_all_regions'
+            txtfile.write(s + '\n')
+            s = '    - viz.sunburst.sunburst'
+            txtfile.write(s + '\n')
+            s = '  name:  \'' + evaluation_results[0] +'\''
+            txtfile.write(s + '\n')
+            s = '  target:  \'' + evaluation_results[0] +'\''
+            txtfile.write(s + '\n')
+            s = '  compute_target: modules.compute_target.compute_runtime'
+            txtfile.write(s + '\n')
+            s = '##############################'
+            txtfile.write(s + '\n')
+
+            txtfile.write('\n')
+
+            s = 'main:'
+            txtfile.write(s + '\n')  
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - tuning_problem'
+            txtfile.write(s + '\n')
+            s = '  arch: gptune\n'
+            s += '  data_rescale: true\n'
+            s += '  rsm_iters: 500\n'
+            s += '  rsm_print: true\n'
+            s += '  rsm_use_nn_solver: true\n'
+            s += '  save_sunburst: true\n'
+            s += '  save_heatmap: true\n'
+            s += '  save_compat: true\n'
+            s += '  use_belief: true\n'
+            s += '  save_raw_line: true\n'
+            s += '  save_barchart: true\n'
+            s += '  compat_labels: true\n'
+            s += '  shorten_event_name: false\n'
+            s += '  port: 7603\n'
+            txtfile.write(s)
+
+        drv = driver()
+        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True)
+        chart2 = plot(chart[0],output_type="div")
+
+        context = { "function_evaluations" : function_evaluations,
+                    "chart" : chart2
+        }
+
         return render(request, 'repo/analysis-dashing.html', context)
 
     def post(self, request, **kwargs):

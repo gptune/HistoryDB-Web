@@ -226,7 +226,8 @@ def sunburst(data_loader):
 
         keys_to_remove = []
         for resource in belief_map[reg]:
-            belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+            if (belief_max - belief_min) != 0:
+                belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
 
             if belief_map[reg][resource] < BELIEF_THRESHOLD:
                 #print("Removing %s from %s" % (resource, reg))

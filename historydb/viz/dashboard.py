@@ -21,6 +21,7 @@ def dashboard_init(data_loaders, global_options):
 	
 	port = global_options['port'] if 'port' in global_options else 7050 
 
+	figures = []
 	if len(webpages.keys()) > 0:
 		start_server(webpages, port)
 

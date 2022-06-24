@@ -33,7 +33,15 @@ class driver(dict):
                 print("\nForce Compute flag was detected, will recompute all Data Loaders.\n")
                 self.remove_tmp_folder(config_filename, config_name)
 
-            self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename)
+            data_loaders = self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename)
+    
+        for app_name, data_loader in data_loaders.items():
+            if data_loader.options['charts']:
+                charts = data_loader["charts"]
+
+        print('Zayed')
+        print(charts)
+        return charts
 
     def remove_tmp_folder(self,glboal_config_filename, global_config_name):
         tmp_folder = os.path.join('data', 'tmp')
@@ -75,6 +83,7 @@ class driver(dict):
                 func = getattr(module, func_name)
                 # We provide all data loaders and the config for this global task
                 func(data_loaders, global_options)
+        return data_loaders
 
 
     def update_dict(self,base_dict, update_dict_data):

@@ -173,6 +173,7 @@ class DataLoader(dict):
         ## Make sure to rewrite the proc_configs so that each region gets a copy of the configurations
         self.proc_configs = proc_configs
         return h5_map, None, event_set, reg_set
+        
 
     def parse_json_data(self, csv_path, target='Runtime'):
         event_set = set()
