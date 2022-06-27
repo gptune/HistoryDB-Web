@@ -1,5 +1,5 @@
 tuning_problem:
-  data: temp.csv
+  data: 
   tasks:
     - modules.resource_score.compute_rsm_task_all_regions
     - viz.sunburst.sunburst

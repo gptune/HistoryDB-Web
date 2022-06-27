@@ -40,6 +40,8 @@ def compute_rsm_task_all_regions(data_loader):
     if num_cpus is None:
         num_cpus = psutil.cpu_count(logical=False)
         print("WARNING: 'rsm_cpu_count' was not set, using %d as default" % num_cpus)
+    else:
+        print("WARNING: 'rsm_cpu_count' set, using %d as default" % num_cpus)
 
     # csv files to dump
     csv_rsm_results = data_loader.get_option('csv_rsm_results', None)
@@ -58,6 +60,7 @@ def compute_rsm_task_all_regions(data_loader):
     alphas = {}
     norm_data = {}
     for key in data_loader.get_regions():
+        print(data_loader.get_regions())
         print("\n--------------")
         print("Region: ", key)
 
@@ -138,7 +141,9 @@ def compute_rsm(data_loader, region, num_iters=2500, use_nn_solver=False,
     app_data = data_loader.get_app_data(region, rescale=rescale)
     #eff_loss = data_loader.get_app_eff_loss(region)
     #### TODO: Change the name from "eff_loss" to signal or target to generalize
-    #eff_loss = data_loader.    
+    #eff_loss = data_loader.   
+    print("Zayed")
+    print(data_loader.compute_target) 
     module_name, func_name = data_loader.compute_target.rsplit('.', 1)
     module = importlib.import_module(module_name)
     func = getattr(module, func_name)

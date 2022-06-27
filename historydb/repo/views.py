@@ -1138,20 +1138,39 @@ class AnalysisDashing(TemplateView):
             if temp_line:
                 analyze_data.append(temp_line)
         df = pd.DataFrame(analyze_data,columns=analyze_cols)
+        # df.columns.to_list()
 
-        with open('temp.csv', 'w') as txtfile:
-            s = ','
-            s += tuning_problem_unique_name
-            s += '\n'
-            txtfile.write(s)
-            for feat in analyze_cols:
-                row = feat
-                row += ",\""
-                temp_list = [str(val) for val in df[feat]]
-                s = ','.join(temp_list)
-                row += s + "\""
-                row += '\n'
-                txtfile.write(row)
+        # with open('temp.csv', 'w') as txtfile:
+        #     s = ','
+        #     s += tuning_problem_unique_name
+        #     s += '\n'
+        #     txtfile.write(s)
+        #     for feat in analyze_cols:
+        #         row = feat
+        #         row += ",\""
+        #         temp_list = [str(val) for val in df[feat]]
+        #         s = ','.join(temp_list)
+        #         row += s + "\""
+        #         row += '\n'
+        #         txtfile.write(row)
+
+        coloumns = ['',tuning_problem_unique_name]
+        dashing_df = pd.DataFrame(columns=coloumns)
+        i = 0
+        rows = []
+        for feat in analyze_cols:
+            dict1 = {}
+            dict1[''] = feat
+            row = ""
+            temp_list = [str(val) for val in df[feat]]
+            s = ','.join(temp_list)
+            row += s
+            dict1[tuning_problem_unique_name] = row
+
+            rows.append(dict1)
+        dashing_df = pd.DataFrame(rows)
+        # print(dashing_df.tail())
+        del df
 
         # writing architecture files
         with open('resources/gptune/event_map.txt', 'w') as txtfile:
@@ -1175,7 +1194,7 @@ class AnalysisDashing(TemplateView):
         with open('configs/gptune_tuning_problem_test.yml', 'w') as txtfile:
             s = 'tuning_problem:'
             txtfile.write(s + '\n')
-            s = '  data: ' + 'temp.csv'
+            s = '  data: '
             txtfile.write(s + '\n')
             s = '  tasks:'
             txtfile.write(s + '\n')
@@ -1218,12 +1237,17 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s)
 
         drv = driver()
-        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', force_compute=True)
+        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True, dataframe= dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,
                     "chart" : chart2
         }
+
+        # for index, row in dashing_df.iterrows():
+        #     print("Zayed")
+        #     print(row[''])
+        #     break
 
         return render(request, 'repo/analysis-dashing.html', context)
 

@@ -54,10 +54,10 @@ class DataLoader(dict):
         return self
 
     @classmethod
-    def init_from_csv(self, config_name, csv_path, proc_configs, arch_file,
+    def init_from_dataframe(self, config_name, dataframe, proc_configs, arch_file,
             event_file, exclude_file, counter_file, target="Runtime", compute_target="None"):
 
-        print("Reading from dataframe")
+        print("Initializing from dataframe")
         
         self = DataLoader()
         self.config_name = config_name
@@ -66,7 +66,7 @@ class DataLoader(dict):
         self.compute_target = compute_target
         
         self.h5_map, self.raw_h5_map, self.events, self.regions \
-            = self.parse_csv_data(csv_path, self.target)
+            = self.parse_dataframe(dataframe, self.target)
         self._setup(arch_file, event_file, exclude_file, counter_file)
 
         return self
@@ -194,6 +194,33 @@ class DataLoader(dict):
         return h5_map, None, event_set, reg_set
 
 
+    def parse_dataframe(self, dataframe, target='Runtime'):
+        event_set = set()
+        reg_set = set()
+        h5_map = defaultdict(dict)
+        
+        for index, row in dataframe.iterrows():
+            key_val_pairs = list(row.items())
+            # print("Zayed")
+            # print(key_val_pairs[0][1])
+            ev = key_val_pairs[0][1]
+            event_set.add(ev)
+            proc_configs = defaultdict()
+            for reg,v in key_val_pairs[1:]:
+                reg_set.add(reg)
+                values = [float(val) for val in v.split(',')]
+                h5_map[reg][ev] = np.asarray(values).reshape((-1, 1))
+                if not self.proc_configs: #If proc configs is not defined
+                    proc_configs[reg] = np.arange(len(h5_map[reg][ev]))
+                else: #If it is defined, just make sure to copy the defined proc_configs to all regions
+                    proc_configs[reg] = self.proc_configs
+
+        event_set.remove(target)
+        event_set = list(event_set)
+        reg_set = list(reg_set)
+        ## Make sure to rewrite the proc_configs so that each region gets a copy of the configurations
+        self.proc_configs = proc_configs
+        return h5_map, None, event_set, reg_set
 
     def parse_json_data(self, csv_path, target='Runtime'):
         event_set = set()
