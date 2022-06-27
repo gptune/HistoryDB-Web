@@ -11,6 +11,8 @@ from numpy import NaN, inf
 import psutil
 import importlib
 
+from multiprocessing import Pool
+
 COMPLETE_FLAG = 'rsm_complete_flag'
 
 class NoDaemonProcess(multiprocessing.Process):
@@ -158,8 +160,8 @@ def compute_rsm(data_loader, region, num_iters=2500, use_nn_solver=False,
 
     raw_alpha = ensemble_omp_wrapper(app_data, eff_loss, num_iters=num_iters,
         use_nn_solver=use_nn_solver, num_cpus=num_cpus)
-    # alpha = np.mean(raw_alpha, axis=1)  # m x 1
-    alpha = raw_alpha
+    alpha = np.mean(raw_alpha, axis=1)  # m x 1
+    # alpha = raw_alpha
 
     lam = 0.005
     errors = np.zeros(len(data_loader.resources))
@@ -217,8 +219,8 @@ def compute_rsm_with_data(data_loader, app_data, eff_loss, num_iters=5000, use_n
 
     raw_alpha = ensemble_omp_wrapper(app_data, eff_loss, num_iters=num_iters,
         use_nn_solver=use_nn_solver, num_cpus=num_cpus)
-    # alpha = np.mean(raw_alpha, axis=1)  # m x 1
-    alpha = raw_alpha
+    alpha = np.mean(raw_alpha, axis=1)  # m x 1
+    # alpha = raw_alpha
 
     lam = 0.005
     errors = np.zeros(len(data_loader.resources))
@@ -276,21 +278,21 @@ def ensemble_omp_wrapper(D, Y, SPARSITY=15, THRESH=3, num_iters=2500,
 
         tasks.append((D.copy(), Y.copy(), SPARSITY, THRESH, proc_iters, use_nn_solver))
 
-    # print("Starting ensemble_omp...")
-    # pool = MyPool(num_cpus)
-    # results = pool.map(target=ensemble_omp, args=(tasks))
-    # print("Finished ensemble_omp!")
-    # pool.close()
-    # pool.join()
+    print("Starting ensemble_omp...")
+    pool = Pool(num_cpus)
+    results = pool.map(ensemble_omp, tasks)
+    print("Finished ensemble_omp!")
+    pool.close()
+    pool.join()
     
-    single_proc_task = []
-    single_proc_task.append(D.copy())
-    single_proc_task.append(Y.copy())
-    single_proc_task.append(SPARSITY)
-    single_proc_task.append(THRESH)
-    single_proc_task.append(num_iters)
-    single_proc_task.append (use_nn_solver)
-    results = ensemble_omp(single_proc_task)
+    # single_proc_task = []
+    # single_proc_task.append(D.copy())
+    # single_proc_task.append(Y.copy())
+    # single_proc_task.append(SPARSITY)
+    # single_proc_task.append(THRESH)
+    # single_proc_task.append(num_iters)
+    # single_proc_task.append (use_nn_solver)
+    # results = ensemble_omp(single_proc_task)
     alpha = results[0]
     for i in range(1, num_cpus):
         alpha = np.hstack((alpha, results[i]))

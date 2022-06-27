@@ -52,6 +52,25 @@ class DataLoader(dict):
         self._setup(arch_file, event_file, exclude_file, counter_file)
 
         return self
+
+    @classmethod
+    def init_from_csv(self, config_name, csv_path, proc_configs, arch_file,
+            event_file, exclude_file, counter_file, target="Runtime", compute_target="None"):
+
+        print("Reading from dataframe")
+        
+        self = DataLoader()
+        self.config_name = config_name
+        self.proc_configs = proc_configs
+        self.target = target
+        self.compute_target = compute_target
+        
+        self.h5_map, self.raw_h5_map, self.events, self.regions \
+            = self.parse_csv_data(csv_path, self.target)
+        self._setup(arch_file, event_file, exclude_file, counter_file)
+
+        return self
+
     
     def _setup(self, arch_file, event_file, exclude_file, counter_file):
 
@@ -173,6 +192,8 @@ class DataLoader(dict):
         ## Make sure to rewrite the proc_configs so that each region gets a copy of the configurations
         self.proc_configs = proc_configs
         return h5_map, None, event_set, reg_set
+
+
 
     def parse_json_data(self, csv_path, target='Runtime'):
         event_set = set()

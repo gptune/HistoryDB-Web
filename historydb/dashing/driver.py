@@ -39,8 +39,6 @@ class driver(dict):
             if data_loader.options['charts']:
                 charts = data_loader["charts"]
 
-        print('Zayed')
-        print(charts)
         return charts
 
     def remove_tmp_folder(self,glboal_config_filename, global_config_name):

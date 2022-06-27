@@ -1214,10 +1214,11 @@ class AnalysisDashing(TemplateView):
             s += '  compat_labels: true\n'
             s += '  shorten_event_name: false\n'
             s += '  port: 7603\n'
+            s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
 
         drv = driver()
-        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True)
+        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', force_compute=True)
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,

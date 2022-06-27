@@ -25,3 +25,4 @@ main:
   compat_labels: true
   shorten_event_name: false
   port: 7603
+  rsm_cpu_count: 4
