@@ -100,7 +100,6 @@ class driver(dict):
         data_loaders = {}
         for task in global_tasks:
             print("===========================")
-            print("Zayed")
             print("Computing %s " % task)
             print("===========================")
             # if '.' not in task then we have a specific application's config to run
@@ -168,7 +167,7 @@ class driver(dict):
         target = self.load_from_config(config_dict_data, 'target', ['Runtime'])
         compute_target = self.load_from_config(config_dict_data, 'compute_target')
         dataframe = self.load_from_config(config_dict_data, 'dataframe')
-        print(procs)
+        # print(procs)
         #if data_path is None or procs is None: return
         # if data_path is None: return
 

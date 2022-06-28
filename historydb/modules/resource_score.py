@@ -142,8 +142,6 @@ def compute_rsm(data_loader, region, num_iters=2500, use_nn_solver=False,
     #eff_loss = data_loader.get_app_eff_loss(region)
     #### TODO: Change the name from "eff_loss" to signal or target to generalize
     #eff_loss = data_loader.   
-    print("Zayed")
-    print(data_loader.compute_target) 
     module_name, func_name = data_loader.compute_target.rsplit('.', 1)
     module = importlib.import_module(module_name)
     func = getattr(module, func_name)

@@ -201,8 +201,6 @@ class DataLoader(dict):
         
         for index, row in dataframe.iterrows():
             key_val_pairs = list(row.items())
-            # print("Zayed")
-            # print(key_val_pairs[0][1])
             ev = key_val_pairs[0][1]
             event_set.add(ev)
             proc_configs = defaultdict()
@@ -334,8 +332,6 @@ class DataLoader(dict):
 
         # Iterate over our keys and copies data
         data_dict = {}
-        print("zprint")
-        print(self.ev_to_res_map.keys())
         for key in keys:
             data_dict[key] = self.h5_map[reg][key].copy()
             print (reg, key)

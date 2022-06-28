@@ -1244,11 +1244,6 @@ class AnalysisDashing(TemplateView):
                     "chart" : chart2
         }
 
-        # for index, row in dashing_df.iterrows():
-        #     print("Zayed")
-        #     print(row[''])
-        #     break
-
         return render(request, 'repo/analysis-dashing.html', context)
 
     def post(self, request, **kwargs):
