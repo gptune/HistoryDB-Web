@@ -11,7 +11,7 @@ tuning_problem:
 main:
   tasks:
     - tuning_problem
-  arch: gptune
+  arch: PMU_EXAMPLE_FAKE_092be9f8_f19f_11ec_ad61_30d042e819fe
   data_rescale: true
   rsm_iters: 500
   rsm_print: true

@@ -1117,6 +1117,7 @@ class AnalysisDashing(TemplateView):
         counter_groups = set()
         counters = set()
         mapping = ''
+        mapping_set = set()
         counter_classes = list((function_evaluations[0])['additional_output'].keys())
         for counter_class in counter_classes:
             temp_phase = list(function_evaluations[0]['additional_output'][counter_class].keys())
@@ -1239,18 +1240,22 @@ class AnalysisDashing(TemplateView):
         #             for counter in function_evaluations[0]['additional_output']['pmu'][counter_group]:
         #                 txtfile.write(counter + "=>" + counter_group + '\n')
 
-        with open('resources/gptune/event_map.txt', 'w') as txtfile:
-            txtfile.write(mapping)
-        
-        with open('resources/gptune/native_all_filtered.txt', 'w') as txtfile:
-            for counter in counters:
-                txtfile.write(counter + '\n')
+        resources_path = 'resources/' + tuning_problem_unique_name
+        if not os.path.isdir(resources_path):
+            print("Zayed .................... Is directory")
+            os.mkdir(resources_path)
+            with open(resources_path + '/event_map.txt', 'w') as txtfile:
+                txtfile.write(mapping)
+            
+            with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+                for counter in counters:
+                    txtfile.write(counter + '\n')
 
-        with open('resources/gptune/architecture_groups.txt', 'w') as txtfile:
-            s = 'UNDEFINED,0'
-            txtfile.write(s + '\n')
-            for counter_group in counter_groups:
-                txtfile.write(counter_group + ",0" + '\n')
+            with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
+                s = 'UNDEFINED,0'
+                txtfile.write(s + '\n')
+                for counter_group in counter_groups:
+                    txtfile.write(counter_group + ",0" + '\n')
 
         # writing the config file
         with open('configs/gptune_tuning_problem_test.yml', 'w') as txtfile:
@@ -1281,7 +1286,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s + '\n')
             s = '    - tuning_problem'
             txtfile.write(s + '\n')
-            s = '  arch: gptune\n'
+            s = '  arch: ' + tuning_problem_unique_name + '\n'
             s += '  data_rescale: true\n'
             s += '  rsm_iters: 500\n'
             s += '  rsm_print: true\n'

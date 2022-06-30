@@ -1,0 +1,57 @@
+Event,Desc
+active_warps_pm,active_warps_pm
+shared_ld_transactions,Number of transactions for shared load accesses. Maximum transaction size in maxwell is 128 bytes, any warp accessing more that 128 bytes will cause multiple transactions for a shared load instruction. This also includes extra transactions caused by shared bank conflicts.
+shared_st_transactions,Number of transactions for shared store accesses. Maximum transaction size in maxwell is 128 bytes, any warp accessing more that 128 bytes will cause multiple transactions for a shared store instruction. This also includes extra transactions caused by shared bank conflicts.
+elapsed_cycles_pm,elapsed_cycles_pm
+shared_ld_bank_conflict,Number of shared load bank conflict generated when the addresses for two or more shared memory load requests fall in the same memory bank.
+shared_st_bank_conflict,Number of shared store bank conflict generated when the addresses for two or more shared memory store requests fall in the same memory bank.
+inst_executed_fp64_pipe_s0,inst_executed_fp64_pipe_s0
+inst_executed_fp64_pipe_s1,inst_executed_fp64_pipe_s1
+inst_executed_fp64_pipe_s2,inst_executed_fp64_pipe_s2
+inst_executed_fp64_pipe_s3,inst_executed_fp64_pipe_s3
+inst_executed_fma_pipe_s0,inst_executed_fma_pipe_s0
+inst_executed_fma_pipe_s1,inst_executed_fma_pipe_s1
+inst_executed_fma_pipe_s2,inst_executed_fma_pipe_s2
+inst_executed_fma_pipe_s3,inst_executed_fma_pipe_s3
+fb_subp0_read_sectors,Number of DRAM read requests to sub partition 0, increments by 1 for 32 byte access.
+fb_subp1_read_sectors,Number of DRAM read requests to sub partition 1, increments by 1 for 32 byte access.
+fb_subp0_write_sectors,Number of DRAM write requests to sub partition 0, increments by 1 for 32 byte access.
+fb_subp1_write_sectors,Number of DRAM write requests to sub partition 1, increments by 1 for 32 byte access.
+active_warps,Accumulated number of active warps per cycle. For every cycle it increments by the number of active warps in the cycle which can be in the range 0 to 48.
+sm_cta_launched,Number of thread blocks launched on a multiprocessor.
+inst_issued0,inst_issued0
+inst_issued1,inst_issued1
+inst_executed,inst_executed
+thread_inst_executed,thread_inst_executed
+not_predicated_off_thread_inst_executed,
+not_predicated_off_thread_inst_executed: Number of instructions executed by active and not predicated off threads, does not include replays. For each instruction it increments by the number of not predicated off threads that execute this instruction.
+global_atom_cas,Number of ATOM.CAS instructions executed per warp.
+global_load,global_load
+global_store,Number of global store transactions. Incre- ments by 1 per transaction. Transaction can be 32/64/96/128B.
+shared_load,Number of executed load instructions where state space is specified as shared, increments per warp on a multiprocessor.
+warps_launched,warps_launched
+shared_store,Number of executed store instructions where state space is specified as shared, increments per warp on a multiprocessor.
+l2_subp0_write_sector_misses,Number of write misses in slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_write_sector_misses,Number of write misses in slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_read_sector_misses,Number of read misses in slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_read_sector_misses,Number of read misses in slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_write_sector_queries,Number of write requests from L1 to slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_write_sector_queries,Number of write requests from L1 to slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_read_sector_queries,Number of read requests from L1 to slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_read_sector_queries,Number of read requests from L1 to slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_read_tex_sector_queries,Number of read requests from Texture cache to slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_write_tex_sector_queries,Number of write requests to Texture cache slice 0 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp0_read_tex_hit_sectors,Number of read requests from L1 that hit in slice 0 of L2 cache. This increments by 1 for each 32- byte access.
+l2_subp0_write_tex_hit_sectors,l2_subp0_write_tex_hit_sectors
+l2_subp0_write_sysmem_sector_queries,Number of system memory write requests to slice 0 of L2 cache. This increments by 1 for each 32- byte access.
+l2_subp0_total_read_sector_queries,Total read requests to slice 0 of L2 cache. This includes requests from L1, Texture cache, system memory. This increments by 1 for each 32-byte access.
+l2_subp0_total_write_sector_queries,Total write requests to slice 0 of L2 cache. This includes requests from L1, Texture cache, system memory. This increments by 1 for each 32-byte access.
+l2_subp1_read_tex_sector_queries,Number of read requests from Texture cache to slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_write_tex_sector_queries,l2_subp1_write_tex_sector_queries
+l2_subp1_read_tex_hit_sectors,Number of read requests from L1 that hit in slice 1 of L2 cache. This increments by 1 for each 32-byte access.
+l2_subp1_write_tex_hit_sectors,l2_subp1_write_tex_hit_sectors
+l2_subp1_write_sysmem_sector_queries,Number of system memory write requests to slice 1 of L2 cache. This increments by 1 for each 32- byte access.
+l2_subp0_read_sysmem_sector_queries,Number of system memory read requests to slice 0 of L2 cache. This increments by 1 for each 32- byte access.
+l2_subp1_read_sysmem_sector_queries,Number of system memory read requests to slice 1 of L2 cache. This increments by 1 for each 32- byte access.
+l2_subp1_total_read_sector_queries,Total read requests to slice 1 of L2 cache. This includes requests from L1, Texture cache, system memory. This increments by 1 for each 32-byte access.
+l2_subp1_total_write_sector_queries,Total write requests to slice 1 of L2 cache. This includes requests from L1, Texture cache, system memory. This increments by 1 for each 32-byte access.
