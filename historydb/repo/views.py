@@ -1129,18 +1129,8 @@ class AnalysisDashing(TemplateView):
                     temp_counters = list(function_evaluations[0]['additional_output'][counter_class][phase][counter_group].keys())
                     counters.update(temp_counters)
                     for counter in temp_counters:
-                        mapping += counter + '=>' + counter_group + '\n'
+                        mapping_set.add(counter + '=>' + counter_group)
         evaluation_results = list((function_evaluations[0])['evaluation_result'].keys())
-        
-        # print("Zayed  .......................")
-        # print(counter_classes)
-        # print("Zayed  .......................")
-        # print(phases)
-        # print("Zayed  .......................")
-        # print(counter_groups)
-        # print("Zayed  .......................")
-        # print(counter)
-        # print("Zayed  .......................")
 
         analyze_cols = []
         for counter in counters:
@@ -1245,6 +1235,7 @@ class AnalysisDashing(TemplateView):
             print("Zayed .................... Is directory")
             os.mkdir(resources_path)
             with open(resources_path + '/event_map.txt', 'w') as txtfile:
+                mapping = '\n'.join(list(mapping_set))
                 txtfile.write(mapping)
             
             with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
@@ -1256,6 +1247,9 @@ class AnalysisDashing(TemplateView):
                 txtfile.write(s + '\n')
                 for counter_group in counter_groups:
                     txtfile.write(counter_group + ",0" + '\n')
+
+            with open(resources_path + '/event_desc.csv', 'w') as txtfile:
+                txtfile.write('')
 
         # writing the config file
         with open('configs/gptune_tuning_problem_test.yml', 'w') as txtfile:
