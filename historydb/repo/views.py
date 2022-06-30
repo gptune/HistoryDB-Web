@@ -1113,31 +1113,55 @@ class AnalysisDashing(TemplateView):
         #     print(function_eval['additional_output']['pmu'])
         #     break
         
-        counters = []
-        counter_groups = list((function_evaluations[0])['additional_output'].keys())
-        for counter_group in counter_groups:
-            counters.extend(list((function_evaluations[0])['additional_output'][counter_group].keys()))
+        phases = set()
+        counter_groups = set()
+        counters = set()
+        mapping = ''
+        counter_classes = list((function_evaluations[0])['additional_output'].keys())
+        for counter_class in counter_classes:
+            temp_phase = list(function_evaluations[0]['additional_output'][counter_class].keys())
+            phases.update(temp_phase)
+            for phase in temp_phase:
+                temp_counter_groups = list(function_evaluations[0]['additional_output'][counter_class][phase].keys())
+                counter_groups.update(temp_counter_groups)
+                for counter_group in temp_counter_groups:
+                    temp_counters = list(function_evaluations[0]['additional_output'][counter_class][phase][counter_group].keys())
+                    counters.update(temp_counters)
+                    for counter in temp_counters:
+                        mapping += counter + '=>' + counter_group + '\n'
         evaluation_results = list((function_evaluations[0])['evaluation_result'].keys())
+        
+        # print("Zayed  .......................")
+        # print(counter_classes)
+        # print("Zayed  .......................")
+        # print(phases)
+        # print("Zayed  .......................")
+        # print(counter_groups)
+        # print("Zayed  .......................")
+        # print(counter)
+        # print("Zayed  .......................")
+
         analyze_cols = []
         for counter in counters:
             analyze_cols.append(counter)
         for evaluation_result in evaluation_results:
             analyze_cols.append(evaluation_result)
 
-        analyze_data=[]
-        for function_eval in function_evaluations:
-            temp_line = []
-            for counter_group in counter_groups:
-                if counter_group in function_eval['additional_output'].keys():
-                    for counter in function_eval['additional_output'][counter_group]:
-                        if counter in function_eval['additional_output'][counter_group].keys():
-                            temp_line.append(function_eval['additional_output'][counter_group][counter])
-            for evaluation_result in evaluation_results:
-                if 'evaluation_result' in function_eval.keys():
-                    temp_line.append(function_eval['evaluation_result'][evaluation_result])
-            if temp_line:
-                analyze_data.append(temp_line)
-        df = pd.DataFrame(analyze_data,columns=analyze_cols)
+        # analyze_data=[]
+        # for function_eval in function_evaluations:
+        #     temp_line = []
+        #     for counter_group in counter_groups:
+        #         if counter_group in function_eval['additional_output'].keys():
+        #             for counter in function_eval['additional_output'][counter_group]:
+        #                 if counter in function_eval['additional_output'][counter_group].keys():
+        #                     temp_line.append(function_eval['additional_output'][counter_group][counter])
+        #     for evaluation_result in evaluation_results:
+        #         if 'evaluation_result' in function_eval.keys():
+        #             temp_line.append(function_eval['evaluation_result'][evaluation_result])
+        #     if temp_line:
+        #         analyze_data.append(temp_line)
+        # df = pd.DataFrame(analyze_data,columns=analyze_cols)
+
         # df.columns.to_list()
 
         # with open('temp.csv', 'w') as txtfile:
@@ -1154,31 +1178,69 @@ class AnalysisDashing(TemplateView):
         #         row += '\n'
         #         txtfile.write(row)
 
-        coloumns = ['',tuning_problem_unique_name]
-        dashing_df = pd.DataFrame(columns=coloumns)
-        i = 0
-        rows = []
-        for feat in analyze_cols:
-            dict1 = {}
-            dict1[''] = feat
-            row = ""
-            temp_list = [str(val) for val in df[feat]]
-            s = ','.join(temp_list)
-            row += s
-            dict1[tuning_problem_unique_name] = row
+        # coloumns = ['',tuning_problem_unique_name]
+        # dashing_df = pd.DataFrame(columns=coloumns)
+        # i = 0
+        # rows = []
+        # for feat in analyze_cols:
+        #     dict1 = {}
+        #     dict1[''] = feat
+        #     row = ""
+        #     temp_list = [str(val) for val in df[feat]]
+        #     s = ','.join(temp_list)
+        #     row += s
+        #     dict1[tuning_problem_unique_name] = row
 
-            rows.append(dict1)
-        dashing_df = pd.DataFrame(rows)
+        #     rows.append(dict1)
+        # dashing_df = pd.DataFrame(rows)
         # print(dashing_df.tail())
-        del df
+        # del df
+
+        coloumns = ['']
+        coloumns.extend(phases)
+        new_dashing_df = pd.DataFrame(columns=coloumns)
+        rows = []
+        for feat in counters:
+            row_dict = {}
+            row_dict[''] = feat
+            for phase in phases:
+                temp_list = []
+                for function_eval in function_evaluations:
+                    for counter_class in counter_classes:
+                        for counter_group in counter_groups:
+                            if feat in function_eval['additional_output'][counter_class][phase][counter_group].keys():
+                                temp_list.append(function_eval['additional_output'][counter_class][phase][counter_group][feat])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows.append(row_dict)
+        
+        for evaluation_result in evaluation_results:
+            row_dict = {}
+            row_dict[''] = evaluation_result
+            for phase in phases:
+                temp_list = []
+                for function_evaluation in function_evaluations:
+                    temp_list.append(function_evaluation['evaluation_result'][evaluation_result])
+                temp_list_2 = [str(val) for val in temp_list]                
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows.append(row_dict)
+
+        new_dashing_df = pd.DataFrame(rows)
+        # print(new_dashing_df.head())
+
+
 
         # writing architecture files
+        # with open('resources/gptune/event_map.txt', 'w') as txtfile:
+        #     for counter_group in counter_groups:
+        #         if counter_group in function_evaluations[0]['additional_output']['pmu'].keys():
+        #             for counter in function_evaluations[0]['additional_output']['pmu'][counter_group]:
+        #                 txtfile.write(counter + "=>" + counter_group + '\n')
+
         with open('resources/gptune/event_map.txt', 'w') as txtfile:
-            for counter_group in counter_groups:
-                if counter_group in function_eval['additional_output'].keys():
-                    for counter in function_eval['additional_output'][counter_group]:
-                        if counter in function_eval['additional_output'][counter_group].keys():
-                            txtfile.write(counter + "=>" + counter_group + '\n')
+            txtfile.write(mapping)
         
         with open('resources/gptune/native_all_filtered.txt', 'w') as txtfile:
             for counter in counters:
@@ -1237,7 +1299,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s)
 
         drv = driver()
-        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True, dataframe= dashing_df)
+        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,
