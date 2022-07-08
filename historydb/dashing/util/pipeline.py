@@ -5,10 +5,10 @@ import csv
 from collections import defaultdict
 from copy import deepcopy
 from numpy import inf, nan
-from util.os_utils import get_all_files
-from util.h5_utils import multi_merge_h5_data, merge_h5_data, \
+from dashing.util.os_utils import get_all_files
+from dashing.util.h5_utils import multi_merge_h5_data, merge_h5_data, \
     validate_region_events, get_event_subset, clean_and_get_regions
-from util.UtilityClass import Utility
+from dashing.util.UtilityClass import Utility
 import importlib
 from sklearn.preprocessing import MinMaxScaler
 

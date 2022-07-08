@@ -1,2 +1,0 @@
-UNDEFINED,0
-group0,0

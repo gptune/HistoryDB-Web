@@ -1230,7 +1230,7 @@ class AnalysisDashing(TemplateView):
         #             for counter in function_evaluations[0]['additional_output']['pmu'][counter_group]:
         #                 txtfile.write(counter + "=>" + counter_group + '\n')
 
-        resources_path = 'resources/' + tuning_problem_unique_name
+        resources_path = 'dashing/resources/' + tuning_problem_unique_name
         if not os.path.isdir(resources_path):
             print("Zayed .................... Is directory")
             os.mkdir(resources_path)
@@ -1294,11 +1294,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s)
 
         drv = driver()
-<<<<<<< HEAD
         chart = drv.main(os.getcwd() + '/dashing/configs/gptune_tuning_problem.yml', True, dataframe= new_dashing_df)
-=======
-        chart = drv.main(os.getcwd()+"/configs/gptune_tuning_problem_test.yml", True, dataframe= new_dashing_df)
->>>>>>> 237d2e6fe5f589eda30ae2e13769237d200ceda5
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,

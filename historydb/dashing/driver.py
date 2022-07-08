@@ -1,7 +1,7 @@
 import yaml
 import importlib
 import numpy as np
-from util.pipeline import DataLoader
+from dashing.util.pipeline import DataLoader
 import os
 import pickle
 import sys
@@ -173,11 +173,11 @@ class driver(dict):
 
         #'arch_group_file', 'event_map_file', 'exclude_file', 'counters_file'])
         arch_name = self.load_from_config(config_dict_data, 'arch', 'haswell')
-        arch_path = os.path.join('resources', arch_name, 'architecture_groups.txt')
-        event_path = os.path.join('resources', arch_name, 'event_map.txt')
-        exclude_path = os.path.join('resources', arch_name, 'exclude_groups.txt')
-        counters_path = os.path.join('resources', arch_name, 'native_all_filtered.txt')
-        desc_path = os.path.join('resources', arch_name, 'event_desc.csv')
+        arch_path = os.path.join('dashing/resources', arch_name, 'architecture_groups.txt')
+        event_path = os.path.join('dashing/resources', arch_name, 'event_map.txt')
+        exclude_path = os.path.join('dashing/resources', arch_name, 'exclude_groups.txt')
+        counters_path = os.path.join('dashing/resources', arch_name, 'native_all_filtered.txt')
+        desc_path = os.path.join('dashing/resources', arch_name, 'event_desc.csv')
 
         # We make a dictionary to pass to the function for optional params
         options = {}
