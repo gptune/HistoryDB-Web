@@ -11,7 +11,6 @@ from util.h5_utils import multi_merge_h5_data, merge_h5_data, \
 from util.UtilityClass import Utility
 import importlib
 from sklearn.preprocessing import MinMaxScaler
-import pandas as pd
 
 class DataLoader(dict):
 
@@ -53,7 +52,7 @@ class DataLoader(dict):
         self._setup(arch_file, event_file, exclude_file, counter_file)
 
         return self
-    
+
     @classmethod
     def init_from_dataframe(self, config_name, dataframe, proc_configs, arch_file,
             event_file, exclude_file, counter_file, target="Runtime", compute_target="None"):
@@ -71,6 +70,7 @@ class DataLoader(dict):
         self._setup(arch_file, event_file, exclude_file, counter_file)
 
         return self
+
     
     def _setup(self, arch_file, event_file, exclude_file, counter_file):
 
@@ -201,8 +201,6 @@ class DataLoader(dict):
         
         for index, row in dataframe.iterrows():
             key_val_pairs = list(row.items())
-            print("Zayed")
-            print(key_val_pairs)
             ev = key_val_pairs[0][1]
             event_set.add(ev)
             proc_configs = defaultdict()
@@ -221,7 +219,6 @@ class DataLoader(dict):
         ## Make sure to rewrite the proc_configs so that each region gets a copy of the configurations
         self.proc_configs = proc_configs
         return h5_map, None, event_set, reg_set
-        
 
     def parse_json_data(self, csv_path, target='Runtime'):
         event_set = set()
@@ -335,8 +332,6 @@ class DataLoader(dict):
 
         # Iterate over our keys and copies data
         data_dict = {}
-        print("zprint")
-        print(self.ev_to_res_map.keys())
         for key in keys:
             data_dict[key] = self.h5_map[reg][key].copy()
             print (reg, key)

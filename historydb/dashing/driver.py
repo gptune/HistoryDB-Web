@@ -31,7 +31,7 @@ class driver(dict):
             # Forces a regeneration of all dataloaders
             if force_compute:
                 print("\nForce Compute flag was detected, will recompute all Data Loaders.\n")
-                self.remove_tmp_folder(config_filename, config_name)
+                # self.remove_tmp_folder(config_filename, config_name)
             
             if dataframe is None:
                 data_loaders = self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename)
@@ -99,9 +99,9 @@ class driver(dict):
         global_tasks = config_dict_data['tasks']    
         data_loaders = {}
         for task in global_tasks:
-            print("===========================")
-            print("Computing %s " % task)
-            print("===========================")
+            # print("===========================")
+            # print("Computing %s " % task)
+            # print("===========================")
             # if '.' not in task then we have a specific application's config to run
             if '.' not in task:
                 # We let this config run and save the data_loader
@@ -185,7 +185,9 @@ class driver(dict):
             if key not in DRIVER_KEYS:
                 options[key] = config_dict_data[key]
         
-        data_loader = self.load_state(global_config_filename, global_config_name, config_name)
+        # data_loader = self.load_state(global_config_filename, global_config_name, config_name)
+
+        data_loader = None
 
         if not procs:
             if data_path is None:
@@ -211,7 +213,7 @@ class driver(dict):
                     data_loader = DataLoader.init_from_h5(config_name, data_path,
                         procs, arch_path, event_path, exclude_path, counters_path, target)
                                        
-            self.save_state(global_config_filename, global_config_name, config_name, data_loader)
+            # self.save_state(global_config_filename, global_config_name, config_name, data_loader)
 
         # Update dataloader's internal dictionary
         data_loader.update_options(options)
@@ -233,7 +235,7 @@ class driver(dict):
             module = importlib.import_module(module_name)
             func = getattr(module, func_name)
             result = func(data_loader)
-            self.save_state(global_config_filename, global_config_name, config_name, data_loader)
+            # self.save_state(global_config_filename, global_config_name, config_name, data_loader)
 
     def load_state(self,global_config_filename, global_config_name, config_name):
         pkl_path = os.path.join('data', 'tmp')

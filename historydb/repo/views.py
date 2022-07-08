@@ -24,7 +24,7 @@ from plotly.offline import plot
 import pandas as pd
 
 from dashing.driver import driver
-from viz.dashboard import dashboard_init
+from dashing.viz.dashboard import dashboard_init
 
 import requests
 import os
@@ -1252,22 +1252,22 @@ class AnalysisDashing(TemplateView):
                 txtfile.write('')
 
         # writing the config file
-        with open('configs/gptune_tuning_problem_test.yml', 'w') as txtfile:
+        with open('dashing/configs/gptune_tuning_problem.yml', 'w') as txtfile:
             s = 'tuning_problem:'
             txtfile.write(s + '\n')
             s = '  data: '
             txtfile.write(s + '\n')
             s = '  tasks:'
             txtfile.write(s + '\n')
-            s = '    - modules.resource_score.compute_rsm_task_all_regions'
+            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
             txtfile.write(s + '\n')
-            s = '    - viz.sunburst.sunburst'
+            s = '    - dashing.viz.sunburst.sunburst'
             txtfile.write(s + '\n')
             s = '  name:  \'' + evaluation_results[0] +'\''
             txtfile.write(s + '\n')
             s = '  target:  \'' + evaluation_results[0] +'\''
             txtfile.write(s + '\n')
-            s = '  compute_target: modules.compute_target.compute_runtime'
+            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
             txtfile.write(s + '\n')
             s = '##############################'
             txtfile.write(s + '\n')
@@ -1283,14 +1283,10 @@ class AnalysisDashing(TemplateView):
             s = '  arch: ' + tuning_problem_unique_name + '\n'
             s += '  data_rescale: true\n'
             s += '  rsm_iters: 500\n'
-            s += '  rsm_print: true\n'
+            s += '  rsm_print: false\n'
             s += '  rsm_use_nn_solver: true\n'
-            s += '  save_sunburst: true\n'
-            s += '  save_heatmap: true\n'
-            s += '  save_compat: true\n'
+            # s += '  save_compat: true\n'
             s += '  use_belief: true\n'
-            s += '  save_raw_line: true\n'
-            s += '  save_barchart: true\n'
             s += '  compat_labels: true\n'
             s += '  shorten_event_name: false\n'
             s += '  port: 7603\n'
@@ -1298,7 +1294,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s)
 
         drv = driver()
-        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True, dataframe= new_dashing_df)
+        chart = drv.main(os.getcwd() + '/dashing/configs/gptune_tuning_problem.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,

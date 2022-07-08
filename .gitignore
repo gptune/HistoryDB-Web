@@ -3,3 +3,7 @@ django_keys.json
 email_settings.json
 db.sqlite3
 *.pyc
+historydb/dashing/configs
+historydb/dashing/resources
+historydb/dashing/ev_belief_perc.csv
+res_imp.csv
