@@ -1299,7 +1299,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s)
 
         drv = driver()
-        chart = drv.main('/home/mohammad/gptune-web/HistoryDB-Web/historydb/configs/gptune_tuning_problem_test.yml', True, dataframe= new_dashing_df)
+        chart = drv.main(os.getcwd()+"/configs/gptune_tuning_problem_test.yml", True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
         context = { "function_evaluations" : function_evaluations,
