@@ -1252,7 +1252,10 @@ class AnalysisDashing(TemplateView):
                 txtfile.write('')
 
         # writing the config file
-        with open('dashing/configs/gptune_tuning_problem.yml', 'w') as txtfile:
+        config_dir = 'dashing/configs'
+        if not os.path.isdir(config_dir):
+            os.mkdir(config_dir)
+        with open(config_dir + '/gptune_tuning_problem.yml', 'w') as txtfile:
             s = 'tuning_problem:'
             txtfile.write(s + '\n')
             s = '  data: '
