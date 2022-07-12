@@ -1134,12 +1134,14 @@ class AnalysisDashing(TemplateView):
                     for counter in temp_counters:
                         mapping_set.add(counter + '=>' + counter_group)
         evaluation_results = list((function_evaluations[0])['evaluation_result'].keys())
+        task_params = list(function_evaluations[0]['task_parameter'].keys())
+        tuning_parmas = list(function_evaluations[0]['tuning_parameter'].keys())
 
-        analyze_cols = []
-        for counter in counters:
-            analyze_cols.append(counter)
-        for evaluation_result in evaluation_results:
-            analyze_cols.append(evaluation_result)
+        # analyze_cols = []
+        # for counter in counters:
+        #     analyze_cols.append(counter)
+        # for evaluation_result in evaluation_results:
+        #     analyze_cols.append(evaluation_result)
 
         # analyze_data=[]
         # for function_eval in function_evaluations:
@@ -1208,6 +1210,30 @@ class AnalysisDashing(TemplateView):
                 temp_row = ','.join(temp_list_2)
                 row_dict[phase] = temp_row
             rows.append(row_dict)
+
+        for task_param in task_params:
+            row_dict = {}
+            row_dict[''] = task_param
+            for phase in phases:
+                temp_list = []
+                for function_eval in function_evaluations:
+                    temp_list.append(function_eval['task_parameter'][task_param])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows.append(row_dict)
+        
+        for tuning_param in tuning_parmas:
+            row_dict = {}
+            row_dict[''] = tuning_param
+            for phase in phases:
+                temp_list = []
+                for function_eval in function_evaluations:
+                    temp_list.append(function_eval['tuning_parameter'][tuning_param])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows.append(row_dict)
         
         for evaluation_result in evaluation_results:
             row_dict = {}
@@ -1222,7 +1248,7 @@ class AnalysisDashing(TemplateView):
             rows.append(row_dict)
 
         new_dashing_df = pd.DataFrame(rows)
-        # print(new_dashing_df.head())
+        # print(new_dashing_df.tail())
 
 
 
@@ -1237,25 +1263,39 @@ class AnalysisDashing(TemplateView):
         if not os.path.isdir(resources_path):
             # print("Zayed .................... Is directory")
             os.mkdir(resources_path)
-            # with open(resources_path + '/event_map.txt', 'w') as txtfile:
-            #     mapping = '\n'.join(list(mapping_set))
-            #     txtfile.write(mapping)
-            
+
             with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
                 for counter in counters:
                     txtfile.write(counter + '\n')
 
-            # with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
-            #     s = 'UNDEFINED,0'
-            #     txtfile.write(s + '\n')
-            #     for counter_group in counter_groups:
-            #         txtfile.write(counter_group + ",0" + '\n')
+            UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
+                                                            resources_path+'/native_all_filtered.txt')
+
+            with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+                for tuning_param in tuning_parmas:
+                    txtfile.write(tuning_param + '\n')
+
+            with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+                for task_param in task_params:
+                    txtfile.write(task_param + '\n')
+
+            with open(resources_path + '/architecture_groups.txt', 'a') as txtfile:
+                s = 'UNDEFINED,0\n'
+                s += 'TaskParams,0\n'
+                s += 'TuningParams,0\n'
+                txtfile.write(s)
+
+            with open(resources_path + '/event_map.txt', 'w') as txtfile:
+                # mapping = '\n'.join(list(mapping_set))
+                # txtfile.write(mapping)
+                for task_param in task_params:
+                    txtfile.write(task_param + '=>' + 'TaskParams\n')
+                for tuning_param in tuning_parmas:
+                    txtfile.write(tuning_param + '=>' + 'TuningParams\n')
 
             with open(resources_path + '/event_desc.csv', 'w') as txtfile:
                 txtfile.write('')
 
-            UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
-                                                            resources_path+'/native_all_filtered.txt')
 
         # writing the config file
         config_dir = 'dashing/configs'

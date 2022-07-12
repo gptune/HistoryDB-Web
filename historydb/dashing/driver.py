@@ -29,9 +29,9 @@ class driver(dict):
                 % (config_name, config_path))
         else:
             # Forces a regeneration of all dataloaders
-            if force_compute:
-                print("\nForce Compute flag was detected, will recompute all Data Loaders.\n")
-                # self.remove_tmp_folder(config_filename, config_name)
+            # if force_compute:
+            #     print("\nForce Compute flag was detected, will recompute all Data Loaders.\n")
+            #     # self.remove_tmp_folder(config_filename, config_name)
             
             if dataframe is None:
                 data_loaders = self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename)

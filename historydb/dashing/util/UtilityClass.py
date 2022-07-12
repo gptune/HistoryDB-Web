@@ -21,10 +21,12 @@ import sys
 import re # NEeded for splitting a string with a list of delimiters
 
 def generate_all_possible_group_names_new(arch_path,corr_filename):
+    counters = set()
     with open(corr_filename, 'r') as file:
         delimit=":|::|,|_|-"
         groupsDict = defaultdict(int)
         for var in file:
+            counters.add(var)
             var = var.rstrip("\n")
             # generate every single possible substring that can potentially be a group name
             substrList = re.split(delimit, var)
@@ -39,21 +41,24 @@ def generate_all_possible_group_names_new(arch_path,corr_filename):
                 ####### if
             ####### for
         ############## 
-        ## Now, generate the "architecture_groups.txt" file
-    num_key = 0
-    f = open(arch_path, "w")
-    # for key, val in groupsDict.items():
-    #     if not (key.isspace() or key == ''):
-    #         #print key, val
-    #         f.write(key + ",0\n")
-    #     num_key += 1
-        #print num_key
-    counter = 0
+
+    ## Now, generate the "architecture_groups.txt" file
+    f = open(arch_path, "a")
+    graphed_counters = set()
+    index = 0
     for key in sorted(groupsDict, key=groupsDict.get, reverse=True):
         f.write(key + ",0\n")
-        counter += 1
-        if counter>20:
+        for counter in counters:
+            if key in counter:
+                graphed_counters.add(counter)
+        coverage_threshold = 0.80
+        if len(graphed_counters)*1.0/len(counters) > coverage_threshold:
+            print("Zayed : " + str(len(graphed_counters)) + "," + str(len(counters)))
+            print("Zayed : " + str(len(counters)*1.0/len(graphed_counters)))
             break
+        # index += 1
+        # if index>10:
+        #     break
     f.close()    
 
 class Utility:   
