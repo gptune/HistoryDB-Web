@@ -16,10 +16,45 @@ import collections #For sorting python dictionary using key
 from collections import defaultdict
 import sys
 
-#import InputClass
-#from InputClass import *
+# import InputClass
+# from InputClass import *
 import re # NEeded for splitting a string with a list of delimiters
 
+def generate_all_possible_group_names_new(arch_path,corr_filename):
+    with open(corr_filename, 'r') as file:
+        delimit=":|::|,|_|-"
+        groupsDict = defaultdict(int)
+        for var in file:
+            var = var.rstrip("\n")
+            # generate every single possible substring that can potentially be a group name
+            substrList = re.split(delimit, var)
+            #print substrList, var
+            for substr in substrList:
+                if not (substr.isspace() or substr == ''):
+                    if substr in groupsDict:
+                        groupsDict[substr] += 1 # n+1st occurrence
+                    else:
+                        groupsDict[substr] = 1 #first occurrence
+                    ####### if
+                ####### if
+            ####### for
+        ############## 
+        ## Now, generate the "architecture_groups.txt" file
+    num_key = 0
+    f = open(arch_path, "w")
+    # for key, val in groupsDict.items():
+    #     if not (key.isspace() or key == ''):
+    #         #print key, val
+    #         f.write(key + ",0\n")
+    #     num_key += 1
+        #print num_key
+    counter = 0
+    for key in sorted(groupsDict, key=groupsDict.get, reverse=True):
+        f.write(key + ",0\n")
+        counter += 1
+        if counter>20:
+            break
+    f.close()    
 
 class Utility:   
     def __init__(self, arch_file_path, event_map_path, exclude_path):

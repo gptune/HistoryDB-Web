@@ -1,3 +1,4 @@
+from ctypes import util
 from django.shortcuts import render
 
 # Create your views here.
@@ -24,7 +25,9 @@ from plotly.offline import plot
 import pandas as pd
 
 from dashing.driver import driver
-from dashing.viz.dashboard import dashboard_init
+from dashing.util import UtilityClass
+# from dashing.util.UtilityClass import generate_all_possible_group_names
+
 
 import requests
 import os
@@ -1232,24 +1235,27 @@ class AnalysisDashing(TemplateView):
 
         resources_path = 'dashing/resources/' + tuning_problem_unique_name
         if not os.path.isdir(resources_path):
-            print("Zayed .................... Is directory")
+            # print("Zayed .................... Is directory")
             os.mkdir(resources_path)
-            with open(resources_path + '/event_map.txt', 'w') as txtfile:
-                mapping = '\n'.join(list(mapping_set))
-                txtfile.write(mapping)
+            # with open(resources_path + '/event_map.txt', 'w') as txtfile:
+            #     mapping = '\n'.join(list(mapping_set))
+            #     txtfile.write(mapping)
             
             with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
                 for counter in counters:
                     txtfile.write(counter + '\n')
 
-            with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
-                s = 'UNDEFINED,0'
-                txtfile.write(s + '\n')
-                for counter_group in counter_groups:
-                    txtfile.write(counter_group + ",0" + '\n')
+            # with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
+            #     s = 'UNDEFINED,0'
+            #     txtfile.write(s + '\n')
+            #     for counter_group in counter_groups:
+            #         txtfile.write(counter_group + ",0" + '\n')
 
             with open(resources_path + '/event_desc.csv', 'w') as txtfile:
                 txtfile.write('')
+
+            UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
+                                                            resources_path+'/native_all_filtered.txt')
 
         # writing the config file
         config_dir = 'dashing/configs'
@@ -1296,6 +1302,9 @@ class AnalysisDashing(TemplateView):
             s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
 
+        # utilility = UtilityClass(resources_path+tuning_problem_unique_name,resources_path+tuning_problem_unique_name+'/event_map.txt', '')
+        # UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
+                                                            # resources_path+'/native_all_filtered.txt')
         drv = driver()
         chart = drv.main(os.getcwd() + '/dashing/configs/gptune_tuning_problem.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
