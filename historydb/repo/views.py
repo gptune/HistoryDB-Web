@@ -26,7 +26,6 @@ import pandas as pd
 
 from dashing.driver import driver
 from dashing.util import UtilityClass
-# from dashing.util.UtilityClass import generate_all_possible_group_names
 
 
 import requests
@@ -1103,18 +1102,6 @@ class AnalysisDashing(TemplateView):
                 output_options = output_options,
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
-
-        # dirname = os.path.dirname(__file__)
-        # filename = os.path.join(dirname, '0.json')
-        # with open('/home/mohammad/gptune-data/0.json', 'r') as f:
-        #     chart = pio.from_json(f.read())
-        # temp_chart = plot.plot(chart,output_type="div")
-
-        # print("Zayed")
-
-        # for function_eval in function_evaluations:
-        #     print(function_eval['additional_output']['pmu'])
-        #     break
         
         phases = set()
         counter_groups = set()
@@ -1268,7 +1255,8 @@ class AnalysisDashing(TemplateView):
                 for counter in counters:
                     txtfile.write(counter + '\n')
 
-            UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
+            if len(counter_groups) < 2:
+                UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
                                                             resources_path+'/native_all_filtered.txt')
 
             with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
@@ -1283,11 +1271,15 @@ class AnalysisDashing(TemplateView):
                 s = 'UNDEFINED,0\n'
                 s += 'TaskParams,0\n'
                 s += 'TuningParams,0\n'
+                if len(counter_groups) != 1:
+                    for counter_group in counter_groups:
+                        s+= counter_group + ',0\n'
                 txtfile.write(s)
 
             with open(resources_path + '/event_map.txt', 'w') as txtfile:
-                # mapping = '\n'.join(list(mapping_set))
-                # txtfile.write(mapping)
+                if len(counter_groups) != 1:
+                    mapping = '\n'.join(list(mapping_set))
+                    txtfile.write(mapping + '\n')
                 for task_param in task_params:
                     txtfile.write(task_param + '=>' + 'TaskParams\n')
                 for tuning_param in tuning_parmas:
