@@ -176,7 +176,7 @@ class Utility:
                             found = 1
             #if found == 1:
                 #print('STATIC: ', group_name_list, "->", name)
-            if found == 1 and len(group_name_list) == 0:
+            if found == 1 and (len(group_name_list) == 0 or len(group_name_list[0]) == 0):
                 # print(name + ' found in undefined ' + str(found) + ','.join(group_name_list))
                 eventMapping['UNDEFINED'].append(name)
                 continue 
@@ -191,7 +191,7 @@ class Utility:
                 # group_name_list = ['UNDEFINED']
                 group_name_list = ['USERDEFINED']
                 #print("No group for ", name)
-            
+
             #Add this event with name "name" to the formulated/found group name
             for group_name in group_name_list:
                 eventMapping[group_name].append(name)
