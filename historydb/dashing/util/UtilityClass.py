@@ -176,6 +176,11 @@ class Utility:
                             found = 1
             #if found == 1:
                 #print('STATIC: ', group_name_list, "->", name)
+            if found == 1 and len(group_name_list) == 0:
+                # print(name + ' found in undefined ' + str(found) + ','.join(group_name_list))
+                eventMapping['UNDEFINED'].append(name)
+                continue 
+
             if found == 0:
                 s = name.lower()
                 #if any(group.lower() in s for group in group_list):
@@ -183,12 +188,15 @@ class Utility:
                 group_name_list = [ group for group in group_list if group.lower() in s] [:]
 
             if (len(group_name_list) == 0 or len(group_name_list[0]) == 0):
-                group_name_list = ['UNDEFINED']
+                # group_name_list = ['UNDEFINED']
+                group_name_list = ['USERDEFINED']
                 #print("No group for ", name)
+            
             #Add this event with name "name" to the formulated/found group name
             for group_name in group_name_list:
                 eventMapping[group_name].append(name)
-        print (eventMapping.items())
+
+        # print (eventMapping.items())
         return eventMapping
 ##gl = group_name in lower case
     def check_if_in_a_dict(self, gl, d):
@@ -352,7 +360,9 @@ if __name__ == "__main__":
         print (key)
         for v in val:
             print ("--", v)
+    # exclude_event_list = eventmap['UNDEFINED']
     exclude_event_list = eventmap['UNDEFINED']
+
 
     allowed_events = []
     ev_to_res_map = defaultdict()

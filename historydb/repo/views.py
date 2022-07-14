@@ -1198,29 +1198,29 @@ class AnalysisDashing(TemplateView):
                 row_dict[phase] = temp_row
             rows.append(row_dict)
 
-        for task_param in task_params:
-            row_dict = {}
-            row_dict[''] = task_param
-            for phase in phases:
-                temp_list = []
-                for function_eval in function_evaluations:
-                    temp_list.append(function_eval['task_parameter'][task_param])
-                temp_list_2 = [str(val) for val in temp_list]
-                temp_row = ','.join(temp_list_2)
-                row_dict[phase] = temp_row
-            rows.append(row_dict)
+        # for task_param in task_params:
+        #     row_dict = {}
+        #     row_dict[''] = task_param
+        #     for phase in phases:
+        #         temp_list = []
+        #         for function_eval in function_evaluations:
+        #             temp_list.append(function_eval['task_parameter'][task_param])
+        #         temp_list_2 = [str(val) for val in temp_list]
+        #         temp_row = ','.join(temp_list_2)
+        #         row_dict[phase] = temp_row
+        #     rows.append(row_dict)
         
-        for tuning_param in tuning_parmas:
-            row_dict = {}
-            row_dict[''] = tuning_param
-            for phase in phases:
-                temp_list = []
-                for function_eval in function_evaluations:
-                    temp_list.append(function_eval['tuning_parameter'][tuning_param])
-                temp_list_2 = [str(val) for val in temp_list]
-                temp_row = ','.join(temp_list_2)
-                row_dict[phase] = temp_row
-            rows.append(row_dict)
+        # for tuning_param in tuning_parmas:
+        #     row_dict = {}
+        #     row_dict[''] = tuning_param
+        #     for phase in phases:
+        #         temp_list = []
+        #         for function_eval in function_evaluations:
+        #             temp_list.append(function_eval['tuning_parameter'][tuning_param])
+        #         temp_list_2 = [str(val) for val in temp_list]
+        #         temp_row = ','.join(temp_list_2)
+        #         row_dict[phase] = temp_row
+        #     rows.append(row_dict)
         
         for evaluation_result in evaluation_results:
             row_dict = {}
@@ -1321,7 +1321,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s + '\n')
             s = '    - tuning_problem'
             txtfile.write(s + '\n')
-            s = '  arch: ' + tuning_problem_unique_name + '\n'
+            s = '  arch: ' + 'haswell3' + '\n'
             s += '  data_rescale: true\n'
             s += '  rsm_iters: 500\n'
             s += '  rsm_print: false\n'
@@ -1334,9 +1334,10 @@ class AnalysisDashing(TemplateView):
             s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
 
-        # utilility = UtilityClass(resources_path+tuning_problem_unique_name,resources_path+tuning_problem_unique_name+'/event_map.txt', '')
-        # UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
-                                                            # resources_path+'/native_all_filtered.txt')
+        with open('dashing/resources//haswell3' + '/native_all_filtered.txt', 'w') as txtfile:
+            for counter in counters:
+                txtfile.write(counter + '\n')
+
         drv = driver()
         chart = drv.main(os.getcwd() + '/dashing/configs/gptune_tuning_problem.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
@@ -1346,7 +1347,7 @@ class AnalysisDashing(TemplateView):
         }
 
         return render(request, 'repo/analysis-dashing.html', context)
-
+        
     def post(self, request, **kwargs):
 
         if not request.user.is_authenticated:
