@@ -7,9 +7,17 @@
     <!-- <p>
     <pre>{{ function_evaluations | pprint }}</pre>
     </p> -->
+    <div>
+        <div style="float: left; width: 50%">
+            {% autoescape off %}
+            {{ chart }}
+            {% endautoescape %}
+        </div>
 
-    {% autoescape off %}
-        {{ chart }}
-    {% endautoescape %}
-
+        <div style="float: right; width: 50%">
+            {% autoescape off %}
+            {{ chart2 }}
+            {% endautoescape %}
+        </div>
+    </div>
 {% endblock %}

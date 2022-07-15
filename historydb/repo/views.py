@@ -1,3 +1,4 @@
+from asyncore import write
 from ctypes import util
 from django.shortcuts import render
 
@@ -1084,6 +1085,51 @@ class ModelPrediction(TemplateView):
 
 class AnalysisDashing(TemplateView):
 
+    def write_config_file(self,file_name,target,arch):
+        config_dir = 'dashing/configs'
+        if not os.path.isdir(config_dir):
+            os.mkdir(config_dir)
+        with open(config_dir + '/' + file_name, 'w') as txtfile:
+            s = 'tuning_problem:'
+            txtfile.write(s + '\n')
+            s = '  data: '
+            txtfile.write(s + '\n')
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
+            txtfile.write(s + '\n')
+            s = '    - dashing.viz.sunburst.sunburst'
+            txtfile.write(s + '\n')
+            s = '  name:  \'' + target +'\''
+            txtfile.write(s + '\n')
+            s = '  target:  \'' + target +'\''
+            txtfile.write(s + '\n')
+            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
+            txtfile.write(s + '\n')
+            s = '##############################'
+            txtfile.write(s + '\n')
+
+            txtfile.write('\n')
+
+            s = 'main:'
+            txtfile.write(s + '\n')  
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - tuning_problem'
+            txtfile.write(s + '\n')
+            s = '  arch: ' + arch + '\n'
+            s += '  data_rescale: true\n'
+            s += '  rsm_iters: 500\n'
+            s += '  rsm_print: false\n'
+            s += '  rsm_use_nn_solver: true\n'
+            # s += '  save_compat: true\n'
+            s += '  use_belief: true\n'
+            s += '  compat_labels: true\n'
+            s += '  shorten_event_name: false\n'
+            s += '  port: 7603\n'
+            s += '  rsm_cpu_count: 4\n' 
+            txtfile.write(s)
+
     def get(self, request, **kwargs):
 
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
@@ -1198,29 +1244,31 @@ class AnalysisDashing(TemplateView):
                 row_dict[phase] = temp_row
             rows.append(row_dict)
 
-        # for task_param in task_params:
-        #     row_dict = {}
-        #     row_dict[''] = task_param
-        #     for phase in phases:
-        #         temp_list = []
-        #         for function_eval in function_evaluations:
-        #             temp_list.append(function_eval['task_parameter'][task_param])
-        #         temp_list_2 = [str(val) for val in temp_list]
-        #         temp_row = ','.join(temp_list_2)
-        #         row_dict[phase] = temp_row
-        #     rows.append(row_dict)
+        new_dashing_df_2 = pd.DataFrame(columns=coloumns)
+        rows2 = []
+        for task_param in task_params:
+            row_dict = {}
+            row_dict[''] = task_param
+            for phase in phases:
+                temp_list = []
+                for function_eval in function_evaluations:
+                    temp_list.append(function_eval['task_parameter'][task_param])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows2.append(row_dict)
         
-        # for tuning_param in tuning_parmas:
-        #     row_dict = {}
-        #     row_dict[''] = tuning_param
-        #     for phase in phases:
-        #         temp_list = []
-        #         for function_eval in function_evaluations:
-        #             temp_list.append(function_eval['tuning_parameter'][tuning_param])
-        #         temp_list_2 = [str(val) for val in temp_list]
-        #         temp_row = ','.join(temp_list_2)
-        #         row_dict[phase] = temp_row
-        #     rows.append(row_dict)
+        for tuning_param in tuning_parmas:
+            row_dict = {}
+            row_dict[''] = tuning_param
+            for phase in phases:
+                temp_list = []
+                for function_eval in function_evaluations:
+                    temp_list.append(function_eval['tuning_parameter'][tuning_param])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows2.append(row_dict)
         
         for evaluation_result in evaluation_results:
             row_dict = {}
@@ -1233,8 +1281,10 @@ class AnalysisDashing(TemplateView):
                 temp_row = ','.join(temp_list_2)
                 row_dict[phase] = temp_row
             rows.append(row_dict)
+            rows2.append(row_dict)
 
         new_dashing_df = pd.DataFrame(rows)
+        new_dashing_df_2 = pd.DataFrame(rows2)
         # print(new_dashing_df.tail())
 
 
@@ -1246,104 +1296,138 @@ class AnalysisDashing(TemplateView):
         #             for counter in function_evaluations[0]['additional_output']['pmu'][counter_group]:
         #                 txtfile.write(counter + "=>" + counter_group + '\n')
 
-        resources_path = 'dashing/resources/' + tuning_problem_unique_name
-        if not os.path.isdir(resources_path):
-            # print("Zayed .................... Is directory")
-            os.mkdir(resources_path)
 
-            with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
-                for counter in counters:
-                    txtfile.write(counter + '\n')
+        # #Automatic group calculation code(Rejected) 
+        # resources_path = 'dashing/resources/' + tuning_problem_unique_name
+        # if not os.path.isdir(resources_path):
+        #     # print("Zayed .................... Is directory")
+        #     os.mkdir(resources_path)
 
-            if len(counter_groups) < 2:
-                UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
-                                                            resources_path+'/native_all_filtered.txt')
+        #     with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+        #         for counter in counters:
+        #             txtfile.write(counter + '\n')
 
-            with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
-                for tuning_param in tuning_parmas:
-                    txtfile.write(tuning_param + '\n')
+        #     if len(counter_groups) < 2:
+        #         UtilityClass.generate_all_possible_group_names_new(resources_path+'/architecture_groups.txt',
+        #                                                     resources_path+'/native_all_filtered.txt')
 
-            with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
-                for task_param in task_params:
-                    txtfile.write(task_param + '\n')
+        #     with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+        #         for tuning_param in tuning_parmas:
+        #             txtfile.write(tuning_param + '\n')
 
-            with open(resources_path + '/architecture_groups.txt', 'a') as txtfile:
-                s = 'UNDEFINED,0\n'
-                s += 'TaskParams,0\n'
-                s += 'TuningParams,0\n'
-                if len(counter_groups) != 1:
-                    for counter_group in counter_groups:
-                        s+= counter_group + ',0\n'
-                txtfile.write(s)
+        #     with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+        #         for task_param in task_params:
+        #             txtfile.write(task_param + '\n')
 
-            with open(resources_path + '/event_map.txt', 'w') as txtfile:
-                if len(counter_groups) != 1:
-                    mapping = '\n'.join(list(mapping_set))
-                    txtfile.write(mapping + '\n')
-                for task_param in task_params:
-                    txtfile.write(task_param + '=>' + 'TaskParams\n')
-                for tuning_param in tuning_parmas:
-                    txtfile.write(tuning_param + '=>' + 'TuningParams\n')
+        #     with open(resources_path + '/architecture_groups.txt', 'a') as txtfile:
+        #         s = 'UNDEFINED,0\n'
+        #         s += 'TaskParams,0\n'
+        #         s += 'TuningParams,0\n'
+        #         if len(counter_groups) != 1:
+        #             for counter_group in counter_groups:
+        #                 s+= counter_group + ',0\n'
+        #         txtfile.write(s)
 
-            with open(resources_path + '/event_desc.csv', 'w') as txtfile:
-                txtfile.write('')
+        #     with open(resources_path + '/event_map.txt', 'w') as txtfile:
+        #         if len(counter_groups) != 1:
+        #             mapping = '\n'.join(list(mapping_set))
+        #             txtfile.write(mapping + '\n')
+        #         for task_param in task_params:
+        #             txtfile.write(task_param + '=>' + 'TaskParams\n')
+        #         for tuning_param in tuning_parmas:
+        #             txtfile.write(tuning_param + '=>' + 'TuningParams\n')
 
+        #     with open(resources_path + '/event_desc.csv', 'w') as txtfile:
+        #         txtfile.write('')
 
         # writing the config file
-        config_dir = 'dashing/configs'
-        if not os.path.isdir(config_dir):
-            os.mkdir(config_dir)
-        with open(config_dir + '/gptune_tuning_problem.yml', 'w') as txtfile:
-            s = 'tuning_problem:'
-            txtfile.write(s + '\n')
-            s = '  data: '
-            txtfile.write(s + '\n')
-            s = '  tasks:'
-            txtfile.write(s + '\n')
-            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
-            txtfile.write(s + '\n')
-            s = '    - dashing.viz.sunburst.sunburst'
-            txtfile.write(s + '\n')
-            s = '  name:  \'' + evaluation_results[0] +'\''
-            txtfile.write(s + '\n')
-            s = '  target:  \'' + evaluation_results[0] +'\''
-            txtfile.write(s + '\n')
-            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
-            txtfile.write(s + '\n')
-            s = '##############################'
-            txtfile.write(s + '\n')
+        # config_dir = 'dashing/configs'
+        # if not os.path.isdir(config_dir):
+        #     os.mkdir(config_dir)
+        # with open(config_dir + '/gptune_tuning_problem.yml', 'w') as txtfile:
+        #     s = 'tuning_problem:'
+        #     txtfile.write(s + '\n')
+        #     s = '  data: '
+        #     txtfile.write(s + '\n')
+        #     s = '  tasks:'
+        #     txtfile.write(s + '\n')
+        #     s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
+        #     txtfile.write(s + '\n')
+        #     s = '    - dashing.viz.sunburst.sunburst'
+        #     txtfile.write(s + '\n')
+        #     s = '  name:  \'' + evaluation_results[0] +'\''
+        #     txtfile.write(s + '\n')
+        #     s = '  target:  \'' + evaluation_results[0] +'\''
+        #     txtfile.write(s + '\n')
+        #     s = '  compute_target: dashing.modules.compute_target.compute_runtime'
+        #     txtfile.write(s + '\n')
+        #     s = '##############################'
+        #     txtfile.write(s + '\n')
 
-            txtfile.write('\n')
+        #     txtfile.write('\n')
 
-            s = 'main:'
-            txtfile.write(s + '\n')  
-            s = '  tasks:'
-            txtfile.write(s + '\n')
-            s = '    - tuning_problem'
-            txtfile.write(s + '\n')
-            s = '  arch: ' + 'haswell3' + '\n'
-            s += '  data_rescale: true\n'
-            s += '  rsm_iters: 500\n'
-            s += '  rsm_print: false\n'
-            s += '  rsm_use_nn_solver: true\n'
-            # s += '  save_compat: true\n'
-            s += '  use_belief: true\n'
-            s += '  compat_labels: true\n'
-            s += '  shorten_event_name: false\n'
-            s += '  port: 7603\n'
-            s += '  rsm_cpu_count: 4\n' 
-            txtfile.write(s)
+        #     s = 'main:'
+        #     txtfile.write(s + '\n')  
+        #     s = '  tasks:'
+        #     txtfile.write(s + '\n')
+        #     s = '    - tuning_problem'
+        #     txtfile.write(s + '\n')
+        #     s = '  arch: ' + 'haswell3' + '\n'
+        #     s += '  data_rescale: true\n'
+        #     s += '  rsm_iters: 500\n'
+        #     s += '  rsm_print: false\n'
+        #     s += '  rsm_use_nn_solver: true\n'
+        #     # s += '  save_compat: true\n'
+        #     s += '  use_belief: true\n'
+        #     s += '  compat_labels: true\n'
+        #     s += '  shorten_event_name: false\n'
+        #     s += '  port: 7603\n'
+        #     s += '  rsm_cpu_count: 4\n' 
+        #     txtfile.write(s)
 
+        self.write_config_file('tuning_problem_1' + '.yml',evaluation_results[0],'haswell3')
+        self.write_config_file('tuning_problem_2' + '.yml',evaluation_results[0],'haswell-user')
+
+        #Architecture setup for counter analysis 
         with open('dashing/resources//haswell3' + '/native_all_filtered.txt', 'w') as txtfile:
             for counter in counters:
                 txtfile.write(counter + '\n')
 
+        #Architecture setup for user paramater analysis 
+        resources_path = 'dashing/resources/haswell-user' 
+        if not os.path.isdir(resources_path):
+            os.mkdir(resources_path)
+
+        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+            for tuning_param in tuning_parmas:
+                txtfile.write(tuning_param + '\n')
+
+        with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+            for task_param in task_params:
+                txtfile.write(task_param + '\n')
+
+        with open(resources_path + '/event_map.txt', 'w') as txtfile:
+            if len(counter_groups) != 1:
+                mapping = '\n'.join(list(mapping_set))
+                txtfile.write(mapping + '\n')
+            for task_param in task_params:
+                txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
+            for tuning_param in tuning_parmas:
+                    txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
+
+        with open(resources_path + '/event_desc.csv', 'w') as txtfile:
+                txtfile.write('')
+
         drv = driver()
-        chart = drv.main(os.getcwd() + '/dashing/configs/gptune_tuning_problem.yml', True, dataframe= new_dashing_df)
+        chart = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
+        chart = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
+        chart3 = plot(chart[0],output_type="div")
+
         context = { "function_evaluations" : function_evaluations,
-                    "chart" : chart2
+                    "chart" : chart2,
+                    "chart2" : chart3
         }
 
         return render(request, 'repo/analysis-dashing.html', context)
