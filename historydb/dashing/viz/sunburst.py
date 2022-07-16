@@ -143,7 +143,7 @@ def sunburst(data_loader):
     regions = data_loader.get_regions()
     config_name = data_loader.get_config_name()
     regions.sort()
-    print(regions)
+    # print(regions)
     resources = sorted(list(resources))
     app_name = name
 

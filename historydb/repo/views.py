@@ -1419,15 +1419,32 @@ class AnalysisDashing(TemplateView):
                 txtfile.write('')
 
         drv = driver()
-        chart = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
+        chart, rsm_group_errors, rsm_ev_errors = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
-        chart = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
+        chart, rsm_group_errors2, rsm_ev_errors2 = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
         chart3 = plot(chart[0],output_type="div")
 
+        group_imp = []
+        for regions in rsm_group_errors:
+            print('Zayed ')
+            print(rsm_group_errors[regions])
+            for group in rsm_group_errors[regions]:
+                row_dict = {}
+                # print(group)
+                # print(group + ',' + str(rsm_group_errors[regions][group]))
+                row_dict['group_name'] = group
+                row_dict['value'] = rsm_group_errors[regions][group]
+                row_dict['region'] = regions
+                group_imp.append(row_dict)
+        # print("Zayed rsms")
+        # print(rsm_group_errors)
+
         context = { "function_evaluations" : function_evaluations,
+                    "tuning_problem_name" : tuning_problem_unique_name,
                     "chart" : chart2,
-                    "chart2" : chart3
+                    "chart2" : chart3,
+                    "groups" : group_imp
         }
 
         return render(request, 'repo/analysis-dashing.html', context)
