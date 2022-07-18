@@ -1385,13 +1385,28 @@ class AnalysisDashing(TemplateView):
         #     s += '  rsm_cpu_count: 4\n' 
         #     txtfile.write(s)
 
-        self.write_config_file('tuning_problem_1' + '.yml',evaluation_results[0],'haswell3')
+        arch_file = 'haswell3'
+        if len(counter_groups) > 1:
+            arch_file = 'defined'
+        self.write_config_file('tuning_problem_1' + '.yml',evaluation_results[0],arch_file)
         self.write_config_file('tuning_problem_2' + '.yml',evaluation_results[0],'haswell-user')
 
         #Architecture setup for counter analysis 
-        with open('dashing/resources//haswell3' + '/native_all_filtered.txt', 'w') as txtfile:
+        resources_path = 'dashing/resources/' + arch_file 
+        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
             for counter in counters:
                 txtfile.write(counter + '\n')
+        
+        if arch_file == 'defined':
+            with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
+                s = 'UNDEFINED,0\n'
+                for counter_group in counter_groups:
+                    s+= counter_group + ',0\n'
+                txtfile.write(s)
+
+            with open(resources_path + '/event_map.txt', 'w') as txtfile:
+                mapping = '\n'.join(list(mapping_set))
+                txtfile.write(mapping + '\n')
 
         #Architecture setup for user paramater analysis 
         resources_path = 'dashing/resources/haswell-user' 
@@ -1456,8 +1471,8 @@ class AnalysisDashing(TemplateView):
                 row_dict['groups'] = ','.join(ev_to_res_map[event])
                 event_imp.append(row_dict)
         
-        print("Zayed")
-        print(ev_to_res_map2)
+        # print("Zayed")
+        # print(ev_to_res_map2)
         for regions in rsm_ev_errors2:
             for event in rsm_ev_errors2[regions]:
                 row_dict = {}

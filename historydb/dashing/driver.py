@@ -87,7 +87,7 @@ class driver(dict):
         for file_name in os.listdir(tmp_folder):
             if file_name.startswith(file_prefix) and file_name.endswith(file_suffix):
                 file_path = os.path.join(tmp_folder, file_name)
-                print("Removing %s" % file_path)
+                # print("Removing %s" % file_path)
                 os.unlink(file_path)
         
 
@@ -159,8 +159,8 @@ class driver(dict):
         for key in update_dict_data:
             if key not in base_dict:
                 base_dict[key] = update_dict_data[key]
-            else:
-                print("%s was overriden by a config." % key)
+            # else:
+            #     print("%s was overriden by a config." % key)
         return base_dict
 
 
@@ -202,17 +202,17 @@ class driver(dict):
             else:
                 procs = self.find_procs(data_path)
                 procs = sorted(procs)
-                print("Warning: procs was not found, using: ", procs)
+                # print("Warning: procs was not found, using: ", procs)
 
         # Generate a data loader if we couldn't find a cached version
         if data_loader is None:
             if data_path is None:
-                print('Using dataframe')
+                # print('Using dataframe')
                 data_loader = DataLoader.init_from_dataframe(config_name, dataframe,
                     procs, arch_path, event_path, exclude_path, counters_path, target, compute_target)
             else:
                 file_ext = data_path.split('.')[-1]
-                print(file_ext)
+                # print(file_ext)
                 if file_ext == 'csv':
                     data_loader = DataLoader.init_from_csv(config_name, data_path,
                         procs, arch_path, event_path, exclude_path, counters_path, target, compute_target)
@@ -237,7 +237,7 @@ class driver(dict):
         # load the module and function, and then run
         for task in tasks:
             module_name, func_name = task.rsplit('.', 1)
-            print("Running %s..." % func_name)
+            # print("Running %s..." % func_name)
 
             module = importlib.import_module(module_name)
             func = getattr(module, func_name)
@@ -251,8 +251,8 @@ class driver(dict):
 
         if os.path.isfile(pkl_path):
             with open(pkl_path, 'rb') as pkl_file:
-                print("Loading the state of %s-%s-%s..." \
-                    % (global_config_filename, global_config_name, config_name))
+                # print("Loading the state of %s-%s-%s..." \
+                #     % (global_config_filename, global_config_name, config_name))
                 return pickle.load(pkl_file)
         return None
 
@@ -293,15 +293,15 @@ class driver(dict):
 
     def find_procs(self,data_path):
         file_ext = data_path.split('.')[-1]
-        print(file_ext)
+        # print(file_ext)
         procs = set()
 
-        if file_ext == 'csv':
+        # if file_ext == 'csv':
             #These may not be directly related to process counts. These can be iterations x configurations x input. So keep procs_config, and num_configs[region] separate. And change accordingly. len(procs_config) may not be useful when num_configs[reg1] is not equal to num_configs[reg2]
             #For now, we are assuming that every region has the same number of configs.
             #proc_configs will be auto populated when we read the csv data in : parse_csv_data.
-            print('Number of configs will be auto detected')
-        else:
+            # print('Number of configs will be auto detected')
+        if file_ext != 'csv':
             data_path = os.path.join(data_path, "00")
             for filename in os.listdir(data_path):
                 if os.path.isdir(os.path.join(data_path, filename)) or "perf-dump" not in filename: continue
