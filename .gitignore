@@ -4,7 +4,6 @@ email_settings.json
 db.sqlite3
 *.pyc
 historydb/dashing/configs/
-historydb/dashing/resources/
 historydb/dashing/ev_belief_perc.csv
 historydb/dashing/res_imp.csv
 historydb/account

@@ -7,7 +7,7 @@
     <!-- <p>
     <pre>{{ function_evaluations | pprint }}</pre>
     </p> -->
-    <div>
+    <div style="margin-top: 30px">
         <div style="float: left; width: 50%">
             {% autoescape off %}
                 {{ chart }}
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="table-responsive table_outer">
+    <div class="table-responsive table_outer" style="margin-top: 30px">
         <div class="text-left mb-3">
           <h4>Group Importances</h4>
         </div>
@@ -66,16 +66,86 @@
                     </td>
 
                     <td style="background: white">
-                        {{group_data.value}}
+                        {{group_data.region}}
                     </td>
 
                     <td style="background: white">
-                        {{group_data.region}}
+                        {{group_data.value}}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-          
+    </div>
+
+
+    <div class="table-responsive table_outer" style="margin-top: 30px">
+        <div class="text-left mb-3">
+          <h4>Counter Importances</h4>
+        </div>
+
+        <table id="function_evaluations" class="table table-striped table-bordered">
+            <thead>
+                <tr>            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Machine setting used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Counter</u>
+                        </span>
+                    </th>
+            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Kernel</u>
+                        </span>
+                    </th>
+
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Groups</u>
+                        </span>
+                    </th>
+                    
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Resouce Importance </u>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for counter_data in counters %}
+                <tr>
+                    <td style="background: white">
+                        {{counter_data.counter_name}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.region}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.groups}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.value}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

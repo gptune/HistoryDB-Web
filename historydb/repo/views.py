@@ -1419,16 +1419,16 @@ class AnalysisDashing(TemplateView):
                 txtfile.write('')
 
         drv = driver()
-        chart, rsm_group_errors, rsm_ev_errors = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
+        chart, rsm_group_errors, rsm_ev_errors, ev_to_res_map = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
         chart2 = plot(chart[0],output_type="div")
 
-        chart, rsm_group_errors2, rsm_ev_errors2 = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
+        chart, rsm_group_errors2, rsm_ev_errors2, ev_to_res_map2 = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
         chart3 = plot(chart[0],output_type="div")
 
         group_imp = []
         for regions in rsm_group_errors:
-            print('Zayed ')
-            print(rsm_group_errors[regions])
+            # print('Zayed ')
+            # print(rsm_group_errors[regions])
             for group in rsm_group_errors[regions]:
                 row_dict = {}
                 # print(group)
@@ -1437,14 +1437,42 @@ class AnalysisDashing(TemplateView):
                 row_dict['value'] = rsm_group_errors[regions][group]
                 row_dict['region'] = regions
                 group_imp.append(row_dict)
-        # print("Zayed rsms")
-        # print(rsm_group_errors)
+
+        for regions in rsm_group_errors2:
+            for group in rsm_group_errors2[regions]:
+                row_dict = {}
+                row_dict['group_name'] = group
+                row_dict['value'] = rsm_group_errors2[regions][group]
+                row_dict['region'] = regions
+                group_imp.append(row_dict)
+
+        event_imp = []
+        for regions in rsm_ev_errors:
+            for event in rsm_ev_errors[regions]:
+                row_dict = {}
+                row_dict['counter_name'] = event
+                row_dict['value'] = rsm_ev_errors[regions][event]
+                row_dict['region'] = regions
+                row_dict['groups'] = ','.join(ev_to_res_map[event])
+                event_imp.append(row_dict)
+        
+        print("Zayed")
+        print(ev_to_res_map2)
+        for regions in rsm_ev_errors2:
+            for event in rsm_ev_errors2[regions]:
+                row_dict = {}
+                row_dict['counter_name'] = event
+                row_dict['value'] = rsm_ev_errors2[regions][event]
+                row_dict['region'] = regions
+                row_dict['groups'] = ','.join(ev_to_res_map2[event])
+                event_imp.append(row_dict)
 
         context = { "function_evaluations" : function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "chart" : chart2,
                     "chart2" : chart3,
-                    "groups" : group_imp
+                    "groups" : group_imp,
+                    "counters" : event_imp
         }
 
         return render(request, 'repo/analysis-dashing.html', context)
