@@ -13,6 +13,8 @@ from difflib import get_close_matches
 import re
 from collections import OrderedDict 
 
+from dash_bootstrap_templates import load_figure_template
+
 def conv_str(ev):
     shortened_event_name = ''
     if (ev == 'transactions'):
@@ -262,6 +264,8 @@ def sunburst(data_loader):
             values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
             #values.append(normed_belief_map[reg][resource])
     csv_file.close()
+    print("Zayed beliefs")
+    print(normed_belief_map)
     # Fourth layer
     # here we will add our last layer, each event and their respective error
     # we will process their errors similar to res_errors where we will compute their
@@ -361,6 +365,7 @@ def sunburst(data_loader):
                     
                     values.append(normed_belief_res_ev_map[reg][resource][event] * normed_belief_map[reg][resource] * normed_runtime[reg])
 
+
     sunburst_colors = ['#FFFFFF']
     default_color = '#babbca' #'#636efa'
     pairs.pop(0)
@@ -371,7 +376,14 @@ def sunburst(data_loader):
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
 
-
+    print("Zayed Sunburst Info")
+    print(ids)
+    print(labels)
+    print(parents)
+    print(values)
+    
+    template = "minty"
+    load_figure_template(template)
     trace = go.Sunburst(
         ids=ids,
         labels=labels,
@@ -380,20 +392,19 @@ def sunburst(data_loader):
         branchvalues="total",
         hovertext=hover_labels,
         hoverinfo="text",
-	insidetextfont = {"size": 20, "color": "#000000"},
+	    insidetextfont = {"size": 20, "color": "#000000"},
         outsidetextfont = {"size": 30, "color": "#377eb8"},
 #        outsidetextfont = {"size": 20, "color": "#377eb8"},
         marker = {"line": {"width": 2}},
-        marker_colors=sunburst_colors
+        # marker_colors=sunburst_colors
     )
 
     layout = go.Layout(
         margin = go.layout.Margin(t=0, l=0, r=0, b=0),
     )
     
-
     fig = go.Figure([trace], layout)
-    fig.update_layout(width = 700, height = 700)
+    fig.update_layout(width = 700, height = 700, template=template)
 
     data_loader.options['charts'].append(fig)
     if save_sunburst:
