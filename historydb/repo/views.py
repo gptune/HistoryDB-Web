@@ -1098,7 +1098,7 @@ class AnalysisDashing(TemplateView):
             txtfile.write(s + '\n')
             s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
             txtfile.write(s + '\n')
-            s = '    - dashing.viz.sunburst.sunburst'
+            s = '    - dashing.viz.sunburst3.sunburst'
             txtfile.write(s + '\n')
             s = '  name:  \'' + target +'\''
             txtfile.write(s + '\n')

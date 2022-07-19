@@ -192,86 +192,8 @@ def sunburst(data_loader):
     parents.append('')
     values.append(sum(normed_runtime.values()))
 
-    # Second layer
-    # Consists of each region whose value is their runtime percentage
-    hover_label = '%s<br>Runtime: %0.2f%%'
-    for reg in regions:
-        #data_loader.set_region(reg)
-        ids.append(reg)
-        pairs.append([reg])
-        labels.append(reg)
-        hover_labels.append(hover_label % (reg, normed_runtime[reg] * 100.0))
-        parents.append(app_name)
-        values.append(normed_runtime[reg])
-    
-
-    # Third Layer
-    # Consists of each resource per a particular region
-
-    # First step is to make a belief mapping
-    lam = 0.005
-    belief_map = OrderedDict() #{}
-    for reg in regions:
-        belief_map[reg] = {}
-        for resource, res_percent_err in rsm_results[reg].items():
-            print (reg, resource, res_percent_err)
-            belief_map[reg][resource] = res_percent_err
-            belief_map[reg][resource] = np.exp(-lam * res_percent_err)
-            print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
-    
-    # Normalize between 0 and 1 removing any small values
-    for reg in regions:
-        if(not belief_map[reg]):
-            continue
-        print ('...........', reg, belief_map[reg])
-        belief_min = min(belief_map[reg].values())
-        belief_max = max(belief_map[reg].values())
-
-        keys_to_remove = []
-        for resource in belief_map[reg]:
-            if (belief_max - belief_min) != 0:
-                belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
-
-            if belief_map[reg][resource] < BELIEF_THRESHOLD:
-                #print("Removing %s from %s" % (resource, reg))
-                keys_to_remove.append(resource)
-        
-        for key in keys_to_remove:
-            del belief_map[reg][key]
-
-    # Next step is with these belief values, normalized them such that
-    # the sum of all beliefs is equal to the regions normalized value
-    # We do this by first dividing all values by the sum
-    # This assures that the sum of these values equals 1
-    normed_belief_map = {}
-    for reg in regions:
-        normed_belief_map[reg] = {}
-        belief_sum = sum(belief_map[reg].values()) * PERCENT_OFFSET
-        for resource, belief in belief_map[reg].items():
-            normed_belief_map[reg][resource] = belief / belief_sum
-
-    # Lastly we append everything to the sunburst
-    hover_label = '%s<br>Percent Error Reduced: %0.2f%%'
-    csv_file = open('dashing/res_imp.csv', 'a')
-    csv_writer = csv.writer(csv_file,delimiter=',')
-    for reg in regions:
-        for resource, belief in belief_map[reg].items():
-            ids.append(reg+resource)
-            pairs.append([reg, resource])
-            labels.append(resource)
-            hover_labels.append(hover_label % (resource, rsm_results[reg][resource]*100.0))
-            csv_writer.writerow([config_name, reg, resource, "#", rsm_results[reg][resource]*100.0])
-            parents.append(reg)
-            values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
-            #values.append(normed_belief_map[reg][resource])
-    csv_file.close()
-    print("Zayed beliefs")
-    print(normed_belief_map)
-    # Fourth layer
-    # here we will add our last layer, each event and their respective error
-    # we will process their errors similar to res_errors where we will compute their
-    # belief score, norm between 0 and 1, and then remove any small values
-
+    #Fourth Layer Calculation
+    #########################################################################
     ev_percent_error = {}
     for reg in regions:
         #base_error = np.linalg.norm(data_loader.get_app_eff_loss(reg))
@@ -340,9 +262,92 @@ def sunburst(data_loader):
             belief_sum = sum(belief_res_ev_map[reg][resource].values()) * PERCENT_OFFSET
             for event, belief in belief_res_ev_map[reg][resource].items():
                 normed_belief_res_ev_map[reg][resource][event] = belief / belief_sum
-                #print(belief, belief/belief_sum)
 
+    ##############################################################################################
+
+
+    #############################################################################################
+    # Third Layer Calculations
+
+    lam = 0.005
+    belief_map = OrderedDict() #{}
+    for reg in regions:
+        belief_map[reg] = {}
+        for resource, res_percent_err in rsm_results[reg].items():
+            # print ("Not is: ", reg, resource, res_percent_err)
+            if resource in normed_belief_res_ev_map[reg]:
+                # print ("Is: ", reg, resource, res_percent_err)
+                belief_map[reg][resource] = res_percent_err
+                belief_map[reg][resource] = np.exp(-lam * res_percent_err)
+            # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
+    # Normalize between 0 and 1 removing any small values
+    for reg in regions:
+        if(not belief_map[reg]):
+            continue
+        # print ('...........', reg, belief_map[reg])
+        belief_min = min(belief_map[reg].values())
+        belief_max = max(belief_map[reg].values())
+
+        keys_to_remove = []
+        for resource in belief_map[reg]:
+            if (belief_max - belief_min) != 0:
+                belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+
+            if belief_map[reg][resource] < BELIEF_THRESHOLD:
+                #print("Removing %s from %s" % (resource, reg))
+                keys_to_remove.append(resource)
+        
+        for key in keys_to_remove:
+            del belief_map[reg][key]
+
+    # Next step is with these belief values, normalized them such that
+    # the sum of all beliefs is equal to the regions normalized value
+    # We do this by first dividing all values by the sum
+    # This assures that the sum of these values equals 1
+    normed_belief_map = {}
+    for reg in regions:
+        normed_belief_map[reg] = {}
+        belief_sum = sum(belief_map[reg].values()) * PERCENT_OFFSET
+        for resource, belief in belief_map[reg].items():
+            normed_belief_map[reg][resource] = belief / belief_sum
+
+    #######################################################################################################
+
+    # Second layer calculation and appending to sunburst
+    # Consists of each region whose value is their runtime percentage
+    hover_label = '%s<br>Runtime: %0.2f%%'
+    is_empty = True
+    for reg in regions:
+        #data_loader.set_region(reg)
+        if normed_belief_map[reg]:
+            is_empty = False
+            ids.append(reg)
+            pairs.append([reg])
+            labels.append(reg)
+            hover_labels.append(hover_label % (reg, normed_runtime[reg] * 100.0))
+            parents.append(app_name)
+            values.append(normed_runtime[reg])
+    
+    if is_empty:
+        labels[0] = "No particular counter is important here"
+
+    # Third Layer appending to the sunburst
+    hover_label = '%s<br>Percent Error Reduced: %0.2f%%'
+    csv_file = open('dashing/res_imp.csv', 'a')
+    csv_writer = csv.writer(csv_file,delimiter=',')
+    for reg in regions:
+        for resource, belief in belief_map[reg].items():
+            ids.append(reg+resource)
+            pairs.append([reg, resource])
+            labels.append(resource)
+            hover_labels.append(hover_label % (resource, rsm_results[reg][resource]*100.0))
+            csv_writer.writerow([config_name, reg, resource, "#", rsm_results[reg][resource]*100.0])
+            parents.append(reg)
+            values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
+    csv_file.close()
+
+    # Fourth layer appending to the sunburst
     hover_label = '%s<br>Percent Error Reduced: %0.2f%%<br>%s'
     for reg in normed_belief_res_ev_map:
         for resource in normed_belief_res_ev_map[reg]:
@@ -366,25 +371,6 @@ def sunburst(data_loader):
                     
                     values.append(normed_belief_res_ev_map[reg][resource][event] * normed_belief_map[reg][resource] * normed_runtime[reg])
 
-    # delte_ids = []
-    # for id in ids:
-    #     has_child = False
-    #     for parent in parents:
-    #         if parent == id:
-    #             print(parent + " && " + id )
-    #             has_child = True
-    #             break
-    #     if has_child == False:
-    #         print("Deleteing :" + id)
-    #         delte_ids.append(ids.index(id))
-
-    # for index in reversed(delte_ids):
-    #     ids.pop(index)
-    #     labels.pop(index)
-    #     parents.pop(index)
-    #     values.pop(index)
-    #     hover_labels.pop(index)
-
     sunburst_colors = ['#FFFFFF']
     default_color = '#babbca' #'#636efa'
     pairs.pop(0)
@@ -395,14 +381,8 @@ def sunburst(data_loader):
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
 
-    print("Zayed Sunburst Info")
-    print(ids)
-    print(labels)
-    print(parents)
-    print(values)
-    
-    template = "minty"
-    load_figure_template(template)
+    # template = "minty"
+    # load_figure_template(template)
     trace = go.Sunburst(
         ids=ids,
         labels=labels,
@@ -415,7 +395,7 @@ def sunburst(data_loader):
         outsidetextfont = {"size": 30, "color": "#377eb8"},
 #        outsidetextfont = {"size": 20, "color": "#377eb8"},
         marker = {"line": {"width": 2}},
-        # marker_colors=sunburst_colors
+        marker_colors=sunburst_colors
     )
 
     layout = go.Layout(
@@ -423,7 +403,8 @@ def sunburst(data_loader):
     )
     
     fig = go.Figure([trace], layout)
-    fig.update_layout(width = 700, height = 700, template=template)
+    # fig.update_layout(width = 700, height = 700, template=template)
+    fig.update_layout(width = 700, height = 700)
 
     data_loader.options['charts'].append(fig)
     if save_sunburst:
