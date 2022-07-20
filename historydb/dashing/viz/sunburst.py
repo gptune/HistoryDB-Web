@@ -265,8 +265,8 @@ def sunburst(data_loader):
             values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
             #values.append(normed_belief_map[reg][resource])
     csv_file.close()
-    print("Zayed beliefs")
-    print(normed_belief_map)
+    # print("Zayed beliefs")
+    # print(normed_belief_map)
     # Fourth layer
     # here we will add our last layer, each event and their respective error
     # we will process their errors similar to res_errors where we will compute their
@@ -395,11 +395,11 @@ def sunburst(data_loader):
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
 
-    print("Zayed Sunburst Info")
-    print(ids)
-    print(labels)
-    print(parents)
-    print(values)
+    # print("Zayed Sunburst Info")
+    # print(ids)
+    # print(labels)
+    # print(parents)
+    # print(values)
     
     template = "minty"
     load_figure_template(template)

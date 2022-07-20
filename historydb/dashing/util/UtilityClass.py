@@ -171,9 +171,9 @@ class Utility:
                         if (line.partition(delimiter)[0]).lower() == name.lower():
                             group_name_list = (line.partition(delimiter)[2]).split(",")
                             found = 1
-                        elif (line.partition(delimiter)[0]).lower() in name.lower():
-                            group_name_list = (line.partition(delimiter)[2]).split(",")
-                            found = 1
+                        # elif (line.partition(delimiter)[0]).lower() in name.lower():                           
+                        #     group_name_list = (line.partition(delimiter)[2]).split(",")
+                        #     found = 1
             #if found == 1:
                 #print('STATIC: ', group_name_list, "->", name)
             if found == 1 and (len(group_name_list) == 0 or len(group_name_list[0]) == 0):
@@ -196,7 +196,8 @@ class Utility:
             for group_name in group_name_list:
                 eventMapping[group_name].append(name)
 
-        # print (eventMapping.items())
+        # print("Zayed event mapping :")
+        # print (eventMapping)
         return eventMapping
 ##gl = group_name in lower case
     def check_if_in_a_dict(self, gl, d):

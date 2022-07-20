@@ -1449,7 +1449,7 @@ class AnalysisDashing(TemplateView):
                 # print(group)
                 # print(group + ',' + str(rsm_group_errors[regions][group]))
                 row_dict['group_name'] = group
-                row_dict['value'] = rsm_group_errors[regions][group]
+                row_dict['value'] = str(round(rsm_group_errors[regions][group] * 100, 2)) + '%'
                 row_dict['region'] = regions
                 group_imp.append(row_dict)
 
@@ -1457,15 +1457,31 @@ class AnalysisDashing(TemplateView):
             for group in rsm_group_errors2[regions]:
                 row_dict = {}
                 row_dict['group_name'] = group
-                row_dict['value'] = rsm_group_errors2[regions][group]
+                row_dict['value'] = str(round(rsm_group_errors2[regions][group] * 100, 2)) + '%'
                 row_dict['region'] = regions
                 group_imp.append(row_dict)
 
+        ev_imps = []
+        for regions in rsm_ev_errors:
+            max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
+            min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
+            # print("ZZZZ" + max_ev, min_ev)
+            diff = max_ev - min_ev
+            for event in rsm_ev_errors[regions]:
+                ev_imps.append(float((rsm_ev_errors[regions][event]-min_ev)/diff))
+        sum_imps = 0
+        # sum_imps+=[x for x in ev_imps]
+        for x in ev_imps:
+            sum_imps+=x
+
         event_imp = []
         for regions in rsm_ev_errors:
+            max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
+            min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
             for event in rsm_ev_errors[regions]:
                 row_dict = {}
                 row_dict['counter_name'] = event
+                # row_dict['value'] = round((((rsm_ev_errors[regions][event]-min_ev)/diff) / sum_imps) * 100, 2)
                 row_dict['value'] = rsm_ev_errors[regions][event]
                 row_dict['region'] = regions
                 row_dict['groups'] = ','.join(ev_to_res_map[event])
@@ -1477,7 +1493,7 @@ class AnalysisDashing(TemplateView):
             for event in rsm_ev_errors2[regions]:
                 row_dict = {}
                 row_dict['counter_name'] = event
-                row_dict['value'] = rsm_ev_errors2[regions][event]
+                row_dict['value'] = str(rsm_ev_errors2[regions][event])
                 row_dict['region'] = regions
                 row_dict['groups'] = ','.join(ev_to_res_map2[event])
                 event_imp.append(row_dict)

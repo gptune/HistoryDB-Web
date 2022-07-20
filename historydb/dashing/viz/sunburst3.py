@@ -205,6 +205,19 @@ def sunburst(data_loader):
             if ev_percent_error[reg][event] < 0.0:
                 ev_percent_error[reg][event] = 0.0
 
+    # print("Zayed ev_to_gro")
+    # print(data_loader.ev_to_res_map)
+    # mapping = dict()
+    # with open('counter_map.txt', 'a') as txtfile:
+    #     for counter in data_loader.ev_to_res_map:
+    #         for group in data_loader.ev_to_res_map[counter]:
+    #             if group not in mapping:
+    #                 mapping[group] = []
+    #             mapping[group].append(counter)
+
+    #     for group in mapping:
+    #         for counter in mapping[group]:
+    #             txtfile.write(counter + '=>' + group + '\n')
 
     lam = 0.0005
     belief_ev_map = OrderedDict() #{}
@@ -278,7 +291,7 @@ def sunburst(data_loader):
             if resource in normed_belief_res_ev_map[reg]:
                 # print ("Is: ", reg, resource, res_percent_err)
                 belief_map[reg][resource] = res_percent_err
-                belief_map[reg][resource] = np.exp(-lam * res_percent_err)
+                # belief_map[reg][resource] = np.exp(-lam * res_percent_err)
             # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
     # Normalize between 0 and 1 removing any small values
