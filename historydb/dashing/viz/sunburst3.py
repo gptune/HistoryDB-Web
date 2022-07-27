@@ -177,11 +177,15 @@ def sunburst(data_loader):
         runtime_sum = np.sum(runtime)
         runtimes[reg] = runtime_sum
     
+
     normed_runtime = OrderedDict() #{}
     # Assures the sum of normed_runtime is less than 1
     runtime_sum = sum(runtimes.values()) * PERCENT_OFFSET
     for reg in regions:
         normed_runtime[reg] = runtimes[reg] / runtime_sum
+
+    # print("Zayed normed runtime")
+    # print(runtimes)
 
     # First layer
     # Add the app name and its value is the sum of the normed runtime
@@ -225,6 +229,7 @@ def sunburst(data_loader):
         belief_ev_map[reg] = OrderedDict() #{}
         for event, percent_error in ev_percent_error[reg].items():
             belief_ev_map[reg][event] = percent_error
+            # belief_ev_map[reg][event] = np.exp(-lam * percent_error)
     # Parse the map into a region->res->event->belief layout
     belief_res_ev_map = OrderedDict() #i{}
     for reg in regions:
@@ -291,7 +296,7 @@ def sunburst(data_loader):
             if resource in normed_belief_res_ev_map[reg]:
                 # print ("Is: ", reg, resource, res_percent_err)
                 belief_map[reg][resource] = res_percent_err
-                # belief_map[reg][resource] = np.exp(-lam * res_percent_err)
+                belief_map[reg][resource] = np.exp(-lam * res_percent_err)
             # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
     # Normalize between 0 and 1 removing any small values
@@ -343,7 +348,8 @@ def sunburst(data_loader):
             values.append(normed_runtime[reg])
     
     if is_empty:
-        labels[0] = "No particular counter is important here"
+        data_loader.options['charts'].append(None)
+
 
     # Third Layer appending to the sunburst
     hover_label = '%s<br>Percent Error Reduced: %0.2f%%'
@@ -354,7 +360,8 @@ def sunburst(data_loader):
             ids.append(reg+resource)
             pairs.append([reg, resource])
             labels.append(resource)
-            hover_labels.append(hover_label % (resource, rsm_results[reg][resource]*100.0))
+            # hover_labels.append(hover_label % (resource, rsm_results[reg][resource]*100.0))
+            hover_labels.append(hover_label % (resource, normed_belief_map[reg][resource]*100.0))
             csv_writer.writerow([config_name, reg, resource, "#", rsm_results[reg][resource]*100.0])
             parents.append(reg)
             values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
@@ -371,7 +378,8 @@ def sunburst(data_loader):
                     #labels.append(event) --> TZI: modify
                     #labels.append(shorten_event_name(event))
                     labels.append(event)
-                    value = ev_percent_error[reg][event]*100.0
+                    # value = ev_percent_error[reg][event]*100.0
+                    value = normed_belief_res_ev_map[reg][resource][event] * 100
 
                     closest_event_names = get_close_matches(event, descriptions.keys(), cutoff=.8)
                     if closest_event_names: # if there was a match at all
@@ -393,6 +401,9 @@ def sunburst(data_loader):
         else:
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
+
+    data_loader['group_reg_pair'] = normed_belief_map
+    data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
 
     # template = "minty"
     # load_figure_template(template)

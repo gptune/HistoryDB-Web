@@ -28,6 +28,8 @@ import pandas as pd
 from dashing.driver import driver
 from dashing.util import UtilityClass
 
+from random import random
+
 
 import requests
 import os
@@ -1149,26 +1151,33 @@ class AnalysisDashing(TemplateView):
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
         
+        has_counter_info = 'additional_output' in function_evaluations[0]
+
         phases = set()
-        counter_groups = set()
-        counters = set()
-        mapping = ''
-        mapping_set = set()
-        counter_classes = list((function_evaluations[0])['additional_output'].keys())
-        for counter_class in counter_classes:
-            temp_phase = list(function_evaluations[0]['additional_output'][counter_class].keys())
-            phases.update(temp_phase)
-            for phase in temp_phase:
-                temp_counter_groups = list(function_evaluations[0]['additional_output'][counter_class][phase].keys())
-                counter_groups.update(temp_counter_groups)
-                for counter_group in temp_counter_groups:
-                    temp_counters = list(function_evaluations[0]['additional_output'][counter_class][phase][counter_group].keys())
-                    counters.update(temp_counters)
-                    for counter in temp_counters:
-                        mapping_set.add(counter + '=>' + counter_group)
+        if has_counter_info:
+            counter_groups = set()
+            counters = set()
+            mapping = ''
+            mapping_set = set()
+            counter_classes = list((function_evaluations[0])['additional_output'].keys())
+            for counter_class in counter_classes:
+                temp_phase = list(function_evaluations[0]['additional_output'][counter_class].keys())
+                phases.update(temp_phase)
+                for phase in temp_phase:
+                    temp_counter_groups = list(function_evaluations[0]['additional_output'][counter_class][phase].keys())
+                    counter_groups.update(temp_counter_groups)
+                    for counter_group in temp_counter_groups:
+                        temp_counters = list(function_evaluations[0]['additional_output'][counter_class][phase][counter_group].keys())
+                        counters.update(temp_counters)
+                        for counter in temp_counters:
+                            mapping_set.add(counter + '=>' + counter_group)
+
         evaluation_results = list((function_evaluations[0])['evaluation_result'].keys())
         task_params = list(function_evaluations[0]['task_parameter'].keys())
         tuning_parmas = list(function_evaluations[0]['tuning_parameter'].keys())
+
+        if not phases:
+            phases.add("Single Phase")
 
         # analyze_cols = []
         # for counter in counters:
@@ -1227,22 +1236,23 @@ class AnalysisDashing(TemplateView):
 
         coloumns = ['']
         coloumns.extend(phases)
-        new_dashing_df = pd.DataFrame(columns=coloumns)
-        rows = []
-        for feat in counters:
-            row_dict = {}
-            row_dict[''] = feat
-            for phase in phases:
-                temp_list = []
-                for function_eval in function_evaluations:
-                    for counter_class in counter_classes:
-                        for counter_group in counter_groups:
-                            if feat in function_eval['additional_output'][counter_class][phase][counter_group].keys():
-                                temp_list.append(function_eval['additional_output'][counter_class][phase][counter_group][feat])
-                temp_list_2 = [str(val) for val in temp_list]
-                temp_row = ','.join(temp_list_2)
-                row_dict[phase] = temp_row
-            rows.append(row_dict)
+        if has_counter_info:
+            new_dashing_df = pd.DataFrame(columns=coloumns)
+            rows = []
+            for feat in counters:
+                row_dict = {}
+                row_dict[''] = feat
+                for phase in phases:
+                    temp_list = []
+                    for function_eval in function_evaluations:
+                        for counter_class in counter_classes:
+                            for counter_group in counter_groups:
+                                if feat in function_eval['additional_output'][counter_class][phase][counter_group].keys():
+                                    temp_list.append(function_eval['additional_output'][counter_class][phase][counter_group][feat])
+                    temp_list_2 = [str(val) for val in temp_list]
+                    temp_row = ','.join(temp_list_2)
+                    row_dict[phase] = temp_row
+                rows.append(row_dict)
 
         new_dashing_df_2 = pd.DataFrame(columns=coloumns)
         rows2 = []
@@ -1270,6 +1280,7 @@ class AnalysisDashing(TemplateView):
                 row_dict[phase] = temp_row
             rows2.append(row_dict)
         
+        
         for evaluation_result in evaluation_results:
             row_dict = {}
             row_dict[''] = evaluation_result
@@ -1280,10 +1291,12 @@ class AnalysisDashing(TemplateView):
                 temp_list_2 = [str(val) for val in temp_list]                
                 temp_row = ','.join(temp_list_2)
                 row_dict[phase] = temp_row
-            rows.append(row_dict)
+            if has_counter_info:
+                rows.append(row_dict)
             rows2.append(row_dict)
 
-        new_dashing_df = pd.DataFrame(rows)
+        if has_counter_info: 
+            new_dashing_df = pd.DataFrame(rows)
         new_dashing_df_2 = pd.DataFrame(rows2)
         # print(new_dashing_df.tail())
 
@@ -1385,28 +1398,31 @@ class AnalysisDashing(TemplateView):
         #     s += '  rsm_cpu_count: 4\n' 
         #     txtfile.write(s)
 
-        arch_file = 'haswell3'
-        if len(counter_groups) > 1:
-            arch_file = 'defined'
-        self.write_config_file('tuning_problem_1' + '.yml',evaluation_results[0],arch_file)
+        if has_counter_info:
+            arch_file = 'haswell3'
+            if len(counter_groups) > 1:
+                arch_file = 'defined'
+            self.write_config_file('tuning_problem_1' + '.yml',evaluation_results[0],arch_file)
+
         self.write_config_file('tuning_problem_2' + '.yml',evaluation_results[0],'haswell-user')
 
         #Architecture setup for counter analysis 
-        resources_path = 'dashing/resources/' + arch_file 
-        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
-            for counter in counters:
-                txtfile.write(counter + '\n')
+        if has_counter_info:
+            resources_path = 'dashing/resources/' + arch_file 
+            with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+                for counter in counters:
+                    txtfile.write(counter + '\n')
         
-        if arch_file == 'defined':
-            with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
-                s = 'UNDEFINED,0\n'
-                for counter_group in counter_groups:
-                    s+= counter_group + ',0\n'
-                txtfile.write(s)
+            if arch_file == 'defined':
+                with open(resources_path + '/architecture_groups.txt', 'w') as txtfile:
+                    s = 'UNDEFINED,0\n'
+                    for counter_group in counter_groups:
+                        s+= counter_group + ',0\n'
+                    txtfile.write(s)
 
-            with open(resources_path + '/event_map.txt', 'w') as txtfile:
-                mapping = '\n'.join(list(mapping_set))
-                txtfile.write(mapping + '\n')
+                with open(resources_path + '/event_map.txt', 'w') as txtfile:
+                    mapping = '\n'.join(list(mapping_set))
+                    txtfile.write(mapping + '\n')
 
         #Architecture setup for user paramater analysis 
         resources_path = 'dashing/resources/haswell-user' 
@@ -1422,9 +1438,9 @@ class AnalysisDashing(TemplateView):
                 txtfile.write(task_param + '\n')
 
         with open(resources_path + '/event_map.txt', 'w') as txtfile:
-            if len(counter_groups) != 1:
-                mapping = '\n'.join(list(mapping_set))
-                txtfile.write(mapping + '\n')
+            if has_counter_info and len(counter_groups) != 1:
+                    mapping = '\n'.join(list(mapping_set))
+                    txtfile.write(mapping + '\n')
             for task_param in task_params:
                 txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
             for tuning_param in tuning_parmas:
@@ -1434,76 +1450,134 @@ class AnalysisDashing(TemplateView):
                 txtfile.write('')
 
         drv = driver()
-        chart, rsm_group_errors, rsm_ev_errors, ev_to_res_map = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
-        chart2 = plot(chart[0],output_type="div")
+        if has_counter_info:
+            chart, rsm_group_errors, rsm_ev_errors, ev_to_res_map, pair, values = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_1.yml', True, dataframe= new_dashing_df)
+            if chart[0] is not None:
+                chart2 = plot(chart[0],output_type="div")
+            else:
+                chart2 = None
+        else:
+            chart2 = None
 
-        chart, rsm_group_errors2, rsm_ev_errors2, ev_to_res_map2 = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
-        chart3 = plot(chart[0],output_type="div")
+        chart, rsm_group_errors2, rsm_ev_errors2, ev_to_res_map2, pair2, values2 = drv.main(os.getcwd() + '/dashing/configs/tuning_problem_2.yml', True, dataframe= new_dashing_df_2)
+        if chart[0] is not None:
+            chart3 = plot(chart[0],output_type="div")
+        else:
+            chart3 = None
+
 
         group_imp = []
-        for regions in rsm_group_errors:
-            # print('Zayed ')
-            # print(rsm_group_errors[regions])
-            for group in rsm_group_errors[regions]:
-                row_dict = {}
-                # print(group)
-                # print(group + ',' + str(rsm_group_errors[regions][group]))
-                row_dict['group_name'] = group
-                row_dict['value'] = str(round(rsm_group_errors[regions][group] * 100, 2)) + '%'
-                row_dict['region'] = regions
-                group_imp.append(row_dict)
+        # if has_counter_info:
+        #     for regions in rsm_group_errors:
+        #         # print('Zayed ')
+        #         # print(rsm_group_errors[regions])
+        #         for group in rsm_group_errors[regions]:
+        #             row_dict = {}
+        #             # print(group)
+        #             # print(group + ',' + str(rsm_group_errors[regions][group]))
+        #             row_dict['group_name'] = group
+        #             row_dict['value'] = str(round(rsm_group_errors[regions][group] * 100, 2)) + '%'
+        #             row_dict['region'] = regions
+        #             group_imp.append(row_dict)
 
-        for regions in rsm_group_errors2:
-            for group in rsm_group_errors2[regions]:
+        # for regions in rsm_group_errors2:
+        #     for group in rsm_group_errors2[regions]:
+        #         row_dict = {}
+        #         row_dict['group_name'] = group
+        #         row_dict['value'] = str(round(rsm_group_errors2[regions][group] * 100, 2)) + '%'
+        #         row_dict['region'] = regions
+        #         group_imp.append(row_dict)
+
+        # print("Zayed pairs: ")
+        # print(pair)
+
+        if has_counter_info:
+            for region in pair:
+                for resource in pair[region]:
+                # print('Zayed ')
+                # print(rsm_group_errors[regions])
+                    row_dict = {}
+                        # print(group)
+                        # print(group + ',' + str(rsm_group_errors[regions][group]))
+                    row_dict['group_name'] = resource
+                    row_dict['value'] = str(round(pair[region][resource] * 100 , 2)) + '%'
+                    row_dict['region'] = region
+                    group_imp.append(row_dict)
+
+        for region in pair2:
+            for group in pair2[region]:
                 row_dict = {}
                 row_dict['group_name'] = group
-                row_dict['value'] = str(round(rsm_group_errors2[regions][group] * 100, 2)) + '%'
-                row_dict['region'] = regions
+                row_dict['value'] = str(round(pair2[region][group] * 100, 2)) + '%'
+                row_dict['region'] = region
                 group_imp.append(row_dict)
 
         ev_imps = []
-        for regions in rsm_ev_errors:
-            max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
-            min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
-            # print("ZZZZ" + max_ev, min_ev)
-            diff = max_ev - min_ev
-            for event in rsm_ev_errors[regions]:
-                ev_imps.append(float((rsm_ev_errors[regions][event]-min_ev)/diff))
-        sum_imps = 0
-        # sum_imps+=[x for x in ev_imps]
-        for x in ev_imps:
-            sum_imps+=x
+        if has_counter_info:
+            for region in values:
+                for group in values[region]:
+                    for event in values[region][group]:
+                        row_dict = {}
+                        row_dict['counter_name'] = event
+                        row_dict['value'] = str(round(values[region][group][event] * 100, 2)) + '%' 
+                        row_dict['region'] = region
+                        row_dict['groups'] = group
+                        ev_imps.append(row_dict)
 
-        event_imp = []
-        for regions in rsm_ev_errors:
-            max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
-            min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
-            for event in rsm_ev_errors[regions]:
-                row_dict = {}
-                row_dict['counter_name'] = event
-                # row_dict['value'] = round((((rsm_ev_errors[regions][event]-min_ev)/diff) / sum_imps) * 100, 2)
-                row_dict['value'] = rsm_ev_errors[regions][event]
-                row_dict['region'] = regions
-                row_dict['groups'] = ','.join(ev_to_res_map[event])
-                event_imp.append(row_dict)
+        for region in values2:
+            for group in values2[region]:
+                for event in values2[region][group]:
+                    row_dict = {}
+                    row_dict['counter_name'] = event
+                    row_dict['value'] = str(round(values2[region][group][event] * 100, 2)) + '%' 
+                    row_dict['region'] = region
+                    row_dict['groups'] = group
+                    ev_imps.append(row_dict)
+
+        # if has_counter_info:
+        #     for regions in rsm_ev_errors:
+        #         max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
+        #         min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
+        #         # print("ZZZZ" + max_ev, min_ev)
+        #         diff = max_ev - min_ev
+        #         for event in rsm_ev_errors[regions]:
+        #             ev_imps.append(float((rsm_ev_errors[regions][event]-min_ev)/diff))
+        # sum_imps = 0
+        # # sum_imps+=[x for x in ev_imps]
+        # for x in ev_imps:
+        #     sum_imps+=x
+
+        # event_imp = []
+        # if has_counter_info:
+        #     for regions in rsm_ev_errors:
+        #         max_ev = rsm_ev_errors[regions][max(rsm_ev_errors[regions])]
+        #         min_ev = rsm_ev_errors[regions][min(rsm_ev_errors[regions])]
+        #         for event in rsm_ev_errors[regions]:
+        #             row_dict = {}
+        #             row_dict['counter_name'] = event
+        #             row_dict['value'] = round((((rsm_ev_errors[regions][event]-min_ev)/diff) / sum_imps) * 100, 2)
+        #             # row_dict['value'] = rsm_ev_errors[regions][event]
+        #             row_dict['region'] = regions
+        #             row_dict['groups'] = ','.join(ev_to_res_map[event])
+        #             event_imp.append(row_dict)
         
-        # print("Zayed")
-        # print(ev_to_res_map2)
-        for regions in rsm_ev_errors2:
-            for event in rsm_ev_errors2[regions]:
-                row_dict = {}
-                row_dict['counter_name'] = event
-                row_dict['value'] = str(rsm_ev_errors2[regions][event])
-                row_dict['region'] = regions
-                row_dict['groups'] = ','.join(ev_to_res_map2[event])
-                event_imp.append(row_dict)
+        # # print("Zayed")
+        # # print(ev_to_res_map2)
+        # for regions in rsm_ev_errors2:
+        #     for event in rsm_ev_errors2[regions]:
+        #         row_dict = {}
+        #         row_dict['counter_name'] = event
+        #         row_dict['value'] = str(rsm_ev_errors2[regions][event])
+        #         row_dict['region'] = regions
+        #         row_dict['groups'] = ','.join(ev_to_res_map2[event])
+        #         event_imp.append(row_dict)
 
         context = { "function_evaluations" : function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "chart" : chart2,
                     "chart2" : chart3,
                     "groups" : group_imp,
-                    "counters" : event_imp
+                    "counters" : ev_imps
         }
 
         return render(request, 'repo/analysis-dashing.html', context)

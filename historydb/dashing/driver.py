@@ -47,9 +47,11 @@ class driver(dict):
         # rsm_norm_data = data_loader['rsm_norm_data']
         rsm_results = data_loader['rsm_results']
 
+
+
         # print("Zayed ev to res: ")
         # print(data_loader.ev_to_res_map)
-        return charts, rsm_results, rsm_ev_errors, data_loader.ev_to_res_map
+        return charts, rsm_results, rsm_ev_errors, data_loader.ev_to_res_map,data_loader['group_reg_pair'], data_loader['group_reg_pair_vlaues']
 
     # def main2(self,config_file, force_compute, dataframe, config_name=None):
     #     config_path, config_dict_data = self.load_config_file(config_file)
