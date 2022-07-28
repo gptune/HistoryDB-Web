@@ -28,7 +28,7 @@ class MyPool(multiprocessing.pool.Pool):
 
 def compute_rsm_task_all_regions(data_loader):
     if data_loader.get_option(COMPLETE_FLAG, False):
-        print("Skipping RSM as it was saved in data_loader...")
+        # print("Skipping RSM as it was saved in data_loader...")
         return
 
     num_iters = data_loader.get_option('rsm_iters', 2500)
@@ -39,9 +39,9 @@ def compute_rsm_task_all_regions(data_loader):
 
     if num_cpus is None:
         num_cpus = psutil.cpu_count(logical=False)
-        print("WARNING: 'rsm_cpu_count' was not set, using %d as default" % num_cpus)
-    else:
-        print("WARNING: 'rsm_cpu_count' set, using %d as default" % num_cpus)
+        # print("WARNING: 'rsm_cpu_count' was not set, using %d as default" % num_cpus)
+    # else:
+    #     # print("WARNING: 'rsm_cpu_count' set, using %d as default" % num_cpus)
 
     # csv files to dump
     csv_rsm_results = data_loader.get_option('csv_rsm_results', None)
@@ -49,10 +49,10 @@ def compute_rsm_task_all_regions(data_loader):
     csv_rsm_ev_errors = data_loader.get_option('csv_rsm_ev_errors', None)
     csv_rsm_alphas = data_loader.get_option('csv_rsm_alphas', None)
 
-    if use_nn_solver:
-        print("Will use nn solver for RSM")
-    else:
-        print("Will use lstsq solver for RSM")
+    # if use_nn_solver:
+    #     print("Will use nn solver for RSM")
+    # else:
+    #     print("Will use lstsq solver for RSM")
 
     results = {}
     errors = {}
@@ -60,9 +60,9 @@ def compute_rsm_task_all_regions(data_loader):
     alphas = {}
     norm_data = {}
     for key in data_loader.get_regions():
-        print(data_loader.get_regions())
-        print("\n--------------")
-        print("Region: ", key)
+        # print(data_loader.get_regions())
+        # print("\n--------------")
+        # print("Region: ", key)
 
         rsm_score, error, ev_error, alpha, norm_d = compute_rsm(data_loader, key,
             num_iters=num_iters, use_nn_solver=use_nn_solver, num_cpus=num_cpus, rescale=rescale)
@@ -95,11 +95,11 @@ def compute_rsm_task_all_regions(data_loader):
     data_loader['rsm_norm_data'] = norm_data
     data_loader[COMPLETE_FLAG] = True
 
-    if print_results:
-        for reg_key in results:
-            print("\n%s\n---------------------" % reg_key)
-            for resource in results[reg_key]:
-                print("%s = %s" % (resource, results[reg_key][resource]))
+    # if print_results:
+    #     for reg_key in results:
+    #         # print("\n%s\n---------------------" % reg_key)
+    #         for resource in results[reg_key]:
+    #             # print("%s = %s" % (resource, results[reg_key][resource]))
 
 
     if csv_rsm_results:
@@ -207,7 +207,7 @@ def compute_rsm_with_data(data_loader, app_data, eff_loss, num_iters=5000, use_n
     
     if num_cpus is None:
         num_cpus = psutil.cpu_count(logical=False)
-        print("WARNING: 'rsm_cpu_count' was not set, using %d as default" % num_cpus)
+        # print("WARNING: 'rsm_cpu_count' was not set, using %d as default" % num_cpus)
 
     # Equivalent to: A = A * diag(1 ./ sqrt(sum(A^2)))
     # We ignore divide by 0 since we repair afterwards
@@ -232,7 +232,7 @@ def compute_rsm_with_data(data_loader, app_data, eff_loss, num_iters=5000, use_n
     for i, resource in enumerate(data_loader.resources):
         resource_events = data_loader.get_events_from_resource(resource)
         ids = [data_loader.events.index(ev) for ev in resource_events if ev in event_set]
-        print(ids)
+        # print(ids)
         #print(resource)
         #print(app_data[:,ids])
         # If this group has no events associated with it
@@ -281,10 +281,10 @@ def ensemble_omp_wrapper(D, Y, SPARSITY=15, THRESH=3, num_iters=2500,
 
         tasks.append((D.copy(), Y.copy(), SPARSITY, THRESH, proc_iters, use_nn_solver))
 
-    print("Starting ensemble_omp...")
+    # print("Starting ensemble_omp...")
     pool = Pool(num_cpus)
     results = pool.map(ensemble_omp, tasks)
-    print("Finished ensemble_omp!")
+    # print("Finished ensemble_omp!")
     pool.close()
     pool.join()
     
@@ -311,8 +311,8 @@ def ensemble_omp(ensemble_args):
     alpha = None
     for iter in range(num_iters):
 
-        if (iter+1) % 500 == 0:
-            print("Starting iteration %d/%d" % (iter+1, num_iters))
+        # if (iter+1) % 500 == 0:
+        #     # print("Starting iteration %d/%d" % (iter+1, num_iters))
 
         A = []
         residual = Y.copy()

@@ -14,8 +14,6 @@ from difflib import get_close_matches
 import re
 from collections import OrderedDict 
 
-from dash_bootstrap_templates import load_figure_template
-
 def conv_str(ev):
     shortened_event_name = ''
     if (ev == 'transactions'):
@@ -242,8 +240,8 @@ def sunburst(data_loader):
             belief_res_ev_map[reg][event_resource][event] = event_belief
 
     #TZI: Debug: Output the event percentages in a csv file for ease of use.
-    csv_file = open('dashing/ev_belief_perc.csv', 'a')
-    csv_writer = csv.writer(csv_file,delimiter=',')
+    # csv_file = open('dashing/ev_belief_perc.csv', 'a')
+    # csv_writer = csv.writer(csv_file,delimiter=',')
     for reg in belief_res_ev_map:
         resources_to_remove = []
         for resource in belief_res_ev_map[reg]:
@@ -261,17 +259,17 @@ def sunburst(data_loader):
 
                 if belief_res_ev_map[reg][resource][event] < BELIEF_THRESHOLD:
                     keys_to_remove.append(event)
-                if belief_res_ev_map[reg][resource][event] > BELIEF_THRESHOLD:
-                    csv_writer.writerow([app_name, reg, resource, event, belief_res_ev_map[reg][resource][event]])
+                # if belief_res_ev_map[reg][resource][event] > BELIEF_THRESHOLD:
+                #     # csv_writer.writerow([app_name, reg, resource, event, belief_res_ev_map[reg][resource][event]])
             
             for key in keys_to_remove:
                 del belief_res_ev_map[reg][resource][key]
         
         for resource in resources_to_remove:
-            print("Deleting %s from %s" % (resource, reg))
+            # print("Deleting %s from %s" % (resource, reg))
             del belief_res_ev_map[reg][resource]
     
-    csv_file.close()
+    # csv_file.close()
     normed_belief_res_ev_map = {}
     for reg in belief_res_ev_map:
         normed_belief_res_ev_map[reg] = {}
@@ -353,8 +351,8 @@ def sunburst(data_loader):
 
     # Third Layer appending to the sunburst
     hover_label = '%s<br>Percent Error Reduced: %0.2f%%'
-    csv_file = open('dashing/res_imp.csv', 'a')
-    csv_writer = csv.writer(csv_file,delimiter=',')
+    # csv_file = open('dashing/res_imp.csv', 'a')
+    # csv_writer = csv.writer(csv_file,delimiter=',')
     for reg in regions:
         for resource, belief in belief_map[reg].items():
             ids.append(reg+resource)
@@ -362,10 +360,10 @@ def sunburst(data_loader):
             labels.append(resource)
             # hover_labels.append(hover_label % (resource, rsm_results[reg][resource]*100.0))
             hover_labels.append(hover_label % (resource, normed_belief_map[reg][resource]*100.0))
-            csv_writer.writerow([config_name, reg, resource, "#", rsm_results[reg][resource]*100.0])
+            # csv_writer.writerow([config_name, reg, resource, "#", rsm_results[reg][resource]*100.0])
             parents.append(reg)
             values.append(normed_belief_map[reg][resource] * normed_runtime[reg])
-    csv_file.close()
+    # csv_file.close()
 
     # Fourth layer appending to the sunburst
     hover_label = '%s<br>Percent Error Reduced: %0.2f%%<br>%s'

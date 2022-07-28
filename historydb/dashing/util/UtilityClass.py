@@ -53,8 +53,6 @@ def generate_all_possible_group_names_new(arch_path,corr_filename):
                 graphed_counters.add(counter)
         coverage_threshold = 0.80
         if len(graphed_counters)*1.0/len(counters) > coverage_threshold:
-            print("Zayed : " + str(len(graphed_counters)) + "," + str(len(counters)))
-            print("Zayed : " + str(len(counters)*1.0/len(graphed_counters)))
             break
         # index += 1
         # if index>10:
@@ -248,9 +246,9 @@ class Utility:
                 [eventlist.append(ev) for ev in (line.partition('\n')[0]).split(',')]
         return eventlist
         
-    def traverse_dictionary(self,dict):
-        for key, val in dict.items():
-            print (key + " " + dict[key].values())
+    # def traverse_dictionary(self,dict):
+    #     for key, val in dict.items():
+    #         print (key + " " + dict[key].values())
 
     def get_exclude_groups_list(self):
         exclude_groups = []
@@ -266,7 +264,7 @@ class Utility:
         arch_dict = defaultdict(list)
         new_groups = []
         uncore_flags = {}
-        print(self)
+        # print(self)
         if os.path.exists(self.arch_path) == True:
             with open(self.arch_path,'r') as groups:
                 for line in groups:
@@ -357,11 +355,11 @@ if __name__ == "__main__":
     AGroups, uncore_flags, arch_dict = obj.set_arch_groups()
     eventlist = obj.get_event_list(sys.argv[4])
     eventmap = obj.assign_event_list_to_eventGroups(eventlist, AGroups)
-    for key, val in eventmap.items():
-        print (key)
-        for v in val:
-            print ("--", v)
-    # exclude_event_list = eventmap['UNDEFINED']
+    # for key, val in eventmap.items():
+    #     # # print (key)
+    #     # for v in val:
+    #     #     # print ("--", v)
+    # # exclude_event_list = eventmap['UNDEFINED']
     exclude_event_list = eventmap['UNDEFINED']
 
 
@@ -374,7 +372,7 @@ if __name__ == "__main__":
                 if (line not in exclude_event_list):
                     allowed_events.append(line)
     except IOError:
-        print("File does not exist. Pruning eventlist instead.")
+        # print("File does not exist. Pruning eventlist instead.")
         for ev in eventlist:
             if (ev not in exclude_event_list):
                 allowed_events.append(ev)

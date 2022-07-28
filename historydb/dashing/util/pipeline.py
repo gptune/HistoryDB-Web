@@ -22,7 +22,7 @@ class DataLoader(dict):
     def init_from_h5(self, config_name, data_path, proc_configs, arch_file,
             event_file, exclude_file, counter_file, target="Runtime"):
         
-        print("Initializing with h5")
+        # print("Initializing with h5")
         
         self = DataLoader()
         self.config_name = config_name
@@ -39,7 +39,7 @@ class DataLoader(dict):
     def init_from_csv(self, config_name, csv_path, proc_configs, arch_file,
             event_file, exclude_file, counter_file, target="Runtime", compute_target="None"):
 
-        print("Initializing with csv")
+        # print("Initializing with csv")
         
         self = DataLoader()
         self.config_name = config_name
@@ -57,7 +57,7 @@ class DataLoader(dict):
     def init_from_dataframe(self, config_name, dataframe, proc_configs, arch_file,
             event_file, exclude_file, counter_file, target="Runtime", compute_target="None"):
 
-        print("Initializing from dataframe")
+        # print("Initializing from dataframe")
         
         self = DataLoader()
         self.config_name = config_name
@@ -129,8 +129,8 @@ class DataLoader(dict):
         filtered_tasks = []
         for i, h5_task in enumerate(h5_file_path_tasks):
             if len(h5_task) == 0:
-                print("WARNING: %d reported 0 files found." % self.proc_configs[i])
-                print("This configuration will be removed and ignored.")
+                # print("WARNING: %d reported 0 files found." % self.proc_configs[i])
+                # print("This configuration will be removed and ignored.")
                 del self.proc_configs[i]
             else:
                 filtered_tasks.append(h5_task)
@@ -263,7 +263,7 @@ class DataLoader(dict):
         if 'UNDEFINED' in res_to_event_map:
             undefined_events = res_to_event_map['UNDEFINED']
             del res_to_event_map['UNDEFINED']
-            print("Removing undefined")
+            # print("Removing undefined")
         
         # this provide a event->resource lookup
         event_to_res_map = {}
@@ -275,7 +275,7 @@ class DataLoader(dict):
         
         for event in undefined_events:
             if event not in event_to_res_map and event in self.events:
-                print("Removing %s for not having a valid resource" % event)
+                # print("Removing %s for not having a valid resource" % event)
                 del self.events[self.events.index(event)]
         
         return res_to_event_map, event_to_res_map, uncore_flags
@@ -334,7 +334,7 @@ class DataLoader(dict):
         data_dict = {}
         for key in keys:
             data_dict[key] = self.h5_map[reg][key].copy()
-            print (reg, key)
+            # print (reg, key)
             # If any resource associated with an event is uncore, we divide it by its
             # processor count
             is_uncore = list(map(lambda x : self.uncore_flags[x],
