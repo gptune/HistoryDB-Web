@@ -1080,7 +1080,191 @@ class ModelPrediction(TemplateView):
 
             return render(request, 'repo/model-prediction.html', context)
 
-class AnalysisDashing(TemplateView):
+class AnalysisDashingParameter(TemplateView):
+
+    def write_config_file(self,file_name,target,arch):
+        config_dir = 'dashing/configs'
+        if not os.path.isdir(config_dir):
+            os.mkdir(config_dir)
+        with open(config_dir + '/' + file_name, 'w') as txtfile:
+            s = 'tuning_problem:'
+            txtfile.write(s + '\n')
+            s = '  data: '
+            txtfile.write(s + '\n')
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
+            txtfile.write(s + '\n')
+            s = '    - dashing.viz.sunburst3.sunburst'
+            txtfile.write(s + '\n')
+            s = '  name:  \'' + target +'\''
+            txtfile.write(s + '\n')
+            s = '  target:  \'' + target +'\''
+            txtfile.write(s + '\n')
+            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
+            txtfile.write(s + '\n')
+            s = '##############################'
+            txtfile.write(s + '\n')
+
+            txtfile.write('\n')
+
+            s = 'main:'
+            txtfile.write(s + '\n')  
+            s = '  tasks:'
+            txtfile.write(s + '\n')
+            s = '    - tuning_problem'
+            txtfile.write(s + '\n')
+            s = '  arch: ' + arch + '\n'
+            s += '  data_rescale: true\n'
+            s += '  rsm_iters: 500\n'
+            s += '  rsm_print: false\n'
+            s += '  rsm_use_nn_solver: true\n'
+            # s += '  save_compat: true\n'
+            s += '  use_belief: true\n'
+            s += '  compat_labels: true\n'
+            s += '  shorten_event_name: false\n'
+            s += '  port: 7603\n'
+            s += '  rsm_cpu_count: 4\n' 
+            txtfile.write(s)
+            
+    def read_task_or_tuning_parameter(self, parameters, name):
+        rows2 = []
+        for parameter in parameters:
+            row_dict = {}
+            row_dict[''] = parameter
+            for phase in self.phases:
+                temp_list = []
+                for function_eval in self.function_evaluations:
+                    temp_list.append(function_eval[name][parameter])
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows2.append(row_dict)
+        return rows2
+
+    def get(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
+        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        output_options = json.loads(request.GET.get("output_options", "[]"))
+        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search_options = json.loads(request.GET.get("search_options", "[]"))
+
+        historydb = HistoryDB_MongoDB()
+
+        self.function_evaluations = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                output_options = output_options,
+                user_configurations_list = user_configurations_list,
+                user_email = user_email)
+        
+        has_counter_info = 'additional_output' in self.function_evaluations[0]
+
+
+        self.phases = set()
+
+        mapping_set = set()
+ 
+        if has_counter_info:
+            # Read about counter and grouping
+            counter_classes = list((self.function_evaluations[0])['additional_output'].keys())
+            for counter_class in counter_classes:
+                temp_phase = list(self.function_evaluations[0]['additional_output'][counter_class].keys())
+                self.phases.update(temp_phase)
+
+        # Read data about tuning and task parameters
+        evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
+        task_params = list(self.function_evaluations[0]['task_parameter'].keys())
+        tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
+
+        if not self.phases:
+            self.phases.add("Single Phase")
+
+        # Transformation countre data to dashing data format
+        coloumns = ['']
+        coloumns.extend(self.phases)
+
+        new_dashing_df_2 = pd.DataFrame(columns=coloumns)
+
+        # Read the tuning and task parameters
+        rows2 = []
+        rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
+        rows2.extend(self.read_task_or_tuning_parameter(tuning_parmas,'tuning_parameter'))
+        
+        # Read the target metrices
+        evaluation_row = self.read_task_or_tuning_parameter(evaluation_results,'evaluation_result')
+        rows2.extend(evaluation_row)
+
+        new_dashing_df_2 = pd.DataFrame(rows2)
+
+        # Deciding on which architecture to use
+        self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user')
+
+        #Architecture setup for user paramater analysis 
+        resources_path = 'dashing/resources/haswell-user' 
+        if not os.path.isdir(resources_path):
+            os.mkdir(resources_path)
+
+        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+            for tuning_param in tuning_parmas:
+                txtfile.write(tuning_param + '\n')
+
+        with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+            for task_param in task_params:
+                txtfile.write(task_param + '\n')
+
+        with open(resources_path + '/event_map.txt', 'w') as txtfile:
+            for task_param in task_params:
+                txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
+            for tuning_param in tuning_parmas:
+                    txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
+
+        with open(resources_path + '/event_desc.csv', 'w') as txtfile:
+                txtfile.write('')
+
+
+        drvr = driver()
+
+        # Calling the visualization for parameters analysis
+        chart, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+        if chart[0] is not None:
+            chart3 = plot(chart[0],output_type="div")
+        else:
+            chart3 = None
+
+        # Reading event importances
+        event_importances = []
+        for region in event_imps_params:
+            for group in event_imps_params[region]:
+                for event in event_imps_params[region][group]:
+                    row_dict = {}
+                    row_dict['counter_name'] = event
+                    row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+                    row_dict['region'] = region
+                    row_dict['groups'] = group
+                    event_importances.append(row_dict)
+
+        context = { "function_evaluations" : self.function_evaluations,
+                    "tuning_problem_name" : tuning_problem_unique_name,
+                    "chart2" : chart3,
+                    "counters" : event_importances
+        }
+
+        return render(request, 'repo/analysis-dashing-parameter.html', context)
+        
+    def post(self, request, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        # placeholder
+        context = {}
+        return render(request, 'repo/analysis-dashing-parameter.html', context)
+
+class AnalysisDashingCounter(TemplateView):
 
     def write_config_file(self,file_name,target,arch):
         config_dir = 'dashing/configs'
@@ -1186,9 +1370,7 @@ class AnalysisDashing(TemplateView):
 
         # Read data about tuning and task parameters
         evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
-        task_params = list(self.function_evaluations[0]['task_parameter'].keys())
-        tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
-
+        
         if not self.phases:
             self.phases.add("Single Phase")
 
@@ -1213,23 +1395,15 @@ class AnalysisDashing(TemplateView):
                     row_dict[phase] = temp_row
                 rows.append(row_dict)
 
-        new_dashing_df_2 = pd.DataFrame(columns=coloumns)
-
-        # Read the tuning and task parameters
-        rows2 = []
-        rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
-        rows2.extend(self.read_task_or_tuning_parameter(tuning_parmas,'tuning_parameter'))
         
         # Read the target metrices
         evaluation_row = self.read_task_or_tuning_parameter(evaluation_results,'evaluation_result')
         if has_counter_info:
             rows.extend(evaluation_row)
-        rows2.extend(evaluation_row)
 
         # Covert to use
         if has_counter_info: 
             new_dashing_df = pd.DataFrame(rows)
-        new_dashing_df_2 = pd.DataFrame(rows2)
 
         # Deciding on which architecture to use
         if has_counter_info:
@@ -1237,8 +1411,6 @@ class AnalysisDashing(TemplateView):
             if len(counter_groups) > 1:
                 arch_file = 'defined'
             self.write_config_file('counter_importance_problem' + '.yml',evaluation_results[0],arch_file)
-
-        self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user')
 
         #Architecture setup for counter analysis 
         if has_counter_info:
@@ -1258,32 +1430,6 @@ class AnalysisDashing(TemplateView):
                     mapping = '\n'.join(list(mapping_set))
                     txtfile.write(mapping + '\n')
 
-        #Architecture setup for user paramater analysis 
-        resources_path = 'dashing/resources/haswell-user' 
-        if not os.path.isdir(resources_path):
-            os.mkdir(resources_path)
-
-        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
-            for tuning_param in tuning_parmas:
-                txtfile.write(tuning_param + '\n')
-
-        with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
-            for task_param in task_params:
-                txtfile.write(task_param + '\n')
-
-        with open(resources_path + '/event_map.txt', 'w') as txtfile:
-            if has_counter_info and len(counter_groups) != 1:
-                    mapping = '\n'.join(list(mapping_set))
-                    txtfile.write(mapping + '\n')
-            for task_param in task_params:
-                txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
-            for tuning_param in tuning_parmas:
-                    txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
-
-        with open(resources_path + '/event_desc.csv', 'w') as txtfile:
-                txtfile.write('')
-
-
         drvr = driver()
 
         # Calling the visualization for counter analysis 
@@ -1296,13 +1442,6 @@ class AnalysisDashing(TemplateView):
         else:
             chart2 = None
 
-        # Calling the visualization for parameters analysis
-        chart, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
-        if chart[0] is not None:
-            chart3 = plot(chart[0],output_type="div")
-        else:
-            chart3 = None
-
         # Reading the group importances
         group_importances = []
         if has_counter_info:
@@ -1313,15 +1452,6 @@ class AnalysisDashing(TemplateView):
                     row_dict['value'] = str(round(group_imps_counter[region][resource] * 100 , 2)) + '%'
                     row_dict['region'] = region
                     group_importances.append(row_dict)
-
-        for region in group_imps_params:
-            for group in group_imps_params[region]:
-                row_dict = {}
-                row_dict['group_name'] = group
-                row_dict['value'] = str(round(group_imps_params[region][group] * 100, 2)) + '%'
-                row_dict['region'] = region
-                group_importances.append(row_dict)
-
 
         # Reading event importances
         event_importances = []
@@ -1336,25 +1466,14 @@ class AnalysisDashing(TemplateView):
                         row_dict['groups'] = group
                         event_importances.append(row_dict)
 
-        for region in event_imps_params:
-            for group in event_imps_params[region]:
-                for event in event_imps_params[region][group]:
-                    row_dict = {}
-                    row_dict['counter_name'] = event
-                    row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
-                    row_dict['region'] = region
-                    row_dict['groups'] = group
-                    event_importances.append(row_dict)
-
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "chart" : chart2,
-                    "chart2" : chart3,
                     "groups" : group_importances,
                     "counters" : event_importances
         }
 
-        return render(request, 'repo/analysis-dashing.html', context)
+        return render(request, 'repo/analysis-dashing-counter.html', context)
         
     def post(self, request, **kwargs):
 
@@ -1363,7 +1482,7 @@ class AnalysisDashing(TemplateView):
 
         # placeholder
         context = {}
-        return render(request, 'repo/analysis-dashing.html', context)
+        return render(request, 'repo/analysis-dashing-counter.html', context)
 
 class SADashboard(TemplateView):
 

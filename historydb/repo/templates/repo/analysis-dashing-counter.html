@@ -26,7 +26,7 @@
     <pre>{{ function_evaluations | pprint }}</pre>
     </p> -->
     <div style="margin-top: 30px">
-        {% if chart2 is not None %}
+        <!-- {% if chart2 is not None %}
             <div style="float: left; padding: 50px;">
                 <div class="text-center mb-3">
                     <h4>Importance of Tuning and Task Parameters</h4>
@@ -37,21 +37,10 @@
                     {% endautoescape %}
                 </div>
             </div>
-        {% endif %}
+        {% endif %} -->
 
-        {% if chart is not None and chart2 is not None%}
-            <div style="float: right; padding: 50px">
-                <div class="text-center mb-3">
-                    <h4>Importance of performanmce counters</h4>
-                </div>
-                <div>
-                    {% autoescape off %}
-                        {{ chart }}
-                    {% endautoescape %}
-                </div>
-            </div>
-        {% elif chart is not None and chart2 is None %}
-            <div style="float: left; padding: 50px">
+        {% if chart is not None %}
+            <div style="float: center; padding: 50px">
                 <div class="text-center mb-3">
                     <h4>Importance of performanmce counters</h4>
                 </div>

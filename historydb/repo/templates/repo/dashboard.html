@@ -130,11 +130,15 @@ asdf
         </a>
     </div>
     <div>
-        <h4>Low-level performance analysis</h4>
+        <h4>Analysis with Dashing</h4>
         <div id="selected_models">
         </div>
-        <a href="{% url 'repo:analysis-dashing' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
-        <button id="button">Performance counter-based analysis with Dashing</button>
+        <a href="{% url 'repo:analysis-dashing-parameter' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+          <button id="button">Parameter Importance Analysis</button>
+        </a>
+
+        <a href="{% url 'repo:analysis-dashing-counter' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
+        <button id="button">Counter Importance Analysis</button>
         </a>
     </div>
     <div>

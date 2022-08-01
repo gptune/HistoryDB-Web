@@ -148,7 +148,7 @@ class Utility:
                     if any(group.lower() in s for group in group_list[0]):
                         group_name = [ group for group in group_list[0] if group.lower() in s] [:]
         ########
-        print ("assign_event_to_eventGroup->GROUP NAME: "+ group_name)
+        # print ("assign_event_to_eventGroup->GROUP NAME: "+ group_name)
         return group_name
     #for a list of events
     def assign_event_list_to_eventGroups(self,event_names, group_list):

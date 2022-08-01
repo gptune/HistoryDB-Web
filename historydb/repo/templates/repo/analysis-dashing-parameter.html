@@ -1,0 +1,177 @@
+<!doctype html>
+
+{% extends 'main/base.html' %}
+<!-- {% load static %} -->
+{% block content %}
+
+<script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<link ref="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/what-input/2.1.1/what-input.min.js"></script>
+<script src="https://unpkg.com/popper.js@1"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/tippy.js@4"></script>
+
+    <!-- <p>
+    <pre>{{ function_evaluations | pprint }}</pre>
+    </p> -->
+    <div style="margin-top: 30px;display: felx;justify-content: center;">
+        {% if chart2 is not None %}
+            <div class='center' style="padding: 20px">
+                <div>
+                    <h4>Importance of Tuning and Task Parameters</h4>
+                </div>
+                <div>
+                    {% autoescape off %}
+                        {{ chart2 }}
+                    {% endautoescape %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>  
+      $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+        $('#event_importance thead tr')
+        .clone(true)
+        .addClass('filters2')
+        .appendTo('#event_importance thead');
+    
+        var table = $('#event_importance').DataTable({
+            orderCellsTop: true,
+            fixedHeader: true,
+    
+            initComplete: function () {
+            var api = this.api();
+    
+            // For each column
+            api
+            .columns()
+            .eq(0)
+            .each(function (colIdx) {
+                // Set the header cell to contain the input element
+                var cell = $('.filters2 th').eq(
+                        $(api.column(colIdx).header()).index()
+                        );
+                var title = $(cell).text();
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+    
+                // On every keypress in this input
+                $(
+                    'input',
+                    $('.filters2 th').eq($(api.column(colIdx).header()).index())
+                 )
+                .off('keyup change')
+                .on('keyup change', function (e) {
+                    e.stopPropagation();
+    
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
+    
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api
+                    .column(colIdx)
+                    .search(
+                            this.value != ''
+                            ? regexr.replace('{search}', '(((' + this.value + ')))')
+                            : '',
+                            this.value != '',
+                            this.value == ''
+                           )
+                    .draw();
+    
+                    $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                });
+            });
+            },
+        });
+    });
+    </script>
+    
+    <div class="table-responsive table_outer" style="margin-top: 30px">
+        <div class="text-center mb-3">
+          <h4>Parameters Importances</h4>
+        </div>
+
+        <table id="event_importance" class="table table-striped table-bordered">
+            <thead>
+                <tr>            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Machine setting used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Parameter</u>
+                        </span>
+                    </th>
+            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Phases</u>
+                        </span>
+                    </th>
+
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Type</u>
+                        </span>
+                    </th>
+                    
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Counter Importance</u>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for counter_data in counters %}
+                <tr>
+                    <td style="background: white">
+                        {{counter_data.counter_name}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.region}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.groups}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.value}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
