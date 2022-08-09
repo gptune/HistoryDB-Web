@@ -1082,7 +1082,7 @@ class ModelPrediction(TemplateView):
 
 class AnalysisDashingParameter(TemplateView):
 
-    def write_config_file(self,file_name,target,arch):
+    def write_config_file(self,file_name,target,arch,chart_type = 'sunburst'):
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)
@@ -1095,7 +1095,10 @@ class AnalysisDashingParameter(TemplateView):
             txtfile.write(s + '\n')
             s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
             txtfile.write(s + '\n')
-            s = '    - dashing.viz.sunburst3.sunburst'
+            if chart_type == 'sunburst':
+                s = '    - dashing.viz.sunburst3.sunburst'
+            else:
+                s = '    - dashing.viz.linechart.raw_values_per_proc_config'
             txtfile.write(s + '\n')
             s = '  name:  \'' + target +'\''
             txtfile.write(s + '\n')
@@ -1251,11 +1254,21 @@ class AnalysisDashingParameter(TemplateView):
         drvr = driver()
 
         # Calling the visualization for parameters analysis
+        transformed_charts = []
         chart, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
         if chart[0] is not None:
             chart3 = plot(chart[0],output_type="div")
+            transformed_charts.append(chart3)
         else:
             chart3 = None
+            self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user', chart_type='linechart')
+            charts, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+            for chart in charts:
+                chart3 = plot(chart,output_type="div")
+                transformed_charts.append(chart3)
+                break
+
+
 
         # Reading event importances
         event_importances = []
@@ -1284,7 +1297,7 @@ class AnalysisDashingParameter(TemplateView):
 
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
-                    "chart2" : chart3,
+                    "chart2" : transformed_charts,
                     "counters" : event_importances
         }
 

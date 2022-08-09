@@ -25,7 +25,7 @@
     <!-- <p>
     <pre>{{ function_evaluations | pprint }}</pre>
     </p> -->
-    {% if chart2 is not None %}
+    <!-- {% if chart2 is not None %}
     <div style="margin-top: 30px;display: flex;justify-content: center;">
             <div class='text-center' style="padding: 20px">
                 <div>
@@ -37,7 +37,23 @@
                     {% endautoescape %}
                 </div>
             </div>
-    </div>
+    </div> -->
+    {% for chart in chart2 %}
+        {% if chart is not None %}
+        <div style="margin-top: 30px;display: flex;justify-content: center;">
+                <div class='text-center' style="padding: 20px">
+                    <div>
+                        <h4>Importance of Tuning and Task Parameters</h4>
+                    </div>
+                    <div>
+                        {% autoescape off %}
+                            {{ chart }}
+                        {% endautoescape %}
+                    </div>
+                </div>
+        </div>
+        {% endif %}
+    {% endfor %}
 
     <script>  
       $(document).ready(function () {

@@ -26,9 +26,9 @@ def raw_values_per_proc_config(data_loader):
             legendgroup="!!!",
             line=dict(color="black", width=4)))
         for ev in data_loader.get_events():
-            ev_importance = importance(data_loader['name'], reg, ev)
-            if ev_importance <= 0.005:
-                continue
+            # ev_importance = importance(data_loader['name'], reg, ev)
+            # if ev_importance <= 0.005:
+            #     continue
 
             data_per_proc = []
             for proc_i, proc in enumerate(proc_configs[reg]):
@@ -65,6 +65,9 @@ def raw_values_per_proc_config(data_loader):
 			
             file_path = os.path.join(dir_path, file_path)
             fig.write_image(file_path, width=1000, height=500)
+        
+        data_loader['group_reg_pair'] = {}
+        data_loader['group_reg_pair_vlaues'] = {}
 
 
 def raw_values_per_config(data_loader):
@@ -188,7 +191,10 @@ def remove_nan(df,resources):
 def normalize_1d(data):
     min_val = min(data)
     max_val = max(data)
-    return [ (d-min_val)/(max_val-min_val) for d in data ]
+    if min_val != max_val:
+        return [ (d-min_val)/(max_val-min_val) for d in data ]
+    else:
+        return [d/max_val for d in data]
 
 
 
