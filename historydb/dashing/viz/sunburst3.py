@@ -14,6 +14,8 @@ from difflib import get_close_matches
 import re
 from collections import OrderedDict 
 
+from sklearn.preprocessing import StandardScaler
+
 def conv_str(ev):
     shortened_event_name = ''
     if (ev == 'transactions'):
@@ -227,7 +229,7 @@ def sunburst(data_loader):
         belief_ev_map[reg] = OrderedDict() #{}
         for event, percent_error in ev_percent_error[reg].items():
             belief_ev_map[reg][event] = percent_error
-            # belief_ev_map[reg][event] = np.exp(-lam * percent_error)
+            belief_ev_map[reg][event] = np.exp(-lam * percent_error)
     # Parse the map into a region->res->event->belief layout
     belief_res_ev_map = OrderedDict() #i{}
     for reg in regions:
@@ -238,6 +240,8 @@ def sunburst(data_loader):
             if event_resource not in belief_res_ev_map[reg]:
                 belief_res_ev_map[reg][event_resource] = OrderedDict()
             belief_res_ev_map[reg][event_resource][event] = event_belief
+
+    original_belief_res_ev_map = copy.deepcopy(belief_res_ev_map)
 
     #TZI: Debug: Output the event percentages in a csv file for ease of use.
     # csv_file = open('dashing/ev_belief_perc.csv', 'a')
@@ -297,6 +301,7 @@ def sunburst(data_loader):
                 belief_map[reg][resource] = np.exp(-lam * res_percent_err)
             # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
+    original_normed_belief_map = copy.deepcopy(belief_map)
     # Normalize between 0 and 1 removing any small values
     for reg in regions:
         if(not belief_map[reg]):
@@ -400,8 +405,28 @@ def sunburst(data_loader):
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
 
-    data_loader['group_reg_pair'] = normed_belief_map
-    data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
+    # Recreating the toatal data
+    for reg in original_belief_res_ev_map:
+        for resource in original_belief_res_ev_map[reg]:
+            for event, value in original_belief_res_ev_map[reg][resource].items():
+                try:
+                    original_belief_res_ev_map[reg][resource][event] = normed_belief_res_ev_map[reg][resource][event]
+                except:
+                    original_belief_res_ev_map[reg][resource][event] = 0.0
+
+    for region in regions:
+        for resource in original_normed_belief_map[region]:
+            try:
+                original_normed_belief_map[region][resource] = normed_belief_map[region][resource]
+            except:
+                original_normed_belief_map[region][resource] = 0.0
+
+
+    # data_loader['group_reg_pair'] = normed_belief_map
+    # data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
+    data_loader['group_reg_pair'] = original_normed_belief_map
+    data_loader['group_reg_pair_vlaues'] = original_belief_res_ev_map
+
 
     # template = "minty"
     # load_figure_template(template)

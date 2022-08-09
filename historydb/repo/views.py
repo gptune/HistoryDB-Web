@@ -855,15 +855,15 @@ class ModelPrediction(TemplateView):
                         #else:
                         #    print ("filtered: ", func_eval)
 
-                import gptune
-                ret = gptune.PredictOutput(problem_space=problem_space,
-                        modeler=modeler,
-                        input_task=Igiven,
-                        input_parameter=pGiven,
-                        function_evaluations=func_eval_list)
-                print("ret: ", ret)
-                output_info["result"] = ret[output_name][0][0] #parameter_given
-                output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
+                # import gptune
+                # ret = gptune.PredictOutput(problem_space=problem_space,
+                #         modeler=modeler,
+                #         input_task=Igiven,
+                #         input_parameter=pGiven,
+                #         function_evaluations=func_eval_list)
+                # print("ret: ", ret)
+                # output_info["result"] = ret[output_name][0][0] #parameter_given
+                # output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,
@@ -1126,7 +1126,7 @@ class AnalysisDashingParameter(TemplateView):
             s += '  port: 7603\n'
             s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
-            
+
     def read_task_or_tuning_parameter(self, parameters, name):
         rows2 = []
         for parameter in parameters:
@@ -1136,6 +1136,14 @@ class AnalysisDashingParameter(TemplateView):
                 temp_list = []
                 for function_eval in self.function_evaluations:
                     temp_list.append(function_eval[name][parameter])
+                print(type(temp_list[0]))
+                if type(temp_list[0]) == str:
+                    unique_values = list(set(temp_list))
+                    new_list = []
+                    for item in temp_list:
+                        new_list.append(unique_values.index(item))
+                    temp_list = []
+                    temp_list.extend(new_list)
                 temp_list_2 = [str(val) for val in temp_list]
                 temp_row = ','.join(temp_list_2)
                 row_dict[phase] = temp_row
@@ -1163,10 +1171,7 @@ class AnalysisDashingParameter(TemplateView):
         
         has_counter_info = 'additional_output' in self.function_evaluations[0]
 
-
         self.phases = set()
-
-        mapping_set = set()
  
         if has_counter_info:
             # Read about counter and grouping
@@ -1195,13 +1200,24 @@ class AnalysisDashingParameter(TemplateView):
         rows2.extend(self.read_task_or_tuning_parameter(tuning_parmas,'tuning_parameter'))
         
         # Read the target metrices
+        # n_n = []
+        # n_n.append(evaluation_results[1])
+        # evaluation_row = self.read_task_or_tuning_parameter(n_n,'evaluation_result')
+
         evaluation_row = self.read_task_or_tuning_parameter(evaluation_results,'evaluation_result')
         rows2.extend(evaluation_row)
 
         new_dashing_df_2 = pd.DataFrame(rows2)
+        # for cols in new_dashing_df_2.columns:
+        #     print("Zayed types: ")
+        #     print(cols, type(cols))
 
         # Deciding on which architecture to use
+
+
+        #####################################################################################
         self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user')
+        #####################################################################################
 
         #Architecture setup for user paramater analysis 
         resources_path = 'dashing/resources/haswell-user' 
@@ -1216,11 +1232,17 @@ class AnalysisDashingParameter(TemplateView):
             for task_param in task_params:
                 txtfile.write(task_param + '\n')
 
+        mapping = {}
         with open(resources_path + '/event_map.txt', 'w') as txtfile:
+            mapping['TASK_PARAMS'] = []
             for task_param in task_params:
                 txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
+                mapping['TASK_PARAMS'].append(task_param)
+            mapping['TUNING_PARAMS'] = []
             for tuning_param in tuning_parmas:
-                    txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
+                txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
+                mapping['TUNING_PARAMS'].append(tuning_param)
+                
 
         with open(resources_path + '/event_desc.csv', 'w') as txtfile:
                 txtfile.write('')
@@ -1237,15 +1259,28 @@ class AnalysisDashingParameter(TemplateView):
 
         # Reading event importances
         event_importances = []
-        for region in event_imps_params:
-            for group in event_imps_params[region]:
-                for event in event_imps_params[region][group]:
+        # for region in event_imps_params:
+        #     for group in event_imps_params[region]:
+        #         for event in event_imps_params[region][group]:
+        #             row_dict = {}
+        #             row_dict['counter_name'] = event
+        #             row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+        #             row_dict['region'] = region
+        #             row_dict['groups'] = group
+        #             event_importances.append(row_dict)
+
+        for region in self.phases:
+            for group in mapping:
+                for event in mapping[group]:
                     row_dict = {}
                     row_dict['counter_name'] = event
-                    row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+                    if group in event_imps_params[region].keys() and event in event_imps_params[region][group].keys():
+                        row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+                    else:
+                        row_dict['value'] = '0.0%'
                     row_dict['region'] = region
                     row_dict['groups'] = group
-                    event_importances.append(row_dict)
+                    event_importances.append(row_dict)               
 
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
@@ -1352,6 +1387,7 @@ class AnalysisDashingCounter(TemplateView):
         counter_groups = set()
         counters = set()
         mapping_set = set()
+        mapping = {}
  
         if has_counter_info:
             # Read about counter and grouping
@@ -1367,6 +1403,9 @@ class AnalysisDashingCounter(TemplateView):
                         counters.update(temp_counters)
                         for counter in temp_counters:
                             mapping_set.add(counter + '=>' + counter_group)
+                            if counter_group not in mapping.keys():
+                                mapping[counter_group] = []
+                            mapping[counter_group].append(counter)
 
         # Read data about tuning and task parameters
         evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
@@ -1452,6 +1491,20 @@ class AnalysisDashingCounter(TemplateView):
                     row_dict['value'] = str(round(group_imps_counter[region][resource] * 100 , 2)) + '%'
                     row_dict['region'] = region
                     group_importances.append(row_dict)
+
+        # if has_counter_info:
+        #     for region in self.phases:
+        #         for counter_group in counter_groups:
+        #             print(" Zayed zeros ", region, counter_group)
+        #             row_dict = {}
+        #             row_dict['group_name'] = counter_group
+        #             if region in group_imps_counter.keys() and counter_group in group_imps_counter[region].keys(): 
+        #                 row_dict['value'] = str(round(group_imps_counter[region][counter_group] * 100 , 2)) + '%'
+        #             else:
+        #                 row_dict['value'] = '0.0%'
+        #             row_dict['region'] = region
+        #             group_importances.append(row_dict)
+
 
         # Reading event importances
         event_importances = []
@@ -1735,6 +1788,9 @@ class SADashboard(TemplateView):
 
                 model_data_list[model_data["objective"]["name"]]["sobol_analysis"] = sobol_analysis
 
+                print("Zayed sobol")
+                print(sobol_analysis)
+
             context = {
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "surrogate_model_uids" : surrogate_model_uids,
@@ -1981,19 +2037,21 @@ class SADashboard(TemplateView):
                             func_eval_list_filtered.append(func_eval)
                         #else:
                         #    print ("filtered: ", func_eval)
-
-                import gptune
-                print ("problem_space: ", problem_space)
-                print ("num_samples: ", num_samples, " type: ", type(num_samples))
-                ret = gptune.SensitivityAnalysis(problem_space=problem_space,
-                        modeler=modeler,
-                        input_task=Igiven,
-                        function_evaluations=func_eval_list_filtered,
-                        num_samples=num_samples)
-                print("ret: ", ret)
-                #output_info["result"] = ret[output_name][0][0] #parameter_given
-                #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
-
+                try:
+                    import gptune
+                    print ("problem_space: ", problem_space)
+                    print ("num_samples: ", num_samples, " type: ", type(num_samples))
+                    ret = gptune.SensitivityAnalysis(problem_space=problem_space,
+                            modeler=modeler,
+                            input_task=Igiven,
+                            function_evaluations=func_eval_list_filtered,
+                            num_samples=num_samples)
+                    print("ret: ", ret)
+                    #output_info["result"] = ret[output_name][0][0] #parameter_given
+                    #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
+                except:
+                    ret = {'S1': {'x':.1,'y':.2}, 'S1_conf': {'x':.1,'y':.2}, 'ST': {'x':.1,'y':.2}, 'ST_conf': {'x':.1,'y':.2}}
+                
                 sobol_analysis = {}
                 sobol_analysis["s1_parameters"] = []
                 for param_name in ret["S1"]:
@@ -2028,6 +2086,9 @@ class SADashboard(TemplateView):
                             sobol_analysis["s2_parameters"].append(tuning_parameter)
 
                 print ("sobol analysis: ", sobol_analysis)
+
+                from dashing.viz import callgraph
+                callgraph.gptune_callgraph3D(ret)
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,

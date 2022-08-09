@@ -1,2 +1,5 @@
-x
-t
+nb
+ib
+m
+n
+k

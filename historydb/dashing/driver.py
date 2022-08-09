@@ -42,10 +42,10 @@ class driver(dict):
             if data_loader.options['charts']:
                 charts = data_loader["charts"]
 
-        rsm_ev_errors = data_loader['rsm_ev_errors']
+        # rsm_ev_errors = data_loader['rsm_ev_errors']
         # rsm_alphas = data_loader['rsm_alphas']
         # rsm_norm_data = data_loader['rsm_norm_data']
-        rsm_results = data_loader['rsm_results']
+        # rsm_results = data_loader['rsm_results']
 
 
 

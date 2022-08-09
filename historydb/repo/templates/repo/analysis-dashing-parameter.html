@@ -25,9 +25,9 @@
     <!-- <p>
     <pre>{{ function_evaluations | pprint }}</pre>
     </p> -->
-    <div style="margin-top: 30px;display: felx;justify-content: center;">
-        {% if chart2 is not None %}
-            <div class='center' style="padding: 20px">
+    {% if chart2 is not None %}
+    <div style="margin-top: 30px;display: flex;justify-content: center;">
+            <div class='text-center' style="padding: 20px">
                 <div>
                     <h4>Importance of Tuning and Task Parameters</h4>
                 </div>
@@ -37,7 +37,6 @@
                     {% endautoescape %}
                 </div>
             </div>
-        {% endif %}
     </div>
 
     <script>  
@@ -173,5 +172,15 @@
         </table>
     </div>
 
+    {% else %}
 
+    <div style="margin-top: 70px;">
+        <div class='text-center' style="padding: 20px">
+            <div>
+                <h4> No particular tuning or task parameter is imporant enough to report.</h4>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
 {% endblock %}
