@@ -38,9 +38,10 @@ class driver(dict):
             else:
                 data_loaders = self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename, dataframe=dataframe)
     
+        charts = []
         for app_name, data_loader in data_loaders.items():
             if data_loader.options['charts']:
-                charts = data_loader["charts"]
+                charts.extend(data_loader["charts"])
 
         # rsm_ev_errors = data_loader['rsm_ev_errors']
         # rsm_alphas = data_loader['rsm_alphas']

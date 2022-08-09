@@ -1082,30 +1082,33 @@ class ModelPrediction(TemplateView):
 
 class AnalysisDashingParameter(TemplateView):
 
-    def write_config_file(self,file_name,target,arch,chart_type = 'sunburst'):
+    def write_config_file(self,file_name,targets,arch,chart_type = 'sunburst'):
+        print("Zayedu ", targets)
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)
         with open(config_dir + '/' + file_name, 'w') as txtfile:
-            s = 'tuning_problem:'
-            txtfile.write(s + '\n')
-            s = '  data: '
-            txtfile.write(s + '\n')
-            s = '  tasks:'
-            txtfile.write(s + '\n')
-            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
-            txtfile.write(s + '\n')
-            if chart_type == 'sunburst':
-                s = '    - dashing.viz.sunburst3.sunburst'
-            else:
-                s = '    - dashing.viz.linechart.raw_values_per_proc_config'
-            txtfile.write(s + '\n')
-            s = '  name:  \'' + target +'\''
-            txtfile.write(s + '\n')
-            s = '  target:  \'' + target +'\''
-            txtfile.write(s + '\n')
-            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
-            txtfile.write(s + '\n')
+            for target in targets:
+                print("Zayedddddddddddddd ", target)
+                s = 'tuning_problem' + str(targets.index(target)) + ':'
+                txtfile.write(s + '\n')
+                s = '  data: '
+                txtfile.write(s + '\n')
+                s = '  tasks:'
+                txtfile.write(s + '\n')
+                s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
+                txtfile.write(s + '\n')
+                if chart_type == 'sunburst':
+                    s = '    - dashing.viz.sunburst3.sunburst'
+                else:
+                    s = '    - dashing.viz.linechart.raw_values_per_proc_config'
+                txtfile.write(s + '\n')
+                s = '  name:  \'' + target +'\''
+                txtfile.write(s + '\n')
+                s = '  target:  \'' + target +'\''
+                txtfile.write(s + '\n')
+                s = '  compute_target: dashing.modules.compute_target.compute_runtime'
+                txtfile.write(s + '\n')
             s = '##############################'
             txtfile.write(s + '\n')
 
@@ -1115,8 +1118,9 @@ class AnalysisDashingParameter(TemplateView):
             txtfile.write(s + '\n')  
             s = '  tasks:'
             txtfile.write(s + '\n')
-            s = '    - tuning_problem'
-            txtfile.write(s + '\n')
+            for target in targets:
+                s = '    - tuning_problem' + str(targets.index(target))
+                txtfile.write(s + '\n')
             s = '  arch: ' + arch + '\n'
             s += '  data_rescale: true\n'
             s += '  rsm_iters: 500\n'
@@ -1191,6 +1195,8 @@ class AnalysisDashingParameter(TemplateView):
         if not self.phases:
             self.phases.add("Single Phase")
 
+
+        # print("Zayed evaluations" , evaluation_results)
         # Transformation countre data to dashing data format
         coloumns = ['']
         coloumns.extend(self.phases)
@@ -1219,7 +1225,7 @@ class AnalysisDashingParameter(TemplateView):
 
 
         #####################################################################################
-        self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user')
+        self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results,'haswell-user')
         #####################################################################################
 
         #Architecture setup for user paramater analysis 
@@ -1234,6 +1240,8 @@ class AnalysisDashingParameter(TemplateView):
         with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
             for task_param in task_params:
                 txtfile.write(task_param + '\n')
+            for evaluation_result in evaluation_results:
+                txtfile.write(evaluation_result + '\n')
 
         mapping = {}
         with open(resources_path + '/event_map.txt', 'w') as txtfile:
@@ -1255,18 +1263,25 @@ class AnalysisDashingParameter(TemplateView):
 
         # Calling the visualization for parameters analysis
         transformed_charts = []
-        chart, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
-        if chart[0] is not None:
-            chart3 = plot(chart[0],output_type="div")
-            transformed_charts.append(chart3)
-        else:
-            chart3 = None
-            self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results[0],'haswell-user', chart_type='linechart')
-            charts, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
-            for chart in charts:
+        charts, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+        
+        print('Zayed Here1 ', charts)
+
+        for chart in charts:
+            # print('Zayed Here1 ', len(charts))
+            if chart is not None:
                 chart3 = plot(chart,output_type="div")
                 transformed_charts.append(chart3)
                 break
+            else:
+                self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
+                charts2, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+                for chart_ in charts2:
+                    print('Zayed Here2 ', len(charts2))
+                    if chart_ is not None:
+                        chart3 = plot(chart_,output_type="div")
+                        transformed_charts.append(chart3)
+                        break
 
 
 
@@ -1314,29 +1329,31 @@ class AnalysisDashingParameter(TemplateView):
 
 class AnalysisDashingCounter(TemplateView):
 
-    def write_config_file(self,file_name,target,arch):
+    def write_config_file(self,file_name,targets,arch):
+        print("Zayeddddddddddddddddd ", targets)
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)
         with open(config_dir + '/' + file_name, 'w') as txtfile:
-            s = 'tuning_problem:'
-            txtfile.write(s + '\n')
-            s = '  data: '
-            txtfile.write(s + '\n')
-            s = '  tasks:'
-            txtfile.write(s + '\n')
-            s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
-            txtfile.write(s + '\n')
-            s = '    - dashing.viz.sunburst3.sunburst'
-            txtfile.write(s + '\n')
-            s = '  name:  \'' + target +'\''
-            txtfile.write(s + '\n')
-            s = '  target:  \'' + target +'\''
-            txtfile.write(s + '\n')
-            s = '  compute_target: dashing.modules.compute_target.compute_runtime'
-            txtfile.write(s + '\n')
-            s = '##############################'
-            txtfile.write(s + '\n')
+            for target in targets:
+                s = 'tuning_problem' + str(targets.index(target)) + ':'
+                txtfile.write(s + '\n')
+                s = '  data: '
+                txtfile.write(s + '\n')
+                s = '  tasks:'
+                txtfile.write(s + '\n')
+                s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
+                txtfile.write(s + '\n')
+                s = '    - dashing.viz.sunburst3.sunburst'
+                txtfile.write(s + '\n')
+                s = '  name:  \'' + target +'\''
+                txtfile.write(s + '\n')
+                s = '  target:  \'' + target +'\''
+                txtfile.write(s + '\n')
+                s = '  compute_target: dashing.modules.compute_target.compute_runtime'
+                txtfile.write(s + '\n')
+                s = '##############################'
+                txtfile.write(s + '\n')
 
             txtfile.write('\n')
 
@@ -1344,8 +1361,11 @@ class AnalysisDashingCounter(TemplateView):
             txtfile.write(s + '\n')  
             s = '  tasks:'
             txtfile.write(s + '\n')
-            s = '    - tuning_problem'
-            txtfile.write(s + '\n')
+            # s = '    - tuning_problem'
+            # txtfile.write(s + '\n')
+            for target in targets:
+                s = '    - tuning_problem' + str(targets.index(target))
+                txtfile.write(s + '\n')
             s = '  arch: ' + arch + '\n'
             s += '  data_rescale: true\n'
             s += '  rsm_iters: 500\n'
@@ -1359,7 +1379,7 @@ class AnalysisDashingCounter(TemplateView):
             s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
 
-    def read_task_or_tuning_parameter(self, parameters, name):
+    def read_target_rows(self, parameters, name):
         rows2 = []
         for parameter in parameters:
             row_dict = {}
@@ -1449,7 +1469,7 @@ class AnalysisDashingCounter(TemplateView):
 
         
         # Read the target metrices
-        evaluation_row = self.read_task_or_tuning_parameter(evaluation_results,'evaluation_result')
+        evaluation_row = self.read_target_rows(evaluation_results,'evaluation_result')
         if has_counter_info:
             rows.extend(evaluation_row)
 
@@ -1462,7 +1482,7 @@ class AnalysisDashingCounter(TemplateView):
             arch_file = 'haswell3'
             if len(counter_groups) > 1:
                 arch_file = 'defined'
-            self.write_config_file('counter_importance_problem' + '.yml',evaluation_results[0],arch_file)
+            self.write_config_file('counter_importance_problem' + '.yml',[evaluation_results],arch_file)
 
         #Architecture setup for counter analysis 
         if has_counter_info:
@@ -1485,14 +1505,21 @@ class AnalysisDashingCounter(TemplateView):
         drvr = driver()
 
         # Calling the visualization for counter analysis 
+        transformed_charts = []
         if has_counter_info:
-            chart, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
-            if chart[0] is not None:
-                chart2 = plot(chart[0],output_type="div")
-            else:
-                chart2 = None
+            # chart, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
+            # if chart[0] is not None:
+            #     chart2 = plot(chart[0],output_type="div")
+            charts, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
+            # print("ZZZZZZZZZZZZZZZZZZZZZZZZZz" ,  len(charts))
+            for chart in charts:
+                if chart is not None:
+                    chart2 = plot(chart,output_type="div")
+                    transformed_charts.append(chart2)         
+                else:
+                    chart2 = None
         else:
-            chart2 = None
+            transformed_charts = None
 
         # Reading the group importances
         group_importances = []
@@ -1534,7 +1561,7 @@ class AnalysisDashingCounter(TemplateView):
 
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
-                    "chart" : chart2,
+                    "chart" : transformed_charts,
                     "groups" : group_importances,
                     "counters" : event_importances
         }

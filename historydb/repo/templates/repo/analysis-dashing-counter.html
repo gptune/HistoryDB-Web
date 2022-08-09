@@ -22,20 +22,22 @@
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://unpkg.com/tippy.js@4"></script>
 
-    {% if chart is not None %}
-    <div style="margin-top: 30px;display: flex;justify-content: center;">
-        <div class='text-center' style="padding: 20px">
-            <div>
-                <h4>Importance of performanmce counters</h4>
-            </div>
-            <div>
-                {% autoescape off %}
-                    {{ chart }}
-                {% endautoescape %}
+    {% for cha in chart %}
+        {% if cha is not None %}
+        <div style="margin-top: 30px;display: flex;justify-content: center;">
+            <div class='text-center' style="padding: 20px">
+                <div>
+                    <h4>Importance of performanmce counters</h4>
+                </div>
+                <div>
+                    {% autoescape off %}
+                        {{ cha }}
+                    {% endautoescape %}
+                </div>
             </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
+    {% endfor %}
     
     <script>  
       $(document).ready(function () {

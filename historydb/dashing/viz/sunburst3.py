@@ -349,9 +349,6 @@ def sunburst(data_loader):
             hover_labels.append(hover_label % (reg, normed_runtime[reg] * 100.0))
             parents.append(app_name)
             values.append(normed_runtime[reg])
-    
-    if is_empty:
-        data_loader.options['charts'].append(None)
 
 
     # Third Layer appending to the sunburst
@@ -426,6 +423,10 @@ def sunburst(data_loader):
     # data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
     data_loader['group_reg_pair'] = original_normed_belief_map
     data_loader['group_reg_pair_vlaues'] = original_belief_res_ev_map
+
+    if is_empty:
+        data_loader.options['charts'].append(None)
+        return
 
 
     # template = "minty"
