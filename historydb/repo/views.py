@@ -2090,8 +2090,11 @@ class SADashboard(TemplateView):
                     #output_info["result"] = ret[output_name][0][0] #parameter_given
                     #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
                 except:
-                    ret = {'S1': {'x':.1,'y':.2}, 'S1_conf': {'x':.1,'y':.2}, 'ST': {'x':.1,'y':.2}, 'ST_conf': {'x':.1,'y':.2}}
+                    ret = {'S1': {'nb':.1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
                 
+                
+                # print('tuning problem info: ', tuning_problem_info)
+
                 sobol_analysis = {}
                 sobol_analysis["s1_parameters"] = []
                 for param_name in ret["S1"]:
@@ -2128,7 +2131,9 @@ class SADashboard(TemplateView):
                 print ("sobol analysis: ", sobol_analysis)
 
                 from dashing.viz import callgraph
-                callgraph.gptune_callgraph3D(ret)
+                fig = callgraph.gptune_callgraph3D(sobol_analysis)
+                chart = plot(fig,output_type="div")
+                # print('Zayed chart: ', chart)
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,
@@ -2141,7 +2146,8 @@ class SADashboard(TemplateView):
                 "machine_configurations_list" : json.dumps(machine_configurations_list),
                 "software_configurations_list" : json.dumps(software_configurations_list),
                 "output_options" : json.dumps(output_options),
-                "user_configurations_list" : json.dumps(user_configurations_list)
+                "user_configurations_list" : json.dumps(user_configurations_list),
+                "sensitivity_analysis_chart" : chart
             }
 
             return render(request, 'repo/model-build-sadashboard.html', context)

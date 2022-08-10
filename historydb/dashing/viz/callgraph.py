@@ -1,5 +1,8 @@
+from cProfile import label
+from cgitb import text
 import os
 import glob
+from re import template
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -13,7 +16,7 @@ from collections import OrderedDict
 from dash_bootstrap_templates import load_figure_template
 # from util.utility_functions import *
 from datetime import datetime as dt
-# import networkx as nx
+import networkx as nx
 # from viz.addEdge import addEdge
 
 import hashlib
@@ -619,16 +622,154 @@ def chimbuko_callgraph2D(data_loader):
 
 
 def gptune_callgraph3D(sobol_analysis):
-    type_of_scores = sobol_analysis.keys()
-    cols = ['param_name', 'X', 'Y']
-    cols.extend(type_of_scores)
-    df = pd.DataFrame(columns=cols)
-    names = sobol_analysis['ST']
-    row = []
-    for name in names:
+    # type_of_scores = sobol_analysis.keys()
+    # cols = ['param_name', 'X', 'Y']
+    # cols.extend(type_of_scores)
+    # df = pd.DataFrame(columns=cols)
+    # names = sobol_analysis['ST']
+    # row = []
+    # pos = 0
+    # for name in names:
+    #     row_dict = {}
+    #     pos += 1
+
+    # print("ZZZZZZZZZZZAyed sobol ", sobol_analysis)
+    first_order_nodes_count = len(sobol_analysis['s1_parameters'])
+    second_order_nodes_count = len(sobol_analysis['s2_parameters'])
+
+    first_order_nodes = [d['name'] for d in sobol_analysis['s1_parameters']]
+    second_order_nodes = [d['name1']+'-' + d['name2'] for d in sobol_analysis['s2_parameters']]
+
+    first_order_nodes_sizes = [d['S1'] * 200 for d in sobol_analysis['s1_parameters']]
+    second_order_nodes_sizes = [d['S2'] * 200 for d in sobol_analysis['s2_parameters']]
+    node_sizes = first_order_nodes_sizes
+    node_sizes.extend(second_order_nodes_sizes)
+
+    first_order_nodes_conf = [d['S1_conf'] * 100 for d in sobol_analysis['s1_parameters']]
+    second_order_nodes_conf = [d['S2_conf'] * 100 for d in sobol_analysis['s2_parameters']]
+    node_conf_sizes = first_order_nodes_conf
+    node_conf_sizes.extend(second_order_nodes_conf)
+
+    node_colors = []
+
+    node_x = []
+    node_y = []
+    node_labels = []
+    for node in first_order_nodes:
+        node_y.append(2)
+        node_x.append(first_order_nodes.index(node)+2)
+        node_labels.append(node)
+        node_colors.append('red')
+
+    for node in second_order_nodes:
+        node_y.append(3)
+        node_x.append(second_order_nodes.index(node)+3)
+        node_labels.append(node)
+        node_colors.append('blue')
+    # print('Zayed Reads ', first_order_nodes, second_order_nodes)
+    G = nx.DiGraph()
+    
+    # nine = go.Scatter()
+    # for x_pos in node_x:
+    #     nine.add_trace(
+    #         x=x_pos, y=node_y[node_x.index(x_pos)],
+    #         mode='markers+text',
+    #         hoverinfo='text',
+    #         marker=dict(
+    #             symbol='circle',
+    #             showscale=False,
+    #             colorscale='Greens',
+    #             reversescale=True,
+    #             color=[],
+    #             size=node_sizes[node_x.index(x_pos)]*200,
+    #             # colorbar=dict(
+    #             #     thickness=15,
+    #             #     title='Node Connections',
+    #             #     xanchor='left',
+    #             #     titleside='right'
+    #             # ),
+    #             line_width=2),
+    #         text=node_labels,
+    #         textfont=dict(size=12),
+    #         textposition='bottom center',
+    #     )
 
 
-    print(df.head())
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers+text',
+        hoverinfo='text',
+        marker=dict(
+            symbol='circle',
+            showscale=False,
+            # colorscale='Greens',
+            autocolorscale=True,
+            # reversescale=True,
+            # size=20,
+            # colorbar=dict(
+            #     thickness=15,
+            #     title='Node Connections',
+            #     xanchor='left',
+            #     titleside='right'
+            # ),
+            line_width=1),
+        text=node_labels,
+        textfont=dict(size=12),
+        textposition='bottom center',
+        
+    )
+    
+    node_trace.marker.size = node_sizes
+    node_trace.marker.color = node_colors
+    # node_trace.marker.line_width = 
+
+    edge_x = []
+    edge_y = []
+    for f_node in first_order_nodes:
+        for s_node in second_order_nodes:
+            if f_node in s_node:
+                edge_y.append(2)
+                edge_y.append(3)
+                edge_y.append(None)
+                edge_x.append(first_order_nodes.index(f_node)+2)
+                edge_x.append(second_order_nodes.index(s_node)+3)
+                edge_x.append(None)
+
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=0.5, color='#888'),
+        hoverinfo='none',
+        mode='lines'
+    ) 
+
+    fig = go.Figure(data=[edge_trace, node_trace],
+             layout=go.Layout(
+                autosize=False,
+                width=300,
+                height=300,
+                # title='Sobol analysis',
+                titlefont_size=16,
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(b=20,l=5,r=5,t=40),
+                # annotations=[ dict(
+                #     text="Python code",
+                #     showarrow=False,
+                #        xref="paper", yref="paper",
+                #     x=0.005, y=-0.002 ) ],
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)),
+                # opacity=1,
+        )
+    
+    fig.update_layout({
+        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+        'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+    })
+
+    return fig
+
+    # print(df.head())
 #     ids = []
 #     labels = []
 #     parents = []
