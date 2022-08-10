@@ -1089,7 +1089,7 @@ class AnalysisDashingParameter(TemplateView):
             os.mkdir(config_dir)
         with open(config_dir + '/' + file_name, 'w') as txtfile:
             for target in targets:
-                print("Zayedddddddddddddd ", target)
+                # print("Zayedddddddddddddd ", target)
                 s = 'tuning_problem' + str(targets.index(target)) + ':'
                 txtfile.write(s + '\n')
                 s = '  data: '
@@ -1482,7 +1482,7 @@ class AnalysisDashingCounter(TemplateView):
             arch_file = 'haswell3'
             if len(counter_groups) > 1:
                 arch_file = 'defined'
-            self.write_config_file('counter_importance_problem' + '.yml',[evaluation_results],arch_file)
+            self.write_config_file('counter_importance_problem' + '.yml',evaluation_results,arch_file)
 
         #Architecture setup for counter analysis 
         if has_counter_info:
