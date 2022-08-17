@@ -135,6 +135,7 @@ def sunburst(data_loader):
     clean_dict(rsm_alphas)
     clean_dict(rsm_results)
 
+    print("Zayed Checking: ", rsm_ev_errors)
     rsm_results = copy.deepcopy(rsm_results)
     resources = set()
     for reg in rsm_results:
@@ -209,6 +210,8 @@ def sunburst(data_loader):
             if ev_percent_error[reg][event] < 0.0:
                 ev_percent_error[reg][event] = 0.0
 
+    print("Zayed Checking2: ", ev_percent_error)
+
     # print("Zayed ev_to_gro")
     # print(data_loader.ev_to_res_map)
     # mapping = dict()
@@ -229,7 +232,7 @@ def sunburst(data_loader):
         belief_ev_map[reg] = OrderedDict() #{}
         for event, percent_error in ev_percent_error[reg].items():
             belief_ev_map[reg][event] = percent_error
-            belief_ev_map[reg][event] = np.exp(-lam * percent_error)
+            # belief_ev_map[reg][event] = np.exp(-lam * percent_error)
     # Parse the map into a region->res->event->belief layout
     belief_res_ev_map = OrderedDict() #i{}
     for reg in regions:
@@ -309,11 +312,13 @@ def sunburst(data_loader):
         # print ('...........', reg, belief_map[reg])
         belief_min = min(belief_map[reg].values())
         belief_max = max(belief_map[reg].values())
+        belief_sum = sum(belief_map[reg].values())
 
         keys_to_remove = []
         for resource in belief_map[reg]:
             if (belief_max - belief_min) != 0:
-                belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+                # belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+                belief_map[reg][resource] = belief_map[reg][resource] / belief_sum
 
             if belief_map[reg][resource] < BELIEF_THRESHOLD:
                 #print("Removing %s from %s" % (resource, reg))

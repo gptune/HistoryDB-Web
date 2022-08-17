@@ -661,11 +661,11 @@ def gptune_callgraph3D(sobol_analysis):
         node_labels.append(node)
         node_colors.append('red')
 
-    for node in second_order_nodes:
-        node_y.append(3)
-        node_x.append(second_order_nodes.index(node)+3)
-        node_labels.append(node)
-        node_colors.append('blue')
+    # for node in second_order_nodes:
+    #     node_y.append(3)
+    #     node_x.append(second_order_nodes.index(node)+3)
+    #     node_labels.append(node)
+    #     node_colors.append('blue')
     # print('Zayed Reads ', first_order_nodes, second_order_nodes)
     G = nx.DiGraph()
     

@@ -1176,16 +1176,20 @@ class AnalysisDashingParameter(TemplateView):
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
         
-        has_counter_info = 'additional_output' in self.function_evaluations[0]
+        has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
+        has_group_info = False
+        if has_counter_info:
+            tks = list(self.function_evaluations[0]['additional_output']['pmu'].keys())
+            has_group_info = type(self.function_evaluations[0]['additional_output']['pmu'][tks[0]]) is dict
 
         self.phases = set()
  
-        if has_counter_info:
+        if has_counter_info and has_group_info:
             # Read about counter and grouping
             counter_classes = list((self.function_evaluations[0])['additional_output'].keys())
             for counter_class in counter_classes:
                 temp_phase = list(self.function_evaluations[0]['additional_output'][counter_class].keys())
-                self.phases.update(temp_phase)
+                self.phases.update(temp_phase)            
 
         # Read data about tuning and task parameters
         evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
@@ -1368,7 +1372,7 @@ class AnalysisDashingCounter(TemplateView):
                 txtfile.write(s + '\n')
             s = '  arch: ' + arch + '\n'
             s += '  data_rescale: true\n'
-            s += '  rsm_iters: 500\n'
+            s += '  rsm_iters: 5000\n'
             s += '  rsm_print: false\n'
             s += '  rsm_use_nn_solver: true\n'
             # s += '  save_compat: true\n'
@@ -1413,8 +1417,11 @@ class AnalysisDashingCounter(TemplateView):
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
         
-        has_counter_info = 'additional_output' in self.function_evaluations[0]
-
+        has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
+        has_group_info = False
+        if has_counter_info:
+            tks = list(self.function_evaluations[0]['additional_output']['pmu'].keys())
+            has_group_info = type(self.function_evaluations[0]['additional_output']['pmu'][tks[0]]) is dict
 
         self.phases = set()
         counter_groups = set()
@@ -1422,7 +1429,7 @@ class AnalysisDashingCounter(TemplateView):
         mapping_set = set()
         mapping = {}
  
-        if has_counter_info:
+        if has_counter_info and has_group_info:
             # Read about counter and grouping
             counter_classes = list((self.function_evaluations[0])['additional_output'].keys())
             for counter_class in counter_classes:
@@ -1439,6 +1446,10 @@ class AnalysisDashingCounter(TemplateView):
                             if counter_group not in mapping.keys():
                                 mapping[counter_group] = []
                             mapping[counter_group].append(counter)
+        if has_counter_info and (not has_group_info):
+            counter_classes = list((self.function_evaluations[0])['additional_output'].keys())
+            counters = tks
+
 
         # Read data about tuning and task parameters
         evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
@@ -1449,7 +1460,7 @@ class AnalysisDashingCounter(TemplateView):
         # Transformation countre data to dashing data format
         coloumns = ['']
         coloumns.extend(self.phases)
-        if has_counter_info:
+        if has_counter_info and has_group_info:
             new_dashing_df = pd.DataFrame(columns=coloumns)
             rows = []
             for feat in counters:
@@ -1462,6 +1473,23 @@ class AnalysisDashingCounter(TemplateView):
                             for counter_group in counter_groups:
                                 if feat in function_eval['additional_output'][counter_class][phase][counter_group].keys():
                                     temp_list.append(function_eval['additional_output'][counter_class][phase][counter_group][feat])
+                    temp_list_2 = [str(val) for val in temp_list]
+                    temp_row = ','.join(temp_list_2)
+                    row_dict[phase] = temp_row
+                rows.append(row_dict)
+        
+        if has_counter_info and (not has_group_info):
+            new_dashing_df = pd.DataFrame(columns=coloumns)
+            rows = []
+            for feat in counters:
+                row_dict = {}
+                row_dict[''] = feat
+                for phase in self.phases:
+                    temp_list = []
+                    for function_eval in self.function_evaluations:
+                        for counter_class in counter_classes:
+                                if feat in function_eval['additional_output'][counter_class].keys():
+                                    temp_list.append(function_eval['additional_output'][counter_class][feat])
                     temp_list_2 = [str(val) for val in temp_list]
                     temp_row = ','.join(temp_list_2)
                     row_dict[phase] = temp_row
@@ -1828,8 +1856,8 @@ class SADashboard(TemplateView):
 
                 model_data_list[model_data["objective"]["name"]]["sobol_analysis"] = sobol_analysis
 
-                print("Zayed sobol")
-                print(sobol_analysis)
+                # print("Zayed sobol")
+                # print(sobol_analysis)
 
             context = {
                     "tuning_problem_unique_name" : tuning_problem_unique_name,

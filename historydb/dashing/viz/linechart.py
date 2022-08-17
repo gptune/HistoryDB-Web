@@ -49,7 +49,7 @@ def raw_values_per_proc_config(data_loader):
         fig.layout.xaxis.title = "Number of Processes"
         fig.layout.xaxis.tickvals = proc_configs[reg]
         fig.layout.yaxis.title = "Normalized Event Count"
-        fig.update_layout(	font={'size': 10})
+        fig.update_layout(width=1500, height=500,	font={'size': 16})
 
         data_loader['charts'].append(fig)
 
@@ -128,7 +128,7 @@ def raw_values_per_config(data_loader):
         fig.layout.xaxis.title = "Number of Configs"
         fig.layout.xaxis.tickvals = data_loader.proc_configs[reg]
         fig.layout.yaxis.title = "Normalized Event Count"
-        fig.update_layout(    font={'size': 10})
+        fig.update_layout(    font={'size': 16})
 
         data_loader['charts'].append(fig)
 
