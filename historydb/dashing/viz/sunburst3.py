@@ -122,6 +122,8 @@ def shorten_event_name(event_name):
     return shortened_event_name
 
 def sunburst(data_loader):
+    # print("Zayed Here but why")
+
     rsm_ev_errors = data_loader['rsm_ev_errors']
     rsm_alphas = data_loader['rsm_alphas']
     rsm_norm_data = data_loader['rsm_norm_data']
@@ -426,6 +428,7 @@ def sunburst(data_loader):
 
     # data_loader['group_reg_pair'] = normed_belief_map
     # data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
+    print("Zayed Here but why")
     data_loader['group_reg_pair'] = original_normed_belief_map
     data_loader['group_reg_pair_vlaues'] = original_belief_res_ev_map
 

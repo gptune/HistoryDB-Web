@@ -1102,6 +1102,9 @@ class AnalysisDashingParameter(TemplateView):
                     s = '    - dashing.viz.sunburst3.sunburst'
                 else:
                     s = '    - dashing.viz.linechart.raw_values_per_proc_config'
+                # s = '    - dashing.viz.sunburst3.sunburst'
+                # txtfile.write(s + '\n')
+                # s = '    - dashing.viz.linechart.raw_values_per_proc_config'
                 txtfile.write(s + '\n')
                 s = '  name:  \'' + target +'\''
                 txtfile.write(s + '\n')
@@ -1269,7 +1272,7 @@ class AnalysisDashingParameter(TemplateView):
         transformed_charts = []
         charts, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
         
-        print('Zayed Here1 ', charts)
+        # print('Zayed Here1 ', charts)
 
         for chart in charts:
             # print('Zayed Here1 ', len(charts))
@@ -1372,7 +1375,7 @@ class AnalysisDashingCounter(TemplateView):
                 txtfile.write(s + '\n')
             s = '  arch: ' + arch + '\n'
             s += '  data_rescale: true\n'
-            s += '  rsm_iters: 5000\n'
+            s += '  rsm_iters: 500\n'
             s += '  rsm_print: false\n'
             s += '  rsm_use_nn_solver: true\n'
             # s += '  save_compat: true\n'
