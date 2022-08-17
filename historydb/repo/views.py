@@ -1098,13 +1098,13 @@ class AnalysisDashingParameter(TemplateView):
                 txtfile.write(s + '\n')
                 s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
                 txtfile.write(s + '\n')
-                if chart_type == 'sunburst':
-                    s = '    - dashing.viz.sunburst3.sunburst'
-                else:
-                    s = '    - dashing.viz.linechart.raw_values_per_proc_config'
-                # s = '    - dashing.viz.sunburst3.sunburst'
-                # txtfile.write(s + '\n')
-                # s = '    - dashing.viz.linechart.raw_values_per_proc_config'
+                # if chart_type == 'sunburst':
+                #     s = '    - dashing.viz.sunburst3.sunburst'
+                # else:
+                #     s = '    - dashing.viz.linechart.raw_values_per_proc_config'
+                s = '    - dashing.viz.sunburst3.sunburst'
+                txtfile.write(s + '\n')
+                s = '    - dashing.viz.linechart.raw_values_per_proc_config'
                 txtfile.write(s + '\n')
                 s = '  name:  \'' + target +'\''
                 txtfile.write(s + '\n')
@@ -1279,16 +1279,16 @@ class AnalysisDashingParameter(TemplateView):
             if chart is not None:
                 chart3 = plot(chart,output_type="div")
                 transformed_charts.append(chart3)
-                break
-            else:
-                self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
-                charts2, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
-                for chart_ in charts2:
-                    print('Zayed Here2 ', len(charts2))
-                    if chart_ is not None:
-                        chart3 = plot(chart_,output_type="div")
-                        transformed_charts.append(chart3)
-                        break
+                # break
+            # else:
+            #     self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
+            #     charts2, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+            #     for chart_ in charts2:
+            #         print('Zayed Here2 ', len(charts2))
+            #         if chart_ is not None:
+            #             chart3 = plot(chart_,output_type="div")
+            #             transformed_charts.append(chart3)
+            #             break
 
 
 
@@ -1304,6 +1304,7 @@ class AnalysisDashingParameter(TemplateView):
         #             row_dict['groups'] = group
         #             event_importances.append(row_dict)
 
+        print("Zayed whoooooo ", self.phases, event_imps_params)
         for region in self.phases:
             for group in mapping:
                 for event in mapping[group]:
@@ -1337,7 +1338,7 @@ class AnalysisDashingParameter(TemplateView):
 class AnalysisDashingCounter(TemplateView):
 
     def write_config_file(self,file_name,targets,arch):
-        print("Zayeddddddddddddddddd ", targets)
+        # print("Zayeddddddddddddddddd ", targets)
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)

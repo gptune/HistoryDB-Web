@@ -46,9 +46,9 @@ def raw_values_per_proc_config(data_loader):
 		
         title_name = reg if show_title else ''
         fig.update_layout(autosize=True, title=title_name)
-        fig.layout.xaxis.title = "Number of Processes"
+        fig.layout.xaxis.title = "Number of Configurations"
         fig.layout.xaxis.tickvals = proc_configs[reg]
-        fig.layout.yaxis.title = "Normalized Event Count"
+        fig.layout.yaxis.title = "Normalized Values"
         fig.update_layout(width=1500, height=500,	font={'size': 16})
 
         data_loader['charts'].append(fig)
@@ -66,8 +66,8 @@ def raw_values_per_proc_config(data_loader):
             file_path = os.path.join(dir_path, file_path)
             fig.write_image(file_path, width=1000, height=500)
         
-        data_loader['group_reg_pair'] = {}
-        data_loader['group_reg_pair_vlaues'] = {}
+        # data_loader['group_reg_pair'] = {}
+        # data_loader['group_reg_pair_vlaues'] = {}
 
 
 def raw_values_per_config(data_loader):

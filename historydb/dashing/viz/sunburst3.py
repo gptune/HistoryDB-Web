@@ -212,7 +212,7 @@ def sunburst(data_loader):
             if ev_percent_error[reg][event] < 0.0:
                 ev_percent_error[reg][event] = 0.0
 
-    print("Zayed Checking2: ", ev_percent_error)
+    # print("Zayed Checking2: ", ev_percent_error)
 
     # print("Zayed ev_to_gro")
     # print(data_loader.ev_to_res_map)
@@ -428,7 +428,7 @@ def sunburst(data_loader):
 
     # data_loader['group_reg_pair'] = normed_belief_map
     # data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
-    print("Zayed Here but why")
+    print("Zayed Here but why " , original_normed_belief_map)
     data_loader['group_reg_pair'] = original_normed_belief_map
     data_loader['group_reg_pair_vlaues'] = original_belief_res_ev_map
 
