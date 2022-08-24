@@ -1126,7 +1126,7 @@ class AnalysisDashingParameter(TemplateView):
                 txtfile.write(s + '\n')
             s = '  arch: ' + arch + '\n'
             s += '  data_rescale: true\n'
-            s += '  rsm_iters: 500\n'
+            s += '  rsm_iters: 5000\n'
             s += '  rsm_print: false\n'
             s += '  rsm_use_nn_solver: true\n'
             # s += '  save_compat: true\n'
@@ -1304,7 +1304,7 @@ class AnalysisDashingParameter(TemplateView):
         #             row_dict['groups'] = group
         #             event_importances.append(row_dict)
 
-        print("Zayed whoooooo ", self.phases, event_imps_params)
+        # print("Zayed whoooooo ", self.phases, event_imps_params)
         for region in self.phases:
             for group in mapping:
                 for event in mapping[group]:
@@ -2109,20 +2109,35 @@ class SADashboard(TemplateView):
                             func_eval_list_filtered.append(func_eval)
                         #else:
                         #    print ("filtered: ", func_eval)
-                try:
-                    import gptune
-                    print ("problem_space: ", problem_space)
-                    print ("num_samples: ", num_samples, " type: ", type(num_samples))
-                    ret = gptune.SensitivityAnalysis(problem_space=problem_space,
-                            modeler=modeler,
-                            input_task=Igiven,
-                            function_evaluations=func_eval_list_filtered,
-                            num_samples=num_samples)
-                    print("ret: ", ret)
+                # try:
+                #     import gptune
+                #     print ("problem_space: ", problem_space)
+                #     print ("num_samples: ", num_samples, " type: ", type(num_samples))
+                #     ret = gptune.SensitivityAnalysis(problem_space=problem_space,
+                #             modeler=modeler,
+                #             input_task=Igiven,
+                #             function_evaluations=func_eval_list_filtered,
+                #             num_samples=num_samples)
+                #     print("ret: ", ret)
+                #     #output_info["result"] = ret[output_name][0][0] #parameter_given
+                #     #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
+                # except:
+                #      ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
+                
+                # try:
+                import gptune
+                print ("problem_space: ", problem_space)
+                print ("num_samples: ", num_samples, " type: ", type(num_samples))
+                ret = gptune.SensitivityAnalysis(problem_space=problem_space,
+                    modeler=modeler,
+                    input_task=Igiven,
+                    function_evaluations=func_eval_list_filtered,
+                    num_samples=num_samples)
+                print("ret: ", ret)
                     #output_info["result"] = ret[output_name][0][0] #parameter_given
                     #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
-                except:
-                    ret = {'S1': {'nb':.1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
+                # except:
+                #     ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
                 
                 
                 # print('tuning problem info: ', tuning_problem_info)
@@ -2163,7 +2178,7 @@ class SADashboard(TemplateView):
                 print ("sobol analysis: ", sobol_analysis)
 
                 from dashing.viz import callgraph
-                fig = callgraph.gptune_callgraph3D(sobol_analysis)
+                fig = callgraph.gptune_callgraph2(sobol_analysis)
                 chart = plot(fig,output_type="div")
                 # print('Zayed chart: ', chart)
 

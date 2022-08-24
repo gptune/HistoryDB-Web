@@ -22,6 +22,54 @@
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://unpkg.com/tippy.js@4"></script>
 
+    <div class="container-fluid">
+
+        <br>
+        <hr>
+
+        <div class="mb-3">
+        <div class="row">
+            <div class="col">
+            <h4><b>Sobol Analysis</b></h4>
+            </div>
+        </div>
+
+        <div style="padding-top: 50px; padding-bottom: 50px; padding-left: 100px; padding-right: 100px; background-color: #f1f1f1">
+            <h4> What is Importance analysis?</h4>
+            <div class="mb-3">
+            <!-- [Quote from <a href="https://salib.readthedocs.io/en/latest/basics.html">SALib</a>] According to <a href="https://en.wikipedia.org/wiki/Sensitivity_analysis">Wikipedia</a>, sensitivity analysis is "the study of how the uncertainty in the output of a mathematical model or system (numerical or otherwise) can be apportioned to different sources of uncertainty in its inputs." The sensitivity of each input is often represented by a numeric value, called the sensitivity index. Sobol indices come in several forms: -->
+            <!-- <ul>
+                <li>First-order (main-effect) indices: measures the contribution to the output variance by a single model input alone.</li>
+                <li>Second-order indices: measures the contribution to the output variance caused by the interaction of two model inputs.</li>
+                <li>Total-order index: measures the contribution to the output variance caused by a model input, including both its first-order effects (the input varying alone) and all higher-order interactions.</li>
+            </ul> -->
+            Imporatnce analysis reveals the importantance of a resource against an objective function. A resource is given more 
+            importance if the resource function closely matches the trends of the target function. 
+            </div>
+
+            <h4>How to read the Importance analysis?</h4>
+            <div class="mb-3">
+            Currently, GPTune offers a sensitivity analysis tool based on <a href="https://ieeexplore.ieee.org/abstract/document/8955677">Dashing</a>. The three elements to an importance analysis are.
+            <ol>
+                <li>
+                    Sunburst charts: There are four layers in the following sunburst chart. At each layer, the more the improtance of an element is the more area 
+                    it gets. The first and central layer shows the name of the objective function.
+                    The second layer lists the importance of difference phases during an application run. The third layer lists improtance of resource group.
+                    The final and outer layer shows the importance of individual resources. IF a sunburst chart is missing it means that the analysis found
+                    no resource important enough to show. Click on a sunburst region to expand it further.
+                </li>
+                <li>
+                    Line charts: The linecharts that follows the sunburst shows the objective function with the predictive function built from each resource.
+                    One can see how well the predictive function of a single resource matches the trends of the objective function.
+                </li>
+                <li>
+                    Tables: The tables include all the resource and the groups information so that users can find the exact importance of a resource along 
+                    with other resource with no importance.  
+                </li>
+            </ol>
+            <br>
+        </div>
+    </div>
     {% for cha in chart %}
         {% if cha is not None %}
         <div style="margin-top: 30px;display: flex;justify-content: center;">

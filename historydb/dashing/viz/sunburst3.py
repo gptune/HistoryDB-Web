@@ -14,7 +14,9 @@ from difflib import get_close_matches
 import re
 from collections import OrderedDict 
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
+
+from numpy import asarray
 
 def conv_str(ev):
     shortened_event_name = ''
@@ -137,7 +139,7 @@ def sunburst(data_loader):
     clean_dict(rsm_alphas)
     clean_dict(rsm_results)
 
-    print("Zayed Checking: ", rsm_ev_errors)
+    # print("Zayed Checking: ", rsm_ev_errors)
     rsm_results = copy.deepcopy(rsm_results)
     resources = set()
     for reg in rsm_results:
@@ -251,6 +253,33 @@ def sunburst(data_loader):
     #TZI: Debug: Output the event percentages in a csv file for ease of use.
     # csv_file = open('dashing/ev_belief_perc.csv', 'a')
     # csv_writer = csv.writer(csv_file,delimiter=',')
+    # for reg in belief_res_ev_map:
+    #     resources_to_remove = []
+    #     for resource in belief_res_ev_map[reg]:
+    #         belief_min = min(belief_res_ev_map[reg][resource].values())
+    #         belief_max = max(belief_res_ev_map[reg][resource].values())
+    #         keys_to_remove = []
+
+    #         if belief_min == belief_max:
+    #             resources_to_remove.append(resource)
+    #             continue
+
+    #         for event, event_belief in belief_res_ev_map[reg][resource].items():
+
+    #             belief_res_ev_map[reg][resource][event] = (event_belief - belief_min) / (belief_max - belief_min)
+
+    #             if belief_res_ev_map[reg][resource][event] < BELIEF_THRESHOLD:
+    #                 keys_to_remove.append(event)
+    #             # if belief_res_ev_map[reg][resource][event] > BELIEF_THRESHOLD:
+    #             #     # csv_writer.writerow([app_name, reg, resource, event, belief_res_ev_map[reg][resource][event]])
+            
+    #         for key in keys_to_remove:
+    #             del belief_res_ev_map[reg][resource][key]
+        
+    #     for resource in resources_to_remove:
+    #         # print("Deleting %s from %s" % (resource, reg))
+    #         del belief_res_ev_map[reg][resource]
+    
     for reg in belief_res_ev_map:
         resources_to_remove = []
         for resource in belief_res_ev_map[reg]:
@@ -258,13 +287,19 @@ def sunburst(data_loader):
             belief_max = max(belief_res_ev_map[reg][resource].values())
             keys_to_remove = []
 
+            bels = list(belief_res_ev_map[reg][resource].values())
+            mean = sum(bels) / len(bels)
+            variance = sum([((x - mean) ** 2) for x in bels]) / len(bels)
+            res = variance ** 0.5
+
             if belief_min == belief_max:
                 resources_to_remove.append(resource)
                 continue
 
             for event, event_belief in belief_res_ev_map[reg][resource].items():
 
-                belief_res_ev_map[reg][resource][event] = (event_belief - belief_min) / (belief_max - belief_min)
+                belief_res_ev_map[reg][resource][event] = abs((event_belief - mean) / res)
+                print("Zayed ", reg, resource, event, belief_res_ev_map[reg][resource][event])
 
                 if belief_res_ev_map[reg][resource][event] < BELIEF_THRESHOLD:
                     keys_to_remove.append(event)
@@ -278,6 +313,7 @@ def sunburst(data_loader):
             # print("Deleting %s from %s" % (resource, reg))
             del belief_res_ev_map[reg][resource]
     
+
     # csv_file.close()
     normed_belief_res_ev_map = {}
     for reg in belief_res_ev_map:
@@ -316,6 +352,7 @@ def sunburst(data_loader):
         belief_max = max(belief_map[reg].values())
         belief_sum = sum(belief_map[reg].values())
 
+
         keys_to_remove = []
         for resource in belief_map[reg]:
             if (belief_max - belief_min) != 0:
@@ -328,6 +365,31 @@ def sunburst(data_loader):
         
         for key in keys_to_remove:
             del belief_map[reg][key]
+
+    # for reg in regions:
+    #     if(not belief_map[reg]):
+    #         continue
+    #     # print ('...........', reg, belief_map[reg])
+    #     belief_min = min(belief_map[reg].values())
+    #     belief_max = max(belief_map[reg].values())
+    #     belief_sum = sum(belief_map[reg].values())
+
+    #     bels = list(belief_res_ev_map[reg][resource].values())
+    #     mean = sum(bels) / len(bels)
+    #     variance = sum([((x - mean) ** 2) for x in bels]) / len(bels)
+    #     res = variance ** 0.5
+    #     keys_to_remove = []
+    #     for resource in belief_map[reg]:
+    #         # if (belief_max - belief_min) != 0:
+    #             # belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+    #         belief_map[reg][resource] = ((belief_map[reg][resource] - mean) / res)
+
+    #         if belief_map[reg][resource] < BELIEF_THRESHOLD:
+    #             #print("Removing %s from %s" % (resource, reg))
+    #             keys_to_remove.append(resource)
+        
+    #     for key in keys_to_remove:
+    #         del belief_map[reg][key]
 
     # Next step is with these belief values, normalized them such that
     # the sum of all beliefs is equal to the regions normalized value
