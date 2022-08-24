@@ -35,7 +35,7 @@ def raw_values_per_proc_config(data_loader):
                 data_per_proc.append(h5_map[reg][ev][proc_i][0])
 			
             res = data_loader.ev_to_res_map[ev][0]
-            ev_color = data_loader.get_resource_color(res)
+            ev_color = data_loader.get_resource_color(ev)
 
             fig.add_trace(go.Scatter(
 				name = ev,
