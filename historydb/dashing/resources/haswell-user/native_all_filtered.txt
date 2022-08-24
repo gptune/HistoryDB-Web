@@ -1,7 +1,6 @@
-ib
 nb
-nthreads
+ib
 m
 n
-nrhs
+k
 runtime

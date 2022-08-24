@@ -1194,10 +1194,18 @@ class AnalysisDashingParameter(TemplateView):
                 temp_phase = list(self.function_evaluations[0]['additional_output'][counter_class].keys())
                 self.phases.update(temp_phase)            
 
+        task_params = []
+        tuning_params = []
         # Read data about tuning and task parameters
         evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
-        task_params = list(self.function_evaluations[0]['task_parameter'].keys())
-        tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
+        for task_param in list(self.function_evaluations[0]['task_parameter'].keys()):
+            if type(self.function_evaluations[0]['task_parameter'][task_param]) is not str:
+                task_params.append(task_param)
+        for tuning_param in list(self.function_evaluations[0]['tuning_parameter'].keys()):
+            if type(self.function_evaluations[0]['tuning_parameter'][tuning_param]) is not str:
+                tuning_params.append(tuning_param)
+        # task_params = list(self.function_evaluations[0]['task_parameter'].keys())
+        # tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
 
         if not self.phases:
             self.phases.add("Single Phase")
@@ -1213,7 +1221,7 @@ class AnalysisDashingParameter(TemplateView):
         # Read the tuning and task parameters
         rows2 = []
         rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
-        rows2.extend(self.read_task_or_tuning_parameter(tuning_parmas,'tuning_parameter'))
+        rows2.extend(self.read_task_or_tuning_parameter(tuning_params,'tuning_parameter'))
         
         # Read the target metrices
         # n_n = []
@@ -1241,7 +1249,7 @@ class AnalysisDashingParameter(TemplateView):
             os.mkdir(resources_path)
 
         with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
-            for tuning_param in tuning_parmas:
+            for tuning_param in tuning_params:
                 txtfile.write(tuning_param + '\n')
 
         with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
@@ -1257,7 +1265,7 @@ class AnalysisDashingParameter(TemplateView):
                 txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
                 mapping['TASK_PARAMS'].append(task_param)
             mapping['TUNING_PARAMS'] = []
-            for tuning_param in tuning_parmas:
+            for tuning_param in tuning_params:
                 txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
                 mapping['TUNING_PARAMS'].append(tuning_param)
                 
