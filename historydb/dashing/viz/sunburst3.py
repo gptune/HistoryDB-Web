@@ -140,11 +140,21 @@ def sunburst(data_loader):
     clean_dict(rsm_results)
 
     # print("Zayed Checking: ", rsm_ev_errors)
+    # rsm_results = copy.deepcopy(rsm_results)
+    # resources = set()
+    # for reg in rsm_results:
+    #     for res in rsm_results[reg]:
+    #         resources.add(res)
+    #         if rsm_results[reg][res] < 0.0:
+    #             rsm_results[reg][res] = 0.0
+
     rsm_results = copy.deepcopy(rsm_results)
     resources = set()
     for reg in rsm_results:
+        base_error = np.linalg.norm(np.array(list(rsm_results[reg].values())))
         for res in rsm_results[reg]:
             resources.add(res)
+            rsm_results[reg][res] = (base_error - rsm_results[reg][res]) / base_error
             if rsm_results[reg][res] < 0.0:
                 rsm_results[reg][res] = 0.0
 
@@ -230,7 +240,9 @@ def sunburst(data_loader):
     #         for counter in mapping[group]:
     #             txtfile.write(counter + '=>' + group + '\n')
 
-    lam = 0.0005
+    # lam = 0.0005
+    # lam = 1
+
     belief_ev_map = OrderedDict() #{}
     for reg in regions:
         belief_ev_map[reg] = OrderedDict() #{}
@@ -298,7 +310,7 @@ def sunburst(data_loader):
 
             for event, event_belief in belief_res_ev_map[reg][resource].items():
 
-                belief_res_ev_map[reg][resource][event] = abs((event_belief - mean) / res)
+                # belief_res_ev_map[reg][resource][event] = abs((event_belief - mean) / res)
                 print("Zayed ", reg, resource, event, belief_res_ev_map[reg][resource][event])
 
                 if belief_res_ev_map[reg][resource][event] < BELIEF_THRESHOLD:
@@ -330,7 +342,10 @@ def sunburst(data_loader):
     #############################################################################################
     # Third Layer Calculations
 
-    lam = 0.005
+    print("Zayed belief_map_before ", rsm_results)
+
+    # lam = 0.005
+    lam = 1
     belief_map = OrderedDict() #{}
     for reg in regions:
         belief_map[reg] = {}
@@ -342,6 +357,7 @@ def sunburst(data_loader):
                 belief_map[reg][resource] = np.exp(-lam * res_percent_err)
             # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
+    print("Zayed belief_map ", belief_map)
     original_normed_belief_map = copy.deepcopy(belief_map)
     # Normalize between 0 and 1 removing any small values
     for reg in regions:
@@ -355,9 +371,9 @@ def sunburst(data_loader):
 
         keys_to_remove = []
         for resource in belief_map[reg]:
-            if (belief_max - belief_min) != 0:
-                # belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
-                belief_map[reg][resource] = belief_map[reg][resource] / belief_sum
+            # if (belief_max - belief_min) != 0:
+            #     # belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
+            #     belief_map[reg][resource] = belief_map[reg][resource] / belief_sum
 
             if belief_map[reg][resource] < BELIEF_THRESHOLD:
                 #print("Removing %s from %s" % (resource, reg))
