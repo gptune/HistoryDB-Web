@@ -22,7 +22,7 @@ def raw_values_per_proc_config(data_loader):
         fig = go.Figure()
         fig.add_trace(go.Scatter(name = data_loader.get_option('name', 'untitled sunburst'),
             x = proc_configs[reg],
-            y = data_loader.get_app_target(reg),
+            y = normalize_1d(data_loader.get_app_target(reg)),
             legendgroup="!!!",
             line=dict(color="black", width=4)))
         for ev in data_loader.get_events():

@@ -644,7 +644,7 @@ def gptune_callgraph2(sobol_analysis):
     second_order_nodes_scores = [d['S2'] for d in sobol_analysis['s2_parameters']]
 
 
-    first_order_nodes_sizes = [d['S1'] * 100 for d in sobol_analysis['s1_parameters']]
+    first_order_nodes_sizes = [abs(d['S1'] * 100) for d in sobol_analysis['s1_parameters']]
     second_order_nodes_sizes = [d['S2'] * 10 for d in sobol_analysis['s2_parameters']]
     node_sizes = first_order_nodes_sizes
     # node_sizes.extend(second_order_nodes_sizes)
@@ -744,7 +744,7 @@ def gptune_callgraph2(sobol_analysis):
             go.Scatter(
                 x = [x0,x1,None],
                 y = [y0,y1,None],
-                line=dict(width=edge_width, color='#888'),
+                line=dict(width=abs(edge_width), color='#888'),
                 hoverinfo='text',
                 hovertext = edge_label,
                 text = edge_label,

@@ -1134,7 +1134,6 @@ class AnalysisDashingParameter(TemplateView):
             s += '  compat_labels: true\n'
             s += '  shorten_event_name: false\n'
             s += '  port: 7603\n'
-            s += '  rsm_cpu_count: 4\n' 
             txtfile.write(s)
 
     def read_task_or_tuning_parameter(self, parameters, name):
@@ -1204,8 +1203,10 @@ class AnalysisDashingParameter(TemplateView):
         for tuning_param in list(self.function_evaluations[0]['tuning_parameter'].keys()):
             if type(self.function_evaluations[0]['tuning_parameter'][tuning_param]) is not str:
                 tuning_params.append(tuning_param)
-        # task_params = list(self.function_evaluations[0]['task_parameter'].keys())
-        # tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
+        all_task_params = list(self.function_evaluations[0]['task_parameter'].keys())
+        all_tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
+        removed_task_params = list(set(all_task_params) - set(task_params))
+        removed_tuning_params = list(set(all_tuning_parmas) - set(tuning_params))
 
         if not self.phases:
             self.phases.add("Single Phase")
@@ -1329,7 +1330,9 @@ class AnalysisDashingParameter(TemplateView):
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "chart2" : transformed_charts,
-                    "counters" : event_importances
+                    "counters" : event_importances,
+                    "removed_task_params" : removed_task_params,
+                    "removed_tuning_params" : removed_tuning_params
         }
 
         return render(request, 'repo/analysis-dashing-parameter.html', context)
@@ -2145,7 +2148,7 @@ class SADashboard(TemplateView):
                     #output_info["result"] = ret[output_name][0][0] #parameter_given
                     #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
                 # except:
-                #     ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
+                    # ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
                 
                 
                 # print('tuning problem info: ', tuning_problem_info)
