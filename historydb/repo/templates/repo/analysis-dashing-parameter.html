@@ -72,7 +72,6 @@
         </div>
     </div>
 
-    {% if removed_task_params or removed_tuning_params %}
     <div class="container-fluid">
 
         <br>
@@ -81,36 +80,35 @@
         <div class="mb-3">
         <div class="row">
             <div class="col">
-            <h4><b>Removed from analysis</b></h4>
+            <h4><b>Parameters</b></h4>
             </div>
         </div>
     
         <div style="padding-top: 50px; padding-bottom: 50px; padding-left: 100px; padding-right: 100px; background-color: #f1f1f1">
             <div class="mb-3">
-            <!-- [Quote from <a href="https://salib.readthedocs.io/en/latest/basics.html">SALib</a>] According to <a href="https://en.wikipedia.org/wiki/Sensitivity_analysis">Wikipedia</a>, sensitivity analysis is "the study of how the uncertainty in the output of a mathematical model or system (numerical or otherwise) can be apportioned to different sources of uncertainty in its inputs." The sensitivity of each input is often represented by a numeric value, called the sensitivity index. Sobol indices come in several forms: -->
-            <!-- <ul>
-                <li>First-order (main-effect) indices: measures the contribution to the output variance by a single model input alone.</li>
-                <li>Second-order indices: measures the contribution to the output variance caused by the interaction of two model inputs.</li>
-                <li>Total-order index: measures the contribution to the output variance caused by a model input, including both its first-order effects (the input varying alone) and all higher-order interactions.</li>
-            </ul> -->
-            {% if removed_task_params %}
-                {% for task_param in removed_task_params %}
-                    {{task_param}} ,
+            Task paramters
+            <ul>
+                {% for task_param in all_task_params %}
+                    {% if task_param in removed_task_params %}
+                        <li>{{task_param}} (Removed for being categorical)</li>
+                    {% else %}
+                        <li>{{task_param}}</li>
+                    {% endif %}
                 {% endfor %}
-                from task parameters and 
-            {% endif %}
-            {% if removed_tuning_params %}
-                {% for tuning_param in removed_tuning_params %}
-                    {{tuning_param}} ,
+            </ul>
+            Tuning parameters
+            <ul>
+                {% for tuning_param in all_tuning_params %}
+                    {% if tuning_param in removed_tuning_params %}
+                        <li>{{tuning_param}} (Removed for being categorical)</li>
+                    {% else %}
+                        <li>{{tuning_param}}</li>
+                    {% endif %}
                 {% endfor %}
-                from tuning parameters
-            {% endif %}
-            were removed from analysis, as these parameters hold categorical values.
+            </ul>
             </div>
-    
         </div>
     </div>
-    {% endif %}
     
     <!-- <p>
     <pre>{{ function_evaluations | pprint }}</pre>

@@ -133,7 +133,7 @@ def sunburst(data_loader):
     name = data_loader.get_option('name', 'untitled sunburst')
     save_sunburst = data_loader.get_option('save_sunburst', False)
     PERCENT_OFFSET = 1.00001
-    BELIEF_THRESHOLD = 0.001
+    BELIEF_THRESHOLD = 0.0015
 
     clean_dict(rsm_ev_errors)
     clean_dict(rsm_alphas)

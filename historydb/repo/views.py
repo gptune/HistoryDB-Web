@@ -1332,7 +1332,9 @@ class AnalysisDashingParameter(TemplateView):
                     "chart2" : transformed_charts,
                     "counters" : event_importances,
                     "removed_task_params" : removed_task_params,
-                    "removed_tuning_params" : removed_tuning_params
+                    "removed_tuning_params" : removed_tuning_params,
+                    "all_task_params" : all_task_params,
+                    "all_tuning_params" : all_tuning_parmas
         }
 
         return render(request, 'repo/analysis-dashing-parameter.html', context)

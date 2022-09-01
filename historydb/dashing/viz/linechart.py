@@ -4,7 +4,72 @@ import pandas
 import os
 import plotly.tools as tls
 import plotly.graph_objects as go
+import random
 
+
+# def raw_values_per_proc_config(data_loader):
+#     proc_configs = data_loader.proc_configs
+#     h5_map = data_loader.h5_map
+#     rsm_results = data_loader['rsm_results']
+#     resources = set()
+#     for reg in rsm_results:
+#         for res in rsm_results[reg]:
+#             resources.add(res)
+#     resources = sorted(list(resources))
+#     save_figure = data_loader.get_option('save_raw_line', False)
+#     show_title = data_loader.get_option('show_raw_line_title', True)
+#     module_name, func_name = data_loader.compute_target.rsplit('.', 1)
+#     for reg in data_loader.regions:
+#         fig = go.Figure()
+#         print("Zayed proc x, ", proc_configs[reg])
+#         fig.add_trace(go.Scatter(name = data_loader.get_option('name', 'untitled sunburst'),
+#             x = proc_configs[reg],
+#             y = normalize_1d(data_loader.get_app_target(reg)),
+#             legendgroup="!!!",
+#             line=dict(color="black", width=4)))
+#         for ev in data_loader.get_events():
+#             # ev_importance = importance(data_loader['name'], reg, ev)
+#             # if ev_importance <= 0.005:
+#             #     continue
+
+#             data_per_proc = []
+#             for proc_i, proc in enumerate(proc_configs[reg]):
+#                 data_per_proc.append(h5_map[reg][ev][proc_i][0])
+			
+#             res = data_loader.ev_to_res_map[ev][0]
+#             ev_color = data_loader.get_resource_color(ev)
+
+#             fig.add_trace(go.Scatter(
+# 				name = ev,
+# 				x = proc_configs[reg],
+# 				y = normalize_1d(data_per_proc),
+# 				legendgroup=ev_color,
+# 				line=dict(color=ev_color, width=2)))
+		
+#         title_name = reg if show_title else ''
+#         fig.update_layout(autosize=True, title=title_name)
+#         fig.layout.xaxis.title = "Number of Configurations"
+#         fig.layout.xaxis.tickvals = proc_configs[reg]
+#         fig.layout.yaxis.title = "Normalized Values"
+#         fig.update_layout(width=1500, height=500,	font={'size': 16})
+
+#         data_loader['charts'].append(fig)
+
+#         if save_figure:
+#             region_filename = reg.replace(':', '_')
+#             region_filename = region_filename.replace(' ', '_')
+#             file_path = '%s_%s.pdf' \
+#               % (data_loader.get_config_name(), region_filename)
+
+#             dir_path = os.path.join('viz_output', 'raw_line')
+#             if not os.path.exists(dir_path):
+#                 os.makedirs(dir_path)
+			
+#             file_path = os.path.join(dir_path, file_path)
+#             fig.write_image(file_path, width=1000, height=500)
+        
+#         # data_loader['group_reg_pair'] = {}
+#         # data_loader['group_reg_pair_vlaues'] = {}
 
 def raw_values_per_proc_config(data_loader):
     proc_configs = data_loader.proc_configs
@@ -18,11 +83,20 @@ def raw_values_per_proc_config(data_loader):
     save_figure = data_loader.get_option('save_raw_line', False)
     show_title = data_loader.get_option('show_raw_line_title', True)
     module_name, func_name = data_loader.compute_target.rsplit('.', 1)
+
+    random_indexes = range(0,len(proc_configs[reg]))
+    if len(proc_configs[reg]) > 100:
+        random_indexes = random.sample(range(0,len(proc_configs[reg])), 100)
+    print("Zayed randoms ", random_indexes)
     for reg in data_loader.regions:
         fig = go.Figure()
+        # print("Zayed proc x, ", proc_configs[reg])
+        target_values = [data_loader.get_app_target(reg)[x] for x in random_indexes]
+        sort_index = np.argsort(target_values)
         fig.add_trace(go.Scatter(name = data_loader.get_option('name', 'untitled sunburst'),
-            x = proc_configs[reg],
-            y = normalize_1d(data_loader.get_app_target(reg)),
+            # x = [proc_configs[reg][x] for x in random_indexes],
+            x = list(range(0, len(random_indexes))),
+            y = normalize_1d([target_values[x] for x in sort_index]),
             legendgroup="!!!",
             line=dict(color="black", width=4)))
         for ev in data_loader.get_events():
@@ -37,10 +111,15 @@ def raw_values_per_proc_config(data_loader):
             res = data_loader.ev_to_res_map[ev][0]
             ev_color = data_loader.get_resource_color(ev)
 
+            temp_data_per_proc = [data_per_proc[x] for x in random_indexes]
             fig.add_trace(go.Scatter(
 				name = ev,
-				x = proc_configs[reg],
-				y = normalize_1d(data_per_proc),
+                # x = [proc_configs[reg][x] for x in random_indexes],
+                x = list(range(0, len(random_indexes))),
+                y = normalize_1d([temp_data_per_proc[x] for x in sort_index]),
+                # y = normalize_1d([data_per_proc[x] for x in random_indexes]),
+				# x = proc_configs[reg],
+				# y = normalize_1d(data_per_proc),
 				legendgroup=ev_color,
 				line=dict(color=ev_color, width=2)))
 		
