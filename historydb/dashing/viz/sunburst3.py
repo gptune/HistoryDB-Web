@@ -133,7 +133,7 @@ def sunburst(data_loader):
     name = data_loader.get_option('name', 'untitled sunburst')
     save_sunburst = data_loader.get_option('save_sunburst', False)
     PERCENT_OFFSET = 1.00001
-    BELIEF_THRESHOLD = 0.0015
+    BELIEF_THRESHOLD = 0.002
 
     clean_dict(rsm_ev_errors)
     clean_dict(rsm_alphas)
@@ -373,9 +373,11 @@ def sunburst(data_loader):
         for resource in belief_map[reg]:
             # if (belief_max - belief_min) != 0:
             #     # belief_map[reg][resource] = (belief_map[reg][resource] - belief_min) / (belief_max - belief_min)
-            #     belief_map[reg][resource] = belief_map[reg][resource] / belief_sum
+                # belief_map[reg][resource] = belief_map[reg][resource] / belief_sum
 
-            if belief_map[reg][resource] < BELIEF_THRESHOLD:
+            if belief_map[reg][resource] < BELIEF_THRESHOLD or len(list(belief_res_ev_map[reg][resource].keys())) == 0:
+            # if belief_map[reg][resource] < BELIEF_THRESHOLD:
+
                 #print("Removing %s from %s" % (resource, reg))
                 keys_to_remove.append(resource)
         
