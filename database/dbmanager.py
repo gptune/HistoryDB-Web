@@ -498,7 +498,7 @@ class HistoryDB_MongoDB(dict):
 
     def get_tuning_problem_type(self, tuning_problem_unique_name):
         document = list(self.db["tuning_problem_db"].find({"unique_name":{"$eq":tuning_problem_unique_name}}))
-        print ("document: ", len(document))
+        #print ("document: ", len(document))
         if len(document) > 0:
             return "regular"
         else:
@@ -507,6 +507,17 @@ class HistoryDB_MongoDB(dict):
                 return "flexible"
             else:
                 return "unknown"
+
+    def get_tuning_problem_unique_name_arr(self, tuning_problem_name, tuning_problem_type="regular"):
+        tuning_problem_unique_names = []
+        if tuning_problem_type == "regular":
+            for document in self.db["tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}}):
+                tuning_problem_unique_names.append(document["unique_name"])
+
+        elif tuning_problem_type == "flexible":
+            documents = self.db["flexible_tuning_problem_db"].find({"tuning_problem_name":{"$eq":tuning_problem_name}})
+
+        return tuning_problem_unique_names
 
     def get_tuning_problem_simple_name(self, tuning_problem_unique_name, tuning_problem_type="regular"):
         if tuning_problem_type == "regular":
@@ -525,6 +536,29 @@ class HistoryDB_MongoDB(dict):
         else:
             return None
         return document #["tuning_problem_info"]
+
+    def load_func_eval_all(self,
+            tuning_problem_unique_name,
+            user_email,
+            tuning_problem_type,
+            **kwargs):
+        func_eval_filtered = []
+
+        application_db = self.db[tuning_problem_unique_name]
+        func_eval_list = application_db.find({"document_type":{"$eq":"func_eval"}})
+
+        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name, tuning_problem_type)
+
+        for func_eval in func_eval_list:
+            try:
+                func_eval["tuning_problem_name"] = tuning_problem_simple_name
+                if self.check_perf_data_accessibility(func_eval, user_email):
+                    func_eval_filtered.append(func_eval)
+            except:
+                print ("func_eval load failed")
+                continue
+
+        return func_eval_filtered
 
     def load_func_eval_filtered(self,
             tuning_problem_unique_name,
@@ -991,6 +1025,30 @@ class HistoryDB_MongoDB(dict):
                         print ("func_eval: " + func_eval["uid"] + " does not match the tuning problem")
 
         return num_added_func_eval
+
+    def load_surrogate_models_all(self,
+            tuning_problem_unique_name,
+            user_email,
+            tuning_problem_type="regular",
+            **kwargs):
+        surrogate_model_list_filtered = {}
+
+        application_db = self.db[tuning_problem_unique_name]
+        surrogate_model_list = application_db.find({"document_type":{"$eq":"surrogate_model"}})
+
+        tuning_problem_simple_name = self.get_tuning_problem_simple_name(tuning_problem_unique_name, tuning_problem_type)
+
+        for surrogate_model in surrogate_model_list:
+            try:
+                surrogate_model["tuning_problem_name"] = tuning_problem_simple_name
+                if self.check_perf_data_accessibility(surrogate_model, user_email):
+                    if surrogate_model["objective"]["name"] not in surrogate_model_list_filtered:
+                        surrogate_model_list_filtered[surrogate_model["objective"]["name"]] = []
+                    surrogate_model_list_filtered[surrogate_model["objective"]["name"]].append(surrogate_model)
+            except:
+                continue
+
+        return surrogate_model_list_filtered
 
     def load_surrogate_models_filtered(self,
             tuning_problem_unique_name,

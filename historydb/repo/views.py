@@ -2227,6 +2227,49 @@ class EntryDel(TemplateView):
 
         return redirect(reverse_lazy('repo:user-dashboard'))
 
+class ExportAll(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        tuning_problem_name = request.GET.get("tuning_problem_name", "")
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search = json.loads(request.GET.get("search", "[]"))
+        if search == []:
+            search = [ "func_eval", "surrogate_model" ]
+
+        historydb = HistoryDB_MongoDB()
+
+        perf_data = []
+
+        if tuning_problem_unique_name != "":
+            tuning_problem_unique_name_arr = [tuning_problem_unique_name]
+        elif tuning_problem_unique_name == "" and tuning_problem_name != "":
+            tuning_problem_unique_name_arr = historydb.get_tuning_problem_unique_name_arr(tuning_problem_name, tuning_problem_type="regular")
+        else:
+            print ("warning: need to provide a tuning problem name")
+
+        for tuning_problem_unique_name_ in tuning_problem_unique_name_arr:
+            tuning_problem_type = historydb.get_tuning_problem_type(tuning_problem_unique_name_)
+
+            if "func_eval" in search:
+                perf_data.extend(historydb.load_func_eval_all(
+                    tuning_problem_unique_name = tuning_problem_unique_name_,
+                    tuning_problem_type = tuning_problem_type,
+                    user_email = user_email))
+
+            if "surrogate_model" in search:
+                surrogate_models = historydb.load_surrogate_models_all(
+                    tuning_problem_unique_name = tuning_problem_unique_name_,
+                    tuning_problem_type = tuning_problem_type,
+                    user_email = user_email)
+                for objective_name in surrogate_models:
+                    perf_data.extend(surrogate_models[objective_name])
+
+        context = { "perf_data" : perf_data, }
+
+        return render(request, 'repo/export.html', context)
+
 class Export(TemplateView):
 
     def get(self, request, **kwargs):
