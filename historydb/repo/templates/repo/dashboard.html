@@ -137,7 +137,7 @@ asdf
           <button id="button">Parameter Importance Analysis</button>
         </a>
 
-        {% if 'additional_output' in func_eval_list.0 %}
+        {% if 'additional_output' in func_eval_list.0 and 'pmu' in func_eval_list.0.additional_output %}
         <a href="{% url 'repo:analysis-dashing-counter' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
         <button id="button">Counter Importance Analysis</button>
         </a>
