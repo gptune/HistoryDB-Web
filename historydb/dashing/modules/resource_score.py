@@ -60,9 +60,9 @@ def compute_rsm_task_all_regions(data_loader):
     alphas = {}
     norm_data = {}
     for key in data_loader.get_regions():
-        print(data_loader.get_regions())
-        print("\n--------------")
-        print("Region: ", key)
+        # print(data_loader.get_regions())
+        # print("\n--------------")
+        # print("Region: ", key)
 
         rsm_score, error, ev_error, alpha, norm_d = compute_rsm(data_loader, key,
             num_iters=num_iters, use_nn_solver=use_nn_solver, num_cpus=num_cpus, rescale=rescale)

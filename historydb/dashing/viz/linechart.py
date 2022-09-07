@@ -87,7 +87,6 @@ def raw_values_per_proc_config(data_loader):
     random_indexes = range(0,len(proc_configs[reg]))
     if len(proc_configs[reg]) > 100:
         random_indexes = random.sample(range(0,len(proc_configs[reg])), 100)
-    print("Zayed randoms ", random_indexes)
     for reg in data_loader.regions:
         fig = go.Figure()
         # print("Zayed proc x, ", proc_configs[reg])

@@ -1083,13 +1083,11 @@ class ModelPrediction(TemplateView):
 class AnalysisDashingParameter(TemplateView):
 
     def write_config_file(self,file_name,targets,arch,chart_type = 'sunburst'):
-        print("Zayedu ", targets)
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)
         with open(config_dir + '/' + file_name, 'w') as txtfile:
             for target in targets:
-                # print("Zayedddddddddddddd ", target)
                 s = 'tuning_problem' + str(targets.index(target)) + ':'
                 txtfile.write(s + '\n')
                 s = '  data: '
@@ -1098,10 +1096,6 @@ class AnalysisDashingParameter(TemplateView):
                 txtfile.write(s + '\n')
                 s = '    - dashing.modules.resource_score.compute_rsm_task_all_regions'
                 txtfile.write(s + '\n')
-                # if chart_type == 'sunburst':
-                #     s = '    - dashing.viz.sunburst3.sunburst'
-                # else:
-                #     s = '    - dashing.viz.linechart.raw_values_per_proc_config'
                 s = '    - dashing.viz.sunburst3.sunburst'
                 txtfile.write(s + '\n')
                 s = '    - dashing.viz.linechart.raw_values_per_proc_config'
@@ -1129,7 +1123,6 @@ class AnalysisDashingParameter(TemplateView):
             s += '  rsm_iters: 5000\n'
             s += '  rsm_print: false\n'
             s += '  rsm_use_nn_solver: true\n'
-            # s += '  save_compat: true\n'
             s += '  use_belief: true\n'
             s += '  compat_labels: true\n'
             s += '  shorten_event_name: false\n'
@@ -1145,7 +1138,7 @@ class AnalysisDashingParameter(TemplateView):
                 temp_list = []
                 for function_eval in self.function_evaluations:
                     temp_list.append(function_eval[name][parameter])
-                print(type(temp_list[0]))
+                # print(type(temp_list[0]))
                 if type(temp_list[0]) == str:
                     unique_values = list(set(temp_list))
                     new_list = []
@@ -1552,11 +1545,7 @@ class AnalysisDashingCounter(TemplateView):
         # Calling the visualization for counter analysis 
         transformed_charts = []
         if has_counter_info:
-            # chart, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
-            # if chart[0] is not None:
-            #     chart2 = plot(chart[0],output_type="div")
             charts, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
-            # print("ZZZZZZZZZZZZZZZZZZZZZZZZZz" ,  len(charts))
             for chart in charts:
                 if chart is not None:
                     chart2 = plot(chart,output_type="div")
@@ -1873,9 +1862,6 @@ class SADashboard(TemplateView):
 
                 model_data_list[model_data["objective"]["name"]]["sobol_analysis"] = sobol_analysis
 
-                # print("Zayed sobol")
-                # print(sobol_analysis)
-
             context = {
                     "tuning_problem_unique_name" : tuning_problem_unique_name,
                     "surrogate_model_uids" : surrogate_model_uids,
@@ -2188,12 +2174,10 @@ class SADashboard(TemplateView):
                             tuning_parameter["S2_conf"] = round(S2_conf_array[name1][name2],3)
                             sobol_analysis["s2_parameters"].append(tuning_parameter)
 
-                print ("sobol analysis: ", sobol_analysis)
-
-                from dashing.viz import callgraph
-                fig = callgraph.gptune_callgraph2(sobol_analysis)
-                chart = plot(fig,output_type="div")
-                # print('Zayed chart: ', chart)
+                # from dashing.viz import callgraph
+                # fig = callgraph.gptune_callgraph2(sobol_analysis)
+                # chart = plot(fig,output_type="div")
+                chart = []
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,

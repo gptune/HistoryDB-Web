@@ -224,7 +224,7 @@ def sunburst(data_loader):
             if ev_percent_error[reg][event] < 0.0:
                 ev_percent_error[reg][event] = 0.0
 
-    print("Zayed Checking2: ", ev_percent_error)
+    # print("Zayed Checking2: ", ev_percent_error)
 
     # print("Zayed ev_to_gro")
     # print(data_loader.ev_to_res_map)
@@ -311,7 +311,7 @@ def sunburst(data_loader):
             for event, event_belief in belief_res_ev_map[reg][resource].items():
 
                 # belief_res_ev_map[reg][resource][event] = abs((event_belief - mean) / res)
-                print("Zayed ", reg, resource, event, belief_res_ev_map[reg][resource][event])
+                # print("Zayed ", reg, resource, event, belief_res_ev_map[reg][resource][event])
 
                 if belief_res_ev_map[reg][resource][event] < BELIEF_THRESHOLD:
                     keys_to_remove.append(event)
@@ -342,7 +342,7 @@ def sunburst(data_loader):
     #############################################################################################
     # Third Layer Calculations
 
-    print("Zayed belief_map_before ", rsm_results)
+    # print("Zayed belief_map_before ", rsm_results)
 
     # lam = 0.005
     lam = 1
@@ -357,7 +357,7 @@ def sunburst(data_loader):
                 belief_map[reg][resource] = np.exp(-lam * res_percent_err)
             # print("%s : %s : %s" % (resource, res_percent_err, belief_map[reg][resource]))
     
-    print("Zayed belief_map ", belief_map)
+    # print("Zayed belief_map ", belief_map)
     original_normed_belief_map = copy.deepcopy(belief_map)
     # Normalize between 0 and 1 removing any small values
     for reg in regions:
@@ -506,7 +506,7 @@ def sunburst(data_loader):
 
     # data_loader['group_reg_pair'] = normed_belief_map
     # data_loader['group_reg_pair_vlaues'] = normed_belief_res_ev_map
-    print("Zayed Here but why " , original_normed_belief_map)
+    # print("Zayed Here but why " , original_normed_belief_map)
     data_loader['group_reg_pair'] = original_normed_belief_map
     data_loader['group_reg_pair_vlaues'] = original_belief_res_ev_map
 
