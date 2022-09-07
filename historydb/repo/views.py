@@ -2174,10 +2174,10 @@ class SADashboard(TemplateView):
                             tuning_parameter["S2_conf"] = round(S2_conf_array[name1][name2],3)
                             sobol_analysis["s2_parameters"].append(tuning_parameter)
 
-                # from dashing.viz import callgraph
-                # fig = callgraph.gptune_callgraph2(sobol_analysis)
-                # chart = plot(fig,output_type="div")
-                chart = []
+                from dashing.viz import callgraph
+                fig = callgraph.gptune_callgraph2(sobol_analysis)
+                chart = plot(fig,output_type="div")
+                # chart = []
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,

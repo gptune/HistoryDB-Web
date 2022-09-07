@@ -125,7 +125,7 @@ def raw_values_per_proc_config(data_loader):
         title_name = reg if show_title else ''
         fig.update_layout(autosize=True, title=title_name)
         fig.layout.xaxis.title = "Number of Configurations"
-        fig.layout.xaxis.tickvals = proc_configs[reg]
+        fig.layout.xaxis.tickvals = list(range(0, len(random_indexes),5))
         fig.layout.yaxis.title = "Normalized Values"
         fig.update_layout(width=1500, height=500,	font={'size': 16})
 

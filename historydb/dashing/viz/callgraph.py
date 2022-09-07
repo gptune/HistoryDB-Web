@@ -673,6 +673,7 @@ def gptune_callgraph2(sobol_analysis):
     # print('Zayed Reads ', first_order_nodes, second_order_nodes)
     G = nx.random_geometric_graph(first_order_nodes_count, 10)
 
+
     node_x = []
     node_y = []
     for node in G.nodes():
@@ -740,11 +741,13 @@ def gptune_callgraph2(sobol_analysis):
         edge_widths.append(edge_width)
         edge_labels.append(edge_label)
         # edge_trace['line']['width'].append(edge_width)
+        if edge_width < 0: color = '#ff0000'
+        else : color = '#888'
         edge_trace.append(
             go.Scatter(
                 x = [x0,x1,None],
                 y = [y0,y1,None],
-                line=dict(width=abs(edge_width), color='#888'),
+                line=dict(width=abs(edge_width), color= color),
                 hoverinfo='text',
                 hovertext = edge_label,
                 text = edge_label,

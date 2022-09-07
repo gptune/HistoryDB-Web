@@ -1,9 +1,6 @@
-NREL
-NSUP
-nbx
-nby
-npz
-lphi
-mx
-my
-time
+nb
+ib
+m
+n
+k
+runtime
