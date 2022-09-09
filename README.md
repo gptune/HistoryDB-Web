@@ -69,6 +69,29 @@ $ python web-reset.py
 ```
 A Django secret key is required to run the webapp. You can comment out lines 8-31 for simple testing (runs the webapp with no admin email/robot checker)
 
+## Additional Python packages needed by Dashing integration (performance counter analysis)
+
+-- plotly
+```
+pip install plotly
+```
+-- h5py
+```
+pip install h5py
+```
+-- psutil
+```
+pip install psutil
+```
+-- dash
+```
+pip install dash
+```
+-- kaleido
+```
+pip install kaleido
+```
+
 ## Set environment
 
 - Set location for database files

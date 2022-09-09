@@ -1,0 +1,349 @@
+<!doctype html>
+
+{% extends 'main/base.html' %}
+<!-- {% load static %} -->
+{% block content %}
+
+<script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
+<link ref="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.dataTables.min.css">
+
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/js/foundation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/what-input/2.1.1/what-input.min.js"></script>
+<script src="https://unpkg.com/popper.js@1"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/tippy.js@4"></script>
+
+    <div class="container-fluid">
+
+        <br>
+        <hr>
+
+        <div class="mb-3">
+        <div class="row">
+            <div class="col">
+            <h4><b>Sobol Analysis</b></h4>
+            </div>
+        </div>
+
+        <div style="padding-top: 50px; padding-bottom: 50px; padding-left: 100px; padding-right: 100px; background-color: #f1f1f1">
+            <h4> What is Importance analysis?</h4>
+            <div class="mb-3">
+            <!-- [Quote from <a href="https://salib.readthedocs.io/en/latest/basics.html">SALib</a>] According to <a href="https://en.wikipedia.org/wiki/Sensitivity_analysis">Wikipedia</a>, sensitivity analysis is "the study of how the uncertainty in the output of a mathematical model or system (numerical or otherwise) can be apportioned to different sources of uncertainty in its inputs." The sensitivity of each input is often represented by a numeric value, called the sensitivity index. Sobol indices come in several forms: -->
+            <!-- <ul>
+                <li>First-order (main-effect) indices: measures the contribution to the output variance by a single model input alone.</li>
+                <li>Second-order indices: measures the contribution to the output variance caused by the interaction of two model inputs.</li>
+                <li>Total-order index: measures the contribution to the output variance caused by a model input, including both its first-order effects (the input varying alone) and all higher-order interactions.</li>
+            </ul> -->
+            Imporatnce analysis reveals the importantance of a resource against an objective function. A resource is given more 
+            importance if the resource function closely matches the trends of the target function. 
+            </div>
+
+            <h4>How to read the Importance analysis?</h4>
+            <div class="mb-3">
+            Currently, GPTune offers a sensitivity analysis tool based on <a href="https://ieeexplore.ieee.org/abstract/document/8955677">Dashing</a>. The three elements to an importance analysis are.
+            <ol>
+                <li>
+                    Sunburst charts: There are four layers in the following sunburst chart. At each layer, the more the improtance of an element is the more area 
+                    it gets. The first and central layer shows the name of the objective function.
+                    The second layer lists the importance of difference phases during an application run. The third layer lists improtance of resource group.
+                    The final and outer layer shows the importance of individual resources. IF a sunburst chart is missing it means that the analysis found
+                    no resource important enough to show. Click on a sunburst region to expand it further.
+                </li>
+                <li>
+                    Line charts: The linecharts that follows the sunburst shows the objective function with the predictive function built from each resource.
+                    One can see how well the predictive function of a single resource matches the trends of the objective function.
+                </li>
+                <li>
+                    Tables: The tables include all the resource and the groups information so that users can find the exact importance of a resource along 
+                    with other resource with no importance.  
+                </li>
+            </ol>
+            <br>
+        </div>
+    </div>
+    {% for cha in chart %}
+        {% if cha is not None %}
+        <div style="margin-top: 30px;display: flex;justify-content: center;">
+            <div class='text-center' style="padding: 20px">
+                <div>
+                    <h4>Importance of performanmce counters</h4>
+                </div>
+                <div>
+                    {% autoescape off %}
+                        {{ cha }}
+                    {% endautoescape %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    
+    <script>  
+      $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+        $('#group_importance thead tr')
+        .clone(true)
+        .addClass('filters')
+        .appendTo('#group_importance thead');
+  
+        var table = $('#group_importance').DataTable({
+            orderCellsTop: true,
+            fixedHeader: true,
+  
+            initComplete: function () {
+            var api = this.api();
+  
+            // For each column
+            api
+            .columns()
+            .eq(0)
+            .each(function (colIdx) {
+                // Set the header cell to contain the input element
+                var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                        );
+                var title = $(cell).text();
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+  
+                // On every keypress in this input
+                $(
+                    'input',
+                    $('.filters th').eq($(api.column(colIdx).header()).index())
+                 )
+                .off('keyup change')
+                .on('keyup change', function (e) {
+                    e.stopPropagation();
+  
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
+  
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api
+                    .column(colIdx)
+                    .search(
+                            this.value != ''
+                            ? regexr.replace('{search}', '(((' + this.value + ')))')
+                            : '',
+                            this.value != '',
+                            this.value == ''
+                           )
+                    .draw();
+  
+                    $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                });
+            });
+            },
+  
+            // dom: 'Bfrtip',
+            // buttons: [
+            //     'copy', 'csv', 'excel', 'pdf', 'print'
+            // ]
+        });
+    });
+  </script>
+  
+    <div class="table-responsive table_outer" style="margin-top: 30px">
+        <div class="text-center mb-3" >
+          <h4>Group Importances</h4>
+        </div>
+
+        <table id="group_importance" class="table table-striped table-bordered">
+            <thead>
+                <tr>            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Machine setting used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Resource Group</u>
+                        </span>
+                    </th>
+            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Phases</u>
+                        </span>
+                    </th>
+                    
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Resouce Importance</u>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for group_data in groups %}
+                <tr>
+                    <td style="background: white">
+                        {{group_data.group_name}}
+                    </td>
+
+                    <td style="background: white">
+                        {{group_data.region}}
+                    </td>
+
+                    <td style="background: white">
+                        {{group_data.value}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>  
+      $(document).ready(function () {
+        // Setup - add a text input to each footer cell
+        $('#event_importance thead tr')
+        .clone(true)
+        .addClass('filters2')
+        .appendTo('#event_importance thead');
+    
+        var table = $('#event_importance').DataTable({
+            orderCellsTop: true,
+            fixedHeader: true,
+    
+            initComplete: function () {
+            var api = this.api();
+    
+            // For each column
+            api
+            .columns()
+            .eq(0)
+            .each(function (colIdx) {
+                // Set the header cell to contain the input element
+                var cell = $('.filters2 th').eq(
+                        $(api.column(colIdx).header()).index()
+                        );
+                var title = $(cell).text();
+                $(cell).html('<input type="text" placeholder="' + title + '" />');
+    
+                // On every keypress in this input
+                $(
+                    'input',
+                    $('.filters2 th').eq($(api.column(colIdx).header()).index())
+                 )
+                .off('keyup change')
+                .on('keyup change', function (e) {
+                    e.stopPropagation();
+    
+                    // Get the search value
+                    $(this).attr('title', $(this).val());
+                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
+    
+                    var cursorPosition = this.selectionStart;
+                    // Search the column for that value
+                    api
+                    .column(colIdx)
+                    .search(
+                            this.value != ''
+                            ? regexr.replace('{search}', '(((' + this.value + ')))')
+                            : '',
+                            this.value != '',
+                            this.value == ''
+                           )
+                    .draw();
+    
+                    $(this)
+                        .focus()[0]
+                        .setSelectionRange(cursorPosition, cursorPosition);
+                });
+            });
+            },
+        });
+    });
+    </script>
+    
+    <div class="table-responsive table_outer" style="margin-top: 30px">
+        <div class="text-center mb-3">
+          <h4>Counter Importances</h4>
+        </div>
+
+        <table id="event_importance" class="table table-striped table-bordered">
+            <thead>
+                <tr>            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Machine setting used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Counter</u>
+                        </span>
+                    </th>
+            
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Phases</u>
+                        </span>
+                    </th>
+
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Groups</u>
+                        </span>
+                    </th>
+                    
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Counter Importance</u>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for counter_data in counters %}
+                <tr>
+                    <td style="background: white">
+                        {{counter_data.counter_name}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.region}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.groups}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.value}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
