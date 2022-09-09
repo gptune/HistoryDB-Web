@@ -7,5 +7,7 @@ historydb/dashing/configs/
 historydb/dashing/ev_belief_perc.csv
 historydb/dashing/res_imp.csv
 historydb/account
+historydb/email_settings.json
+historydb/google_recaptcha_keys.json
 database/mongodb_data/
 GPTune/
