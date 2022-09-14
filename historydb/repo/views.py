@@ -1137,7 +1137,7 @@ class AnalysisDashingParameter(TemplateView):
             list.append(function_eval[name][parameter])
         s = numpy.array(list)
         sort_index = numpy.argsort(s)
-        print(sort_index)
+        # print('Zayed', sort_index)
         return sort_index
 
     def read_task_or_tuning_parameter_ranked(self, parameters, name, sort_index):
@@ -1148,7 +1148,7 @@ class AnalysisDashingParameter(TemplateView):
             for phase in self.phases:
                 temp_list = []
                 for index in sort_index:
-                    temp_list.append(self.function_evaluations[name][parameter])
+                    temp_list.append(self.function_evaluations[index][name][parameter])
                 # print(type(temp_list[0]))
                 if type(temp_list[0]) == str:
                     unique_values = list(set(temp_list))
@@ -1246,17 +1246,21 @@ class AnalysisDashingParameter(TemplateView):
 
         new_dashing_df_2 = pd.DataFrame(columns=coloumns)
 
+        sorted_index = self.get_sorted_ranks(evaluation_results,'evaluation_result')
         # Read the tuning and task parameters
         rows2 = []
-        rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
-        rows2.extend(self.read_task_or_tuning_parameter(tuning_params,'tuning_parameter'))
+        # rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
+        # rows2.extend(self.read_task_or_tuning_parameter(tuning_params,'tuning_parameter'))
+
+        rows2.extend(self.read_task_or_tuning_parameter_ranked(task_params, 'task_parameter', sorted_index))
+        rows2.extend(self.read_task_or_tuning_parameter_ranked(tuning_params,'tuning_parameter', sorted_index))
         
         # Read the target metrices
         # n_n = []
         # n_n.append(evaluation_results[1])
         # evaluation_row = self.read_task_or_tuning_parameter(n_n,'evaluation_result')
 
-        evaluation_row = self.read_task_or_tuning_parameter(evaluation_results,'evaluation_result')
+        evaluation_row = self.read_task_or_tuning_parameter_ranked(evaluation_results,'evaluation_result', sorted_index)
         rows2.extend(evaluation_row)
 
         new_dashing_df_2 = pd.DataFrame(rows2)
