@@ -32,6 +32,7 @@ import json
 import ast
 import re
 import copy
+import numpy
 
 class Dashboard(TemplateView):
 
@@ -1128,6 +1129,39 @@ class AnalysisDashingParameter(TemplateView):
             s += '  shorten_event_name: false\n'
             s += '  port: 7603\n'
             txtfile.write(s)
+
+    def get_sorted_ranks(self,parameters,name):
+        list = []
+        parameter = parameters[0]
+        for function_eval in self.function_evaluations:
+            list.append(function_eval[name][parameter])
+        s = numpy.array(list)
+        sort_index = numpy.argsort(s)
+        print(sort_index)
+        return sort_index
+
+    def read_task_or_tuning_parameter_ranked(self, parameters, name, sort_index):
+        rows2 = []
+        for parameter in parameters:
+            row_dict = {}
+            row_dict[''] = parameter
+            for phase in self.phases:
+                temp_list = []
+                for index in sort_index:
+                    temp_list.append(self.function_evaluations[name][parameter])
+                # print(type(temp_list[0]))
+                if type(temp_list[0]) == str:
+                    unique_values = list(set(temp_list))
+                    new_list = []
+                    for item in temp_list:
+                        new_list.append(unique_values.index(item))
+                    temp_list = []
+                    temp_list.extend(new_list)
+                temp_list_2 = [str(val) for val in temp_list]
+                temp_row = ','.join(temp_list_2)
+                row_dict[phase] = temp_row
+            rows2.append(row_dict)
+        return rows2    
 
     def read_task_or_tuning_parameter(self, parameters, name):
         rows2 = []

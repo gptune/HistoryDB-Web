@@ -1,12 +1,5 @@
-Nproc
-P_max_elmts
-Px
-Py
-agg_num_levels
-smooth_num_levels
-strong_threshold
-trunc_factor
-nx
-ny
-nz
-r
+LOOKAHEAD
+NREL
+NSUP
+nprows
+runtime
