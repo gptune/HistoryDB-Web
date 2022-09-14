@@ -59,7 +59,7 @@
 
             <h4>How to read the importance analysis?</h4>
             <div class="mb-3">
-            Currently, GPTune offers a sensitivity analysis tool based on <a href="https://ieeexplore.ieee.org/abstract/document/8955677">Dashing</a>. The three elements to an importance analysis are.
+            The important analysis produces sunburst charts and data tables.
             <ol>
                 <li>
                   Sunburst charts: There are four layers in the following sunburst chart. At each layer, the more the improtance of an element is the more area
@@ -81,49 +81,6 @@
         </div>
     </div>
 
-    <!--
-    <div class="container-fluid">
-
-        <br>
-        <hr>
-    
-        <div class="mb-3">
-        <div class="row">
-            <div class="col">
-            <h4><b>Parameters</b></h4>
-            </div>
-        </div>
-    
-        <div style="padding-top: 50px; padding-bottom: 50px; padding-left: 100px; padding-right: 100px; background-color: #f1f1f1">
-            <div class="mb-3">
-            Task parameters
-            <ul>
-                {% for task_param in all_task_params %}
-                    {% if task_param in removed_task_params %}
-                        <li>{{task_param}} (Removed for being categorical)</li>
-                    {% else %}
-                        <li>{{task_param}}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-            Tuning parameters
-            <ul>
-                {% for tuning_param in all_tuning_params %}
-                    {% if tuning_param in removed_tuning_params %}
-                        <li>{{tuning_param}} (Removed for being categorical)</li>
-                    {% else %}
-                        <li>{{tuning_param}}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-            </div>
-        </div>
-    </div>
-    --!>
-    
-    <!-- <p>
-    <pre>{{ function_evaluations | pprint }}</pre>
-    </p> -->
     <!-- {% if chart2 is not None %}
     <div style="margin-top: 30px;display: flex;justify-content: center;">
             <div class='text-center' style="padding: 20px">
@@ -136,7 +93,8 @@
                     {% endautoescape %}
                 </div>
             </div>
-    </div> -->
+    </div> --!>
+
     {% for chart in chart2 %}
         {% if chart is not None %}
         <div style="margin-top: 30px;display: flex;justify-content: center;">
