@@ -630,8 +630,8 @@ def gptune_callgraph2(sobol_analysis):
     first_order_nodes = [d['name'] for d in sobol_analysis['s1_parameters']]
     second_order_nodes = [d['name1']+'-' + d['name2'] for d in sobol_analysis['s2_parameters']]
 
-    first_order_nodes_text = [d['name'] + '\n, score=' + str(d['S1']) + '\n conf=' + str(d['S1_conf']) for d in sobol_analysis['s1_parameters']]
-    total_order_nodes_text = [d['name'] + '\n, score=' + str(d['ST']) + '\n conf=' + str(d['ST_conf']) for d in sobol_analysis['st_parameters']]
+    first_order_nodes_text = [d['name'] + '\n, score=' + str(round(d['S1'],2)) + '\n conf=' + str(round(d['S1_conf'],2)) for d in sobol_analysis['s1_parameters']]
+    total_order_nodes_text = [d['name'] + '\n, score=' + str(round(d['ST'],2)) + '\n conf=' + str(round(d['ST_conf'],2)) for d in sobol_analysis['st_parameters']]
     
     second_order_nodes_scores = [d['S2'] for d in sobol_analysis['s2_parameters']]
 
@@ -683,18 +683,20 @@ def gptune_callgraph2(sobol_analysis):
     # print('Zayed Reads ', first_order_nodes, second_order_nodes)
     G = nx.random_geometric_graph(first_order_nodes_count, 10)
     # G = nx.circulant_graph(first_order_nodes_count, [])
-    print("Zayed why ", nx.circular_layout(G))
+    # print("Zayed why ", nx.circular_layout(G))
     node_pos = nx.circular_layout(G)
 
     node_x = []
     node_y = []
-    for node in G.nodes():
-        x, y = G.nodes[node]['pos']
-        node_x.append(x)
-        node_y.append(y)
+    # for node in G.nodes():
+    #     x, y = G.nodes[node]['pos']
+    #     node_x.append(x)
+    #     node_y.append(y)
 
-    # for key , value in node_pos.items():
-    #     print("Zayedddddddddddddddddddd ", value[0])
+    for key , value in node_pos.items():
+        # print("Zayedddddddddddddddddddd ", value[0])
+        node_x.append(value[0])
+        node_y.append(value[1])
 
     node_trace = go.Scatter(
         x=node_x, y=node_y,
@@ -707,7 +709,8 @@ def gptune_callgraph2(sobol_analysis):
             #'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
             #'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
             # colorscale='YlGnBu',
-            colorscale = 'Blues',
+            # colorscale = 'Blues',
+            color = '#00f',
             reversescale=True,
             size=10,
             line_width=2,
@@ -759,14 +762,70 @@ def gptune_callgraph2(sobol_analysis):
     middle_node_traces = []
 
 
-    print('Zayed sobol', sobol_analysis)
+    # print('Zayed sobol', sobol_analysis)
+
+    ############################################
+    # edge_x = []
+    # edge_y = []
+    # edge_widths =[]
+    # edge_labels = []
+    # for edge in G.edges():
+    #     x0, y0 = G.nodes[edge[0]]['pos']
+    #     x1, y1 = G.nodes[edge[1]]['pos']
+    #     edge_x.append(x0)
+    #     edge_x.append(x1)
+    #     edge_x.append(None)
+    #     # edge_trace['x'] += [x0, x1, None]
+    #     # edge_trace['y'] += [y0, y1, None]
+    #     edge_y.append(y0)
+    #     edge_y.append(y1)
+    #     edge_y.append(None)
+    #     edge_label = first_order_nodes[edge[0]] + '-' + first_order_nodes[edge[1]] 
+    #     edge_width = second_order_nodes_sizes[second_order_nodes.index(edge_label)]
+    #     edge_label += (', score: ' + str(second_order_nodes_scores[second_order_nodes.index(edge_label)])) 
+    #     edge_widths.append(edge_width)
+    #     edge_labels.append(edge_label)
+    #     # edge_trace['line']['width'].append(edge_width)
+    #     if edge_width < 0: color = '#ff0000'
+    #     else : color = '#00f'
+    #     edge_trace.append(
+    #         go.Scatter(
+    #             x = [x0,x1,None],
+    #             y = [y0,y1,None],
+    #             line=dict(width=abs(edge_width), color= color),
+    #             hoverinfo='text',
+    #             hovertext = edge_label,
+    #             text = edge_label,
+    #             textfont=dict(size=12),
+    #             # textposition='bottom right',
+    #             mode='lines'
+    #         )
+    #     )
+    #     middle_node_traces.append(
+    #         go.Scatter(
+    #             x = [(x0+x1)/2],
+    #             y = [(y0+y1)/2],
+    #             text = [edge_label],
+    #             mode='markers',
+    #             hoverinfo='text',
+    #             marker=go.Marker(
+    #                 opacity=0
+    #             )
+    #         )
+    #     )
+
+    ################################################
     edge_x = []
     edge_y = []
     edge_widths =[]
     edge_labels = []
     for edge in G.edges():
-        x0, y0 = G.nodes[edge[0]]['pos']
-        x1, y1 = G.nodes[edge[1]]['pos']
+        # print("Zayed edge", edge)
+        x0 = node_x[edge[0]]
+        y0 = node_y[edge[0]]
+        x1 = node_x[edge[1]]
+        y1 = node_y[edge[1]]
+        # x1, y1 = G.nodes[edge[1]]['pos']
         edge_x.append(x0)
         edge_x.append(x1)
         edge_x.append(None)
@@ -777,7 +836,7 @@ def gptune_callgraph2(sobol_analysis):
         edge_y.append(None)
         edge_label = first_order_nodes[edge[0]] + '-' + first_order_nodes[edge[1]] 
         edge_width = second_order_nodes_sizes[second_order_nodes.index(edge_label)]
-        edge_label += (', score: ' + str(second_order_nodes_scores[second_order_nodes.index(edge_label)])) 
+        edge_label += (', score: ' + str(round(second_order_nodes_scores[second_order_nodes.index(edge_label)],2))) 
         edge_widths.append(edge_width)
         edge_labels.append(edge_label)
         # edge_trace['line']['width'].append(edge_width)
