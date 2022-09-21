@@ -52,7 +52,7 @@ class driver(dict):
 
         # print("Zayed ev to res: ")
         # print(data_loader.ev_to_res_map)
-        return charts, data_loader['group_reg_pair'], data_loader['group_reg_pair_vlaues']
+        return charts, data_loader['group_reg_pair'], data_loader['group_reg_pair_vlaues'], data_loader['raw_importance']
 
     # def main2(self,config_file, force_compute, dataframe, config_name=None):
     #     config_path, config_dict_data = self.load_config_file(config_file)

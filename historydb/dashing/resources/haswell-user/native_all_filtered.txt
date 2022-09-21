@@ -1,5 +1,6 @@
-LOOKAHEAD
-NREL
-NSUP
-nprows
+nb
+ib
+m
+n
+k
 runtime

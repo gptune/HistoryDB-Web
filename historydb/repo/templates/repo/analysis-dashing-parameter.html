@@ -246,7 +246,16 @@
                           <div class='text-left'>
                             <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
                           </div>">
-                          <u>Counter Importance</u>
+                          <u>Counter Importance (in %)</u>
+                        </span>
+                    </th>
+
+                    <th>
+                        <span class="tippy" data-tippy-content="
+                          <div class='text-left'>
+                            <h6>Software dependencies and the software versions used to generate the function evaluation result.</h6>
+                          </div>">
+                          <u>Counter Importance (in values)</u>
                         </span>
                     </th>
                 </tr>
@@ -269,6 +278,10 @@
 
                     <td style="background: white">
                         {{counter_data.value}}
+                    </td>
+
+                    <td style="background: white">
+                        {{counter_data.raw_counter}}
                     </td>
                 </tr>
                 {% endfor %}

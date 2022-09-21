@@ -1310,7 +1310,7 @@ class AnalysisDashingParameter(TemplateView):
 
         # Calling the visualization for parameters analysis
         transformed_charts = []
-        charts, group_imps_params, event_imps_params = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+        charts, group_imps_params, event_imps_params, raw_counter_imp = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
         
         # print('Zayed Here1 ', charts)
 
@@ -1345,6 +1345,7 @@ class AnalysisDashingParameter(TemplateView):
         #             event_importances.append(row_dict)
 
         # print("Zayed whoooooo ", self.phases, event_imps_params)
+        # print("Zayed whoooooo", raw_counter_imp['Single Phase']['TUNING_PARAMS']['agg_num_levels'])
         for region in self.phases:
             for group in mapping:
                 for event in mapping[group]:
@@ -1356,6 +1357,7 @@ class AnalysisDashingParameter(TemplateView):
                         row_dict['value'] = '0.0%'
                     row_dict['region'] = region
                     row_dict['groups'] = group
+                    row_dict['raw_counter'] = str(round(raw_counter_imp[region][group][event],5))
                     event_importances.append(row_dict)               
 
         context = { "function_evaluations" : self.function_evaluations,

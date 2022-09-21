@@ -133,7 +133,7 @@ def sunburst(data_loader):
     name = data_loader.get_option('name', 'untitled sunburst')
     save_sunburst = data_loader.get_option('save_sunburst', False)
     PERCENT_OFFSET = 1.00001
-    BELIEF_THRESHOLD = 0.002
+    BELIEF_THRESHOLD = 0.003
 
     clean_dict(rsm_ev_errors)
     clean_dict(rsm_alphas)
@@ -261,6 +261,7 @@ def sunburst(data_loader):
             belief_res_ev_map[reg][event_resource][event] = event_belief
 
     original_belief_res_ev_map = copy.deepcopy(belief_res_ev_map)
+    # print("Zayed here", belief_res_ev_map)
 
     #TZI: Debug: Output the event percentages in a csv file for ease of use.
     # csv_file = open('dashing/ev_belief_perc.csv', 'a')
@@ -489,6 +490,8 @@ def sunburst(data_loader):
             res = pair[1]
             sunburst_colors.append(data_loader.get_resource_color(res))
 
+    new_orig = copy.deepcopy(original_belief_res_ev_map)
+    data_loader['raw_importance'] = new_orig
     # Recreating the toatal data
     for reg in original_belief_res_ev_map:
         for resource in original_belief_res_ev_map[reg]:
