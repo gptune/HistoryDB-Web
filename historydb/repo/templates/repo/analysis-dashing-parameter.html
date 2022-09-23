@@ -22,7 +22,6 @@
 <script src="https://unpkg.com/tippy.js@6"></script>
 <script src="https://unpkg.com/tippy.js@4"></script>
 
-
     <div class="container-fluid">
 
         <br>
@@ -71,6 +70,36 @@
             <br>
         </div>
     </div>
+
+    <form method="POST" action="{% url 'repo:analysis-dashing-parameter' %}?tuning_problem_unique_name={{tuning_problem_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&tuning_problem={{tuning_problem_name}}" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px; background-color: #f1f1f1">
+            <div class="row mb-3">
+              <div class="col">
+                <b>Choose the input task (task parameter and constant variables)</b>
+              </div>
+            </div>
+  
+            <div class="row mb-3">
+              <div class="col">
+                <select class="custom-select d-block w-100" name="input_task_p" id="input_task_id">
+                  {% for input_task in input_task_avail %}
+                  <option value="{{ input_task }}" label="{{ input_task }}"></option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+              <label></label>
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Run Parameter Analysis for Objective'</button>
+            </div>
+        </div>
+    
+        </form>
 
     <div class="container-fluid">
 

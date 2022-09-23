@@ -1162,6 +1162,46 @@ class AnalysisDashingParameter(TemplateView):
                 row_dict[phase] = temp_row
             rows2.append(row_dict)
         return rows2    
+    
+    def read_task_or_tuning_parameter_ranked_filters(self, parameters, name, sort_index, filters):
+        rows2 = []
+        for parameter in parameters:
+            row_dict = {}
+            row_dict[''] = parameter
+            for phase in self.phases:
+                temp_list = []
+                for index in sort_index:
+                    should_include = True
+                    for vals in filters[0].keys():
+                        # print("Zayed vals", vals, filters[0][vals]==self.function_evaluations[index]['task_parameter'][vals])
+                        if vals in self.function_evaluations[index]['task_parameter'].keys() and filters[0][vals]!=self.function_evaluations[index]['task_parameter'][vals]:
+                            should_include = False
+                        elif 'constansts' in self.function_evaluations[index] and vals in self.function_evaluations[index]['constants'].keys() and filters[0][vals]!=self.function_evaluations[index]['constants'][vals]:
+                            should_include = False
+                        elif 'machine_configuration' in self.function_evaluations[index]:
+                            for machine in self.function_evaluations[index]['machine_configuration'].keys():
+                                if type(self.function_evaluations[index]['machine_configuration'][machine]) is dict and vals in self.function_evaluations[index]['machine_configuration'][machine].keys() and filters[0][vals] != self.function_evaluations[index]['machine_configuration'][machine][vals]:
+                                    should_include = False
+                                    break
+                        else:
+                            should_include = False
+                            break
+                    if should_include is True:    
+                        temp_list.append(self.function_evaluations[index][name][parameter])
+                # print(type(temp_list[0]))
+                if temp_list:
+                    if type(temp_list[0]) == str:
+                        unique_values = list(set(temp_list))
+                        new_list = []
+                        for item in temp_list:
+                            new_list.append(unique_values.index(item))
+                        temp_list = []
+                        temp_list.extend(new_list)
+                    temp_list_2 = [str(val) for val in temp_list]
+                    temp_row = ','.join(temp_list_2)
+                    row_dict[phase] = temp_row
+            rows2.append(row_dict)
+        return rows2  
 
     def read_task_or_tuning_parameter(self, parameters, name):
         rows2 = []
@@ -1198,13 +1238,27 @@ class AnalysisDashingParameter(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
+        print("Zayed test", machine_configurations_list)
+
         self.function_evaluations = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                 machine_configurations_list = machine_configurations_list,
                 software_configurations_list = software_configurations_list,
                 output_options = output_options,
                 user_configurations_list = user_configurations_list,
                 user_email = user_email)
-        
+
+        input_task_avail = []
+        for func_eval in self.function_evaluations:
+                input_task = {}
+                input_task.update(func_eval["task_parameter"])
+                if "constants" in func_eval:
+                    input_task.update(func_eval["constants"])
+
+                if input_task not in input_task_avail:
+                    input_task_avail.append(input_task)
+
+
+
         has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
         has_group_info = False
         if has_counter_info:
@@ -1261,6 +1315,207 @@ class AnalysisDashingParameter(TemplateView):
         # evaluation_row = self.read_task_or_tuning_parameter(n_n,'evaluation_result')
 
         evaluation_row = self.read_task_or_tuning_parameter_ranked(evaluation_results,'evaluation_result', sorted_index)
+        rows2.extend(evaluation_row)
+
+        new_dashing_df_2 = pd.DataFrame(rows2)
+        # for cols in new_dashing_df_2.columns:
+        #     print("Zayed types: ")
+        #     print(cols, type(cols))
+
+        # Deciding on which architecture to use
+
+
+        #####################################################################################
+        self.write_config_file('tuning_task_params_problem' + '.yml',evaluation_results,'haswell-user')
+        #####################################################################################
+
+        #Architecture setup for user paramater analysis 
+        resources_path = 'dashing/resources/haswell-user' 
+        if not os.path.isdir(resources_path):
+            os.mkdir(resources_path)
+
+        with open(resources_path + '/native_all_filtered.txt', 'w') as txtfile:
+            for tuning_param in tuning_params:
+                txtfile.write(tuning_param + '\n')
+
+        with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
+            for task_param in task_params:
+                txtfile.write(task_param + '\n')
+            for evaluation_result in evaluation_results:
+                txtfile.write(evaluation_result + '\n')
+
+        mapping = {}
+        with open(resources_path + '/event_map.txt', 'w') as txtfile:
+            mapping['TASK_PARAMS'] = []
+            for task_param in task_params:
+                txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
+                mapping['TASK_PARAMS'].append(task_param)
+            mapping['TUNING_PARAMS'] = []
+            for tuning_param in tuning_params:
+                txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
+                mapping['TUNING_PARAMS'].append(tuning_param)
+                
+
+        with open(resources_path + '/event_desc.csv', 'w') as txtfile:
+                txtfile.write('')
+
+
+        drvr = driver()
+
+        # Calling the visualization for parameters analysis
+        transformed_charts = []
+        # charts, group_imps_params, event_imps_params, raw_counter_imp = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+        
+        # print('Zayed Here1 ', charts)
+        charts = []
+        for chart in charts:
+            # print('Zayed Here1 ', len(charts))
+            if chart is not None:
+                chart3 = plot(chart,output_type="div")
+                transformed_charts.append(chart3)
+                # break
+            # else:
+            #     self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
+            #     charts2, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+            #     for chart_ in charts2:
+            #         print('Zayed Here2 ', len(charts2))
+            #         if chart_ is not None:
+            #             chart3 = plot(chart_,output_type="div")
+            #             transformed_charts.append(chart3)
+            #             break
+
+
+
+        # Reading event importances
+        event_importances = []
+        # for region in event_imps_params:
+        #     for group in event_imps_params[region]:
+        #         for event in event_imps_params[region][group]:
+        #             row_dict = {}
+        #             row_dict['counter_name'] = event
+        #             row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+        #             row_dict['region'] = region
+        #             row_dict['groups'] = group
+        #             event_importances.append(row_dict)
+
+        # print("Zayed whoooooo ", self.phases, event_imps_params)
+        # print("Zayed whoooooo", raw_counter_imp['Single Phase']['TUNING_PARAMS']['agg_num_levels'])
+
+
+        # for region in self.phases:
+        #     for group in mapping:
+        #         for event in mapping[group]:
+        #             row_dict = {}
+        #             row_dict['counter_name'] = event
+        #             if group in event_imps_params[region].keys() and event in event_imps_params[region][group].keys():
+        #                 row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+        #             else:
+        #                 row_dict['value'] = '0.0%'
+        #             row_dict['region'] = region
+        #             row_dict['groups'] = group
+        #             row_dict['raw_counter'] = str(round(raw_counter_imp[region][group][event],5))
+        #             event_importances.append(row_dict)               
+
+        # print("Zayed test 2", tuning_problem_unique_name)
+        context = { "function_evaluations" : self.function_evaluations,
+                    "tuning_problem_name" : tuning_problem_unique_name,
+                    "chart2" : transformed_charts,
+                    "counters" : event_importances,
+                    "removed_task_params" : removed_task_params,
+                    "removed_tuning_params" : removed_tuning_params,
+                    "all_task_params" : all_task_params,
+                    "all_tuning_params" : all_tuning_parmas,
+                    'input_task_avail' : input_task_avail,
+                    "machine_configurations_list" : json.dumps(machine_configurations_list),
+                    "software_configurations_list" : json.dumps(software_configurations_list),
+                    "output_options" : json.dumps(output_options),
+                    "user_configurations_list" : json.dumps(user_configurations_list)
+        }
+
+        return render(request, 'repo/analysis-dashing-parameter.html', context)
+        
+    def post(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
+        software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
+        output_options = json.loads(request.GET.get("output_options", "[]"))
+        user_configurations_list = json.loads(request.GET.get("user_configurations_list", "{}"))
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search_options = json.loads(request.GET.get("search_options", "[]"))
+
+        historydb = HistoryDB_MongoDB()
+
+        self.function_evaluations = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
+                machine_configurations_list = machine_configurations_list,
+                software_configurations_list = software_configurations_list,
+                output_options = output_options,
+                user_configurations_list = user_configurations_list,
+                user_email = user_email)
+
+        input_task_avail = []
+        input_task_avail.append(ast.literal_eval(request.POST["input_task_p"]))
+        # print("Zayed test 3", input_task_avail)
+
+        has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
+        has_group_info = False
+        if has_counter_info:
+            tks = list(self.function_evaluations[0]['additional_output']['pmu'].keys())
+            has_group_info = type(self.function_evaluations[0]['additional_output']['pmu'][tks[0]]) is dict
+
+        self.phases = set()
+ 
+        if has_counter_info and has_group_info:
+            # Read about counter and grouping
+            counter_classes = list((self.function_evaluations[0])['additional_output'].keys())
+            for counter_class in counter_classes:
+                temp_phase = list(self.function_evaluations[0]['additional_output'][counter_class].keys())
+                self.phases.update(temp_phase)            
+
+        task_params = []
+        tuning_params = []
+        # Read data about tuning and task parameters
+        evaluation_results = list((self.function_evaluations[0])['evaluation_result'].keys())
+        for task_param in list(self.function_evaluations[0]['task_parameter'].keys()):
+            if type(self.function_evaluations[0]['task_parameter'][task_param]) is not str:
+                task_params.append(task_param)
+        for tuning_param in list(self.function_evaluations[0]['tuning_parameter'].keys()):
+            if type(self.function_evaluations[0]['tuning_parameter'][tuning_param]) is not str:
+                tuning_params.append(tuning_param)
+        all_task_params = list(self.function_evaluations[0]['task_parameter'].keys())
+        all_tuning_parmas = list(self.function_evaluations[0]['tuning_parameter'].keys())
+        removed_task_params = list(set(all_task_params) - set(task_params))
+        removed_tuning_params = list(set(all_tuning_parmas) - set(tuning_params))
+
+        if not self.phases:
+            self.phases.add("Single Phase")
+
+
+        # print("Zayed evaluations" , evaluation_results)
+        # Transformation countre data to dashing data format
+        coloumns = ['']
+        coloumns.extend(self.phases)
+
+        new_dashing_df_2 = pd.DataFrame(columns=coloumns)
+
+        sorted_index = self.get_sorted_ranks(evaluation_results,'evaluation_result')
+        # Read the tuning and task parameters
+        rows2 = []
+        # rows2.extend(self.read_task_or_tuning_parameter(task_params, 'task_parameter'))
+        # rows2.extend(self.read_task_or_tuning_parameter(tuning_params,'tuning_parameter'))
+
+        # rows2.extend(self.read_task_or_tuning_parameter_ranked(task_params, 'task_parameter', sorted_index))
+        # rows2.extend(self.read_task_or_tuning_parameter_ranked(tuning_params,'tuning_parameter', sorted_index))
+
+        rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(task_params, 'task_parameter', sorted_index, input_task_avail))
+        rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(tuning_params,'tuning_parameter', sorted_index, input_task_avail))
+        
+        # Read the target metrices
+        # n_n = []
+        # n_n.append(evaluation_results[1])
+        # evaluation_row = self.read_task_or_tuning_parameter(n_n,'evaluation_result')
+
+        evaluation_row = self.read_task_or_tuning_parameter_ranked_filters(evaluation_results,'evaluation_result', sorted_index,input_task_avail)
         rows2.extend(evaluation_row)
 
         new_dashing_df_2 = pd.DataFrame(rows2)
@@ -1367,18 +1622,10 @@ class AnalysisDashingParameter(TemplateView):
                     "removed_task_params" : removed_task_params,
                     "removed_tuning_params" : removed_tuning_params,
                     "all_task_params" : all_task_params,
-                    "all_tuning_params" : all_tuning_parmas
+                    "all_tuning_params" : all_tuning_parmas,
+                    'input_task_avail' : input_task_avail
         }
 
-        return render(request, 'repo/analysis-dashing-parameter.html', context)
-        
-    def post(self, request, **kwargs):
-
-        if not request.user.is_authenticated:
-            return redirect(reverse_lazy('account:login'))
-
-        # placeholder
-        context = {}
         return render(request, 'repo/analysis-dashing-parameter.html', context)
 
 class AnalysisDashingCounter(TemplateView):
