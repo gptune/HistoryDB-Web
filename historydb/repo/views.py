@@ -1579,7 +1579,6 @@ class AnalysisDashingParameter(TemplateView):
             #     self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
             #     charts2, null__, null_ = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
             #     for chart_ in charts2:
-            #         print('Zayed Here2 ', len(charts2))
             #         if chart_ is not None:
             #             chart3 = plot(chart_,output_type="div")
             #             transformed_charts.append(chart3)
@@ -1631,7 +1630,6 @@ class AnalysisDashingParameter(TemplateView):
 class AnalysisDashingCounter(TemplateView):
 
     def write_config_file(self,file_name,targets,arch):
-        # print("Zayeddddddddddddddddd ", targets)
         config_dir = 'dashing/configs'
         if not os.path.isdir(config_dir):
             os.mkdir(config_dir)
@@ -1856,7 +1854,6 @@ class AnalysisDashingCounter(TemplateView):
         # if has_counter_info:
         #     for region in self.phases:
         #         for counter_group in counter_groups:
-        #             print(" Zayed zeros ", region, counter_group)
         #             row_dict = {}
         #             row_dict['group_name'] = counter_group
         #             if region in group_imps_counter.keys() and counter_group in group_imps_counter[region].keys(): 
@@ -2380,37 +2377,18 @@ class SADashboard(TemplateView):
                     }
                     problem_space["output_space"].append(problem)
 
-                output_range = ast.literal_eval(output_range[i])
+                output_range_ = ast.literal_eval(output_range[i])
                 func_eval_list_filtered = []
                 #copy.deepcopy(func_eval_list)
                 for func_eval in func_eval_list:
                     if output_type == "integer" or output_type == "real":
-                        if func_eval["evaluation_result"][output_name] >= output_range[0] and\
-                           func_eval["evaluation_result"][output_name] <= output_range[-1]:
+                        if func_eval["evaluation_result"][output_name] >= output_range_[0] and\
+                           func_eval["evaluation_result"][output_name] <= output_range_[-1]:
                             func_eval_list_filtered.append(func_eval)
-                        #else:
-                        #    print ("filtered: ", func_eval)
                     elif output_type == "categorical":
-                        if func_eval["evaluation_result"][output_name] in output_range:
+                        if func_eval["evaluation_result"][output_name] in output_range_:
                             func_eval_list_filtered.append(func_eval)
-                        #else:
-                        #    print ("filtered: ", func_eval)
-                # try:
-                #     import gptune
-                #     print ("problem_space: ", problem_space)
-                #     print ("num_samples: ", num_samples, " type: ", type(num_samples))
-                #     ret = gptune.SensitivityAnalysis(problem_space=problem_space,
-                #             modeler=modeler,
-                #             input_task=Igiven,
-                #             function_evaluations=func_eval_list_filtered,
-                #             num_samples=num_samples)
-                #     print("ret: ", ret)
-                #     #output_info["result"] = ret[output_name][0][0] #parameter_given
-                #     #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
-                # except:
-                #      ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
-                
-                # try:
+
                 import gptune
                 print ("problem_space: ", problem_space)
                 print ("num_samples: ", num_samples, " type: ", type(num_samples))
@@ -2420,13 +2398,6 @@ class SADashboard(TemplateView):
                     function_evaluations=func_eval_list_filtered,
                     num_samples=num_samples)
                 print("ret: ", ret)
-                    #output_info["result"] = ret[output_name][0][0] #parameter_given
-                    #output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
-                # except:
-                    # ret = {'S1': {'nb':1,'ib':.2}, 'S1_conf': {'nb':.1,'ib':.2}, 'ST': {'nb':.1,'ib':.2}, 'ST_conf': {'nb':.1,'ib':.2}, 'S2': {'nb':{'ib':.1},'ib':{'nb':.2}}, 'S2_conf': {'nb':{'ib':.1},'ib':{'nb':.2}}}
-                
-                
-                # print('tuning problem info: ', tuning_problem_info)
 
                 sobol_analysis = {}
                 sobol_analysis["s1_parameters"] = []
@@ -2648,9 +2619,7 @@ class SADashboard(TemplateView):
             sobol_analysis["num_samples"] = 1000
 
             sobol_analysis_task_parameter = ast.literal_eval(request.POST["sobol_analysis_task_parameter"])
-            print ("SOBEL_ANALYSIS_TASK_PARAMETER: ", sobol_analysis_task_parameter)
             sobol_analysis_task_parameter_arr = [sobol_analysis_task_parameter[key] for key in sobol_analysis_task_parameter.keys()]
-            print ("SOBEL_ANALYSIS_TASK_PARAMETER_ARR: ", sobol_analysis_task_parameter_arr)
 
             from gptune import SensitivityAnalysis
             si = SensitivityAnalysis(model_data=surrogate_model, task_parameters=sobol_analysis_task_parameter_arr, num_samples=sobol_analysis_num_samples)
@@ -3076,6 +3045,49 @@ class EntryDel(TemplateView):
 
         return redirect(reverse_lazy('repo:user-dashboard'))
 
+class ExportAll(TemplateView):
+
+    def get(self, request, **kwargs):
+
+        tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
+        tuning_problem_name = request.GET.get("tuning_problem_name", "")
+        user_email = request.user.email if request.user.is_authenticated else ""
+        search = json.loads(request.GET.get("search", "[]"))
+        if search == []:
+            search = [ "func_eval", "surrogate_model" ]
+
+        historydb = HistoryDB_MongoDB()
+
+        perf_data = []
+
+        if tuning_problem_unique_name != "":
+            tuning_problem_unique_name_arr = [tuning_problem_unique_name]
+        elif tuning_problem_unique_name == "" and tuning_problem_name != "":
+            tuning_problem_unique_name_arr = historydb.get_tuning_problem_unique_name_arr(tuning_problem_name, tuning_problem_type="regular")
+        else:
+            print ("warning: need to provide a tuning problem name")
+
+        for tuning_problem_unique_name_ in tuning_problem_unique_name_arr:
+            tuning_problem_type = historydb.get_tuning_problem_type(tuning_problem_unique_name_)
+
+            if "func_eval" in search:
+                perf_data.extend(historydb.load_func_eval_all(
+                    tuning_problem_unique_name = tuning_problem_unique_name_,
+                    tuning_problem_type = tuning_problem_type,
+                    user_email = user_email))
+
+            if "surrogate_model" in search:
+                surrogate_models = historydb.load_surrogate_models_all(
+                    tuning_problem_unique_name = tuning_problem_unique_name_,
+                    tuning_problem_type = tuning_problem_type,
+                    user_email = user_email)
+                for objective_name in surrogate_models:
+                    perf_data.extend(surrogate_models[objective_name])
+
+        context = { "perf_data" : perf_data, }
+
+        return render(request, 'repo/export.html', context)
+
 class Export(TemplateView):
 
     def get(self, request, **kwargs):
@@ -3202,8 +3214,17 @@ def direct_upload(request):
                     tuning_problem_name = tuning_problem_name,
                     function_evaluation = function_evaluation)
 
-            response_data = {}
-            response_data["result"] = "success"
+            if ret == 0:
+                response_data = {}
+                response_data["result"] = "success"
+            elif ret == -1:
+                response_data = {}
+                response_data["result"] = "failed"
+                response_data["message"] = "no user information is found"
+            else:
+                response_data = {}
+                response_data["result"] = "failed"
+                response_data["message"] = "error"
         else:
             response_data = {}
             response_data["result"] = "failed"

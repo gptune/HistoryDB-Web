@@ -31,6 +31,7 @@ urlpatterns = [
     path('analytical-models/', views.AnalyticalModels.as_view(), name='analytical-models'),
     path('add-analytical-model/', views.AddAnalyticalModel.as_view(), name='add-analytical-model'),
     path('export/', views.Export.as_view(), name='export'),
+    path('export-all/', views.ExportAll.as_view(), name='export-all'),
     path('direct-download/', views.direct_download, name='direct-download'),
     path('direct-upload/', views.direct_upload, name='direct-upload'),
     path('api-test/', views.api_test, name='api-test'),

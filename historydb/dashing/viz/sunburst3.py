@@ -173,25 +173,25 @@ def sunburst(data_loader):
     pairs = []
 
     descriptions = {}
-    with open(data_loader['desc_path'], 'r') as f:
-        reader = csv.reader(f)
-        descriptions = {}
-        for rows in reader:
-            val = ""
-            key = rows[0]
-            for r in range(1, len(rows)):
-                val += rows[r]
-            descriptions[key] = val
-                
+    if os.path.exists(data_loader['desc_path']):
+        with open(data_loader['desc_path'], 'r') as f:
+            reader = csv.reader(f)
+            descriptions = {}
+            for rows in reader:
+                val = ""
+                key = rows[0]
+                for r in range(1, len(rows)):
+                    val += rows[r]
+                descriptions[key] = val
+
     runtimes = OrderedDict() #{}
     for reg in regions:
         runtime = data_loader.get_app_target(reg)
-        
+
         ## The following will only work if we have ts or Runtime in the dataset
         #runtime = data_loader.get_sunburst_level1_target(reg)
         runtime_sum = np.sum(runtime)
         runtimes[reg] = runtime_sum
-    
 
     normed_runtime = OrderedDict() #{}
     # Assures the sum of normed_runtime is less than 1
