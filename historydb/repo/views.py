@@ -2926,8 +2926,17 @@ def direct_upload(request):
                     tuning_problem_name = tuning_problem_name,
                     function_evaluation = function_evaluation)
 
-            response_data = {}
-            response_data["result"] = "success"
+            if ret == 0:
+                response_data = {}
+                response_data["result"] = "success"
+            elif ret == -1:
+                response_data = {}
+                response_data["result"] = "failed"
+                response_data["message"] = "no user information is found"
+            else:
+                response_data = {}
+                response_data["result"] = "failed"
+                response_data["message"] = "error"
         else:
             response_data = {}
             response_data["result"] = "failed"

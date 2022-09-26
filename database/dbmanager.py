@@ -661,16 +661,21 @@ class HistoryDB_MongoDB(dict):
                 if parameter_name not in func_eval["tuning_parameter"]:
                     return False
 
-                parameter_type = parameter_space["type"]
-                if parameter_type == "integer" or parameter_type == "real":
+                if "value" in parameter_space:
                     param_value = func_eval["tuning_parameter"][parameter_name]
-                    if param_value < parameter_space["lower_bound"] or\
-                       param_value > parameter_space["upper_bound"]:
+                    if param_value != parameter_space["value"]:
                         return False
-                elif parameter_type == "categorical":
-                    param_value = func_eval["tuning_parameter"][parameter_name]
-                    if param_value not in parameter_space["categories"]:
-                        return False
+                else:
+                    parameter_type = parameter_space["type"]
+                    if parameter_type == "integer" or parameter_type == "real":
+                        param_value = func_eval["tuning_parameter"][parameter_name]
+                        if param_value < parameter_space["lower_bound"] or\
+                           param_value > parameter_space["upper_bound"]:
+                            return False
+                    elif parameter_type == "categorical":
+                        param_value = func_eval["tuning_parameter"][parameter_name]
+                        if param_value not in parameter_space["categories"]:
+                            return False
 
         if "input_space" in problem_space:
             for input_space in problem_space["input_space"]:
@@ -678,30 +683,36 @@ class HistoryDB_MongoDB(dict):
                 if parameter_name not in func_eval["task_parameter"]:
                     return False
 
-                parameter_type = input_space["type"]
-                if parameter_type == "integer" or parameter_type == "real":
+                if "value" in input_space:
                     param_value = func_eval["task_parameter"][parameter_name]
-                    if param_value < input_space["lower_bound"] or\
-                       param_value > input_space["upper_bound"]:
+                    if param_value != input_space["value"]:
                         return False
-                elif parameter_type == "categorical":
-                    param_value = func_eval["task_parameter"][parameter_name]
-                    if param_value not in input_space["categories"]:
-                        return False
+                else:
+                    parameter_type = input_space["type"]
+                    if parameter_type == "integer" or parameter_type == "real":
+                        param_value = func_eval["task_parameter"][parameter_name]
+                        if param_value < input_space["lower_bound"] or\
+                           param_value > input_space["upper_bound"]:
+                            return False
+                    elif parameter_type == "categorical":
+                        param_value = func_eval["task_parameter"][parameter_name]
+                        if param_value not in input_space["categories"]:
+                            return False
 
         if "constants" in problem_space:
-            constants_checked = False
-            for constants in problem_space["constants"]:
-                var_match = True
-                for constant_name in constants:
-                    if constant_name not in func_eval["constants"]:
-                        var_match = False
-                    if constants[constant_name] != func_eval["constants"][constant_name]:
-                        var_match = False
-                if var_match == True:
-                    constants_checked = True
-            if constants_checked == False:
-                return False
+            if type(problem_space["constants"]) == type([]) and len(problem_space["constants"]) > 0:
+                constants_checked = False
+                for constants in problem_space["constants"]:
+                    var_match = True
+                    for constant_name in constants:
+                        if constant_name not in func_eval["constants"]:
+                            var_match = False
+                        if constants[constant_name] != func_eval["constants"][constant_name]:
+                            var_match = False
+                    if var_match == True:
+                        constants_checked = True
+                if constants_checked == False:
+                    return False
 
         if "output_space" in problem_space:
             for output_space in problem_space["output_space"]:
@@ -811,7 +822,11 @@ class HistoryDB_MongoDB(dict):
         access_token_info_list = []
         for access_token_info in self.db["access_tokens_db"].find({"access_token":{"$eq":access_token}}):
             access_token_info_list.append(access_token_info)
-        return access_token_info_list[0]
+
+        if len(access_token_info) > 0:
+            return access_token_info_list[0]
+        else:
+            return None
 
     def store_func_eval_with_token(self,
             access_token,
@@ -824,6 +839,8 @@ class HistoryDB_MongoDB(dict):
         #function_evaluation["access_token"] = access_token
 
         access_token_info = self.load_user_info_by_access_token(access_token)
+        if access_token_info == None:
+            return -1
 
         function_evaluation["user_info"] = access_token_info["user_info_real"]
         function_evaluation["user_info_display"] = access_token_info["user_info_display"]
