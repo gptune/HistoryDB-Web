@@ -653,7 +653,7 @@ def gptune_callgraph2(sobol_analysis):
 
     ##################################################
 
-    second_order_nodes_sizes = [d['S2'] * 10 for d in sobol_analysis['s2_parameters']]
+    second_order_nodes_sizes = [d['S2'] * edge_size_multiplication_factor for d in sobol_analysis['s2_parameters']]
 
     # node_sizes = first_order_nodes_sizes
     # node_sizes.extend(second_order_nodes_sizes)
@@ -735,6 +735,7 @@ def gptune_callgraph2(sobol_analysis):
             #'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
             #'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
             # colorscale='YlGnBu',
+            color = '#f00',
             reversescale=True,
             size=10,
             line_width=2,
@@ -743,7 +744,7 @@ def gptune_callgraph2(sobol_analysis):
         hovertext = total_order_nodes_text,
         textfont=dict(size=12),
         textposition='bottom center',
-        opacity=.1,
+        opacity=.2,
         )
 
     node_trace2.marker.size = total_order_nodes_sizes    
