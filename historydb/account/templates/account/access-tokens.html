@@ -1,0 +1,61 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-account').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h1>My Access Tokens</h1>
+  </div>
+
+  <div class="d-block text-right mt-3">
+    <a id="add_app_tab" href="{% url 'account:add-access-token' %}">Add an access token</a>
+  </div>
+
+  <div class="table-responsive">
+    <br>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Access token</th>
+          <th>User name to be shown to others</th>
+          <th>User email to be shown to others</th>
+          <th>User affiliation to be shown to others</th>
+          <th>Accessibility</th>
+          <th>Creation time</th>
+          <th>Expiration time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for token_info in access_tokens %}
+          <tr>
+            <td>{{ token_info.id }}</td>
+            <td>{{ token_info.access_token | truncatechars:"20"}}</td>
+            <td>{{ token_info.user_info_display.user_name }}</td>
+            <td>{{ token_info.user_info_display.user_email }}</td>
+            <td>{{ token_info.user_info_display.user_affiliation }}</td>
+            <td>{{ token_info.accessibility.type }}</td>
+            <td>{{ token_info.creation_time.tm_mon }}/{{ token_info.creation_time.tm_mday }}/{{ token_info.creation_time.tm_year }}</td>
+            <td>{{ token_info.expiration_time.tm_mon }}/{{ token_info.expiration_time.tm_mday }}/{{ token_info.expiration_time.tm_year }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <table>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
