@@ -22,7 +22,6 @@ urlpatterns = [
     path('documentation/', include('documentation.urls')),
     path('repo/', include('repo.urls')),
     path('account/', include('account.urls')),
-    url(r'docs/', include('docs.urls'), name='docs'),
     path('', include('main.urls')),
     path('admin/', admin.site.urls),
 ]

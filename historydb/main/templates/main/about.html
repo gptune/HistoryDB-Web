@@ -60,58 +60,10 @@
     </li>
     <li>
       <b>History database:</b> GPTune supports using an autotuning database called <i>GPTune history database</i> which allows users to save and re-use performance data to reduce the cost of the expensive black-box objective function.
-      The history database enables several useful autotuning capabilities, as outlined in the history datbase introduction in below.
+      The history database enables several useful autotuning capabilities such as transfer learning and performance analysis using pre-trained surrogate models.
     </li>
   </ul>
   </p>
-
-  <br><br>
-  <h1>History Database</h1>
-  <br>
-  <p class="lead">
-  The success of autotuning usually depends on collecting sufficient performance data samples to build an accurate surrogate performance model or to explore the search space.
-  To enhance reusabiltiy of performance data for autotuning, we provide a history database which is a shared repository and API to share autotuning performance data between multiple users at different sites.
-  Our shared repository in this website provides two useful interfaces (1) <a href="{% url 'repo:dashboard' %}">an interactive web dashboard</a> that allows users to navigate the database from a web browser (2) <a href="https://gptune.lbl.gov/docs/src/historydb_repository.html#programmable-api">a programmable API (called crowd-tuning API)</a> which allows users to write a program query to download or upload performance data.
-  This website provides <a href="https://gptune.lbl.gov/docs/index.html">an online user guide</a> to learn how to use the database.
-  Our history database enables following use cases.
-  <ul style="font-size:20px">
-    <li>
-      <b>Checkpointing and restarting:</b> Users can perform checkpointing and restarting of (long-running) autotuning.
-    </li>
-    <li>
-      <b>Query tuning results:</b> Users can query the best tuning parameter configuration to run their applications.
-      <ul>
-        <li>Example (web-interface):
-          To browse performance data of ScaLAPACK's PDGEQRF in our history database, 1. Access <a href="https://gptune.lbl.gov/repo/dashboard">https://gptune.lbl.gov/repo/dashboard</a>, 2. Choose "PDGEQRF" and click on "Search", 3. You should be able to see the data table that contains the historical data of ScaLAPACK's PDGEQRF.
-        </li>
-      </ul>
-    </li>
-    <li>
-      <b>Sensitivity analysis:</b> Using historical data, users can run a surrogate model-based sensitivity analysis that estimates importance of each tuning parameter.
-      <ul>
-        <li>Example (web-interface):
-          To run a sensitivity analysis of SuperLU_DIST, 1. Login at http://gptune.lbl.gov, 2. Access <a href="https://gptune.lbl.gov/repo/dashboard">https://gptune.lbl.gov/repo/dashboard</a>, 3. Choose "SuperLU_DIST-pddrive_spawn" and click on "Search", 4. You should be able to see the table, and there should be a button "Sensitivity analysis", you can click on this and follow the instructions there.
-        </li>
-        <li>Example (crowd-tuning API): <a href="https://github.com/gptune/GPTune/blob/master/examples/CrowdTuning/SuperLU_DIST/sensitivity_analysis.py">Run a sensitivity analysis of SuperLU using crowd-tuning API</a>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <b>Performance prediction:</b> Using historical data, users can run a surrogate model-based performance prediction for a given tuning parameter configuration.
-      <ul>
-        <li>Example (web-interface):
-          To run a sensitivity analysis of SuperLU_DIST, 1. Login at http://gptune.lbl.gov, 2. access <a href="https://gptune.lbl.gov/repo/dashboard">https://gptune.lbl.gov/repo/dashboard</a>, 3. Choose "SuperLU_DIST-pddrive_spawn" and click on "Search", 4. You should be able to see the table, and there should be a button "Make prediction", you can click on this and follow the instructions there.
-        </li>
-      </ul>
-    </li>
-    <li>
-      <b>Transfer learning:</b> Users can download historical performance data and use the knowledge to tune a similar but different tuning problem using transfer learning-based autotuning.
-      <ul>
-        <li>Example: <a href="https://github.com/gptune/GPTune/blob/master/examples/CrowdTuning/Demo/demo_tuning.py">GPTune's transfer learning-based autotuning for a synthetic function using the history database.</a> It uses the crowd-tuning API to access and download historical data from the history database.
-        </li>
-      </ul>
-    </li>
-  </ul>
 
   </p>
   <p class="lead">
