@@ -89,19 +89,7 @@
         For the details of the underlying GPTune algorithm and programmable interface, please refer to our <a href="http://127.0.0.1:8000/documentation/gptune-user-guide/">users guide</a> (to be updated shortly).
 
       </div>
-
-      <h4>How to Read the Sensitivity Analysis Graph</h4>
-      <div>
-        The first-order index, the total index, and the second-order indices are represented in the graph following the value table. 
-        The nodes represent The first-order index and the total index, while the edges represent the second-order indices. 
-        The volume of the darker blue region on a node represents the first-order index score, while the volume of lighter red 
-        represents the second-order index score. If no color is visible beside the parameter name, that means the scores are 0. 
-        Hovering over a region will show the name of the parameter and the original score and confidence. The edges represent the 
-        second-order score. The width of the edge represents the score. The blue color on the edge depicts a positive value while 
-        red represents the opposite. If no edge appears between two edges, that means the second-order value there is 0. Hovering 
-        at the middle of an edge will show the name, raw score and confidence of the edge. 
-      </div>
-      
+            
       <br>
 
       <h4>Run Surrogate-based Sobol Analysis</h4>
@@ -311,22 +299,38 @@
 
 
 <div style="margin-top: 30px;display: flex;justify-content: center;">
-  <div class='text-center' style="padding: 20px">
+  <div class='text-center'>
       <!-- <div>
           <h4></h4>
       </div> -->
 
       {% if sensitivity_analysis_chart %}
-      <div class="mb-3">
+      <div>
         <h4><b>A graphical representation (work in progress) of the Sobol analysis output</b></h4>
       </div>
-      {% endif %}
 
       <div>
-          {% autoescape off %}
-              {{ sensitivity_analysis_chart }}
-          {% endautoescape %}
-      </div>
+        {% autoescape off %}
+            {{ sensitivity_analysis_chart }}
+        {% endautoescape %}
+    </div>
+      {% endif %}
+  </div>
+</div>
+
+<div style="margin-top: 10px;display: flex;justify-content: center;">
+  <div class='text-center'>
+    <h4>How to Read the Sensitivity Analysis Graph</h4>
+    <div>
+      The first-order index, the total index, and the second-order indices are represented in the graph following the value table. 
+      The nodes represent the first-order index and the total index, while the edges represent the second-order indices. 
+      The volume of the darker blue region on a node represents the first-order index score, while the volume of lighter red 
+      represents the second-order index score. If no color is visible beside the parameter name, that means the scores are 0. 
+      Hovering over a region will show the name of the parameter and the original score and confidence. The edges represent the 
+      second-order score. The width of the edge represents the score. The blue color on the edge depicts a positive value while 
+      red represents the opposite. If no edge appears between two edges, that means the second-order value there is 0. Hovering 
+      at the middle of an edge will show the name, raw score and confidence of the edge. 
+    </div>
   </div>
 </div>
 
