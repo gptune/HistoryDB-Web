@@ -101,7 +101,11 @@ def login(request):
             auth.login(request, user)
             return redirect(reverse_lazy('main:index'))
         else:
-            return render(request, 'login.html', {'error': 'username or password is incorrect'})
+            context = {
+                "header": "Unable to sign-in",
+                "message": "Username or password is incorrect"
+            }
+            return render(request, 'main/error.html', context)
     else:
         return render(request, 'account/login.html')
 
