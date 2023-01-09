@@ -18,6 +18,8 @@ with open("./historydb/email_settings.json", "w") as f_out:
     data["EMAIL_HOST_USER"] = read_from_file("/email-setting/email-host-user")
     data["EMAIL_HOST_PASSWORD"] = read_from_file("/email-setting/email-host-password")
     data["SERVER_EMAIL"] = read_from_file("/email-setting/server-email")
+    data["EMAILING_BCC"] = read_from_file("/email-setting/emailing-bcc")
+    data["EMAILING_REPLY_TO"] = read_from_file("/email-setting/emailing-reply-to")
 
     import json
     f_out.write(json.dumps(data))

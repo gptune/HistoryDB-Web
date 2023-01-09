@@ -57,6 +57,8 @@ EMAIL_HOST = get_email_setting_data("EMAIL_HOST")
 EMAIL_HOST_USER = get_email_setting_data("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = get_email_setting_data("EMAIL_HOST_PASSWORD")
 SERVER_EMAIL = get_email_setting_data("SERVER_EMAIL")
+EMAILING_BCC = get_email_setting_data("EMAILING_BCC")
+EMAILING_REPLY_TO = get_email_setting_data("EMAILING_REPLY_TO")
 
 google_recaptcha_setting_file = os.path.join(BASE_DIR, 'google_recaptcha_keys.json')
 def get_google_recaptcha_setting_data(setting):
