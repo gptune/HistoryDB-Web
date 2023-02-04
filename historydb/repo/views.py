@@ -856,15 +856,15 @@ class ModelPrediction(TemplateView):
                         #else:
                         #    print ("filtered: ", func_eval)
 
-                # import gptune
-                # ret = gptune.PredictOutput(problem_space=problem_space,
-                #         modeler=modeler,
-                #         input_task=Igiven,
-                #         input_parameter=pGiven,
-                #         function_evaluations=func_eval_list)
-                # print("ret: ", ret)
-                # output_info["result"] = ret[output_name][0][0] #parameter_given
-                # output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
+                import gptune
+                ret = gptune.PredictOutput(problem_space=problem_space,
+                        modeler=modeler,
+                        input_task=Igiven,
+                        input_parameter=pGiven,
+                        function_evaluations=func_eval_list)
+                print("ret: ", ret)
+                output_info["result"] = ret[output_name][0][0] #parameter_given
+                output_info["result_std"] = ret[output_name+"_var"][0][0] #parameter_given
 
             context = {
                 "tuning_problem_unique_name": tuning_problem_unique_name,
