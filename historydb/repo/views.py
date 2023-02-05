@@ -840,18 +840,18 @@ class ModelPrediction(TemplateView):
                     }
                     problem_space["output_space"].append(problem)
 
-                output_parameter_range = ast.literal_eval(output_parameter_range[i])
+                output_parameter_range_ = ast.literal_eval(output_parameter_range[i])
                 func_eval_list_filtered = []
                 #copy.deepcopy(func_eval_list)
                 for func_eval in func_eval_list:
                     if output_type == "integer" or output_type == "real":
-                        if func_eval["evaluation_result"][output_name] >= output_parameter_range[0] and\
-                           func_eval["evaluation_result"][output_name] <= output_parameter_range[-1]:
+                        if func_eval["evaluation_result"][output_name] >= output_parameter_range_[0] and\
+                           func_eval["evaluation_result"][output_name] <= output_parameter_range_[-1]:
                             func_eval_list_filtered.append(func_eval)
                         #else:
                         #    print ("filtered: ", func_eval)
                     elif output_type == "categorical":
-                        if func_eval["evaluation_result"][output_name] in output_parameter_range:
+                        if func_eval["evaluation_result"][output_name] in output_parameter_range_:
                             func_eval_list_filtered.append(func_eval)
                         #else:
                         #    print ("filtered: ", func_eval)
