@@ -1848,6 +1848,9 @@ class AnalysisDashingCounter(TemplateView):
 
     def get(self, request, **kwargs):
 
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))
         software_configurations_list = json.loads(request.GET.get("software_configurations_list", "{}"))
