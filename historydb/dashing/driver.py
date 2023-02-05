@@ -39,9 +39,16 @@ class driver(dict):
                 data_loaders = self.handle_global_config(config_dict_data[config_name], config_name, config_dict_data, config_filename, dataframe=dataframe)
     
         charts = []
+        event_imps = []
+        raw_values = []
         for app_name, data_loader in data_loaders.items():
             if data_loader.options['charts']:
+                # print(data_loader["charts"][0])
                 charts.extend(data_loader["charts"])
+                charts.extend({'data':'table'})
+                # print('zayed 1', data_loader['group_reg_pair_vlaues'])
+                event_imps.append(data_loader['group_reg_pair_vlaues'])
+                raw_values.append(data_loader['raw_importance'])
 
         # rsm_ev_errors = data_loader['rsm_ev_errors']
         # rsm_alphas = data_loader['rsm_alphas']
@@ -52,7 +59,7 @@ class driver(dict):
 
         # print("Zayed ev to res: ")
         # print(data_loader.ev_to_res_map)
-        return charts, data_loader['group_reg_pair'], data_loader['group_reg_pair_vlaues'], data_loader['raw_importance']
+        return charts, data_loader['group_reg_pair'], data_loader['group_reg_pair_vlaues'], data_loader['raw_importance'], event_imps, raw_values
 
     # def main2(self,config_file, force_compute, dataframe, config_name=None):
     #     config_path, config_dict_data = self.load_config_file(config_file)

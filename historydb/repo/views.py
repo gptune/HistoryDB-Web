@@ -1172,20 +1172,28 @@ class AnalysisDashingParameter(TemplateView):
                 temp_list = []
                 for index in sort_index:
                     should_include = True
-                    for vals in filters[0].keys():
-                        # print("Zayed vals", vals, filters[0][vals]==self.function_evaluations[index]['task_parameter'][vals])
-                        if vals in self.function_evaluations[index]['task_parameter'].keys() and filters[0][vals]!=self.function_evaluations[index]['task_parameter'][vals]:
+                    for vals in filters.keys():
+                        # print("Zayed vals", vals, self.function_evaluations[index]['tuning_parameter'].keys(), vals in self.function_evaluations[index]['tuning_parameter'].keys())
+                        if vals in self.function_evaluations[index]['tuning_parameter'].keys():
+                            # print("Zayed test: " ,self.function_evaluations[index]['tuning_parameter'][vals])
+                            if self.function_evaluations[index]['tuning_parameter'][vals]<float(filters[vals].split(",")[0]) or self.function_evaluations[index]['tuning_parameter'][vals]>float(filters[vals].split(",")[-1]):
+                                should_include = False
+                        elif vals in self.function_evaluations[index]['evaluation_result'].keys():
+                            # print("Zayed test: " ,self.function_evaluations[index]['evaluation_result'][vals])
+                            if self.function_evaluations[index]['evaluation_result'][vals]<float(filters[vals].split(",")[0]) or self.function_evaluations[index]['evaluation_result'][vals]>float(filters[vals].split(",")[-1]):
+                                should_include = False
+                        elif vals in self.function_evaluations[index]['task_parameter'].keys() and filters[vals]!=self.function_evaluations[index]['task_parameter'][vals]:
+                            # print("Zayed Here for ", vals)
                             should_include = False
                         elif 'constansts' in self.function_evaluations[index] and vals in self.function_evaluations[index]['constants'].keys() and filters[0][vals]!=self.function_evaluations[index]['constants'][vals]:
                             should_include = False
                         elif 'machine_configuration' in self.function_evaluations[index]:
                             for machine in self.function_evaluations[index]['machine_configuration'].keys():
-                                if type(self.function_evaluations[index]['machine_configuration'][machine]) is dict and vals in self.function_evaluations[index]['machine_configuration'][machine].keys() and filters[0][vals] != self.function_evaluations[index]['machine_configuration'][machine][vals]:
+                                if type(self.function_evaluations[index]['machine_configuration'][machine]) is dict and vals in self.function_evaluations[index]['machine_configuration'][machine].keys() and filters[vals] != self.function_evaluations[index]['machine_configuration'][machine][vals]:
                                     should_include = False
-                                    break
-                        else:
-                            should_include = False
-                            break
+                        # else:
+                        #     should_include = False
+                        #     break
                     if should_include is True:    
                         temp_list.append(self.function_evaluations[index][name][parameter])
                 # print(type(temp_list[0]))
@@ -1256,7 +1264,81 @@ class AnalysisDashingParameter(TemplateView):
                 if input_task not in input_task_avail:
                     input_task_avail.append(input_task)
 
+        ########################################################
+        tuning_problem_loaded = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem = copy.deepcopy(tuning_problem_loaded)
+        tuning_problem_info = tuning_problem["tuning_problem_info"]
+            
+        num_func_eval = len(self.function_evaluations)
+        for i in range(num_func_eval):
+            self.function_evaluations[i]["id"] = i
 
+            for parameter_info in tuning_problem_info["parameter_info"]:
+                parameter_name = parameter_info["parameter_name"]
+                parameter_type = parameter_info["parameter_type"]
+
+                if parameter_type == "integer" or parameter_type == "real":
+                    value = self.function_evaluations[i]["tuning_parameter"][parameter_name]
+                    if "lower_bound" not in parameter_info:
+                        parameter_info["lower_bound"] = value
+                    else:
+                        if value < parameter_info["lower_bound"]:
+                            parameter_info["lower_bound"] = value
+                    if "upper_bound" not in parameter_info:
+                        parameter_info["upper_bound"] = value
+                    else:
+                        if value > parameter_info["upper_bound"]:
+                            parameter_info["upper_bound"] = value
+                elif parameter_type == "categorical":
+                    category = self.function_evaluations[i]["tuning_parameter"][parameter_name]
+                    if "categories" not in parameter_info:
+                        parameter_info["categories"] = [category]
+                    else:
+                        if category not in parameter_info["categories"]:
+                            parameter_info["categories"].append(category)
+                else:
+                    pass
+
+            for output_info in tuning_problem_info["output_info"]:
+                output_name = output_info["output_name"]
+                output_type = output_info["output_type"]
+
+                if output_type == "integer":
+                    value = self.function_evaluations[i]["evaluation_result"][output_name]
+                    if "lower_bound" not in output_info:
+                        output_info["lower_bound"] = value
+                    else:
+                        if value < output_info["lower_bound"]:
+                            output_info["lower_bound"] = value
+                    if "upper_bound" not in output_info:
+                        output_info["upper_bound"] = value
+                    else:
+                        if value > output_info["upper_bound"]:
+                            output_info["upper_bound"] = value
+                elif output_type == "real":
+                    value = self.function_evaluations[i]["evaluation_result"][output_name]
+                    if "lower_bound" not in output_info:
+                        output_info["lower_bound"] = round(value-0.005,2)
+                    else:
+                        if round(value-0.005, 2) < output_info["lower_bound"]:
+                            output_info["lower_bound"] = round(value-0.005, 2)
+                    if "upper_bound" not in output_info:
+                        output_info["upper_bound"] = round(value+0.005, 2)
+                    else:
+                        if round(value+0.005, 2) > output_info["upper_bound"]:
+                            output_info["upper_bound"] = round(value+0.005, 2)
+
+                elif output_type == "categorical":
+                    category = self.function_evaluations[i]["evaluation_result"][output_name]
+                    if "categories" not in output_info:
+                        output_info["categories"] = [category]
+                    else:
+                        if category not in output_info["categories"]:
+                            output_info["categories"].append(category)
+                else:
+                    pass
+        
+        #################################################################################
 
         has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
         has_group_info = False
@@ -1417,6 +1499,8 @@ class AnalysisDashingParameter(TemplateView):
 
         # print("Zayed test 2", tuning_problem_unique_name)
         context = { "function_evaluations" : self.function_evaluations,
+                    "tuning_problem": tuning_problem,
+                    "output_options" : output_options,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "tuning_problem" : tuning_problem,
                     "chart2" : transformed_charts,
@@ -1458,7 +1542,49 @@ class AnalysisDashingParameter(TemplateView):
 
         input_task_avail = []
         input_task_avail.append(ast.literal_eval(request.POST["input_task_p"]))
+        input_task_alt = copy.deepcopy(input_task_avail[0])
         # print("Zayed test 3", input_task_avail)
+
+        ##########################################################
+        tuning_problem = request.GET.get("tuning_problem", "{}")
+        tuning_parameter_range = request.POST.getlist("tuning_parameter_range")
+        output_range = request.POST.getlist("output_range")
+
+        # print("ZAYED ZZZZZZZZZZZZZZ", tuning_parameter_range)
+
+        tuning_problem_loaded = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
+        tuning_problem = copy.deepcopy(tuning_problem_loaded)
+        tuning_problem_info = tuning_problem["tuning_problem_info"]
+
+        index=0
+        for i in range(len(tuning_problem_info["parameter_info"])):
+            parameter_info = tuning_problem_info["parameter_info"][i]
+
+            parameter_name = parameter_info["parameter_name"]
+            parameter_type = parameter_info["parameter_type"]
+
+            if(parameter_type != "categorical"):
+                parameter_range = ast.literal_eval(tuning_parameter_range[index])
+                input_task_alt[parameter_name]=str(parameter_range[0])+','+str(parameter_range[-1])
+                parameter_info['upper_bound'] = parameter_range[-1]
+                parameter_info['lower_bound'] = parameter_range[0]
+                index+=1
+
+        for i in range(len(tuning_problem_info["output_info"])):
+            output_info = tuning_problem_info["output_info"][i]
+
+            output_name = output_info["output_name"]
+
+            # print('Zayed Check: ', output_range[i])
+            out_range = ast.literal_eval(output_range[i])
+            input_task_alt[output_name]=str(out_range[0])+','+str(out_range[-1])
+
+            output_info['upper_bound'] = out_range[-1]
+            output_info['lower_bound'] = out_range[0]
+
+
+        # print("Why Zayed why ",input_task_alt)
+        #######################################################################
 
         has_counter_info = 'additional_output' in self.function_evaluations[0] and 'pmu' in self.function_evaluations[0]['additional_output']
         has_group_info = False
@@ -1510,18 +1636,20 @@ class AnalysisDashingParameter(TemplateView):
         # rows2.extend(self.read_task_or_tuning_parameter_ranked(task_params, 'task_parameter', sorted_index))
         # rows2.extend(self.read_task_or_tuning_parameter_ranked(tuning_params,'tuning_parameter', sorted_index))
 
-        rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(task_params, 'task_parameter', sorted_index, input_task_avail))
-        rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(tuning_params,'tuning_parameter', sorted_index, input_task_avail))
+        # rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(task_params, 'task_parameter', sorted_index, input_task_avail))
+        rows2.extend(self.read_task_or_tuning_parameter_ranked_filters(tuning_params,'tuning_parameter', sorted_index, input_task_alt))
         
         # Read the target metrices
         # n_n = []
         # n_n.append(evaluation_results[1])
         # evaluation_row = self.read_task_or_tuning_parameter(n_n,'evaluation_result')
 
-        evaluation_row = self.read_task_or_tuning_parameter_ranked_filters(evaluation_results,'evaluation_result', sorted_index,input_task_avail)
+        evaluation_row = self.read_task_or_tuning_parameter_ranked_filters(evaluation_results,'evaluation_result', sorted_index,input_task_alt)
         rows2.extend(evaluation_row)
 
         new_dashing_df_2 = pd.DataFrame(rows2)
+        print(new_dashing_df_2.head())
+        print(new_dashing_df_2.tail())
         # for cols in new_dashing_df_2.columns:
         #     print("Zayed types: ")
         #     print(cols, type(cols))
@@ -1543,17 +1671,17 @@ class AnalysisDashingParameter(TemplateView):
                 txtfile.write(tuning_param + '\n')
 
         with open(resources_path + '/native_all_filtered.txt', 'a') as txtfile:
-            for task_param in task_params:
-                txtfile.write(task_param + '\n')
+            # for task_param in task_params:
+            #     txtfile.write(task_param + '\n')
             for evaluation_result in evaluation_results:
                 txtfile.write(evaluation_result + '\n')
 
         mapping = {}
         with open(resources_path + '/event_map.txt', 'w') as txtfile:
-            mapping['TASK_PARAMS'] = []
-            for task_param in task_params:
-                txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
-                mapping['TASK_PARAMS'].append(task_param)
+            # mapping['TASK_PARAMS'] = []
+            # for task_param in task_params:
+            #     txtfile.write(task_param + '=>' + 'TASK_PARAMS\n')
+            #     mapping['TASK_PARAMS'].append(task_param)
             mapping['TUNING_PARAMS'] = []
             for tuning_param in tuning_params:
                 txtfile.write(tuning_param + '=>' + 'TUNING_PARAMS\n')
@@ -1568,15 +1696,10 @@ class AnalysisDashingParameter(TemplateView):
 
         # Calling the visualization for parameters analysis
         transformed_charts = []
-        charts, group_imps_params, event_imps_params, raw_counter_imp = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
+        charts, group_imps_params, event_imps_paramsz, raw_counter_impz, event_imps_params_list, raw_counter_imp_list = drvr.main(os.getcwd() + '/dashing/configs/tuning_task_params_problem.yml', True, dataframe= new_dashing_df_2)
         
         # print('Zayed Here1 ', charts)
 
-        for chart in charts:
-            # print('Zayed Here1 ', len(charts))
-            if chart is not None:
-                chart3 = plot(chart,output_type="div")
-                transformed_charts.append(chart3)
                 # break
             # else:
             #     self.write_config_file('tuning_task_params_problem' + '.yml',[evaluation_results[charts.index(chart)]],'haswell-user', chart_type='linechart')
@@ -1590,37 +1713,64 @@ class AnalysisDashingParameter(TemplateView):
 
 
         # Reading event importances
-        event_importances = []
-        # for region in event_imps_params:
-        #     for group in event_imps_params[region]:
-        #         for event in event_imps_params[region][group]:
+        total_event_imps = []
+        index = 0
+        for event_imps_params in event_imps_params_list:
+            print('Zayeds', event_imps_params)
+            event_importances = []
+            for region in self.phases:
+                for group in mapping:
+                    for event in mapping[group]:
+                        row_dict = {}
+                        row_dict['counter_name'] = event
+                        if group in event_imps_params[region].keys() and event in event_imps_params[region][group].keys():
+                            row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+                        else:
+                            row_dict['value'] = '0.0%'
+                        row_dict['region'] = region
+                        row_dict['groups'] = group
+                        row_dict['raw_counter'] = str(round(raw_counter_imp_list[index][region][group][event],5))
+                        event_importances.append(row_dict)
+            total_event_imps.append(event_importances)
+            index+=1  
+
+        # event_importances = []
+        # for region in self.phases:
+        #     for group in mapping:
+        #         for event in mapping[group]:
         #             row_dict = {}
         #             row_dict['counter_name'] = event
-        #             row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+        #             if group in event_imps_params[region].keys() and event in event_imps_params[region][group].keys():
+        #                 row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
+        #             else:
+        #                 row_dict['value'] = '0.0%'
         #             row_dict['region'] = region
         #             row_dict['groups'] = group
-        #             event_importances.append(row_dict)
+        #             row_dict['raw_counter'] = str(round(raw_counter_imp[region][group][event],5))
+        #             event_importances.append(row_dict)              
 
-        # print("Zayed whoooooo ", self.phases, event_imps_params)
-        # print("Zayed whoooooo", raw_counter_imp['Single Phase']['TUNING_PARAMS']['agg_num_levels'])
-        for region in self.phases:
-            for group in mapping:
-                for event in mapping[group]:
-                    row_dict = {}
-                    row_dict['counter_name'] = event
-                    if group in event_imps_params[region].keys() and event in event_imps_params[region][group].keys():
-                        row_dict['value'] = str(round(event_imps_params[region][group][event] * 100, 2)) + '%' 
-                    else:
-                        row_dict['value'] = '0.0%'
-                    row_dict['region'] = region
-                    row_dict['groups'] = group
-                    row_dict['raw_counter'] = str(round(raw_counter_imp[region][group][event],5))
-                    event_importances.append(row_dict)               
+        master_event_importances = []
+        index=0
+        for chart in charts:
+            # print('Zayed Here1 ', len(charts))
+            if chart is not None:
+                # print(type(event_importances))
+                if type(chart) is not str:
+                    chart3 = plot(chart,output_type="div")
+                    transformed_charts.append(chart3)
+                    master_event_importances.append(None)
+                else:
+                    transformed_charts.append(None)
+                    master_event_importances.append(total_event_imps[index])
+                    index+=1
 
+
+        # print("Final Zayed", input_task_avail)
         context = { "function_evaluations" : self.function_evaluations,
+                    "tuning_problem": tuning_problem,
                     "tuning_problem_name" : tuning_problem_unique_name,
                     "chart2" : transformed_charts,
-                    "counters" : event_importances,
+                    "counters" : master_event_importances,
                     "removed_task_params" : removed_task_params,
                     "removed_tuning_params" : removed_tuning_params,
                     "all_task_params" : all_task_params,
@@ -1833,13 +1983,14 @@ class AnalysisDashingCounter(TemplateView):
         # Calling the visualization for counter analysis 
         transformed_charts = []
         if has_counter_info:
-            charts, group_imps_counter, event_imps_counter = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
+            charts, group_imps_counter, event_imps_counter, raw_counter_imps, later, later2 = drvr.main(os.getcwd() + '/dashing/configs/counter_importance_problem.yml', True, dataframe= new_dashing_df)
             for chart in charts:
                 if chart is not None:
-                    chart2 = plot(chart,output_type="div")
-                    transformed_charts.append(chart2)         
-                else:
-                    chart2 = None
+                    if type(chart) is not str:
+                        chart2 = plot(chart,output_type="div")
+                        transformed_charts.append(chart2)         
+                    else:
+                        chart2 = None
         else:
             transformed_charts = None
 
