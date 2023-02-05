@@ -1237,8 +1237,7 @@ class AnalysisDashingParameter(TemplateView):
         search_options = json.loads(request.GET.get("search_options", "[]"))
 
         historydb = HistoryDB_MongoDB()
-
-        print("Zayed test", machine_configurations_list)
+        tuning_problem = historydb.load_tuning_problem_by_unique_name(tuning_problem_unique_name)
 
         self.function_evaluations = historydb.load_func_eval_filtered(tuning_problem_unique_name = tuning_problem_unique_name,
                 machine_configurations_list = machine_configurations_list,
@@ -1419,6 +1418,7 @@ class AnalysisDashingParameter(TemplateView):
         # print("Zayed test 2", tuning_problem_unique_name)
         context = { "function_evaluations" : self.function_evaluations,
                     "tuning_problem_name" : tuning_problem_unique_name,
+                    "tuning_problem" : tuning_problem,
                     "chart2" : transformed_charts,
                     "counters" : event_importances,
                     "removed_task_params" : removed_task_params,
@@ -1435,6 +1435,9 @@ class AnalysisDashingParameter(TemplateView):
         return render(request, 'repo/analysis-dashing-parameter.html', context)
         
     def post(self, request, **kwargs):
+
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
 
         tuning_problem_unique_name = request.GET.get("tuning_problem_unique_name", "")
         machine_configurations_list = json.loads(request.GET.get("machine_configurations_list", "{}"))

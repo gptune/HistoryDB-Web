@@ -24,7 +24,7 @@
 
 <div class="container-fluid pt-3">
   <div class="py-5 text-center">
-    <h1 style="margin-top: 0">Tuning Parameter Important Analysis with Dashing</h1>
+    <h1 style="margin-top: 0">Tuning Parameter Importance Analysis with Dashing</h1>
   </div>
 </div>
 
@@ -103,10 +103,12 @@
         </div>
 
         <div class="container-fluid">
-            <div class="py-5 text-center">
-              <label></label>
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Run Parameter Analysis for Objective'</button>
-            </div>
+          <div class="py-5 text-center">
+            {% for output_parameter in tuning_problem.tuning_problem_info.output_info %}
+            <label></label>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Run Parameter Analysis for Objective '{{ output_parameter.output_name }}'</button>
+            {% endfor %}
+          </div>
         </div>
     
     </form>
