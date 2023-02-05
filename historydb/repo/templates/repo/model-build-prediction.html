@@ -94,7 +94,7 @@
           {% endifequal %}
         </div>
         <div class="col">
-          <label>Input</label>
+          <label style="color:red">Input (make sure to provide a proper value within the range)</label>
           {% ifequal tuning_parameter.parameter_type 'categorical' %}
           <input type="text" class="form-control" name="tuning_parameter_given" value="'{{ tuning_parameter.given_value }}'">
           {% else %}
