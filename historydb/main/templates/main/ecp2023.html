@@ -1,0 +1,50 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-about').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <br><br>
+
+  <h1>GPTune Tutorial Materials - ECP Annual Meeting 2023</h1>
+  <p class="lead">
+    <ul>
+      <h3>
+        <li>
+          Presentation slides (<a href="https://drive.google.com/file/d/12lwbAtJBgKXdfYZSU_N2YZ2Ts6rkbnb9/view?usp=sharing">link</a>)
+        </li>
+        <li>
+            Instruction for hands-on exercises
+          <ul>
+            <li>Preparation of the Docker image (<a href="https://ggle.io/5X00">link</a>)</li>
+            <li>Part 1: Basic usage of GPTune (<a href="https://ggle.io/5X01">link</a>)</li>
+            <li>Part 2: Advanced algorithms of GPTune (<a href="https://ggle.io/5X02 ">link</a>)</li>
+            <li>Part 3: History database and crowd-tuning (<a href="https://ggle.io/5X03">link</a>)</li>
+          </ul>
+        </li>
+        <li>
+          Survey (<a href="https://forms.gle/WdjQbcJk3iwC9mzv5">link</a>)
+        </li>
+        <li>
+          GPTune Users' Guide (<a href="https://github.com/gptune/GPTune/blob/master/Doc/GPTune_UsersGuide.pdf">link</a>)
+        </li>
+        <li>
+          GPTune GitHub repository (<a href="https://github.com/gptune/GPTune">link</a>)
+        </li>
+      </h3>
+    </ul>
+  </p>
+
+</div>
+
+{% endblock %}
