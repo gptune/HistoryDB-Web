@@ -8,6 +8,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    path('reset-password/', views.reset_password, name='reset-password'),
     path('profile/', views.ProfileDashboard.as_view(), name='profile'),
     path('access-tokens/', views.AccessTokens.as_view(), name='access-tokens'),
     path('add-access-token/', views.AddAccessToken.as_view(), name='add-access-token'),

@@ -93,8 +93,6 @@ def login(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
-        #print ("username: ", username)
-        #print ("password: ", password)
         user = auth.authenticate(request, username=username, password=password)
         if user is not None:
             auth.login(request, user)
@@ -112,10 +110,66 @@ def logout(request):
     auth.logout(request)
     return redirect(reverse_lazy('main:index'))
 
+def reset_password(request):
+    if not request.user.is_authenticated:
+        return redirect(reverse_lazy('account:login'))
+
+    if request.method == "POST":
+        username = request.user.username
+        current_password = request.POST["current_password"]
+
+        user = auth.authenticate(request, username=username, password=current_password)
+        if user is not None:
+            auth.login(request, user)
+            if request.POST["new_password1"] == request.POST["new_password2"]:
+                recaptcha_response = request.POST.get('g-recaptcha-response')
+                data = {
+                    'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                    'response': recaptcha_response
+                }
+                r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+                result = r.json()
+                if result['success']:
+                    user.set_password(request.POST["new_password1"])
+                    user.save()
+                    context = {
+                            "header": "Updated password",
+                            }
+                    return render(request, 'account/return.html', context)
+                else:
+                    context = {
+                        "header": "Failed to reset your password",
+                        "message": "Confirm robot checking"
+                    }
+                    return render(request, 'main/error.html', context)
+            else:
+                context = {
+                    "header": "Failed to reset your password",
+                    "message": "The ``new password'' field and the ``confirm new password'' field need to be the same."
+                }
+                return render(request, 'main/error.html', context)
+            return redirect(reverse_lazy('main:index'))
+        else:
+            context = {
+                "header": "Failed to reset your password",
+                "message": "Password is incorrect"
+            }
+            return render(request, 'main/error.html', context)
+
+    elif request.method == "GET":
+        if not request.user.is_authenticated:
+            return redirect(reverse_lazy('account:login'))
+
+        username = request.user.username
+        context = {
+            "username": username,
+            "GOOGLE_RECAPTCHA_SITE_KEY": settings.GOOGLE_RECAPTCHA_SITE_KEY,
+        }
+
+        return render(request, 'account/reset-password.html', context)
+
 def activate(request, username):
     if request.method == "POST":
-        print ("POST")
-
         activation_code = ""
         activation_code += request.POST['n1']
         activation_code += request.POST['n2']
