@@ -152,6 +152,9 @@ def acknowledgement(request):
 def membership(request):
     return render(request, 'main/membership.html')
 
+def examples(request):
+    return render(request, 'main/examples.html')
+
 def gptune_tutorial_ecp2021(request):
     return render(request, 'main/ecp2021.html')
 

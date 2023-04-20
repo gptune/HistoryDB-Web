@@ -39,13 +39,11 @@
   });
 </script>
 
-<div style="padding-top: 10px; padding-bottom: 20px; padding-left: 20px; padding-right: 20px;">
-
-<div class="container-fluid pt-3">
+<div class="container-fluid pt-3 px-4 py-5">
   <form method="POST">
     {% csrf_token %}
-    <div class="well">
-      <h2 style="margin-top: 0">Tuning Problem</h2>
+    <div class="container-fluid">
+      <h2>History Database Dashboard</h2>
       <div class="mb-3">
         <script>
           var machine_configurations_avail = {{ machine_configurations_avail | safe | escape }};
@@ -55,8 +53,8 @@
         </script>
 
         <br>
-        <select class="custom-select d-block w-100" style="height:50px" name="tuning_problem" id="tuning_problem_id" onChange="UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, outputs_avail, user_configurations_avail);">
-          <option value="" label="Choose..." selected></option>
+        <select class="custom-select" style="height:50px; max-width:1000px;" name="tuning_problem" id="tuning_problem_id" onChange="UpdateConfigurationsList(machine_configurations_avail, software_configurations_avail, outputs_avail, user_configurations_avail);">
+          <option value="" label="Choose the tuning problem ..." selected></option>
           {% if tuning_problems_avail %}
           {% for tuning_problem in tuning_problems_avail %}
           <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }}
@@ -103,23 +101,20 @@ asdf
 
 {% ifnotequal func_eval_list|length 0 %}
 
-<div class="container-fluid">
+<div class="container-fluid pt-3 px-4 py-5">
   <br><br>
   <hr>
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    <h2 class="h2">Performance Data (Function Evaluations by GPTune)</h2>
+    <h2 class="h2">Performance Data (Function Evaluation Results)</h2>
   </div>
 
   <div class="text-left mb-3">
   </div>
 
   <div>
-    <h4>Number of function evaluation result: {{ num_func_eval }}</h4>
-    <br>
-    <br>
-
+    <h6>Number of function evaluation results: {{ num_func_eval }}</h6>
     <div>
-        <h4>Surrogate-based analysis (login required to run analysis)</h4>
+        <h6>Surrogate-based analysis (login required to run analysis)</h6>
         <div id="selected_models">
         </div>
         <a href="{% url 'repo:model-prediction' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
@@ -130,7 +125,7 @@ asdf
         </a>
     </div>
     <div>
-        <h4>Analysis with Dashing (login required to run analysis)</h4>
+        <h6>Analysis with Dashing (login required to run analysis)</h6>
         <div id="selected_models">
         </div>
         <a href="{% url 'repo:analysis-dashing-parameter' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
@@ -144,95 +139,26 @@ asdf
         {% endif %}
     </div>
     <div>
-        <h4>Export data</h4>
+        <h6>Export data</h6>
         <a href="{% url 'repo:export' %}?tuning_problem_unique_name={{tuning_problem_unique_name}}&machine_configurations_list={{machine_configurations_list}}&software_configurations_list={{software_configurations_list}}&output_options={{output_options}}&user_configurations_list={{user_configurations_list}}&search_options={{search_options}}">
         <button id="button">JSON (GPTune-compatible)</button>
         </a>
     </div>
   </div>
 
-  <script>
-    //$(document).ready( function () {
-    //  $('#function_evaluations').DataTable( {
-    //    dom: 'Bfrtip',
-    //    buttons: [
-    //        'copy', 'csv', 'excel', 'pdf', 'print'
-    //    ]
-    //    } );
-    //});
-
-    $(document).ready(function () {
-        // Setup - add a text input to each footer cell
-        $('#function_evaluations thead tr')
-        .clone(true)
-        .addClass('filters')
-        .appendTo('#function_evaluations thead');
-
-        var table = $('#function_evaluations').DataTable({
-            orderCellsTop: true,
-            fixedHeader: true,
-
-            initComplete: function () {
-            var api = this.api();
-
-            // For each column
-            api
-            .columns()
-            .eq(0)
-            .each(function (colIdx) {
-                // Set the header cell to contain the input element
-                var cell = $('.filters th').eq(
-                        $(api.column(colIdx).header()).index()
-                        );
-                var title = $(cell).text();
-                $(cell).html('<input type="text" placeholder="' + title + '" />');
-
-                // On every keypress in this input
-                $(
-                    'input',
-                    $('.filters th').eq($(api.column(colIdx).header()).index())
-                 )
-                .off('keyup change')
-                .on('keyup change', function (e) {
-                    e.stopPropagation();
-
-                    // Get the search value
-                    $(this).attr('title', $(this).val());
-                    var regexr = '({search})'; //$(this).parents('th').find('select').val();
-
-                    var cursorPosition = this.selectionStart;
-                    // Search the column for that value
-                    api
-                    .column(colIdx)
-                    .search(
-                            this.value != ''
-                            ? regexr.replace('{search}', '(((' + this.value + ')))')
-                            : '',
-                            this.value != '',
-                            this.value == ''
-                           )
-                    .draw();
-
-                    $(this)
-                        .focus()[0]
-                        .setSelectionRange(cursorPosition, cursorPosition);
-                });
-            });
-            },
-
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
-        });
-    });
+  <script type="text/javascript">
+      $(document).ready( function () {
+        $('#function_evaluations').DataTable( {
+          dom: 'Blfrtip',
+          buttons: [
+              'copy', 'csv', 'excel', 'pdf', 'print'
+          ]
+          } );
+      });
   </script>
 
-  <div class="table-responsive table_outer">
-    <div class="text-left mb-3">
-      <h4>Export to other format</h4>
-    </div>
-
+  <div class="table-responsive table_outer my-5">
+    Export to other formats
     <table id="function_evaluations" class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -628,8 +554,6 @@ asdf
     </table>
   </div>
   {% endfor %}
-</div>
-
 </div>
 
 {% else %}

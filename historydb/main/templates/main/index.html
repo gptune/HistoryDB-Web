@@ -4,9 +4,7 @@
 
 {% extends 'main/base.html' %}
 {% load static %}
-
 {% block content %}
-
 
 <script>
   $(document).ready(function () {
@@ -14,240 +12,41 @@
   });
 </script>
 
-<div style="background-color: lightgrey">
-  <br><br>
-  <div class="container px-4 py-5" style="text-align: center">
-    <h1>GPTune: Performance Autotuner for HPC Applications</h1>
-    <p>GPTune is an autotuning framework designed particularly for high-performance computing applications that are expensive to evaluate. GPTune uses Bayesian optimization-based approach using Gaussian Process regression and supports advanced features such as multi-task learning, transfer learning, multi-fidelity, and multi-objective tuning.</p>
-    <a class="btn btn-lg btn-primary" href="{% url 'main:gptune-tutorial-ecp2022' %}" role="button">GPTune Tutorial (2022)</a>&nbsp;&nbsp;
-    <a class="btn btn-lg btn-primary" href="https://forms.gle/WdjQbcJk3iwC9mzv5" style="background-color:orange;border-color:orange;color:white;" role="button">GPTune User Survey</a>&nbsp;&nbsp;
-  </div>
-  <div class="container px-4 py-5" style="text-align: center">
-    <h1>The History Database</h1>
-
-    <p>The success of autotuning depends on collecting performance data samples. The GPTune History Database allows users to share performance data samples, so everyone can benefit from (expensive) runs of widely used high-performance computing codes.
-    Please Sign Up For Free to access more data and use all the nice features of the history database!
-    <p>
-    <a class="btn btn-lg btn-primary" href="{% url 'repo:dashboard' %}" role="button">Go To Dashboard</a>&nbsp;&nbsp;
-    <a class="btn btn-lg btn-primary" href="{% url 'account:signup' %}" style="background-color:orange;border-color:orange;color:white;" role="button">Sign Up For Free</a>&nbsp;&nbsp;
-    <a class="btn btn-lg btn-primary" href="https://github.com/gptune/GPTune/issues" style="background-color:MediumSeaGreen;border-color:MediumSeaGreen;color:white;" role="button">Issue Report / Get Help</a>
+<div>
+  <hr>
+  <div class="container px-4 py-5" style="background-color:#EAEDED">
+    <h1>GPTune</h1>
+    <p class="lead">GPTune is a performance autotuner designed particularly for HPC applications that are expensive to evaluate. GPTune uses Bayesian optimization based on Gaussian Process regression and supports advanced features such as multi-task learning, transfer learning, multi-fidelity/objective tuning, and parameter sensitivity analysis.</p>
+    <p class="lead"><a href="{% url 'main:about'%}#about-gptune"><u>More information</u></a></p>
+    <p class="lead">
+      <a class="btn btn-lg btn-primary" href="https://github.com/gptune/GPTune" style="background-color:transparent;color:black;border-color:black;border-width:2px;" role="button">GitHub</a>&nbsp;&nbsp;
+      <a class="btn btn-lg btn-primary" href="{% url 'documentation:gptune-user-guide' %}" style="background-color:transparent;color:black;border-color:black;border-width:2px" role="button">User Guide</a>&nbsp;&nbsp;
+      <a class="btn btn-lg btn-primary" href="{% url 'main:gptune-tutorial-ecp2023' %}" style="background-color:transparent;color:black;border-color:black;border-width:2px" role="button">Tutorial (2023)</a>&nbsp;&nbsp;
+      <a class="btn btn-lg btn-primary" href="https://github.com/gptune/GPTune/issues" style="background-color:transparent;color:black;border-color:black;border-width:2px;" role="button">Issue Report</a>
     </p>
   </div>
-  <br><br>
-</div>
 
-<div class="container">
-  <div class="container px-4 py-5">
-    <div class="row justify-content-center">
-      <h1>History Database Statistics</h1>
-    </div>
-    <br>
-
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="card bg-light mb-3" style="max-width: 18rem;">
-          <div class="card-header">
-            <h5 class="card-title">Number of tuning problems</h5>
-          </div>
-          <div class="card-body">
-            <h2><p class="card-text"> {{ stats.num_tuning_problems }} problems</p></h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4">
-        <div class="card bg-light mb-3" style="max-width: 18rem;">
-          <div class="card-header">
-            <h5 class="card-title">Number of function evaluations</h5>
-          </div>
-          <div class="card-body">
-            <h2><p class="card-text"> {{ stats.num_function_evaluations }} function evaluations</p></h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4">
-        <div class="card bg-light mb-3" style="max-width: 18rem;">
-          <div class="card-header">
-            <h5 class="card-title">Number of users</h5>
-          </div>
-          <div class="card-body">
-            <h2><p class="card-text"> {{ stats.num_users }} users</p></h2>
-          </div>
-        </div>
-      </div>
-
-    </div>
+  <hr>
+  <div class="container px-4 py-5" style="background-color:#EAEDED">
+    <h1>History Database</h1>
+    <p class="lead">GPTune provides a shared database (history database) that allows users to share performance data samples, so everyone can benefit from (expensive) runs of widely used high-performance computing codes.
+    Sign up for free to access more data and use all the available features of the history database.
+    <p class="lead"><a href="{% url 'main:about'%}#about-history-database"><u>More information</u></a></p>
+    <p>
+      <h6 style="color:red;">Current statistics</h6>
+      <ul>
+        <li>Number of tuning problems (target applications): {{ stats.num_tuning_problems }}</li>
+        <li>Number of registered users: {{ stats.num_users }}</li>
+        <li>Number of function evaluations: {{ stats.num_function_evaluations }}</li>
+      </ul>
+    </p>
+    <p class="lead">
+      <a class="btn btn-lg btn-primary" href="{% url 'repo:dashboard' %}" style="background-color:transparent;color:black;border-color:black;border-width:2px" role="button">Dashboard</a>&nbsp;&nbsp;
+      <a class="btn btn-lg btn-primary" href="{% url 'account:signup' %}" style="background-color:transparent;color:black;border-color:black;border-width:2px" role="button">Sign Up</a>&nbsp;&nbsp;
+      <a class="btn btn-lg btn-primary" href="{% url 'main:examples' %}" style="background-color:transparent;color:black;border-color:black;border-width:2px" role="button">Examples</a>
+    </p>
   </div>
-</div>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <h1>Tuning Examples in History Database</h1>
-  </div>
-  <br>
-
-  <div class="row">
-    <div class="col-lg-4">
-      <img src="{% static 'images/ScaLAPACK.gif' %}" width=140>
-      <h2>ScaLAPACK</h2>
-      <p>The ScaLAPACK (or Scalable LAPACK) library includes a subset of LAPACK routines redesigned for distributed memory MIMD parallel computers. It is currently written in a Single-Program-Multiple-Data style using explicit message passing for interprocessor communication. It assumes matrices are laid out in a two-dimensional block cyclic decomposition.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.ScaLAPACK %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-
-    <div class="col-lg-4">
-      <img src="{% static 'images/SuperLULogo.png' %}" width=200>
-      <h2>SuperLU_DIST</h2>
-      <p>SuperLU_DIST contains a set of subroutines to solve a sparse linear system A*X=B. It uses Gaussian elimination with static pivoting (GESP). Static pivoting is a technique that combines the numerical stability of partial pivoting with the scalability of Cholesky (no pivoting), to run accurately and efficiently on large numbers of processors.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.SuperLU_DIST %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-
-    <div class="col-lg-4">
-      <img src="{% static 'images/HypreLogo.png' %}" width=280>
-      <h2>Hypre</h2>
-      <p>The Parallel High Performance Preconditioners (hypre) is a library of routines for scalable (parallel) solution of linear systems. The built-in BLOPEX package in addition allows solving eigenvalue problems.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.Hypre %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-
-    <div class="col-lg-4">
-      <img src="{% static 'images/PLASMA.png' %}" width=360>
-      <p>PLASMA is a software package for solving problems in dense linear algebra using OpenMP. PLASMA provides implementations of state-of-the-art algorithms using cutting-edge task scheduling techniques. PLASMA currently offers a collection of routines for solving linear systems of equations, least squares problems, eigenvalue problems, and singular value problems.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.PLASMA %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-
-    <div class="col-lg-4">
-      <img src="{% static 'images/SLATE.png' %}" width=320>
-      <p>The objective of the Software for Linear Algebra Targeting Exascale (SLATE) project is to provide fundamental dense linear algebra capabilities to the US Department of Energy and to the high-performance computing (HPC) community at large. To this end, SLATE provides basic dense matrix operations (e.g., matrix multiplication, rank-k update, triangular solve), norms, linear systems solvers, least square solvers, and singular value and eigenvalue solvers.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.SLATE %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-
-    <div class="col-lg-4">
-      <h2>NIMROD</h2>
-      <p>NIMROD solves the extended magnetohydrodynamic equations using:
-
-      Spectral finite element discretization in two dimensions,
-      Finite Fourier series in the third dimension,
-      Semi-implicit and implicit temporal discretization for the range of temporal scales found in fusion experiments,
-      Simulation particles for kinetic effects from a minority species of energetic ions,
-      and
-      Integro-differential methods for kinetic effects from free-streaming.</p>
-      <form method="POST">
-        <label><b>Tuning Problem</b></label>
-        {% csrf_token %}
-        <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
-          <option value="" label="Choose..." selected></option>
-          {% if tuning_problems_avail_per_category %}
-          {% for tuning_problem in tuning_problems_avail_per_category.NIMROD %}
-          <option value="{{ tuning_problem.unique_name }}">{{ tuning_problem.tuning_problem_name }} ({{ tuning_problem.user_info.user_name }})</option>
-          </li>
-          {% endfor %}
-          {% else %}
-          {% endif %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-secondary">
-          <span class="glyphicon glyphicon-search"></span>Dashboard &raquo;
-        </button>
-        <br>
-        <br>
-      </form>
-    </div>
-  </div>
 </div>
 
 {% endblock %}
