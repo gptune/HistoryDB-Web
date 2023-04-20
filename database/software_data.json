@@ -3,6 +3,7 @@
         "HPC Library": {
             "Dense Linear Algebra Library": [
                 "BLAS",
+                "XBLAS",
                 "LAPACK",
                 "ScaLAPACK",
                 "SLATE",
