@@ -11,9 +11,6 @@ class Index(TemplateView):
 
         historydb = HistoryDB_MongoDB()
 
-        tuning_problems_avail_per_category = historydb.load_tuning_problems_per_category()
-        print ("tuning_problems_avail_per_category: ", tuning_problems_avail_per_category)
-
         user_email = ""
         if request.user.is_authenticated:
             user_email = request.user.email
@@ -22,7 +19,6 @@ class Index(TemplateView):
         user_count = len(User.objects.all())
 
         context = {
-                "tuning_problems_avail_per_category": tuning_problems_avail_per_category,
                 "stats": {
                         "num_tuning_problems": historydb.get_num_tuning_problems(),
                         "num_function_evaluations": historydb.get_num_function_evaulations(),
@@ -31,6 +27,28 @@ class Index(TemplateView):
                 }
 
         return render(request, 'main/index.html', context)
+
+def about(request):
+    return render(request, 'main/about.html')
+
+def publications(request):
+    return render(request, 'main/publications.html')
+
+def acknowledgement(request):
+    return render(request, 'main/acknowledgement.html')
+
+def membership(request):
+    return render(request, 'main/membership.html')
+
+class Examples(TemplateView):
+
+    def get(self, request, **kwargs):
+        historydb = HistoryDB_MongoDB()
+
+        tuning_problems_avail_per_category = historydb.load_tuning_problems_per_category()
+        context = { "tuning_problems_avail_per_category": tuning_problems_avail_per_category }
+
+        return render(request, 'main/examples.html', context)
 
     def post(self, request, **kwargs):
 
@@ -139,21 +157,6 @@ class Index(TemplateView):
                 }
 
         return render(request, 'repo/dashboard.html', context)
-
-def about(request):
-    return render(request, 'main/about.html')
-
-def publications(request):
-    return render(request, 'main/publications.html')
-
-def acknowledgement(request):
-    return render(request, 'main/acknowledgement.html')
-
-def membership(request):
-    return render(request, 'main/membership.html')
-
-def examples(request):
-    return render(request, 'main/examples.html')
 
 def gptune_tutorial_ecp2021(request):
     return render(request, 'main/ecp2021.html')

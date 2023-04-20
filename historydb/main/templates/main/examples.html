@@ -20,7 +20,7 @@
     <h2>ScaLAPACK</h2>
     <img src="{% static 'images/ScaLAPACK.gif' %}" width=140>
     <p>The ScaLAPACK (or Scalable LAPACK) library includes a subset of LAPACK routines redesigned for distributed memory MIMD parallel computers. It is currently written in a Single-Program-Multiple-Data style using explicit message passing for interprocessor communication. It assumes matrices are laid out in a two-dimensional block cyclic decomposition.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
@@ -45,7 +45,7 @@
     <img src="{% static 'images/SuperLULogo.png' %}" width=200>
     <h2>SuperLU_DIST</h2>
     <p>SuperLU_DIST contains a set of subroutines to solve a sparse linear system A*X=B. It uses Gaussian elimination with static pivoting (GESP). Static pivoting is a technique that combines the numerical stability of partial pivoting with the scalability of Cholesky (no pivoting), to run accurately and efficiently on large numbers of processors.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
@@ -70,7 +70,7 @@
     <img src="{% static 'images/HypreLogo.png' %}" width=280>
     <h2>Hypre</h2>
     <p>The Parallel High Performance Preconditioners (hypre) is a library of routines for scalable (parallel) solution of linear systems. The built-in BLOPEX package in addition allows solving eigenvalue problems.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
@@ -93,8 +93,9 @@
   <hr>
   <div class="container px-4 py-5" style="background-color:#EAEDED">
     <img src="{% static 'images/PLASMA.png' %}" width=360>
+    <h2>PLASMA</h2>
     <p>PLASMA is a software package for solving problems in dense linear algebra using OpenMP. PLASMA provides implementations of state-of-the-art algorithms using cutting-edge task scheduling techniques. PLASMA currently offers a collection of routines for solving linear systems of equations, least squares problems, eigenvalue problems, and singular value problems.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
@@ -117,8 +118,9 @@
   <hr>
   <div class="container px-4 py-5" style="background-color:#EAEDED">
     <img src="{% static 'images/SLATE.png' %}" width=320>
+    <h2>SLATE</h2>
     <p>The objective of the Software for Linear Algebra Targeting Exascale (SLATE) project is to provide fundamental dense linear algebra capabilities to the US Department of Energy and to the high-performance computing (HPC) community at large. To this end, SLATE provides basic dense matrix operations (e.g., matrix multiplication, rank-k update, triangular solve), norms, linear systems solvers, least square solvers, and singular value and eigenvalue solvers.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
@@ -149,7 +151,7 @@
     Simulation particles for kinetic effects from a minority species of energetic ions,
     and
     Integro-differential methods for kinetic effects from free-streaming.</p>
-    <form method="POST">
+    <form method="POST" action="{% url 'main:examples' %}">
       <label><b>Tuning Problem</b></label>
       {% csrf_token %}
       <select class="custom-select d-block w-50" name="tuning_problem_unique_name">
