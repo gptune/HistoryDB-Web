@@ -10,6 +10,7 @@ class Profile(models.Model):
     affiliation = models.CharField(max_length=100, blank=True)
     position = models.CharField(max_length=100, blank=True)
     ecp_member = models.CharField(max_length=10, blank=True)
+    motivation = models.CharField(max_length=250, blank=True)
     is_certified = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=6, blank=True)
 

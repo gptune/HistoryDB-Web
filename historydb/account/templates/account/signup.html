@@ -9,6 +9,19 @@
 
 <link href="{% static 'css/form-validation.css' %}" rel="stylesheet">
 
+<script src="https://unpkg.com/popper.js@1"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<script src="https://unpkg.com/tippy.js@4"></script>
+
+<script>
+  $(document).ready(function() {
+    $('body').on('mouseenter', '.tippy', function(e) {
+      tippy('body .tippy', {
+      })
+    });
+  });
+</script>
+
 <script>
   $(document).ready(function () {
     $('#nav-item-login').addClass('active');
@@ -25,7 +38,16 @@
     <form method="POST" action="{% url 'account:signup' %}" class="needs-validation" novalidate>
       {% csrf_token %}
       <div class="mb-3">
-        <label for="username">Username</label>
+        <div style="display:flex;justify-content:space-between;">
+          <label for="username">Username</label>
+          <span class="tippy" data-tippy-content="
+            <div class='text-left'>Your unique username. No special characters or spaces.
+            </div>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16" style="color:#569CE2">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+          </span>
+        </div>
         <div class="input-group">
           <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
           <div class="invalid-feedback" style="width: 100%;">
@@ -35,7 +57,17 @@
       </div>
 
       <div class="mb-3">
-        <label for="email">Email</label>
+        <div style="display:flex;justify-content:space-between;">
+          <label for="email">Email</label>
+          <span class="tippy" data-tippy-content="
+            <div class='text-left'>
+              We recommend you to use your institutional email, if possible.
+            </div>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16" style="color:#569CE2">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+          </span>
+        </div>
         <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
         <div class="invalid-feedback">
           Please enter a valid email address.
@@ -43,7 +75,17 @@
       </div>
 
       <div class="mb-3">
-        <label for="password1">Password <span class="text-muted"></span></label>
+        <div style="display:flex;justify-content:space-between;">
+          <label for="password1">Password <span class="text-muted"></span></label>
+          <span class="tippy" data-tippy-content="
+            <div class='text-left'>
+              Although we do our best effort to maintain security of user information, we recommend you to use a single-usage password for our website.
+            </div>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16" style="color:#569CE2">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+          </span>
+        </div>
         <input id="password1" name="password1" type="password" class="form-control" required>
       </div>
 
@@ -80,7 +122,18 @@
       </div>
 
       <div class="d-block my-3">
-        <label>Are you part of Exascale Computing Project?</label>
+        <div style="display:flex;justify-content:space-between;">
+          <label>Are you part of Exascale Computing Project (ECP)?</label>
+          <span class="tippy" data-tippy-content="
+            <div class='text-left'>
+              Our project is part of the ECP effort, so we ask this question to understand how our framework is being used for the ECP community.
+            </div>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16" style="color:#569CE2">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+          </span>
+        </div>
+
         <div class="custom-control custom-radio">
           <input id="ecp_member_y" name="ecp_member" value="Yes" type="radio" class="custom-control-input" onClick="UpdateECP_Y();" required>
           <label class="custom-control-label" for="ecp_member_y">Yes</label>
@@ -93,6 +146,21 @@
           <input id="ecp_member_x" name="ecp_member" value="Unknown" type="radio" class="custom-control-input" onClick="UpdateECP_X();" checked required>
           <label class="custom-control-label" for="ecp_member_x">I don't know</label>
         </div>
+      </div>
+
+      <div class="d-block my-3">
+        <div style="display:flex;justify-content:space-between;">
+          <label>How would you like to use our history database? (optional; max 250 characters)</label>
+          <span class="tippy" data-tippy-content="
+            <div class='text-left'>
+              <h6>Our project is part of the ECP effort, so we ask this question to understand how our framework is being used for the ECP community. The answer of this question would not affect your user policy</h6>
+            </div>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16" style="color:#569CE2">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.93 4.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+            </svg>
+          </span>
+        </div>
+        <textarea class="form-control" id="motivation" name="signup_motivation" rows="5" maxlength="250"></textarea>
       </div>
 
       <div class="d-block my-3">

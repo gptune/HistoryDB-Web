@@ -1,229 +1,24 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
 <!doctype html>
 
 {% extends 'main/base.html' %}
 {% load static %}
 {% block content %}
 
-
-<!-- Style code and Javascript code here are obtained from https://codepen.io/DVELOPR/pen/Npdwmd -->
-
-<style>
-
-@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900|Montserrat:400,700');
-
-body {
-    padding: 0px;
-    margin: 0px;
-    -webkit-font-smoothing: antialiased;
-    outline: none;
-}
-
-a {
-    text-decoration: none;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="password"],
-input[type="date"],
-textarea{
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    border-radius: 0px;
-
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
- 
-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-button:focus, input:focus {
-    outline: none;
-}
-
-.mm-number {
-	height: 20vh;
-	width: 20vw;
-}
-
-.mm-number-container {
-	-ms-box-orient: horizontal;
-	display: -webkit-box;
-	display: -moz-box;
-	display: -ms-flexbox;
-	display: -moz-flex;
-	display: -webkit-flex;
-	display: flex;
-	margin: 0 auto;
-	align-items: center;
-	justify-content: center;
-	height: inherit;
-}
-
-.mm-number-input {
-	width: 500px;
-	max-width: 90%;
-	margin: 0 auto;
-	text-align: center;
-}
-
-.mm-number-input-container {
-	-ms-box-orient: horizontal;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: flex;
-    margin: 0 auto;
-    align-items: center;
-    justify-content: center;
-    height: inherit;
-}
-
-.mm-number-input-item {
-	width: 40px;
-	height: 40px;
-	margin: 10px 2px;
-}
-
-.mm-number-input-item input {
-	width: 100%;
-	height: inherit;
-	font-size: 20px;
-	font-weight: 300;
-	text-align: center;
-	border: 1px solid rgba(20,20,20,0.1);
-}
-
-.mm-number-input-submit {
-    text-align: center;
-    width: 80px;
-    height: 40px;
-    background: #f1f1f1;
-    color: #333;
-    border: none;
-    font-size: 14px;
-    font-weight: 300;
-}
-
-.mm-number-input-submit:focus, .mm-number-input-submit:hover {
-	background: #333;
-	color: #f1f1f1;
-	cursor: pointer;
-}
-
-</style>
-
-<script>
-    jQuery(document).ready(function() {
-
-    jQuery('.mm-number-input-item:nth-child(1) input').focus();
-
-    jQuery('.mm-number-input-item').each(function(index) {
-        var item, id, input;
-        item = jQuery(this);
-        id = index + 1;
-        input = item.children('input');
-        item.addClass('mm-number-input-item-'+id);
-        input.data('id',id);
-    });
-
-    jQuery('.mm-number-input-item input').on('keyup', function(e) {
-        var item, value, id, count, pass = [];
-        item = jQuery(this);
-        value = item.val();
-        id = item.data('id');
-        count = jQuery('.mm-number-input-item').length;
-
-        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-            jQuery('.mm-number-input-item-'+(id)+' input').val('');
-        }
-        else {
-            if(!value) {
-                jQuery('.mm-number-input-item-'+id+' input').focus().select();
-            }
-            else {
-                if(id < count) {
-                    jQuery('.mm-number-input-item-'+(id+1)+' input').focus().select();
-                }
-                else {
-                    //
-                }
-            }
-
-            jQuery('.mm-number-input-item input').each(function() {
-                var x;
-                x = jQuery(this);
-                pass.push(x.val());
-            });
-
-            var number = pass.join("");
-        }
-    });
-
-    });
-</script>
-
-<!-- Author: Younghyun Cho <younghyun@berkeley.edu>; Style code and Javascript code are obtained from https://codepen.io/DVELOPR/pen/Npdwmd -->
-
-<div class="container">
-     <div class="mm-number">
-     </div>
-</div>
-<div class="container">
-    <h2>Enter Passcode to Active Your Account</h1>
-    <form method="POST" action="{% url 'account:activate' username=username %}">
-        {% csrf_token %}
-
-        <div class="mm-number">
-
-            <div class="mm-number-container">
-                <div class="mm-number-input">
-                    <div class="mm-number-input-container animated">
-                        <div class="mm-number-input-item">
-                            <input name="n1" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                        <div class="mm-number-input-item">
-                            <input name="n2" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                        <div class="mm-number-input-item">
-                            <input name="n3" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                        <div class="mm-number-input-item">
-                            <input name="n4" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                        <div class="mm-number-input-item">
-                            <input name="n5" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                        <div class="mm-number-input-item">
-                            <input name="n6" type="number" pattern="\d*" class="animated" maxlength="1" placeholder="X">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <input type="submit" class="btn btn-primary" value="Activate">
-
-    </form>
+<div class="container text-center" style="padding-top: 50px; max-width: 800px">
+  <h2>Enter Passcode to Active Your Account</h1>
+  <br>
+  <form method="POST" action="{% url 'account:activate' username=username %}">
+    {% csrf_token %}
+    <p>
+    <input name="activation_code" type="number" maxlength=10>
+    </p>
+    <p>
+    <button class="btn btn-lg btn-primary btn-block" style="width:200px; display: block; margin:0 auto;" type="submit">Submit</button>
+    </p>
+  </form>
 </div>
 
 {% endblock %}
+

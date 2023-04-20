@@ -42,6 +42,7 @@ def signup(request):
                 user.profile.position = request.POST["position"]
                 user.profile.affiliation = request.POST["affiliation"]
                 user.profile.ecp_member = request.POST["ecp_member"]
+                user.profile.motivation = request.POST["signup_motivation"]
 
                 # 6-digit activation code
                 import random
@@ -70,10 +71,6 @@ def signup(request):
 
                 user.save()
 
-                context = {
-                    "header": "Registration Completed",
-                    "message": "Your registration is completed, however, you will need our approval to use all the features of GPTune history database. We will review this registration and send you a notification email if and when the approval is done. If you have not received a notification after 48 hours and need approval, please send an email to the administrator (gptune.historydb.manager@gmail.com) (please use the email address you used for signing-up)."
-                    }
                 return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
                 #return render(request, 'account/return.html', context)
             else:
@@ -170,18 +167,8 @@ def reset_password(request):
 
 def activate(request, username):
     if request.method == "POST":
-        activation_code = ""
-        activation_code += request.POST['n1']
-        activation_code += request.POST['n2']
-        activation_code += request.POST['n3']
-        activation_code += request.POST['n4']
-        activation_code += request.POST['n5']
-        activation_code += request.POST['n6']
-        print (activation_code)
-
-        print ("username: ", username)
+        activation_code = request.POST["activation_code"]
         user = User.objects.get(username=username)
-        print ("user's code: ", user.profile.activation_code)
 
         if (activation_code == user.profile.activation_code):
             user.is_active = True
@@ -193,7 +180,6 @@ def activate(request, username):
                     }
 
             return render(request, 'account/return.html', context)
-            #return redirect(reverse_lazy('main:index'))
         else:
             return redirect(reverse_lazy('account:activate', kwargs={'username': user.username}))
 
