@@ -1,0 +1,54 @@
+<!-- Author: Younghyun Cho <younghyun@berkeley.edu> -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container" style="max-width: 800px">
+  <div class="py-5 text-center">
+    <h2>Terms of Use</h2>
+    <p class="lead">
+  </div>
+
+  <div>
+    <p>
+    By signing up and using our history database, the user agrees with our (the GPTune history database team) statements herein.
+    </p>
+
+    <p>
+    The GPTune history database collects two types of information: (1) the users’ registration information (2) the users’ voluntarily submitted performance data.
+    </p>
+
+    <p>
+    We use the <a href="https://www.nersc.gov/systems/spin/">NERSC’s Spin platform</a> to host our service. In other words, our storage and web instances run only within the NERSC’s resources.
+    </p>
+
+    <p>
+    During registration the user is required to supply a username, password (we use <a href="https://docs.djangoproject.com/en/4.2/topics/auth/passwords/">Django's password management system</a>, therefore, we only store hashed information in our user DB), email address, first/last name, position, and affiliation. The user may also optionally answer some other questions during the registration.
+    </p>
+
+    <p>
+    We never sell or rent user information to anywhere else. We only interanlly use the information to better support and improve our service. We may use the information for our internal understanding of user statistics.
+    </p>
+
+    <p>
+    After registartion, we approve users based on their registration information, because an approved user can use (many) computational/storage resources in our database. The functionalities depending on the user priviledge levels are described in <a href="https://gptune.lbl.gov/membership">https://gptune.lbl.gov/membership</a>.
+    </p>
+
+    <p>
+    The GPTune history database is a non-profit, academic contribution for an autotuning ecosystem. Your use of our database and its resources is entirely at your own risk. 
+    </p>
+
+    <p>
+    If a registered user wants not to use our history database anymore, the user can withdraw their registration by sending us an email at <a href="mailto: gptune-dev@lbl.gov">gptune-dev@lbl.gov</a>.
+    </p>
+
+    <p>
+    Last update: May 17, 2023
+    </p>
+  </div>
+</div>
+
+{% endblock %}

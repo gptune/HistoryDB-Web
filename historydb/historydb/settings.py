@@ -180,4 +180,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_collected')
 
 MEDIA_ROOT = os.path.join(Path(__file__).resolve().parent.parent.parent, "media")
 
-#DOCS_ROOT = os.environ['HISTORYDB_DOCS_ROOT']
+DOCS_ROOT = os.environ['HISTORYDB_DOCS_ROOT']

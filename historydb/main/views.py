@@ -170,5 +170,8 @@ def gptune_tutorial_ecp2023(request):
 def release(request):
     return render(request, 'main/release.html')
 
+def terms_of_use(request):
+    return render(request, 'main/terms-of-use.html')
+
 def base(request):
     return render(request, 'main/base.html')
