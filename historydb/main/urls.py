@@ -18,6 +18,7 @@ urlpatterns = [
     path('gptune-tutorial-ecp2023', views.gptune_tutorial_ecp2023, name='gptune-tutorial-ecp2023'),
     path('release', views.release, name='release'),
     path('terms-of-use', views.terms_of_use, name='terms-of-use'),
+    path('license', views.license, name='license'),
     path('examples', views.Examples.as_view(), name='examples'),
     path('base', views.base, name='base'),
 ]

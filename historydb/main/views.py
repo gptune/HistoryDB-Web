@@ -173,5 +173,8 @@ def release(request):
 def terms_of_use(request):
     return render(request, 'main/terms-of-use.html')
 
+def license(request):
+    return render(request, 'main/license.html')
+
 def base(request):
     return render(request, 'main/base.html')
