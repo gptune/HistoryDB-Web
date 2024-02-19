@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.Index.as_view(), name='index'),
     path('about', views.about, name='about'),
     path('publications', views.publications, name='publications'),
+    url(r'^docs/', include('docs.urls')),
     path('acknowledgement', views.acknowledgement, name='acknowledgement'),
     path('membership', views.membership, name='membership'),
     path('gptune-tutorial-ecp2021', views.gptune_tutorial_ecp2021, name='gptune-tutorial-ecp2021'),

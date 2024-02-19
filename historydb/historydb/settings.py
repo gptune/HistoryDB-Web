@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     'repo.apps.RepoConfig',
     'account.apps.AccountConfig',
     'main.apps.MainConfig',
+    'docs',
 ]
 
 MIDDLEWARE = [
