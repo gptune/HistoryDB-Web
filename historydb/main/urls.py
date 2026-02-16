@@ -17,6 +17,7 @@ urlpatterns = [
     path('gptune-tutorial-ecp2021', views.gptune_tutorial_ecp2021, name='gptune-tutorial-ecp2021'),
     path('gptune-tutorial-ecp2022', views.gptune_tutorial_ecp2022, name='gptune-tutorial-ecp2022'),
     path('gptune-tutorial-ecp2023', views.gptune_tutorial_ecp2023, name='gptune-tutorial-ecp2023'),
+    path('gptune-tutorial-cass2026', views.gptune_tutorial_cass2026, name='gptune-tutorial-cass2026'),
     path('release', views.release, name='release'),
     path('terms-of-use', views.terms_of_use, name='terms-of-use'),
     path('license', views.license, name='license'),

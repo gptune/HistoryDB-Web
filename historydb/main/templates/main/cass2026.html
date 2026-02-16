@@ -1,0 +1,35 @@
+<!-- Author: Younghyun Cho -->
+
+<!doctype html>
+
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<script>
+  $(document).ready(function () {
+    $('#nav-item-tutorial').addClass('active');
+  });
+</script>
+
+<div class="container">
+  <br><br>
+
+  <h1>GPTune Tutorial Materials - CASS 2026</h1>
+  <p class="lead">
+    <ul>
+      <h3>
+        <li>
+          <a href="{% url 'documentation:gptune-tutorial-slides-cass2026' %}">GPTune Tutorial Slides (CASS 2026 BoF)</a>
+        </li>
+        <li>
+          GPTune GitHub repository (<a href="https://github.com/gptune/GPTune">link</a>)
+        </li>
+      </h3>
+    </ul>
+  </p>
+
+</div>
+
+{% endblock %}

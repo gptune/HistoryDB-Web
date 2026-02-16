@@ -47,6 +47,14 @@ def gptune_tutorial_slides_ecp2021(request):
         response['Content-Disposition'] = 'inline;filename=some_file.pdf'
         return response
 
+def gptune_tutorial_slides_cass2026(request):
+    fs = FileSystemStorage()
+
+    with fs.open('GPTune_Tutorial-CASS_BoF_2026_compact.pdf') as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=some_file.pdf'
+        return response
+
 def gptune_hands_on(request):
     fs = FileSystemStorage()
 

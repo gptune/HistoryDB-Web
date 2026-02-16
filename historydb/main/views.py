@@ -167,6 +167,9 @@ def gptune_tutorial_ecp2022(request):
 def gptune_tutorial_ecp2023(request):
     return render(request, 'main/ecp2023.html')
 
+def gptune_tutorial_cass2026(request):
+    return render(request, 'main/cass2026.html')
+
 def release(request):
     return render(request, 'main/release.html')
 
